@@ -1,0 +1,93 @@
+---
+description: GitFlow e convenzioni git per FacilityFlow Retail (store_fix)
+alwaysApply: true
+---
+
+# GitFlow — FacilityFlow Retail
+
+Modello di branching per questo repo Next.js multi-tenant. Segui sempre queste regole quando crei branch, commit o PR.
+
+## Branch
+
+| Branch | Ruolo |
+|--------|--------|
+| `main` | Produzione — solo merge da `release/*` o `hotfix/*` |
+| `develop` | Integrazione — destinazione di feature/bugfix |
+| `feature/*` | Nuove funzionalità |
+| `bugfix/*` | Fix non urgenti (verso `develop`) |
+| `release/*` | Preparazione rilascio (es. `release/1.2.0`) |
+| `hotfix/*` | Fix urgenti su produzione |
+
+### Naming
+
+- `feature/<ticket-or-slug>` — es. `feature/FF-142-tenant-onboarding`
+- `bugfix/<ticket-or-slug>` — es. `bugfix/FF-201-fix-login-redirect`
+- `hotfix/<ticket-or-slug>` — es. `hotfix/FF-310-critical-auth`
+- `release/x.y.z` — es. `release/1.4.0`
+
+```
+✅ feature/FF-88-store-dashboard
+✅ release/2.1.0
+❌ feature/newStuff
+❌ main-fix / develop-temp
+```
+
+## Flusso PR
+
+1. **Feature / bugfix** → PR verso `develop`
+2. **Release** → PR verso `main`, poi merge anche in `develop`
+3. **Hotfix** → PR verso `main`, poi merge anche in `develop`
+
+```
+✅ feature/FF-12-… → develop
+✅ release/1.3.0 → main (+ sync develop)
+✅ hotfix/FF-99-… → main (+ sync develop)
+❌ feature/* → main
+❌ commit diretti su main (eccetto merge/hotfix)
+```
+
+## Protezioni branch
+
+- **Mai** `git push --force` su `main` o `develop`
+- **Nessun** commit diretto su `main` tranne merge di release/hotfix
+- Lavoro quotidiano: branch da `develop` (o da `main` solo per hotfix)
+
+```
+❌ git push --force origin main
+❌ git push --force origin develop
+✅ git push -u origin HEAD   # sul proprio feature branch
+```
+
+## Commit
+
+Preferire [Conventional Commits](https://www.conventionalcommits.org/):
+
+- `feat:` nuova funzionalità
+- `fix:` correzione bug
+- `chore:` manutenzione / tooling
+- `docs:` documentazione
+- `refactor:` refactor senza cambio comportamento
+- `test:` test
+
+```
+✅ feat: aggiungi filtro tenant sulla lista store
+✅ fix: correggi redirect post-login multi-tenant
+❌ updated stuff / wip / asd
+```
+
+## Regole agente (allineate alle user rule)
+
+- **Commit solo se richiesto** esplicitamente dall’utente
+- **Mai** saltare hook (`--no-verify`, `--no-gpg-sign`, ecc.)
+- **Mai** `amend` salvo condizioni user rule (richiesta esplicita / hook che ha modificato file + commit tuo non pushato)
+- **Mai** aggiornare `git config`
+- **Mai** push force su `main`/`develop`; avvisa se richiesto su quei branch
+- PR: usare `gh`; push con `-u` solo se necessario; non pushare senza richiesta
+
+## Checklist rapida
+
+1. Branch corretto dal base giusto (`develop` o `main` per hotfix)
+2. Naming conforme
+3. Commit conventional (se ti viene chiesto di committare)
+4. PR verso il target giusto
+5. Dopo release/hotfix: allineare `develop`

@@ -1,0 +1,67 @@
+---
+description: Verifica post-dev obbligatoria dopo ogni slice FacilityFlow Retail (compose/health, smoke, perf, report)
+alwaysApply: true
+---
+
+# Post-dev verify — FacilityFlow Retail
+
+Dopo **ogni slice di sviluppo significativo**, non dichiarare “fatto” senza evidenza. Esegui questa checklist e lascia un brief verify report.
+
+## 1. Stack Docker (se presente)
+
+- Se esiste `compose.yaml` / `docker-compose.yml`:
+  - `docker compose down && docker compose up -d --build` (o equivalente)
+  - Verifica health: **app**, **db**, **jobs** (stato healthy / log senza errori critici)
+- Se compose **non** c’è ancora (pre-scaffold):
+  - **Non** inventare uno stack rotto
+  - Esegui i check locali disponibili (typecheck, lint, unit test)
+  - Segna compose come **TODO** nel report
+
+## 2. Check locali (sempre o fallback)
+
+- [ ] Typecheck (es. `tsc --noEmit` / script progetto)
+- [ ] Lint
+- [ ] Unit test rilevanti al cambio
+- Usa gli script del repo; non inventare comandi se mancano — annota il gap
+
+## 3. Smoke path critici toccati
+
+- [ ] Percorsi API/UI/job modificati in questa slice
+- [ ] Happy path minimo + 1 fallimento atteso se applicabile
+- [ ] Nessun 5xx / crash ovvio nei log
+
+## 4. Performance (dove rilevante)
+
+Misura o stima e annota:
+
+- TTFB / latenza endpoint list o query toccate
+- Tempo query DB se cambiato indexing/filtri
+- Hint bundle size se tocchi frontend (build output / chunk)
+
+Se regressione: proponi **speedup concreti** (indice, cache, pagination, lazy load, N+1, ecc.) — non generici.
+
+## 5. Mindset verification-before-completion
+
+- Nessun “done” senza comandi eseguiti e esito osservato
+- Fallimenti → fix o follow-up espliciti; non nascondere
+- Scope stretto: verifica ciò che la slice ha toccato + regressioni ovvie
+
+## 6. Verify report (breve)
+
+Alla fine della slice, includi:
+
+```text
+### Verify report
+- Comandi: …
+- Esito: PASS | FAIL (dettaglio)
+- Health stack: app/db/jobs | N/A (TODO compose)
+- Smoke: …
+- Perf: … (regressioni + proposte se presenti)
+- Follow-up: …
+```
+
+## Non fare
+
+- Claim di completezza senza evidenza
+- Avviare compose inventato / non funzionante
+- Report lunghi: checklist + 5–10 righe di esito bastano

@@ -1,0 +1,71 @@
+---
+description: Modalità Agile Scrum per FacilityFlow Retail — sprint, cerimonie, DoD, retro e refactor incrementale
+alwaysApply: true
+---
+
+# Agile Scrum — FacilityFlow Retail
+
+Lavora sempre in modalità Scrum (solo/small team + AI agent). Fonte di verità: `docs/product/BACKLOG.md` (Sprint 1–4, epics E01–E12).
+
+## Cadenza
+
+- **Sprint length:** 2 settimane (allineata a Sprint 1–4 nel backlog)
+- **Goal:** un Increment potenzialmente rilasciabile a fine sprint
+- Non cambiare lo scope mid-sprint senza aggiornare esplicitamente lo Sprint Backlog
+
+## Artefatti
+
+| Artefatto | Dove / come |
+|-----------|-------------|
+| Product Backlog | `docs/product/BACKLOG.md` — epics, story, AC, priorità |
+| Sprint Backlog | Sezione/sprint corrente in BACKLOG + note di planning (capacità, dipendenze) |
+| Increment | Codice + test che soddisfano il DoD delle story dello sprint |
+| Definition of Done | Checklist sotto — obbligatoria per ogni story “Done” |
+
+## Cerimonie (leggere)
+
+1. **Sprint Planning** — selezionare story dal Product Backlog; stimare capacità; dichiarare Sprint Goal; elencare dipendenze e rischi
+2. **Daily (async)** — breve nota: fatto ieri / oggi / blocker (chat o commento; non meeting obbligatorio)
+3. **Sprint Review** — dimostrare l’Increment vs AC; aggiornare backlog con feedback
+4. **Retro** — note brevi in `docs/product/retros/` (vedi chiusura sprint)
+
+## Definition of Done (DoD)
+
+Una story è Done solo se:
+
+- [ ] Acceptance Criteria soddisfatti
+- [ ] Isolamento tenant verificato (no leak cross-tenant)
+- [ ] Test sulla logica di dominio rilevante
+- [ ] Regola compose/verify rispettata (build/typecheck/test verdi dove applicabile)
+- [ ] Nessun code smell nuovo introdotto intenzionalmente
+- [ ] BACKLOG aggiornato (checkbox / stato story)
+
+## Chiusura sprint (obbligatoria)
+
+Dopo aver completato lo Sprint Backlog:
+
+1. **Mark done** — spuntare story/AC in `docs/product/BACKLOG.md`
+2. **Retro** — creare `docs/product/retros/S{N}-YYYY-MM-DD.md` con: cosa è andato bene, cosa migliorare, action item (max 5), refactor candidati
+3. **Next Sprint Backlog** — preparare lo sprint successivo da epics/story residue con:
+   - Sprint Goal
+   - Capacità stimata
+   - Dipendenze / ordine
+   - DoD richiamato
+   - Story selezionate (ID da BACKLOG)
+
+## Refactor continuo (anti big-bang)
+
+Dopo ogni sprint (o story maggiore), **ri-analizzare** il codebase per:
+
+- astrazione / riuso / generalizzazione
+- rimozione boilerplate
+- code smell (duplicazione, god object, coupling, naming debole)
+
+**Regole:** niente rewrite totali; preferire **slice incrementali** con test; un refactor per volta, legato a una story o a un action item della retro; non mischiare feature e refactor massicci nello stesso PR se evitabile.
+
+## Comportamento agente
+
+- Prima di implementare: leggere lo Sprint Backlog corrente e le AC della story
+- Durante: mantenere Increment allineato al DoD; segnalare blocker nella daily async
+- Dopo story/sprint: aggiornare BACKLOG, proporre slice di refactor se emergono odor, preparare next sprint se lo sprint è chiuso
+- Non inventare scope fuori backlog senza esplicitarlo come proposta di Product Backlog

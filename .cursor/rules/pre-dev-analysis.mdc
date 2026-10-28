@@ -1,0 +1,60 @@
+---
+description: Analisi obbligatoria pre-implementazione (backlog, ricerca, ottimizzazioni, AI) per FacilityFlow Retail
+alwaysApply: true
+---
+
+# Pre-dev Analysis — FacilityFlow Retail
+
+Prima di implementare **qualsiasi** epic, user story o task, completa questo checklist e pubblica una **Analysis Card** nella risposta. Non saltare i passi.
+
+## 1. Allineamento backlog
+
+- [ ] Leggi `docs/product/BACKLOG.md` e confronta lo scope della richiesta
+- [ ] Verifica che la story/task sia **in-scope** (AC chiari, priorità nota)
+- [ ] Controlla la lista **out-of-scope**: se espande scope o è fuori backlog → segnala e **attendi conferma**
+- [ ] Annota assunzioni (tenant, ruoli, SLA, dipendenze da altre story)
+
+## 2. Ricerca best practice (obbligatoria)
+
+- [ ] Usa **WebSearch** / **WebFetch** su pratiche attuali rilevanti **a questo task** (es. ticketing, SLA, RBAC, multi-tenant SaaS, Next.js App Router, Prisma, Auth.js)
+- [ ] Annota 2–4 finding utili (pattern, anti-pattern, librerie mature) con **fonte URL**
+- [ ] Adatta i finding al contesto FacilityFlow: non copiare stack generici se non calzano
+
+## 3. Ottimizzazioni prima del codice
+
+- [ ] Proponi almeno un’alternativa **più semplice** (UX, data model, meno moving parts)
+- [ ] Preferisci: meno tabelle/stati, meno round-trip, flusso lineare, SoR chiaro
+- [ ] Scarta complessità “nice-to-have” non richiesta dagli AC
+
+## 4. Valutazione AI (assistenza, non SoR)
+
+- [ ] Valuta opportunità AI **per questo task**: classificare ticket, suggerire vendor, riassumere note, ecc.
+- [ ] **VIETATO overkill**: l’AI non sostituisce mai il System of Record; solo assist + conferma umana
+- [ ] Se ROI poco chiaro per MVP → **skip** (decisione `later` o `no` con motivo)
+
+## 5. Analysis Card (output obbligatorio)
+
+Prima di scrivere codice, includi nella reply:
+
+```
+### Analysis Card
+- **Assunzioni:** …
+- **Ricerca:** … (fonti: …)
+- **Scelta di design:** … (e perché non l’alternativa più complessa)
+- **AI:** yes | no | later — perché
+- **Rischi:** …
+```
+
+## 6. Gate di conferma utente
+
+| Situazione | Azione |
+|---|---|
+| Implementazione AC chiaramente **in-scope** | Pubblica Analysis Card → **procedi** |
+| Cambio **architetturale**, nuova dipendenza pesante, o **espansione scope** | Pubblica Analysis Card → **attendi conferma** |
+
+## Anti-pattern
+
+- Codificare senza Analysis Card
+- Inventare requisiti non in backlog
+- Aggiungere AI “perché sì” senza ROI MVP
+- Far diventare l’AI fonte di verità (stato ticket, SLA, permessi)
