@@ -12,8 +12,19 @@ export type CsrfDecision =
   | { allow: true }
   | { allow: false; reason: "sec-fetch-site-cross-site" | "invalid-origin" | "origin-mismatch" };
 
-/** Paths that must accept cross-origin / no-Origin clients (Bearer webhooks, Auth.js, health). */
+function normalizePath(pathname: string): string {
+  const p = pathname.replace(/\/+$/, "") || "/";
+  return p;
+}
+
+/**
+ * Paths exempt from Origin / Sec-Fetch-Site CSRF gate.
+ * Non-API pages are exempt except mutating session handlers (`/logout`).
+ * API exemptions: Bearer webhooks, Auth.js, health.
+ */
 export function isCsrfExemptApiPath(pathname: string): boolean {
+  const p = normalizePath(pathname);
+  if (p === "/logout") return false;
   if (!pathname.startsWith("/api/")) return true;
   if (pathname.startsWith("/api/health")) return true;
   if (pathname.startsWith("/api/auth")) return true;

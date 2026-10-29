@@ -1,11 +1,12 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { shouldUpgradeInsecureRequests } from "@/infrastructure/security/csp-upgrade";
 import { evaluateApiCsrf } from "@/infrastructure/security/csrf-origin";
 import { resolveServerActionsAllowedOrigins } from "@/infrastructure/security/server-actions-origins";
 import { applyNoStore } from "@/infrastructure/security/session-cleanup-headers";
 
 /**
- * Security baseline headers (US-E10-07 / T4.6) + CSRF gate on mutating `/api/*`.
+ * Security baseline headers (US-E10-07 / T4.6) + CSRF gate on mutating `/api/*` + `/logout`.
  * CSP permissiva per Next.js + Tailwind inline; frame deny; nosniff.
  */
 export function middleware(request: NextRequest) {
@@ -54,7 +55,7 @@ export function middleware(request: NextRequest) {
       ? "script-src 'self' 'unsafe-inline'"
       : "script-src 'self' 'unsafe-inline' 'unsafe-eval'";
 
-  const csp = [
+  const cspParts = [
     "default-src 'self'",
     scriptSrc,
     "style-src 'self' 'unsafe-inline'",
@@ -65,7 +66,17 @@ export function middleware(request: NextRequest) {
     "frame-ancestors 'none'",
     "base-uri 'none'",
     "form-action 'self'",
-  ].join("; ");
+  ];
+  if (
+    shouldUpgradeInsecureRequests({
+      NODE_ENV: process.env.NODE_ENV,
+      FF_DOMAIN: process.env.FF_DOMAIN,
+      FF_CSP_UPGRADE_INSECURE: process.env.FF_CSP_UPGRADE_INSECURE,
+    })
+  ) {
+    cspParts.push("upgrade-insecure-requests");
+  }
+  const csp = cspParts.join("; ");
 
   response.headers.set("Content-Security-Policy", csp);
   response.headers.set("X-Frame-Options", "DENY");

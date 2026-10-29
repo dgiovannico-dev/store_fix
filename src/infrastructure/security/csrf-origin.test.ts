@@ -6,12 +6,14 @@ import {
 } from "./csrf-origin";
 
 describe("isCsrfExemptApiPath", () => {
-  it("esenta health, auth, inbound; protegge API app", () => {
+  it("esenta health, auth, inbound; protegge API app e /logout", () => {
     expect(isCsrfExemptApiPath("/api/health/ready")).toBe(true);
     expect(isCsrfExemptApiPath("/api/auth/callback/credentials")).toBe(true);
     expect(isCsrfExemptApiPath("/api/inbound/email")).toBe(true);
     expect(isCsrfExemptApiPath("/api/ai/suggest-category")).toBe(false);
     expect(isCsrfExemptApiPath("/app/tickets")).toBe(true);
+    expect(isCsrfExemptApiPath("/logout")).toBe(false);
+    expect(isCsrfExemptApiPath("/logout/")).toBe(false);
   });
 });
 
@@ -84,5 +86,27 @@ describe("evaluateApiCsrf", () => {
 
   it("passa senza Origin (curl)", () => {
     expect(evaluateApiCsrf({ ...base, origin: null }).allow).toBe(true);
+  });
+
+  it("protegge POST /logout da Origin mismatch", () => {
+    const r = evaluateApiCsrf({
+      ...base,
+      pathname: "/logout",
+      origin: "https://evil.example",
+      secFetchSite: "cross-site",
+    });
+    expect(r.allow).toBe(false);
+    if (!r.allow) expect(r.reason).toBe("sec-fetch-site-cross-site");
+  });
+
+  it("accetta POST /logout same-origin", () => {
+    expect(
+      evaluateApiCsrf({
+        ...base,
+        pathname: "/logout",
+        origin: "http://localhost:3000",
+        secFetchSite: "same-origin",
+      }).allow,
+    ).toBe(true);
   });
 });
