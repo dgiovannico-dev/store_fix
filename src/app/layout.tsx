@@ -1,21 +1,9 @@
 import type { Metadata, Viewport } from "next";
-import { IBM_Plex_Sans, Sora } from "next/font/google";
+import { plex, sora } from "@/app/fonts";
 import { RegisterServiceWorker } from "@/components/pwa/register-service-worker";
 import { t } from "@/i18n";
 import { requestLocale } from "@/i18n/request-locale";
 import "./globals.css";
-
-const sora = Sora({
-  variable: "--font-sora",
-  subsets: ["latin"],
-  weight: ["500", "600", "700"],
-});
-
-const plex = IBM_Plex_Sans({
-  variable: "--font-plex",
-  subsets: ["latin"],
-  weight: ["400", "500", "600"],
-});
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await requestLocale();
