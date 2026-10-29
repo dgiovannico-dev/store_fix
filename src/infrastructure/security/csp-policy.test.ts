@@ -12,6 +12,8 @@ describe("buildContentSecurityPolicy", () => {
     expect(csp).not.toContain("unsafe-eval");
     expect(csp).toContain("object-src 'none'");
     expect(csp).toContain("frame-src 'none'");
+    expect(csp).toContain("worker-src 'self'");
+    expect(csp).not.toContain("worker-src 'self' blob:");
     expect(csp).toContain("base-uri 'none'");
     expect(csp).toContain("form-action 'self'");
     expect(csp).not.toContain("upgrade-insecure-requests");

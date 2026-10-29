@@ -27,6 +27,7 @@ export function buildContentSecurityPolicy(env: CspPolicyEnv = {}): string {
     "connect-src 'self' http: https:",
     "object-src 'none'",
     "frame-src 'none'",
+    "worker-src 'self'",
     "frame-ancestors 'none'",
     "base-uri 'none'",
     "form-action 'self'",
