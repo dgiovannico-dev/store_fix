@@ -116,6 +116,7 @@ export default async function TicketsListPage({ searchParams }: Props) {
           <FilterSelect
             name="status"
             label={msg.ticketsList.filterStatus}
+            allLabel={msg.common.filterAll}
             value={filters.status ?? ""}
             options={Object.values(TicketStatus).map((s) => ({
               value: s,
@@ -125,6 +126,7 @@ export default async function TicketsListPage({ searchParams }: Props) {
           <FilterSelect
             name="priority"
             label={msg.ticketsList.filterPriority}
+            allLabel={msg.common.filterAll}
             value={filters.priority ?? ""}
             options={Object.values(TicketPriority).map((p) => ({
               value: p,
@@ -134,18 +136,21 @@ export default async function TicketsListPage({ searchParams }: Props) {
           <FilterSelect
             name="storeId"
             label={msg.ticketsList.filterStore}
+            allLabel={msg.common.filterAll}
             value={filters.storeId ?? ""}
             options={stores.map((s) => ({ value: s.id, label: s.name }))}
           />
           <FilterSelect
             name="vendorId"
             label={msg.ticketsList.filterVendor}
+            allLabel={msg.common.filterAll}
             value={filters.vendorId ?? ""}
             options={vendors.map((v) => ({ value: v.id, label: v.name }))}
           />
           <FilterSelect
             name="slaRisk"
             label={msg.ticketsList.filterSla}
+            allLabel={msg.common.filterAll}
             value={filters.slaRisk ?? ""}
             options={[
               { value: "overdue", label: msg.ticketsList.slaOverdue },
@@ -220,6 +225,7 @@ export default async function TicketsListPage({ searchParams }: Props) {
 function FilterSelect(props: {
   name: string;
   label: string;
+  allLabel: string;
   value: string;
   options: { value: string; label: string }[];
 }) {
@@ -231,7 +237,7 @@ function FilterSelect(props: {
         defaultValue={props.value}
         className="mt-1 w-full rounded-[var(--radius)] border border-[var(--border)] bg-white px-3 py-2 text-sm"
       >
-        <option value="">Tutti</option>
+        <option value="">{props.allLabel}</option>
         {props.options.map((o) => (
           <option key={o.value} value={o.value}>
             {o.label}

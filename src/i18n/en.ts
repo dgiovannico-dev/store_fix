@@ -28,6 +28,7 @@ export const en = {
     costs: "Period costs",
     range30: "Last 30 days",
     byStore: "By store",
+    storeCol: "Store",
     hours: "hours",
     ctaOnboarding: "Go to onboarding",
     ctaTicket: "New ticket",
@@ -64,6 +65,7 @@ export const en = {
     empty: "No stores yet. Add one to continue onboarding.",
     add: "Add store",
     importCsv: "Import CSV",
+    edit: "Edit",
     archive: "Archive",
     namePlaceholder: "Store name",
     cityPlaceholder: "City",
@@ -86,6 +88,7 @@ export const en = {
     error: "Something went wrong",
     empty: "No items",
     back: "Back",
+    filterAll: "All",
   },
   gdpr: {
     exportTitle: "Tenant data export (GDPR)",

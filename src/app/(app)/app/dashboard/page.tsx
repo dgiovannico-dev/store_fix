@@ -189,7 +189,9 @@ export default async function DashboardPage() {
                 <table className="w-full min-w-[28rem] text-left text-sm">
                   <thead>
                     <tr className="border-b border-[var(--border)] text-[var(--muted-foreground)]">
-                      <th className="py-2 pr-3 font-medium">Store</th>
+                      <th className="py-2 pr-3 font-medium">
+                        {msg.dashboard.storeCol}
+                      </th>
                       <th className="py-2 pr-3 font-medium">{msg.dashboard.open}</th>
                       <th className="py-2 pr-3 font-medium">
                         {msg.dashboard.breached}
