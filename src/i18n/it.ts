@@ -369,6 +369,15 @@ export const it = {
     vendorLinked: "Vendor collegato",
     saveScope: "Salva scope",
   },
+  roles: {
+    owner: "Proprietario",
+    admin_hq: "Admin HQ",
+    ops_coordinator: "Ops coordinator",
+    store_manager: "Store manager",
+    store_staff: "Store staff",
+    vendor: "Fornitore",
+    viewer_finance: "Viewer finance",
+  },
   home: {
     eyebrow: "Manutenzione retail · Italia",
     body: "System of record per ticket, SLA e fornitori — self-host OSS, senza WhatsApp come SoR.",

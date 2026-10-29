@@ -10,6 +10,7 @@ import {
 import { intakeCategoryLabel } from "@/domain/intake/chat-steps";
 import { can } from "@/domain/rbac/can";
 import { RbacAction } from "@/domain/rbac/actions";
+import { roleLabel } from "@/domain/rbac/role-labels";
 import { ticketStatusLabel } from "@/domain/ticket/status-labels";
 import { getOnboardingSnapshot } from "@/domain/onboarding/progress";
 import { DashboardKpiGrid } from "@/components/dashboard/kpi-metric-card";
@@ -77,7 +78,9 @@ export default async function DashboardPage() {
           <p className="mt-1 text-sm text-[var(--muted-foreground)]">
             {msg.dashboard.range30}
             {session.user?.name ? ` · ${session.user.name}` : null}
-            {isFinance ? " · viewer_finance" : null}
+            {isFinance
+              ? ` · ${roleLabel(session.role, prefs.locale)}`
+              : null}
           </p>
         </div>
         <div className="flex flex-wrap gap-2 text-sm">

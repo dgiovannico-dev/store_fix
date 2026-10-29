@@ -8,8 +8,10 @@ import {
 import { RbacAction } from "@/domain/rbac/actions";
 import { can, canMutate } from "@/domain/rbac/can";
 import { listMemberships } from "@/domain/memberships/membership-service";
+import { roleLabel } from "@/domain/rbac/role-labels";
 import { listStores } from "@/domain/stores/store-service";
 import { listVendors } from "@/domain/vendors/vendor-service";
+import { getTenantI18nPrefs } from "@/application/tenant/i18n-prefs";
 import { tenantMessages } from "@/i18n/tenant-messages";
 
 export default async function MembersPage() {
@@ -20,8 +22,9 @@ export default async function MembersPage() {
   if (!canEdit) redirect("/onboarding");
   const canAudit = can(session.role, RbacAction.viewConfigAudit);
 
-  const [msg, members, stores, vendors] = await Promise.all([
+  const [msg, prefs, members, stores, vendors] = await Promise.all([
     tenantMessages(session.tenantId),
+    getTenantI18nPrefs(session.tenantId),
     listMemberships(session.tenantId),
     listStores(session.tenantId),
     listVendors(session.tenantId),
@@ -60,7 +63,7 @@ export default async function MembersPage() {
                 <p className="font-medium">
                   {m.user.name ?? m.user.email}{" "}
                   <span className="text-sm font-normal text-[var(--muted-foreground)]">
-                    · {m.role}
+                    · {roleLabel(m.role, prefs.locale)}
                     {m.deletedAt ? ` · ${copy.disabled}` : ""}
                   </span>
                 </p>
