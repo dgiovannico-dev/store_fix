@@ -182,6 +182,7 @@ export default async function VendorTicketDetailPage({ params }: Props) {
         status={ticket.status}
         labels={msg.ticketPanels}
         locale={prefs.locale}
+        currency={prefs.currency}
       />
 
       <section className="mt-10">

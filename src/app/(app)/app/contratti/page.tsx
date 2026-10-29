@@ -15,7 +15,7 @@ import {
 import { listVendors } from "@/domain/vendors/vendor-service";
 import { getTenantI18nPrefs } from "@/application/tenant/i18n-prefs";
 import { StatusPanel } from "@/components/ui/status-panel";
-import { formatMoney } from "@/i18n/format";
+import { formatMoney, withCurrency } from "@/i18n/format";
 import { tenantMessages } from "@/i18n/tenant-messages";
 
 function expiryTone(endsOn: Date, now: Date) {
@@ -146,7 +146,10 @@ export default async function ContrattiPage({ searchParams }: Props) {
             type="number"
             step="0.01"
             min="0"
-            placeholder={msg.contracts.feePlaceholder}
+            placeholder={withCurrency(
+              msg.contracts.feePlaceholder,
+              prefs.currency,
+            )}
             className="w-full rounded-[var(--radius)] border border-[var(--border)] px-3 py-2 text-sm"
           />
           <button

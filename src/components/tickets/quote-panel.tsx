@@ -9,7 +9,7 @@ import {
 import { QuoteAmountFields } from "@/components/tickets/quote-amount-fields";
 import { StatusPanel } from "@/components/ui/status-panel";
 import { quoteStatusLabel } from "@/domain/ticket/quote-status-labels";
-import type { Locale, MessageCatalog } from "@/i18n";
+import { withCurrency, type Locale, type MessageCatalog } from "@/i18n";
 
 const initial: QuoteActionState = {};
 
@@ -70,7 +70,7 @@ export function QuotePanel({
           <input type="hidden" name="ticketId" value={ticketId} />
           <QuoteAmountFields
             defaultAmount={estimatedCost}
-            amountLabel={labels.amountLabel}
+            amountLabel={withCurrency(labels.amountLabel, currency)}
             noteLabel={labels.noteLabel}
           />
           {proposeState.error ? (

@@ -20,4 +20,9 @@ export function dateLocaleFor(locale: Locale): string {
 
 export { it, en };
 export type { MessageCatalog };
-export { formatMoney, formatDateTime, type FormatPrefs } from "./format";
+export {
+  formatMoney,
+  formatDateTime,
+  withCurrency,
+  type FormatPrefs,
+} from "./format";

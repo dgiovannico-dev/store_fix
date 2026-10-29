@@ -3,6 +3,12 @@ export type FormatPrefs = {
   currency: string;
 };
 
+/** Sostituisce `{currency}` (ISO 4217) in label/placeholder catalog. */
+export function withCurrency(template: string, currency: string): string {
+  const code = (currency || "EUR").toUpperCase();
+  return template.replaceAll("{currency}", code);
+}
+
 export function formatMoney(
   value: { toString(): string } | number | null | undefined,
   prefs: FormatPrefs = { dateLocale: "it-IT", currency: "EUR" },
