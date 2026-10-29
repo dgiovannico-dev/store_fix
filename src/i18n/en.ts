@@ -15,6 +15,7 @@ export const en = {
     inbox: "Inbox",
     notifications: "Notifications",
     locale: "Language",
+    signOut: "Sign out",
   },
   meta: {
     description:
@@ -702,6 +703,5 @@ export const en = {
       "Optional sample ticket — open from Report or ticket list when the network is ready.",
     continue: "Continue →",
     networkReady: "Network ready. You can open the dashboard.",
-    signOut: "Sign out",
   },
 } as const satisfies MessageCatalog;

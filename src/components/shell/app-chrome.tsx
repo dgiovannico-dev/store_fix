@@ -36,13 +36,23 @@ export async function AppChrome({ children }: { children: React.ReactNode }) {
               </Link>
             ))}
           </div>
-          <NotificationBell
-            role={session.role}
-            labels={msg.notifBell}
-            dateLocale={prefs.dateLocale}
-            currency={prefs.currency}
-            locale={prefs.locale}
-          />
+          <div className="flex items-center gap-2">
+            <NotificationBell
+              role={session.role}
+              labels={msg.notifBell}
+              dateLocale={prefs.dateLocale}
+              currency={prefs.currency}
+              locale={prefs.locale}
+            />
+            <form action="/logout" method="post">
+              <button
+                type="submit"
+                className="rounded-[var(--radius)] border border-[var(--border)] px-2.5 py-1 text-xs text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
+              >
+                {msg.nav.signOut}
+              </button>
+            </form>
+          </div>
         </div>
       </header>
       {children}

@@ -188,7 +188,7 @@ export default async function OnboardingPage() {
             type="submit"
             className="rounded-[var(--radius)] border border-[var(--border)] px-4 py-2 text-sm"
           >
-            {copy.signOut}
+            {msg.nav.signOut}
           </button>
         </form>
       </div>
