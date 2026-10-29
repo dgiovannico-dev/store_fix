@@ -246,7 +246,7 @@ export default async function DashboardPage() {
           )}
           {isFinance ? (
             <p className="mt-3 text-xs text-[var(--muted-foreground)]">
-              Accesso read-only: nessuna mutation, note interne non disponibili.
+              {msg.dashboard.financeReadonly}
             </p>
           ) : null}
         </section>

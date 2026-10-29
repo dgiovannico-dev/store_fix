@@ -115,7 +115,7 @@ export default async function TicketsListPage({ searchParams }: Props) {
         <form className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3" method="get">
           <FilterSelect
             name="status"
-            label="Stato"
+            label={msg.ticketsList.filterStatus}
             value={filters.status ?? ""}
             options={Object.values(TicketStatus).map((s) => ({
               value: s,
@@ -124,7 +124,7 @@ export default async function TicketsListPage({ searchParams }: Props) {
           />
           <FilterSelect
             name="priority"
-            label="Priorità"
+            label={msg.ticketsList.filterPriority}
             value={filters.priority ?? ""}
             options={Object.values(TicketPriority).map((p) => ({
               value: p,
@@ -133,19 +133,19 @@ export default async function TicketsListPage({ searchParams }: Props) {
           />
           <FilterSelect
             name="storeId"
-            label="Store"
+            label={msg.ticketsList.filterStore}
             value={filters.storeId ?? ""}
             options={stores.map((s) => ({ value: s.id, label: s.name }))}
           />
           <FilterSelect
             name="vendorId"
-            label="Vendor"
+            label={msg.ticketsList.filterVendor}
             value={filters.vendorId ?? ""}
             options={vendors.map((v) => ({ value: v.id, label: v.name }))}
           />
           <FilterSelect
             name="slaRisk"
-            label="SLA"
+            label={msg.ticketsList.filterSla}
             value={filters.slaRisk ?? ""}
             options={[
               { value: "overdue", label: msg.ticketsList.slaOverdue },
