@@ -13,6 +13,7 @@ export const it = {
     inbox: "Inbox",
     notifications: "Notifiche",
     locale: "Lingua",
+    signOut: "Esci",
   },
   meta: {
     description:
@@ -705,7 +706,6 @@ export const it = {
       "Ticket di prova opzionale — apri da Segnala o lista ticket quando la rete è pronta.",
     continue: "Continua →",
     networkReady: "Rete pronta. Puoi aprire la dashboard.",
-    signOut: "Esci",
   },
 } as const;
 
