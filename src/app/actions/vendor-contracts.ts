@@ -7,6 +7,7 @@ import {
   softDeleteVendorContract,
 } from "@/domain/vendor-contracts/vendor-contract-service";
 import { actionError } from "@/i18n/action-errors";
+import { actionResultError } from "@/i18n/domain-errors";
 
 async function sessionTenant() {
   const session = await auth();
@@ -36,7 +37,7 @@ export async function createVendorContractAction(
       notes: formData.get("notes") || null,
     },
   });
-  if (!result.ok) return { error: result.message };
+  if (!result.ok) return { error: await actionResultError(result) };
   revalidatePath("/app/contratti");
   revalidatePath(`/app/vendors/${String(formData.get("vendorId"))}`);
   return {};
@@ -53,7 +54,7 @@ export async function deleteVendorContractAction(
     role: session.role!,
     contractId,
   });
-  if (!result.ok) return { error: result.message };
+  if (!result.ok) return { error: await actionResultError(result) };
   revalidatePath("/app/contratti");
   if (vendorId) revalidatePath(`/app/vendors/${vendorId}`);
   return {};

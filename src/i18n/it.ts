@@ -106,6 +106,14 @@ export const it = {
     unauthorized: "Non autorizzato",
     invalidJson: "JSON non valido",
   },
+  /** Codici dominio → copy UI (boundary actions; dominio espone `code`). */
+  domainErrors: {
+    ticketNotFound: "Ticket non trovato",
+    ticketImmutableVerified:
+      "Ticket verificato: campi chiave immutabili",
+    ticketImmutableCancelled: "Ticket annullato: non modificabile",
+    vendorInvalid: "Fornitore non valido",
+  },
   gdpr: {
     exportTitle: "Export dati tenant (GDPR)",
     exportHint: "Scarica JSON delle entità core del tuo tenant.",

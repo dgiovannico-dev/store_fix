@@ -223,7 +223,8 @@ describe("transition-ticket", () => {
     });
     expect(blocked.ok).toBe(false);
     if (!blocked.ok) {
-      expect(blocked.message).toMatch(/verificat|immutabil/i);
+      expect(blocked.code).toBe("ticketImmutableVerified");
+      expect(blocked.message).toMatch(/immutable|verificat/i);
     }
 
     const cancelled = await cancelTicket({

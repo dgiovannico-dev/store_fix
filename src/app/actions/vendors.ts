@@ -8,6 +8,7 @@ import {
   updateVendor,
 } from "@/domain/vendors/vendor-service";
 import { actionError } from "@/i18n/action-errors";
+import { actionResultError } from "@/i18n/domain-errors";
 
 async function sessionTenant() {
   const session = await auth();
@@ -48,7 +49,7 @@ export async function createVendorAction(
       storeCoverageIds: coverageFromForm(formData),
     },
   });
-  if (!result.ok) return { error: result.message };
+  if (!result.ok) return { error: await actionResultError(result) };
   revalidatePath("/app/vendors");
   return {};
 }

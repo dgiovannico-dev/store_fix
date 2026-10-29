@@ -9,6 +9,7 @@ import {
 } from "@/application/tickets/vendor-ticket-lifecycle";
 import { getActiveMembership } from "@/domain/memberships/membership-service";
 import { actionError } from "@/i18n/action-errors";
+import { actionResultError } from "@/i18n/domain-errors";
 
 export type VendorActionState = { error?: string; ok?: boolean };
 
@@ -39,7 +40,7 @@ export async function vendorStatusAction(
     membership: c.membership,
     to,
   });
-  if (!result.ok) return { error: result.message };
+  if (!result.ok) return { error: await actionResultError(result) };
   revalidatePath("/vendor/inbox");
   revalidatePath(`/vendor/tickets/${ticketId}`);
   return { ok: true };
@@ -64,7 +65,7 @@ export async function vendorCompleteAction(
       completionReport: formData.get("completionReport"),
     },
   });
-  if (!result.ok) return { error: result.message };
+  if (!result.ok) return { error: await actionResultError(result) };
   revalidatePath("/vendor/inbox");
   revalidatePath(`/vendor/tickets/${ticketId}`);
   revalidatePath(`/app/tickets/${ticketId}`);

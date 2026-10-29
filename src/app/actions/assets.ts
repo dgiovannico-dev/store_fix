@@ -5,6 +5,7 @@ import { auth } from "@/auth";
 import { createAsset, softDeleteAsset } from "@/domain/assets/asset-service";
 import { getActiveMembership } from "@/domain/memberships/membership-service";
 import { actionError } from "@/i18n/action-errors";
+import { actionResultError } from "@/i18n/domain-errors";
 
 async function ctx() {
   const session = await auth();
@@ -39,7 +40,7 @@ export async function createAssetAction(
       serial: formData.get("serial") || null,
     },
   });
-  if (!result.ok) return { error: result.message };
+  if (!result.ok) return { error: await actionResultError(result) };
   revalidatePath("/app/assets");
   return {};
 }

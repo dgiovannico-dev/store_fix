@@ -33,12 +33,15 @@ async function loadTicket(tenantId: string, ticketId: string) {
   });
 }
 
-function failTransition(e: unknown): { ok: false; message: string } {
-  if (
-    e instanceof IllegalTransitionError ||
-    e instanceof ForbiddenError ||
-    e instanceof TicketImmutableError
-  ) {
+function failTransition(e: unknown): {
+  ok: false;
+  message: string;
+  code?: string;
+} {
+  if (e instanceof TicketImmutableError) {
+    return { ok: false, message: e.message, code: e.code };
+  }
+  if (e instanceof IllegalTransitionError || e instanceof ForbiddenError) {
     return { ok: false, message: e.message };
   }
   throw e;
@@ -69,7 +72,11 @@ export async function transitionTicket(input: {
 }) {
   const ticket = await loadTicket(input.tenantId, input.ticketId);
   if (!ticket) {
-    return { ok: false as const, message: "Ticket non trovato" };
+    return {
+      ok: false as const,
+      message: "Ticket non trovato",
+      code: "ticketNotFound",
+    };
   }
 
   try {
@@ -199,7 +206,11 @@ export async function assignTicket(input: {
     },
   });
   if (!vendor) {
-    return { ok: false as const, message: "Fornitore non valido" };
+    return {
+      ok: false as const,
+      message: "Fornitore non valido",
+      code: "vendorInvalid",
+    };
   }
 
   const result = await transitionTicket({
