@@ -29,7 +29,11 @@ export type SignupResult =
       tenantSlug: string;
       email: string;
     }
-  | { ok: false; code: "EMAIL_TAKEN" | "SLUG_TAKEN" | "VALIDATION"; message: string };
+  | {
+      ok: false;
+      code: "signupEmailTaken" | "signupSlugTaken" | "signupValidation";
+      message: string;
+    };
 
 /**
  * Crea atomicamente User + Tenant + Membership owner (US-E01-01 / T1.12).
@@ -39,7 +43,7 @@ export async function signupHqOwner(raw: unknown): Promise<SignupResult> {
   if (!parsed.success) {
     return {
       ok: false,
-      code: "VALIDATION",
+      code: "signupValidation",
       message: parsed.error.issues[0]?.message ?? "Dati non validi",
     };
   }
@@ -49,7 +53,7 @@ export async function signupHqOwner(raw: unknown): Promise<SignupResult> {
   if (existing) {
     return {
       ok: false,
-      code: "EMAIL_TAKEN",
+      code: "signupEmailTaken",
       message: "Impossibile completare la registrazione con questi dati.",
     };
   }
@@ -109,7 +113,7 @@ export async function signupHqOwner(raw: unknown): Promise<SignupResult> {
     if (msg.includes("Unique constraint") && msg.includes("slug")) {
       return {
         ok: false,
-        code: "SLUG_TAKEN",
+        code: "signupSlugTaken",
         message: "Nome workspace già in uso. Scegline un altro.",
       };
     }

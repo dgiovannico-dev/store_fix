@@ -9,7 +9,12 @@ import { parseCsv, rowsToObjects } from "./csv";
 
 export const STORE_CSV_MAX_ROWS = 200;
 
-export type CsvRowError = { line: number; message: string };
+export type CsvRowError = {
+  line: number;
+  message: string;
+  code?: string;
+  params?: Record<string, string>;
+};
 
 export type StoreCsvImportResult = {
   imported: number;
@@ -42,6 +47,8 @@ export async function importStoresFromCsv(input: {
         {
           line: 0,
           message: `Troppi import. Riprova tra ${limit.retryAfterSec}s.`,
+          code: "csvImportRateLimited",
+          params: { sec: String(limit.retryAfterSec) },
         },
       ],
     };
@@ -58,6 +65,8 @@ export async function importStoresFromCsv(input: {
           {
             line: 1,
             message: `Header mancante: "${h}". Usa il template IT.`,
+            code: "csvHeaderMissing",
+            params: { header: h },
           },
         ],
       };
@@ -71,6 +80,11 @@ export async function importStoresFromCsv(input: {
         {
           line: 0,
           message: `Massimo ${STORE_CSV_MAX_ROWS} righe dati (trovate ${records.length}).`,
+          code: "csvTooManyRows",
+          params: {
+            max: String(STORE_CSV_MAX_ROWS),
+            found: String(records.length),
+          },
         },
       ],
     };
@@ -95,6 +109,7 @@ export async function importStoresFromCsv(input: {
       errors.push({
         line,
         message: parsed.error.issues[0]?.message ?? "Riga non valida",
+        code: "csvRowInvalid",
       });
       continue;
     }
@@ -112,7 +127,11 @@ export async function importStoresFromCsv(input: {
       });
       imported += 1;
     } catch {
-      errors.push({ line, message: "Salvataggio fallito" });
+      errors.push({
+        line,
+        message: "Salvataggio fallito",
+        code: "csvSaveFailed",
+      });
     }
   }
 

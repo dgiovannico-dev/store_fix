@@ -71,4 +71,14 @@ describe("domainErrors catalog", () => {
       domainErrorFor("inboundStoreNotFound", "en", { name: "Milano Duomo" }),
     ).toBe("Store not found: Milano Duomo");
   });
+
+  it("signup/csv codes risolvono IT/EN + params", () => {
+    expect(domainErrorFor("signupEmailTaken", "it")).toContain("registrazione");
+    expect(
+      domainErrorFor("csvHeaderMissing", "en", { header: "nome" }),
+    ).toContain("nome");
+    expect(
+      domainErrorFor("csvTooManyRows", "en", { max: "200", found: "201" }),
+    ).toContain("201");
+  });
 });

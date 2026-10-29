@@ -7,6 +7,7 @@ import {
   type CsvRowError,
 } from "@/domain/stores/csv-import";
 import { actionError } from "@/i18n/action-errors";
+import { actionResultError } from "@/i18n/domain-errors";
 
 export type ImportState = {
   imported?: number;
@@ -38,5 +39,13 @@ export async function importStoresAction(
     csvText,
   });
   revalidatePath("/app/stores");
-  return { imported: result.imported, errors: result.errors };
+
+  const errors = await Promise.all(
+    result.errors.map(async (e) => ({
+      ...e,
+      message: await actionResultError(e),
+    })),
+  );
+
+  return { imported: result.imported, errors };
 }
