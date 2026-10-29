@@ -1,6 +1,7 @@
 "use server";
 
 import { acceptInvite } from "@/domain/invites/invite";
+import { actionResultError } from "@/i18n/domain-errors";
 
 export async function acceptInviteAction(input: {
   token: string;
@@ -13,7 +14,7 @@ export async function acceptInviteAction(input: {
     password: input.password,
   });
   if (!result.ok) {
-    return { ok: false, message: result.message };
+    return { ok: false, message: await actionResultError(result) };
   }
   return { ok: true };
 }

@@ -36,7 +36,10 @@ export async function createInvite(input: {
   role: Role;
   storeIds?: string[];
   vendorId?: string | null;
-}): Promise<{ ok: true; inviteId: string; acceptUrl: string } | { ok: false; message: string }> {
+}): Promise<
+  | { ok: true; inviteId: string; acceptUrl: string }
+  | { ok: false; message: string; code: string }
+> {
   requireTenantId(input.tenantId);
   assertCanMutate(input.actorRole, RbacAction.inviteUsers);
 
@@ -47,11 +50,11 @@ export async function createInvite(input: {
     vendorId: input.vendorId,
   });
   if (!parsed.success) {
-    return { ok: false, message: "Dati invito non validi" };
+    return { ok: false, message: "Dati invito non validi", code: "invalidInviteData" };
   }
 
   if (parsed.data.role === Role.owner) {
-    return { ok: false, message: "Non puoi invitare un altro owner" };
+    return { ok: false, message: "Non puoi invitare un altro owner", code: "cannotInviteOwner" };
   }
 
   if (parsed.data.role === Role.vendor) {
@@ -59,6 +62,7 @@ export async function createInvite(input: {
       return {
         ok: false,
         message: "vendorId obbligatorio per ruolo vendor",
+        code: "vendorIdRequiredForVendor",
       };
     }
     const vendor = await prisma.vendor.findFirst({
@@ -69,7 +73,7 @@ export async function createInvite(input: {
       },
     });
     if (!vendor) {
-      return { ok: false, message: "Fornitore non trovato nel tenant" };
+      return { ok: false, message: "Fornitore non trovato nel tenant", code: "vendorNotInTenant" };
     }
   }
 
@@ -106,18 +110,34 @@ export async function acceptInvite(input: {
   password: string;
 }): Promise<
   | { ok: true; email: string; tenantId: string; role: Role }
-  | { ok: false; code: "INVALID" | "EXPIRED" | "ACCEPTED"; message: string }
+  | {
+      ok: false;
+      code: "inviteInvalid" | "inviteExpired" | "inviteAccepted";
+      message: string;
+    }
 > {
   const tokenHash = hashToken(input.rawToken);
   const invite = await prisma.inviteToken.findUnique({ where: { tokenHash } });
   if (!invite) {
-    return { ok: false, code: "INVALID", message: "Invito non valido" };
+    return {
+      ok: false,
+      code: "inviteInvalid",
+      message: "Invito non valido",
+    };
   }
   if (invite.acceptedAt) {
-    return { ok: false, code: "ACCEPTED", message: "Invito già usato" };
+    return {
+      ok: false,
+      code: "inviteAccepted",
+      message: "Invito già usato",
+    };
   }
   if (invite.expiresAt < new Date()) {
-    return { ok: false, code: "EXPIRED", message: "Invito scaduto" };
+    return {
+      ok: false,
+      code: "inviteExpired",
+      message: "Invito scaduto",
+    };
   }
 
   const bcrypt = await import("bcryptjs");

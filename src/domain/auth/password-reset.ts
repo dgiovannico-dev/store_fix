@@ -57,9 +57,11 @@ export async function resetPassword(input: {
   email: string;
   rawToken: string;
   newPassword: string;
-}): Promise<{ ok: true } | { ok: false; message: string }> {
+}): Promise<
+  { ok: true } | { ok: false; message: string; code: string }
+> {
   if (input.newPassword.length < 8) {
-    return { ok: false, message: "Password troppo corta" };
+    return { ok: false, message: "Password troppo corta", code: "passwordTooShort" };
   }
   const email = input.email.trim().toLowerCase();
   const identifier = `${RESET_PREFIX}${email}`;
@@ -67,17 +69,17 @@ export async function resetPassword(input: {
     where: { token: hashToken(input.rawToken) },
   });
   if (!row || row.identifier !== identifier) {
-    return { ok: false, message: "Link non valido" };
+    return { ok: false, message: "Link non valido", code: "resetLinkInvalid" };
   }
   if (row.expires < new Date()) {
     await prisma.verificationToken.delete({ where: { token: row.token } }).catch(() => {});
-    return { ok: false, message: "Link scaduto" };
+    return { ok: false, message: "Link scaduto", code: "resetLinkExpired" };
   }
 
   const passwordHash = await bcrypt.hash(input.newPassword, 12);
   const user = await prisma.user.findUnique({ where: { email } });
   if (!user) {
-    return { ok: false, message: "Link non valido" };
+    return { ok: false, message: "Link non valido", code: "resetLinkInvalid" };
   }
 
   await prisma.$transaction([
