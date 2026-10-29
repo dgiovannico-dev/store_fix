@@ -356,6 +356,19 @@ export const it = {
     vendorLinked: "Vendor collegato",
     saveScope: "Salva scope",
   },
+  home: {
+    eyebrow: "Manutenzione retail · Italia",
+    body: "System of record per ticket, SLA e fornitori — self-host OSS, senza WhatsApp come SoR.",
+    signIn: "Accedi",
+    health: "Health check",
+  },
+  offline: {
+    title: "Sei offline",
+    body: "FacilityFlow richiede connessione per ticket, SLA e costi. Gli asset dell'interfaccia possono restare in cache; i dati restano sul server.",
+    retry: "riprova",
+    restorePrefix: "Ripristina la rete e",
+    restoreSuffix: ".",
+  },
   auth: {
     tagline:
       "Manutenzione retail, un solo sistema di verità per store, HQ e fornitori.",

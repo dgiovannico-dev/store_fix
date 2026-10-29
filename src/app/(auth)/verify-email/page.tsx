@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { confirmEmailVerification } from "@/domain/tenancy/email-verification";
-import { t } from "@/i18n";
+import { requestMessages } from "@/i18n/request-locale";
 
 type Props = {
   searchParams: Promise<{ token?: string; email?: string }>;
@@ -8,7 +8,7 @@ type Props = {
 
 export default async function VerifyEmailPage({ searchParams }: Props) {
   const { token, email } = await searchParams;
-  const msg = t("it").auth;
+  const msg = (await requestMessages()).auth;
 
   let status: "ok" | "invalid" | "expired" | "missing" = "missing";
   if (token && email) {
