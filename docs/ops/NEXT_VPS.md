@@ -7,7 +7,7 @@
 
 ## 0 — Prerequisito repo / CI
 
-- [ ] CI green su `develop` (US-E14-04) — vedi riga CI in [`S5-EXIT-GAPS.md`](../product/sprints/S5-EXIT-GAPS.md)
+- [x] CI green su `develop` (US-E14-04) — PASS 2026-10-29 (vedi [`S5-EXIT-GAPS.md`](../product/sprints/S5-EXIT-GAPS.md))
 
 ## 1 — Host e rete
 
