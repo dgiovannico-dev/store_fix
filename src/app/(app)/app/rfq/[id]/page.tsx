@@ -3,8 +3,13 @@ import { notFound, redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { awardQuoteBidAction } from "@/app/actions/rfq";
 import { getQuoteRequest } from "@/application/rfq/rfq-service";
+import { getTenantI18nPrefs } from "@/application/tenant/i18n-prefs";
 import { canMutate } from "@/domain/rbac/can";
 import { RbacAction } from "@/domain/rbac/actions";
+import {
+  rfqBidStatusLabel,
+  rfqRequestStatusLabel,
+} from "@/domain/rfq/status-labels";
 import { formatMoney } from "@/i18n/format";
 import { tenantMessages } from "@/i18n/tenant-messages";
 
@@ -18,7 +23,10 @@ export default async function RfqDetailPage({
   if (!canMutate(session.role, RbacAction.manageRfq)) redirect("/app/tickets");
 
   const { id } = await params;
-  const msg = await tenantMessages(session.tenantId);
+  const [msg, prefs] = await Promise.all([
+    tenantMessages(session.tenantId),
+    getTenantI18nPrefs(session.tenantId),
+  ]);
   const request = await getQuoteRequest({
     tenantId: session.tenantId,
     role: session.role,
@@ -37,7 +45,8 @@ export default async function RfqDetailPage({
         {request.title}
       </h1>
       <p className="mt-1 text-sm text-[var(--muted-foreground)]">
-        {msg.rfq.status}: {request.status}
+        {msg.rfq.status}:{" "}
+        {rfqRequestStatusLabel(request.status, prefs.locale)}
         {request.store ? ` · ${request.store.name}` : ""}
         {request.ticketId ? (
           <>
@@ -46,7 +55,7 @@ export default async function RfqDetailPage({
               href={`/app/tickets/${request.ticketId}`}
               className="underline"
             >
-              ticket
+              {msg.rfq.ticketLink}
             </Link>
           </>
         ) : null}
@@ -65,7 +74,7 @@ export default async function RfqDetailPage({
             <div>
               <p className="font-medium">{b.vendor.name}</p>
               <p className="text-[var(--muted-foreground)]">
-                {b.status}
+                {rfqBidStatusLabel(b.status, prefs.locale)}
                 {b.amountEur != null ? ` · ${formatMoney(b.amountEur)}` : ""}
                 {b.note ? ` — ${b.note}` : ""}
               </p>

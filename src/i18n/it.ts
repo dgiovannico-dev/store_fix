@@ -439,6 +439,7 @@ export const it = {
     offers: "Offerte",
     award: "Aggiudica",
     awarded: "Aggiudicata",
+    ticketLink: "ticket",
     vendorTitle: "Richieste preventivo",
     vendorHint: "Solo le RFQ a cui sei stato invitato.",
     vendorEmpty: "Nessun invito RFQ.",
@@ -447,6 +448,16 @@ export const it = {
     sendBid: "Invia offerta",
     updateBid: "Aggiorna offerta",
     yourOffer: "Offerta inviata",
+  },
+  rfqRequestStatus: {
+    open: "Aperta",
+    awarded: "Aggiudicata",
+    cancelled: "Annullata",
+  },
+  rfqBidStatus: {
+    invited: "Invitato",
+    submitted: "Inviata",
+    withdrawn: "Ritirata",
   },
   localeSettings: {
     title: "Lingua e regione",

@@ -5,6 +5,10 @@ import { auth } from "@/auth";
 import { listVendorQuoteBids } from "@/application/rfq/rfq-service";
 import { getTenantI18nPrefs } from "@/application/tenant/i18n-prefs";
 import { StatusPanel } from "@/components/ui/status-panel";
+import {
+  rfqBidStatusLabel,
+  rfqRequestStatusLabel,
+} from "@/domain/rfq/status-labels";
 import { formatMoney } from "@/i18n/format";
 import { tenantMessages } from "@/i18n/tenant-messages";
 import { prisma } from "@/infrastructure/db/prisma";
@@ -61,7 +65,8 @@ export default async function VendorRfqListPage() {
                 {b.quoteRequest.title}
               </Link>
               <p className="mt-1 text-xs text-[var(--muted-foreground)]">
-                {b.quoteRequest.status} · {b.status}
+                {rfqRequestStatusLabel(b.quoteRequest.status, prefs.locale)} ·{" "}
+                {rfqBidStatusLabel(b.status, prefs.locale)}
                 {b.amountEur != null ? ` · ${formatMoney(b.amountEur)}` : ""}
               </p>
             </li>
