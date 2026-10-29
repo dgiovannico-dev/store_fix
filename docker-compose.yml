@@ -26,6 +26,21 @@ services:
       - "127.0.0.1:9333:9333"
     volumes:
       - seaweed_data:/data
+    # Official master readiness (Raft-aware); wget is in the image.
+    # @see https://github.com/seaweedfs/seaweedfs/blob/master/test/samba/docker-compose.yml
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "wget",
+          "--spider",
+          "-q",
+          "http://127.0.0.1:9333/cluster/healthz",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 10s
 
   app:
     build:
@@ -36,6 +51,8 @@ services:
       - no-new-privileges:true
     depends_on:
       postgres:
+        condition: service_healthy
+      seaweedfs:
         condition: service_healthy
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER:-facilityflow}:${POSTGRES_PASSWORD:-facilityflow_dev}@postgres:5432/${POSTGRES_DB:-facilityflow}?schema=public
