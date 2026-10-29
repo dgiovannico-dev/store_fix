@@ -236,6 +236,7 @@ export default async function TicketDetailPage({
         ticketId={ticket.id}
         canOps={canOps}
         labels={msg.ticketPanels}
+        locale={prefs.locale}
       />
 
       {canOps ? (

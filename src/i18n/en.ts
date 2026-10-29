@@ -252,6 +252,7 @@ export const en = {
     summarizePending: "Generating…",
     summarizeError: "Summary error",
     summarizeSource: "Source:",
+    summarizeNeedsConfirm: "read-only — human confirm",
     vendorTitle: "Update work",
     vendorStart: "Start work",
     vendorWaiting: "Waiting for parts",
