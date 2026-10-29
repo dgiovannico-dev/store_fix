@@ -7,6 +7,7 @@ export const it = {
     vendors: "Fornitori",
     contracts: "Contratti",
     calendar: "Calendario PM",
+    rfq: "RFQ",
     dashboard: "Dashboard",
     segnala: "Segnala",
     inbox: "Inbox",

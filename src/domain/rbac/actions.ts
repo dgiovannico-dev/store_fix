@@ -20,6 +20,10 @@ export const RbacAction = {
   viewCosts: "view_costs",
   /** Accetta/rifiuta preventivo (F2-02) */
   acceptQuote: "accept_quote",
+  /** RFQ multi-vendor (F3-07) — create/invite/award */
+  manageRfq: "manage_rfq",
+  /** Vendor risponde a RFQ */
+  respondRfq: "respond_rfq",
   dashboardHq: "dashboard_hq",
   exportGdpr: "export_gdpr",
   viewConfigAudit: "view_config_audit",

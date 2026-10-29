@@ -22,6 +22,8 @@
 | Dashboard HQ aggregata | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ | ✅**** |
 | Scorecard fornitori (F2-03) | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ | ✅**** |
 | Accetta/rifiuta preventivo (F2-02) | ✅ | ✅ | ❌ | ◐ | ❌ | ❌ | ❌ |
+| RFQ multi-vendor manage (F3-07) | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ |
+| RFQ respond bid (F3-07) | ❌ | ❌ | ❌ | ❌ | ❌ | ◐ | ❌ |
 | CRUD contratti fornitori (F2-04) | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ |
 | Lista contratti (read) | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ | ✅ |
 | Calendario PM (F2-04 v2) | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ |

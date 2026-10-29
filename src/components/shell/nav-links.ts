@@ -14,7 +14,10 @@ export function navLinksForRole(
   if (role === Role.vendor) {
     return {
       home: "/vendor/inbox",
-      links: [{ href: "/vendor/inbox", label: msg.nav.inbox }],
+      links: [
+        { href: "/vendor/inbox", label: msg.nav.inbox },
+        { href: "/vendor/rfq", label: msg.nav.rfq },
+      ],
     };
   }
   if (role === Role.viewer_finance) {
@@ -35,6 +38,9 @@ export function navLinksForRole(
     { href: "/app/calendario", label: msg.nav.calendar },
     { href: "/app/segnala", label: msg.nav.segnala },
   ];
+  if (role && canMutate(role, RbacAction.manageRfq)) {
+    links.push({ href: "/app/rfq", label: msg.nav.rfq });
+  }
   if (role && canMutate(role, RbacAction.manageTenant)) {
     links.push({ href: "/app/settings/locale", label: msg.nav.locale });
   }

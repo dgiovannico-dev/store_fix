@@ -202,6 +202,17 @@ export default async function TicketDetailPage({
 
       <SummarizeNotesPanel ticketId={ticket.id} canOps={canOps} />
 
+      {canOps ? (
+        <p className="mt-4 text-sm">
+          <Link
+            href={`/app/rfq/new?ticketId=${ticket.id}`}
+            className="font-medium text-[var(--primary)] hover:underline"
+          >
+            Richiedi preventivi a più fornitori (RFQ)
+          </Link>
+        </p>
+      ) : null}
+
       <TicketOpsPanel
         ticketId={ticket.id}
         status={ticket.status}

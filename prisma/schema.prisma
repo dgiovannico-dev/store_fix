@@ -76,6 +76,8 @@ model Tenant {
   vendorContracts     VendorContract[]
   pmSeries            PmSeries[]
   pmEvents            PlannedMaintenanceEvent[]
+  quoteRequests       QuoteRequest[]
+  quoteBids           QuoteBid[]
 }
 
 /// Progress Flusso C — skip esplicito; step “fatti” derivati da SoR (T1.30).
@@ -148,6 +150,7 @@ model Store {
   contracts VendorContract[]
   pmSeries PmSeries[]
   pmEvents PlannedMaintenanceEvent[]
+  quoteRequests QuoteRequest[]
 
   @@index([tenantId])
 }
@@ -171,6 +174,7 @@ model Vendor {
   contracts    VendorContract[]
   pmSeries     PmSeries[]
   pmEvents     PlannedMaintenanceEvent[]
+  quoteBids    QuoteBid[]
 
   @@index([tenantId])
 }
@@ -349,6 +353,7 @@ model Ticket {
   events      TicketEvent[]
   attachments Attachment[]
   notifications Notification[]
+  quoteRequests QuoteRequest[]
 
   @@index([tenantId])
   @@index([tenantId, status])
@@ -359,6 +364,63 @@ model Ticket {
   @@index([storeId])
   @@index([vendorId])
   @@index([slaDueAt])
+}
+
+enum QuoteRequestStatus {
+  open
+  awarded
+  cancelled
+}
+
+enum QuoteBidStatus {
+  invited
+  submitted
+  withdrawn
+}
+
+/// RFQ multi-vendor interno (F3-07) — no marketplace/escrow.
+model QuoteRequest {
+  id              String             @id @default(cuid())
+  tenantId        String
+  ticketId        String?
+  storeId         String?
+  title           String
+  notes           String?
+  status          QuoteRequestStatus @default(open)
+  dueAt           DateTime?
+  awardedBidId    String?
+  createdByUserId String?
+  deletedAt       DateTime?
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+
+  tenant Tenant    @relation(fields: [tenantId], references: [id])
+  ticket Ticket?   @relation(fields: [ticketId], references: [id])
+  store  Store?    @relation(fields: [storeId], references: [id])
+  bids   QuoteBid[]
+
+  @@index([tenantId, status])
+  @@index([tenantId, ticketId])
+}
+
+model QuoteBid {
+  id             String         @id @default(cuid())
+  tenantId       String
+  quoteRequestId String
+  vendorId       String
+  status         QuoteBidStatus @default(invited)
+  amountEur      Decimal?       @db.Decimal(12, 2)
+  note           String?
+  submittedAt    DateTime?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  tenant       Tenant       @relation(fields: [tenantId], references: [id])
+  quoteRequest QuoteRequest @relation(fields: [quoteRequestId], references: [id])
+  vendor       Vendor       @relation(fields: [vendorId], references: [id])
+
+  @@unique([quoteRequestId, vendorId])
+  @@index([tenantId, vendorId])
 }
 
 model TicketEvent {

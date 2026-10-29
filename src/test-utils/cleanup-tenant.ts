@@ -9,6 +9,8 @@ export async function cleanupTenant(tenantId: string): Promise<void> {
   await prisma.ticketEvent.deleteMany({ where: { tenantId } });
   await prisma.configAuditEvent.deleteMany({ where: { tenantId } });
   await prisma.inboundEmailMessage.deleteMany({ where: { tenantId } });
+  await prisma.quoteBid.deleteMany({ where: { tenantId } });
+  await prisma.quoteRequest.deleteMany({ where: { tenantId } });
   await prisma.ticket.deleteMany({ where: { tenantId } });
   await prisma.plannedMaintenanceEvent.deleteMany({ where: { tenantId } });
   await prisma.pmSeries.deleteMany({ where: { tenantId } });

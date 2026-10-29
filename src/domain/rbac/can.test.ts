@@ -37,4 +37,12 @@ describe("RBAC can()", () => {
     expect(can(Role.vendor, RbacAction.acceptQuote)).toBe(false);
     expect(can(Role.owner, RbacAction.acceptQuote)).toBe(true);
   });
+
+  it("RFQ: ops manage, vendor respond scoped", () => {
+    expect(can(Role.ops_coordinator, RbacAction.manageRfq)).toBe(true);
+    expect(canMutate(Role.ops_coordinator, RbacAction.manageRfq)).toBe(true);
+    expect(can(Role.vendor, RbacAction.respondRfq)).toBe(true);
+    expect(canMutate(Role.vendor, RbacAction.respondRfq)).toBe(false);
+    expect(can(Role.store_staff, RbacAction.manageRfq)).toBe(false);
+  });
 });

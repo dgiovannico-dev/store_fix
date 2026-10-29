@@ -9,6 +9,7 @@ export const en = {
     vendors: "Vendors",
     contracts: "Contracts",
     calendar: "PM calendar",
+    rfq: "RFQ",
     dashboard: "Dashboard",
     segnala: "Report fault",
     inbox: "Inbox",

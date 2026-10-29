@@ -6,3 +6,4 @@
 - Dopo `verified`: costi e campi chiave **immutabili** (`assertTicketMutable`).
 - Export contabile (F2-05): `GET /api/exports/accounting` — CSV UTF-8 (BOM per Excel), colonne `actual_cost` con punto decimale + `currency=EUR`; RBAC `export_accounting` (HQ + `viewer_finance`).
 - Preventivo (F2-02): `Ticket.estimatedCost` + `quoteStatus` (`pending`|`accepted`|`rejected`); eventi `quote_*`; vendor propone, store/HQ `accept_quote`; chiusura `done` bloccata se `pending`.
+- RFQ multi-vendor (F3-07): `QuoteRequest` + `QuoteBid.amountEur`; award → ticket `vendorId` + `estimatedCost` + `quoteStatus=accepted` (bridge F2-02). No escrow/marketplace.

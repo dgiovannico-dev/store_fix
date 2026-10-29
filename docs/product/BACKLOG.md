@@ -604,7 +604,7 @@ E00 Platform OSS (Compose, SeaweedFS, Mailpit, pg-boss, Prisma schema)
 | **F3-04** | Email-to-ticket IMAP poll (stretch F2-08) | **P1** | Done 2026-10-29 — coda `email.imap_poll` + imapflow/mailparser → `processInboundEmail`; Seen su ok/dup; skip se IMAP_* vuoto | No (env VPS) |
 | **F3-05** | PM ricorrente RRULE (evoluzione F2-04) | **P1** | Done 2026-10-29 — `PmSeries` + rrule.js expand; job `pm.maintain`; reminder email 48h; UI ricorrenza su calendario | No |
 | **F3-06** | Multi-lingua / multi-regione light | **P2** | Done 2026-10-29 — `Tenant.defaultLocale/currency/dateLocale` + format helpers + `/app/settings/locale`; chrome usa prefs | No |
-| **F3-07** | RFQ vendor interno (no marketplace) | **P2** | Ops richiede preventivi a N vendor del tenant; no escrow/billing/directory pubblica | No |
+| **F3-07** | RFQ vendor interno (no marketplace) | **P2** | Done 2026-10-29 — `QuoteRequest`/`QuoteBid`; HQ `/app/rfq` + vendor `/vendor/rfq`; award → ticket F2-02 | No |
 | **F3-08** | Push store (ntfy / webhook self-host) | **P2** | Eventi ticket → ntfy o webhook; **vietato** WA Cloud API | **Sì** |
 
 ---
