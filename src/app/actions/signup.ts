@@ -6,7 +6,8 @@ import { redirect } from "next/navigation";
 import { signIn } from "@/auth";
 import { sendEmailVerification } from "@/domain/tenancy/email-verification";
 import { signupHqOwner } from "@/domain/tenancy/signup";
-import { checkRateLimit } from "@/infrastructure/rate-limit";
+import { RATE_LIMIT } from "@/infrastructure/rate-limit-policies";
+import { checkRateLimitPolicy } from "@/infrastructure/rate-limit";
 import { rateLimitKey } from "@/infrastructure/security/client-ip";
 import { actionError } from "@/i18n/action-errors";
 import { actionResultError, domainError } from "@/i18n/domain-errors";
@@ -19,10 +20,9 @@ export async function signupAction(
   _prev: SignupActionState,
   formData: FormData,
 ): Promise<SignupActionState> {
-  const limit = checkRateLimit(
+  const limit = checkRateLimitPolicy(
     rateLimitKey("signup", await headers()),
-    10,
-    15 * 60 * 1000,
+    RATE_LIMIT.signup,
   );
   if (!limit.ok) {
     const template = await actionError("rateLimitedRetry");
