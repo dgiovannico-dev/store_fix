@@ -14,7 +14,9 @@ describe("logout Clear-Site-Data wiring", () => {
     );
     expect(raw).toMatch(/applyLogoutClearSiteData/);
     expect(raw).toMatch(/signOut\s*\(/);
-    expect(raw).toMatch(/checkRateLimit/);
+    expect(raw).toMatch(/checkRateLimitPolicy/);
+    expect(raw).toMatch(/tooManyRequestsFromLimit/);
+    expect(raw).toMatch(/RATE_LIMIT\.logout/);
     expect(raw).toMatch(/rateLimitKey\s*\(\s*["']logout["']/);
   });
 

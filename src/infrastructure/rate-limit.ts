@@ -1,5 +1,8 @@
+import type { RateLimitPolicy } from "@/infrastructure/rate-limit-policies";
+
 /**
  * Rate limit in-process (OSS, zero Redis) — sufficiente per MVP single-node.
+ * Policy nominate: `rate-limit-policies.ts` · 429 JSON: `rate-limit-response.ts`.
  * Chiave tipica: `login:ip` / `signup:ip`.
  */
 type Bucket = { count: number; resetAt: number };
@@ -11,6 +14,14 @@ export type RateLimitResult = {
   remaining: number;
   retryAfterSec: number;
 };
+
+export function checkRateLimitPolicy(
+  key: string,
+  policy: RateLimitPolicy,
+  now = Date.now(),
+): RateLimitResult {
+  return checkRateLimit(key, policy.limit, policy.windowMs, now);
+}
 
 export function checkRateLimit(
   key: string,
