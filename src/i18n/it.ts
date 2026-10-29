@@ -135,6 +135,21 @@ export const it = {
     pmCalendarForbidden: "Calendario PM non consentito",
     scorecardForbidden: "Scorecard fornitori non consentita",
     dashboardForbidden: "Dashboard non consentita",
+    completeWorkPhotoRequired:
+      "Per chiudere serve almeno una foto (JPEG/PNG/WebP)",
+    actualCostRequired: "Costo effettivo obbligatorio",
+    actualCostInvalid: "Costo effettivo non valido",
+    actualCostMustBePositive:
+      "Costo effettivo deve essere maggiore di zero",
+    workReportRequired:
+      "Report intervento obbligatorio (minimo 5 caratteri)",
+    vendorStatusInvalid: "Stato vendor non valido",
+    completeWorkInvalidData:
+      "Dati chiusura non validi (costo e report obbligatori)",
+    completeWorkBadStatus:
+      "Chiusura consentita solo da assigned / in_progress / waiting_parts",
+    quotePendingAcceptance:
+      "Preventivo in attesa di accettazione: attendi lo store o aggiorna il preventivo",
   },
   gdpr: {
     exportTitle: "Export dati tenant (GDPR)",

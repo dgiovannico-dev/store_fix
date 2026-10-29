@@ -136,6 +136,20 @@ export const en = {
     pmCalendarForbidden: "PM calendar not allowed",
     scorecardForbidden: "Vendor scorecard not allowed",
     dashboardForbidden: "Dashboard not allowed",
+    completeWorkPhotoRequired:
+      "Closing requires at least one photo (JPEG/PNG/WebP)",
+    actualCostRequired: "Actual cost is required",
+    actualCostInvalid: "Actual cost is invalid",
+    actualCostMustBePositive: "Actual cost must be greater than zero",
+    workReportRequired:
+      "Work report required (minimum 5 characters)",
+    vendorStatusInvalid: "Invalid vendor status",
+    completeWorkInvalidData:
+      "Invalid close data (cost and report required)",
+    completeWorkBadStatus:
+      "Close allowed only from assigned / in_progress / waiting_parts",
+    quotePendingAcceptance:
+      "Quote awaiting acceptance: wait for the store or update the quote",
   },
   gdpr: {
     exportTitle: "Tenant data export (GDPR)",

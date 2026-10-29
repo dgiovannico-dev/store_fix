@@ -15,13 +15,17 @@ describe("assertCompleteWorkReady", () => {
   });
 
   it("fail senza foto", () => {
-    expect(() =>
+    try {
       assertCompleteWorkReady({
         attachments: [],
         actualCost: 10,
         completionReport: "Fatto",
-      }),
-    ).toThrow(CompleteWorkError);
+      });
+      expect.unreachable();
+    } catch (e) {
+      expect(e).toBeInstanceOf(CompleteWorkError);
+      expect((e as CompleteWorkError).code).toBe("completeWorkPhotoRequired");
+    }
   });
 
   it("fail mime non immagine", () => {
