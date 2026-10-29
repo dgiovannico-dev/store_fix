@@ -42,6 +42,7 @@ describe("vendor invite", () => {
       role: Role.vendor,
     });
     expect(missing.ok).toBe(false);
+    if (!missing.ok) expect(missing.code).toBe("vendorIdRequiredForVendor");
 
     const vendor = await createVendor({
       tenantId,
