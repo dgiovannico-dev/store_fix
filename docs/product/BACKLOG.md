@@ -600,7 +600,7 @@ E00 Platform OSS (Compose, SeaweedFS, Mailpit, pg-boss, Prisma schema)
 |----|--------|----------|-------------|-------------|
 | **F3-01** | Exit pilota produzione (chiusura gap E14/S5) | **P0** | HTTPS ACME, staging parity, migrate-on-deploy, DR remoto, smoke Flusso A UI, CI green `develop`, tag `v0.1.0` dry-run → **GO pilota** | **Sì** (prerequisito) |
 | **F3-02** | Observability GlitchTip (`observe`) staging/prod | **P1** | Profile Compose `observe` su VPS **oppure** policy log-only firmata post-review | **Sì** |
-| **F3-03** | AI riassunto note ticket (stretch F2-07) | **P1** | Riassunto Ollama su note/eventi; persistenza solo dopo conferma umana | No (Ollama opz.) |
+| **F3-03** | AI riassunto note ticket (stretch F2-07) | **P1** | Done 2026-10-29 — `/api/ai/summarize-ticket` + pannello HQ sola lettura (heuristic/Ollama); no write SoR | No (Ollama opz.) |
 | **F3-04** | Email-to-ticket IMAP poll (stretch F2-08) | **P1** | Worker pg-boss IMAP UNSEEN → `processInboundEmail`; dedup Message-ID; no SaaS inbound | **Sì** |
 | **F3-05** | PM ricorrente RRULE (evoluzione F2-04) | **P1** | RRULE genera `PlannedMaintenanceEvent` + reminder pg-boss; calendario mostra serie | No |
 | **F3-06** | Multi-lingua / multi-regione light | **P2** | `defaultLocale` IT+EN; date/valuta configurabili; niente rewrite i18n big-bang | No |

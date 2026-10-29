@@ -37,9 +37,19 @@ ollama serve
 
 La UI applica categoria/vendor **solo** dopo tap di conferma.
 
+### Riassunto note (F3-03)
+
+`POST /api/ai/summarize-ticket`
+
+```json
+{ "ticketId": "…" }
+→ { "summary": "• …", "source": "ollama"|"heuristic", "needsConfirm": true }
+```
+
+UI: pannello sola lettura su dettaglio ticket HQ — **non** scrive SoR.
+
 ## Fuori scope
 
 - Classificazione / assign automatici senza conferma
 - Cloud LLM a pagamento
 - Scrivere ticket / costi / vendor da modello
-- Riassunti note (stretch)

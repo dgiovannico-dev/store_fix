@@ -8,6 +8,7 @@ import { SlaRelaunchPanel } from "@/components/ops/sla-relaunch-panel";
 import { AttachmentGallery } from "@/components/tickets/attachment-gallery";
 import { AttachmentUploader } from "@/components/tickets/attachment-uploader";
 import { QuotePanel } from "@/components/tickets/quote-panel";
+import { SummarizeNotesPanel } from "@/components/tickets/summarize-notes-panel";
 import { TicketTimeline } from "@/components/tickets/ticket-timeline";
 import { VerifyPanel } from "@/components/tickets/verify-panel";
 import { getActiveMembership } from "@/domain/memberships/membership-service";
@@ -198,6 +199,8 @@ export default async function TicketDetailPage({
           showInternalNotes={showInternalNotes}
         />
       </section>
+
+      <SummarizeNotesPanel ticketId={ticket.id} canOps={canOps} />
 
       <TicketOpsPanel
         ticketId={ticket.id}
