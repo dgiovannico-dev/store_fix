@@ -2,6 +2,8 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { createVendorAction, deleteVendorAction } from "@/app/actions/vendors";
+import { getTenantI18nPrefs } from "@/application/tenant/i18n-prefs";
+import { StatusPanel } from "@/components/ui/status-panel";
 import { RbacAction } from "@/domain/rbac/actions";
 import { can, canMutate } from "@/domain/rbac/can";
 import { listStores } from "@/domain/stores/store-service";
@@ -14,8 +16,9 @@ export default async function VendorsPage() {
     redirect("/login");
   }
 
-  const msg = await tenantMessages(session.tenantId);
-  const [vendors, stores] = await Promise.all([
+  const [msg, prefs, vendors, stores] = await Promise.all([
+    tenantMessages(session.tenantId),
+    getTenantI18nPrefs(session.tenantId),
     listVendors(session.tenantId),
     listStores(session.tenantId),
   ]);
@@ -103,13 +106,17 @@ export default async function VendorsPage() {
         </form>
       ) : null}
 
+      {vendors.length === 0 ? (
+        <div className="mt-10">
+          <StatusPanel
+            kind="empty"
+            title={msg.vendor.emptyList}
+            locale={prefs.locale}
+          />
+        </div>
+      ) : (
       <ul className="mt-10 divide-y divide-[var(--border)]">
-        {vendors.length === 0 ? (
-          <li className="py-6 text-sm text-[var(--muted-foreground)]">
-            {msg.vendor.emptyList}
-          </li>
-        ) : (
-          vendors.map((v) => (
+          {vendors.map((v) => (
             <li
               key={v.id}
               className="flex flex-wrap items-center justify-between gap-3 py-4"
@@ -144,9 +151,9 @@ export default async function VendorsPage() {
                 </form>
               ) : null}
             </li>
-          ))
-        )}
+          ))}
       </ul>
+      )}
     </main>
   );
 }

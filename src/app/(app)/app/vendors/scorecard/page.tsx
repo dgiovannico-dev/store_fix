@@ -6,6 +6,7 @@ import { can } from "@/domain/rbac/can";
 import { RbacAction } from "@/domain/rbac/actions";
 import { ForbiddenError } from "@/domain/rbac/guards";
 import { getTenantI18nPrefs } from "@/application/tenant/i18n-prefs";
+import { StatusPanel } from "@/components/ui/status-panel";
 import { formatMoney } from "@/i18n/format";
 import { tenantMessages } from "@/i18n/tenant-messages";
 
@@ -72,9 +73,13 @@ export default async function VendorScorecardPage({ searchParams }: Props) {
       </p>
 
       {overview.rows.length === 0 ? (
-        <p className="mt-10 text-sm text-[var(--muted-foreground)]">
-          {msg.scorecard.empty}
-        </p>
+        <div className="mt-10">
+          <StatusPanel
+            kind="empty"
+            title={msg.scorecard.empty}
+            locale={prefs.locale}
+          />
+        </div>
       ) : (
         <div className="mt-8 overflow-x-auto">
           <table className="w-full min-w-[36rem] text-left text-sm">

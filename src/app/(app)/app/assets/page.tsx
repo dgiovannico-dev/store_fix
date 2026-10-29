@@ -12,6 +12,7 @@ import { can } from "@/domain/rbac/can";
 import { listStores } from "@/domain/stores/store-service";
 import { listVendors } from "@/domain/vendors/vendor-service";
 import { getTenantI18nPrefs } from "@/application/tenant/i18n-prefs";
+import { StatusPanel } from "@/components/ui/status-panel";
 import { tenantMessages } from "@/i18n/tenant-messages";
 
 export default async function AssetsPage() {
@@ -109,13 +110,17 @@ export default async function AssetsPage() {
         </button>
       </form>
 
+      {assets.length === 0 ? (
+        <div className="mt-10">
+          <StatusPanel
+            kind="empty"
+            title={copy.empty}
+            locale={prefs.locale}
+          />
+        </div>
+      ) : (
       <ul className="mt-10 divide-y divide-[var(--border)]">
-        {assets.length === 0 ? (
-          <li className="py-6 text-sm text-[var(--muted-foreground)]">
-            {copy.empty}
-          </li>
-        ) : (
-          assets.map((a) => (
+          {assets.map((a) => (
             <li
               key={a.id}
               className="flex flex-wrap items-center justify-between gap-3 py-4"
@@ -145,9 +150,9 @@ export default async function AssetsPage() {
                 </button>
               </form>
             </li>
-          ))
-        )}
+          ))}
       </ul>
+      )}
     </main>
   );
 }

@@ -2,6 +2,8 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { listQuoteRequests } from "@/application/rfq/rfq-service";
+import { getTenantI18nPrefs } from "@/application/tenant/i18n-prefs";
+import { StatusPanel } from "@/components/ui/status-panel";
 import { canMutate } from "@/domain/rbac/can";
 import { RbacAction } from "@/domain/rbac/actions";
 import { formatMoney } from "@/i18n/format";
@@ -12,7 +14,10 @@ export default async function RfqListPage() {
   if (!session?.tenantId || !session.role) redirect("/login");
   if (!canMutate(session.role, RbacAction.manageRfq)) redirect("/app/tickets");
 
-  const msg = await tenantMessages(session.tenantId);
+  const [msg, prefs] = await Promise.all([
+    tenantMessages(session.tenantId),
+    getTenantI18nPrefs(session.tenantId),
+  ]);
   const items = await listQuoteRequests({
     tenantId: session.tenantId,
     role: session.role,
@@ -33,13 +38,17 @@ export default async function RfqListPage() {
       </div>
       <p className="mt-1 text-sm text-[var(--muted-foreground)]">{msg.rfq.hint}</p>
 
+      {items.length === 0 ? (
+        <div className="mt-8">
+          <StatusPanel
+            kind="empty"
+            title={msg.rfq.empty}
+            locale={prefs.locale}
+          />
+        </div>
+      ) : (
       <ul className="mt-8 divide-y divide-[var(--border)]">
-        {items.length === 0 ? (
-          <li className="py-6 text-sm text-[var(--muted-foreground)]">
-            {msg.rfq.empty}
-          </li>
-        ) : (
-          items.map((r) => {
+          {items.map((r) => {
             const submitted = r.bids.filter((b) => b.status === "submitted");
             const amounts = submitted
               .map((b) => Number(b.amountEur))
@@ -61,9 +70,9 @@ export default async function RfqListPage() {
                 </p>
               </li>
             );
-          })
-        )}
+          })}
       </ul>
+      )}
     </main>
   );
 }
