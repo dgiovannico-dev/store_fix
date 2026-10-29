@@ -250,6 +250,7 @@ export const it = {
     summarizePending: "Generazione…",
     summarizeError: "Errore riassunto",
     summarizeSource: "Fonte:",
+    summarizeNeedsConfirm: "sola lettura — conferma umana",
     vendorTitle: "Aggiorna intervento",
     vendorStart: "Inizia intervento",
     vendorWaiting: "In attesa ricambi",

@@ -7,6 +7,7 @@ import {
   triageTicketAction,
   type TicketActionState,
 } from "@/app/actions/tickets";
+import { StatusPanel } from "@/components/ui/status-panel";
 import { intakePriorityOptions } from "@/domain/intake/chat-steps";
 import type { Locale, MessageCatalog } from "@/i18n";
 
@@ -84,9 +85,11 @@ export function TicketOpsPanel({
             />
           </label>
           {triageState.error ? (
-            <p className="text-sm text-[var(--critical)]" role="alert">
-              {triageState.error}
-            </p>
+            <StatusPanel
+              kind="error"
+              title={triageState.error}
+              locale={locale}
+            />
           ) : null}
           <button
             type="submit"
@@ -185,9 +188,11 @@ export function TicketOpsPanel({
             />
           </label>
           {assignState.error ? (
-            <p className="text-sm text-[var(--critical)]" role="alert">
-              {assignState.error}
-            </p>
+            <StatusPanel
+              kind="error"
+              title={assignState.error}
+              locale={locale}
+            />
           ) : null}
           <button
             type="submit"
@@ -213,9 +218,11 @@ export function TicketOpsPanel({
             />
           </label>
           {cancelState.error ? (
-            <p className="text-sm text-[var(--critical)]" role="alert">
-              {cancelState.error}
-            </p>
+            <StatusPanel
+              kind="error"
+              title={cancelState.error}
+              locale={locale}
+            />
           ) : null}
           <button
             type="submit"
