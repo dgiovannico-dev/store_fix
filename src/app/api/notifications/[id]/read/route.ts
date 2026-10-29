@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { actionError } from "@/i18n/action-errors";
+import { actionResultError } from "@/i18n/domain-errors";
 import { markNotificationRead } from "@/application/notifications/queries";
 
 type Ctx = { params: Promise<{ id: string }> };
@@ -17,7 +18,10 @@ export async function POST(_req: Request, ctx: Ctx) {
     notificationId: id,
   });
   if (!result.ok) {
-    return NextResponse.json({ error: result.message }, { status: 404 });
+    return NextResponse.json(
+      { error: await actionResultError(result) },
+      { status: 404 },
+    );
   }
   return NextResponse.json({ ok: true });
 }

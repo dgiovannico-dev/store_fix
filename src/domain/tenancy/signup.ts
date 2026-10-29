@@ -47,7 +47,7 @@ export type SignupResult =
   | {
       ok: false;
       code: SignupFailCode;
-      message: string;
+      message?: string;
     };
 
 /**
@@ -61,11 +61,7 @@ export async function signupHqOwner(raw: unknown): Promise<SignupResult> {
     const code = (
       fieldCodes.has(issue) ? issue : "signupValidation"
     ) as SignupFailCode;
-    return {
-      ok: false,
-      code,
-      message: issue,
-    };
+    return { ok: false, code };
   }
 
   const email = parsed.data.email.toLowerCase();
@@ -74,7 +70,6 @@ export async function signupHqOwner(raw: unknown): Promise<SignupResult> {
     return {
       ok: false,
       code: "signupEmailTaken",
-      message: "Impossibile completare la registrazione con questi dati.",
     };
   }
 
@@ -134,7 +129,6 @@ export async function signupHqOwner(raw: unknown): Promise<SignupResult> {
       return {
         ok: false,
         code: "signupSlugTaken",
-        message: "Nome workspace già in uso. Scegline un altro.",
       };
     }
     throw e;

@@ -3,6 +3,7 @@ import { processInboundEmail } from "@/application/email-inbound/process-inbound
 import { checkRateLimit } from "@/infrastructure/rate-limit";
 import { logJson } from "@/infrastructure/log";
 import { actionError } from "@/i18n/action-errors";
+import { actionResultError } from "@/i18n/domain-errors";
 
 /**
  * Webhook inbound email → ticket (F2-08).
@@ -50,8 +51,13 @@ export async function POST(req: Request) {
   });
 
   if (!result.ok) {
-    logJson("warn", "inbound.email.reject", { requestId, message: result.message });
-    return NextResponse.json({ error: result.message }, { status: 422 });
+    const error = await actionResultError(result);
+    logJson("warn", "inbound.email.reject", {
+      requestId,
+      code: result.code,
+      error,
+    });
+    return NextResponse.json({ error, code: result.code }, { status: 422 });
   }
 
   logJson("info", "inbound.email.ok", {
