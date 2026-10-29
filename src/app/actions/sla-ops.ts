@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { auth } from "@/auth";
 import { relaunchSlaTicket } from "@/application/sla/relaunch";
 import { getActiveMembership } from "@/domain/memberships/membership-service";
+import { actionError } from "@/i18n/action-errors";
 
 export type RelaunchState = { error?: string; ok?: boolean };
 
@@ -13,13 +14,13 @@ export async function relaunchSlaAction(
 ): Promise<RelaunchState> {
   const session = await auth();
   if (!session?.user?.id || !session.tenantId || !session.role) {
-    return { error: "Accesso richiesto" };
+    return { error: await actionError("accessRequired") };
   }
   const membership = await getActiveMembership(
     session.user.id,
     session.tenantId,
   );
-  if (!membership) return { error: "Membership non attiva" };
+  if (!membership) return { error: await actionError("membershipInactive") };
 
   const ticketId = String(formData.get("ticketId") ?? "");
   const result = await relaunchSlaTicket({

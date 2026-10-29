@@ -6,6 +6,7 @@ import {
   createVendorContract,
   softDeleteVendorContract,
 } from "@/domain/vendor-contracts/vendor-contract-service";
+import { actionError } from "@/i18n/action-errors";
 
 async function sessionTenant() {
   const session = await auth();
@@ -18,7 +19,7 @@ export async function createVendorContractAction(
   formData: FormData,
 ): Promise<{ error?: string }> {
   const session = await sessionTenant();
-  if (!session) return { error: "Accesso richiesto" };
+  if (!session) return { error: await actionError("accessRequired") };
 
   const feeRaw = String(formData.get("annualFee") ?? "").trim();
   const result = await createVendorContract({
@@ -46,7 +47,7 @@ export async function deleteVendorContractAction(
   vendorId?: string,
 ): Promise<{ error?: string }> {
   const session = await sessionTenant();
-  if (!session) return { error: "Accesso richiesto" };
+  if (!session) return { error: await actionError("accessRequired") };
   const result = await softDeleteVendorContract({
     tenantId: session.tenantId!,
     role: session.role!,

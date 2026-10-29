@@ -6,6 +6,7 @@ import {
   importStoresFromCsv,
   type CsvRowError,
 } from "@/domain/stores/csv-import";
+import { actionError } from "@/i18n/action-errors";
 
 export type ImportState = {
   imported?: number;
@@ -19,15 +20,15 @@ export async function importStoresAction(
 ): Promise<ImportState> {
   const session = await auth();
   if (!session?.tenantId || !session.role) {
-    return { error: "Accesso richiesto" };
+    return { error: await actionError("accessRequired") };
   }
 
   const file = formData.get("file");
   if (!(file instanceof File) || file.size === 0) {
-    return { error: "Seleziona un file CSV" };
+    return { error: await actionError("selectCsv") };
   }
   if (file.size > 512_000) {
-    return { error: "File troppo grande (max 512 KB)" };
+    return { error: await actionError("fileTooLarge") };
   }
 
   const csvText = await file.text();

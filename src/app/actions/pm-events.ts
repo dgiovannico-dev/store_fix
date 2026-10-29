@@ -8,6 +8,7 @@ import {
   softDeletePmEvent,
 } from "@/domain/pm/pm-event-service";
 import { createPmSeries } from "@/domain/pm/pm-series-service";
+import { actionError } from "@/i18n/action-errors";
 
 async function sessionTenant() {
   const session = await auth();
@@ -20,7 +21,7 @@ export async function createPmEventAction(
   formData: FormData,
 ): Promise<{ error?: string }> {
   const session = await sessionTenant();
-  if (!session) return { error: "Accesso richiesto" };
+  if (!session) return { error: await actionError("accessRequired") };
   const date = String(formData.get("scheduledDate") ?? "");
   const time = String(formData.get("scheduledTime") ?? "09:00");
   const scheduledAt = new Date(`${date}T${time}:00`);
@@ -63,7 +64,7 @@ export async function completePmEventAction(
   eventId: string,
 ): Promise<{ error?: string }> {
   const session = await sessionTenant();
-  if (!session) return { error: "Accesso richiesto" };
+  if (!session) return { error: await actionError("accessRequired") };
   const result = await markPmEventDone({
     tenantId: session.tenantId!,
     role: session.role!,
@@ -78,7 +79,7 @@ export async function cancelPmEventAction(
   eventId: string,
 ): Promise<{ error?: string }> {
   const session = await sessionTenant();
-  if (!session) return { error: "Accesso richiesto" };
+  if (!session) return { error: await actionError("accessRequired") };
   const result = await softDeletePmEvent({
     tenantId: session.tenantId!,
     role: session.role!,

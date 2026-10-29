@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { auth } from "@/auth";
 import { rejectTicket, verifyTicket } from "@/application/tickets/verify-ticket";
 import { getActiveMembership } from "@/domain/memberships/membership-service";
+import { actionError } from "@/i18n/action-errors";
 
 export type VerifyActionState = { error?: string; ok?: boolean };
 
@@ -23,7 +24,7 @@ export async function verifyTicketAction(
   formData: FormData,
 ): Promise<VerifyActionState> {
   const c = await ctx();
-  if (!c) return { error: "Accesso richiesto" };
+  if (!c) return { error: await actionError("accessRequired") };
   const ticketId = String(formData.get("ticketId") ?? "");
   const result = await verifyTicket({
     tenantId: c.session.tenantId!,
@@ -44,7 +45,7 @@ export async function rejectTicketAction(
   formData: FormData,
 ): Promise<VerifyActionState> {
   const c = await ctx();
-  if (!c) return { error: "Accesso richiesto" };
+  if (!c) return { error: await actionError("accessRequired") };
   const ticketId = String(formData.get("ticketId") ?? "");
   const result = await rejectTicket({
     tenantId: c.session.tenantId!,
