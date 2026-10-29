@@ -48,7 +48,7 @@ export function QuotePanel({
     <section className="mt-6 space-y-3 rounded-[var(--radius)] border border-[var(--border)] p-4">
       <h2 className="text-sm font-semibold">{labels.quoteTitle}</h2>
       <p className="text-sm text-[var(--muted-foreground)]">
-        {labels.quoteStatus}{" "}
+        {labels.quoteStatusPrefix}{" "}
         <span className="font-medium text-[var(--foreground)]">
           {statusLabel}
         </span>
