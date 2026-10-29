@@ -14,7 +14,7 @@ describe("rate-limit exports + presign wiring", () => {
       path.join(root, "src/app/api/gdpr/export/route.ts"),
       "utf8",
     );
-    expect(raw).toMatch(/checkRateLimitPolicyAsync/);
+    expect(raw).toMatch(/rejectIfRateLimited/);
     expect(raw).toMatch(/RATE_LIMIT\.gdprExport/);
     expect(raw).toMatch(/gdpr-export:/);
   });
@@ -24,7 +24,7 @@ describe("rate-limit exports + presign wiring", () => {
       path.join(root, "src/app/api/exports/accounting/route.ts"),
       "utf8",
     );
-    expect(raw).toMatch(/checkRateLimitPolicyAsync/);
+    expect(raw).toMatch(/rejectIfRateLimited/);
     expect(raw).toMatch(/RATE_LIMIT\.accountingExport/);
     expect(raw).toMatch(/accounting-export:/);
   });
@@ -37,7 +37,7 @@ describe("rate-limit exports + presign wiring", () => {
       ),
       "utf8",
     );
-    expect(raw).toMatch(/checkRateLimitPolicyAsync/);
+    expect(raw).toMatch(/rejectIfRateLimited/);
     expect(raw).toMatch(/RATE_LIMIT\.attachmentPresign/);
     expect(raw).toMatch(/attachment-presign:/);
   });
