@@ -15,7 +15,7 @@ describe("logout Clear-Site-Data wiring", () => {
     expect(raw).toMatch(/applyLogoutClearSiteData/);
     expect(raw).toMatch(/signOut\s*\(/);
     expect(raw).toMatch(/checkRateLimit/);
-    expect(raw).toMatch(/logout:/);
+    expect(raw).toMatch(/rateLimitKey\s*\(\s*["']logout["']/);
   });
 
   it("Auth.js POST signout applies Clear-Site-Data", () => {
