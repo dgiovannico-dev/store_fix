@@ -22,7 +22,9 @@ GC bucket scaduti: job pg-boss `rate_limit.gc` (orario `:15`, Europe/Rome) → `
 | `inbound-email:{ip}` | **60** | **60 s** | `inboundEmail` | `/api/inbound/email` (Bearer webhook) |
 | `gdpr-export:{tenantId}:{userId}` | **3** | **15 min** | `gdprExport` | `/api/gdpr/export` (JSON full-tenant) |
 | `accounting-export:{tenantId}:{userId}` | **10** | **15 min** | `accountingExport` | `/api/exports/accounting` (CSV) |
-| `attachment-presign:{tenantId}:{userId}` | **40** | **15 min** | `attachmentPresign` | `POST …/attachments/presign` |
+| `attachment-presign:{tenantId}:{userId}` | **40** | **15 min** | `attachmentPresign` | `POST …/attachments/presign` + `…/confirm` (budget condiviso) |
+| `attachment-url:{tenantId}:{userId}` | **60** | **15 min** | `attachmentUrl` | `GET …/attachments/[id]/url` |
+| `notifications:{tenantId}:{userId}` | **60** | **60 s** | `notifications` | `/api/notifications*` (poll unread + list + mark-read) |
 
 Superamento → redirect o risposta **429** / copy IT “Troppe richieste” (`rateLimitedRetry` / `tooManyRequests`).  
 Route JSON (`/api/*`, `/logout`): `tooManyRequestsJson` — header **`Retry-After`** (secondi) + `Cache-Control: no-store` + body `{ code: "rate_limited", retryAfterSec }`.
