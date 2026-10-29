@@ -5,9 +5,10 @@ File: [`compose.prod.yaml`](../../compose.prod.yaml)
 ## Avvio
 
 ```bash
-cp .env.example .env.prod
+cp .env.prod.example .env.prod
 # genera secret (vedi SECRETS.md) — niente default deboli in prod
 # FF_DOMAIN=app.example.com · NEXT_PUBLIC_APP_URL=https://app.example.com
+chmod 600 .env.prod
 docker compose -f compose.prod.yaml --env-file .env.prod up -d --build
 ```
 

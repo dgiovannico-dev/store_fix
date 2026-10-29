@@ -3,11 +3,13 @@
 **Stato:** NO-GO — gap in [`../product/sprints/S5-EXIT-GAPS.md`](../product/sprints/S5-EXIT-GAPS.md).  
 **Chiusura:** tutte le checkbox sotto + [`RELEASE_CHECKLIST.md`](./RELEASE_CHECKLIST.md) → aggiornare exit gaps a **GO** · tag `v0.1.0` ([`RELEASE.md`](./RELEASE.md)).
 
-> Provisioning **manuale** sull’host; nessuno script di bootstrap automatico in repo.
+> Provisioning **manuale** sull’host; nessuno script di bootstrap automatico remoto.  
+> Preflight locale (repo/Docker): `npm run vps:preflight` → [`../../scripts/vps-preflight.sh`](../../scripts/vps-preflight.sh).
 
 ## 0 — Prerequisito repo / CI
 
 - [x] CI green su `develop` (US-E14-04) — PASS 2026-10-29 (vedi [`S5-EXIT-GAPS.md`](../product/sprints/S5-EXIT-GAPS.md))
+- [ ] `npm run vps:preflight` OK sulla macchina operatore (prima del clone sul VPS)
 
 ## 1 — Host e rete
 
