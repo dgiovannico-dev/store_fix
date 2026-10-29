@@ -39,7 +39,7 @@ export async function summarizeTicketNotes(input: {
     input.tenantId,
   );
   if (!membership || !HQ.has(membership.role)) {
-    throw new ForbiddenError("Solo HQ ops");
+    throw new ForbiddenError("Solo HQ ops", "hqOpsOnly");
   }
 
   const ticket = await prisma.ticket.findFirst({
@@ -50,7 +50,7 @@ export async function summarizeTicketNotes(input: {
     },
   });
   if (!ticket || !canAccessStore(membership, ticket.storeId)) {
-    throw new ForbiddenError("Ticket non accessibile");
+    throw new ForbiddenError("Ticket non accessibile", "ticketNotAccessible");
   }
 
   const events = await listTicketEvents(input.tenantId, ticket.id);

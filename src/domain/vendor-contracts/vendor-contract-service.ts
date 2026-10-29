@@ -49,7 +49,7 @@ export async function listVendorContracts(input: {
 }) {
   requireTenantId(input.tenantId);
   if (!canReadVendorContracts(input.role)) {
-    throw new ForbiddenError("Contratti non consentiti");
+    throw new ForbiddenError("Contratti non consentiti", "contractsForbidden");
   }
 
   const now = new Date();

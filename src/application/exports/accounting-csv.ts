@@ -45,7 +45,7 @@ export async function buildAccountingCsv(input: {
 }): Promise<{ filename: string; body: string; rowCount: number }> {
   requireTenantId(input.tenantId);
   if (!can(input.role, RbacAction.exportAccounting)) {
-    throw new ForbiddenError("Export contabile non consentito");
+    throw new ForbiddenError("Export contabile non consentito", "exportAccountingForbidden");
   }
 
   const from = input.from ?? new Date(Date.now() - 365 * 24 * 60 * 60 * 1000);

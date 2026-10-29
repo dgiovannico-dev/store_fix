@@ -5,6 +5,7 @@ import { ForbiddenError } from "@/domain/rbac/guards";
 import { checkRateLimit } from "@/infrastructure/rate-limit";
 import { logJson } from "@/infrastructure/log";
 import { actionError } from "@/i18n/action-errors";
+import { actionResultError } from "@/i18n/domain-errors";
 
 /** Assist vendor (F2-07) — heuristic; conferma umana obbligatoria in UI. */
 export async function POST(req: Request) {
@@ -55,7 +56,10 @@ export async function POST(req: Request) {
     });
   } catch (e) {
     if (e instanceof ForbiddenError) {
-      return NextResponse.json({ error: e.message }, { status: 403 });
+      return NextResponse.json(
+        { error: await actionResultError({ message: e.message, code: e.code }) },
+        { status: 403 },
+      );
     }
     throw e;
   }

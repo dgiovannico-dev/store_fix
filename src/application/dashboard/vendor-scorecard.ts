@@ -35,7 +35,7 @@ export async function listVendorScorecards(input: {
 }): Promise<VendorScorecardOverview> {
   requireTenantId(input.tenantId);
   if (!can(input.role, RbacAction.dashboardHq)) {
-    throw new ForbiddenError("Scorecard fornitori non consentita");
+    throw new ForbiddenError("Scorecard fornitori non consentita", "scorecardForbidden");
   }
 
   const rangeDays = input.rangeDays ?? 30;

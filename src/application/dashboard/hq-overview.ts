@@ -43,7 +43,7 @@ export async function getHqOverview(input: {
 }): Promise<HqOverview> {
   requireTenantId(input.tenantId);
   if (!can(input.role, RbacAction.dashboardHq)) {
-    throw new ForbiddenError("Dashboard non consentita");
+    throw new ForbiddenError("Dashboard non consentita", "dashboardForbidden");
   }
 
   const rangeDays = input.rangeDays ?? 30;

@@ -175,9 +175,9 @@ export async function getQuoteRequest(input: {
   if (input.role === Role.vendor) {
     assertCan(input.role, RbacAction.respondRfq);
     const vendorId = input.membership?.vendorId;
-    if (!vendorId) throw new ForbiddenError("Membership vendor richiesta");
+    if (!vendorId) throw new ForbiddenError("Membership vendor richiesta", "membershipVendorRequired");
     const own = request.bids.filter((b) => b.vendorId === vendorId);
-    if (own.length === 0) throw new ForbiddenError("RFQ non assegnata");
+    if (own.length === 0) throw new ForbiddenError("RFQ non assegnata", "rfqNotAssigned");
     return { ...request, bids: own };
   }
 
@@ -193,7 +193,7 @@ export async function listVendorQuoteBids(input: {
   requireTenantId(input.tenantId);
   assertCan(input.role, RbacAction.respondRfq);
   const vendorId = input.membership.vendorId;
-  if (!vendorId) throw new ForbiddenError("Membership vendor richiesta");
+  if (!vendorId) throw new ForbiddenError("Membership vendor richiesta", "membershipVendorRequired");
 
   return prisma.quoteBid.findMany({
     where: {
