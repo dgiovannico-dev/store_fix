@@ -1,4 +1,5 @@
 import type { MessageCatalog } from "@/i18n";
+import { ticketEventLabel } from "@/domain/ticket/event-labels";
 
 type EventRow = {
   id: string;
@@ -11,28 +12,6 @@ type EventRow = {
 };
 
 type TimelineLabels = MessageCatalog["ticketTimeline"];
-
-function eventLabel(labels: TimelineLabels, type: string): string {
-  const map: Record<string, string> = {
-    "ticket.created": labels.evtCreated,
-    "ticket.triaged": labels.evtTriaged,
-    "ticket.assigned": labels.evtAssigned,
-    "ticket.cancelled": labels.evtCancelled,
-    status_changed: labels.evtStatusChanged,
-    assigned: labels.evtAssignedLegacy,
-    cost_set: labels.evtCostSet,
-    sla_breached: labels.evtSlaBreached,
-    sla_relaunch: labels.evtSlaRelaunch,
-    verified: labels.evtVerified,
-    rejected: labels.evtRejected,
-    note_added: labels.evtNote,
-    attachment_added: labels.evtAttachment,
-    quote_proposed: labels.evtQuoteProposed,
-    quote_accepted: labels.evtQuoteAccepted,
-    quote_rejected: labels.evtQuoteRejected,
-  };
-  return map[type] ?? type;
-}
 
 export function TicketTimeline({
   events,
@@ -62,7 +41,7 @@ export function TicketTimeline({
           amountEur?: number;
           completionReport?: string;
         } | null;
-        const label = eventLabel(labels, e.type);
+        const label = ticketEventLabel(labels, e.type);
         return (
           <li key={e.id} className="text-sm">
             <span className="font-medium">{label}</span>
