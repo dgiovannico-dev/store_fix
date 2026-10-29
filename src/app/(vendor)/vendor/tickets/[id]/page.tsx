@@ -156,6 +156,7 @@ export default async function VendorTicketDetailPage({ params }: Props) {
             ticket.estimatedCost != null ? Number(ticket.estimatedCost) : null
           }
           labels={msg.ticketPanels}
+          locale={prefs.locale}
           dateLocale={prefs.dateLocale}
           currency={prefs.currency}
         />
@@ -168,6 +169,7 @@ export default async function VendorTicketDetailPage({ params }: Props) {
             ticket.estimatedCost != null ? Number(ticket.estimatedCost) : null
           }
           labels={msg.ticketPanels}
+          locale={prefs.locale}
           dateLocale={prefs.dateLocale}
           currency={prefs.currency}
         />

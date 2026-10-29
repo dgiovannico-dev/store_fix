@@ -7,7 +7,8 @@ import {
   type QuoteActionState,
 } from "@/app/actions/ticket-quote";
 import { QuoteAmountFields } from "@/components/tickets/quote-amount-fields";
-import type { MessageCatalog } from "@/i18n";
+import { quoteStatusLabel } from "@/domain/ticket/quote-status-labels";
+import type { Locale, MessageCatalog } from "@/i18n";
 
 const initial: QuoteActionState = {};
 
@@ -17,6 +18,7 @@ type Props = {
   quoteStatus: string | null;
   estimatedCost: number | null;
   labels: MessageCatalog["ticketPanels"];
+  locale?: Locale;
   dateLocale?: string;
   currency?: string;
 };
@@ -27,6 +29,7 @@ export function QuotePanel({
   quoteStatus,
   estimatedCost,
   labels,
+  locale = "it",
   dateLocale = "it-IT",
   currency = "EUR",
 }: Props) {
@@ -39,15 +42,7 @@ export function QuotePanel({
     initial,
   );
 
-  const statusLabel = quoteStatus
-    ? quoteStatus === "pending"
-      ? labels.quotePending
-      : quoteStatus === "accepted"
-        ? labels.quoteAccepted
-        : quoteStatus === "rejected"
-          ? labels.quoteRejected
-          : quoteStatus
-    : labels.quoteNone;
+  const statusLabel = quoteStatusLabel(quoteStatus, locale);
 
   return (
     <section className="mt-6 space-y-3 rounded-[var(--radius)] border border-[var(--border)] p-4">

@@ -1,6 +1,8 @@
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { createQuoteRequestAction } from "@/app/actions/rfq";
+import { getTenantI18nPrefs } from "@/application/tenant/i18n-prefs";
+import { StatusPanel } from "@/components/ui/status-panel";
 import { canMutate } from "@/domain/rbac/can";
 import { RbacAction } from "@/domain/rbac/actions";
 import { listVendors } from "@/domain/vendors/vendor-service";
@@ -16,7 +18,10 @@ export default async function NewRfqPage({
   if (!canMutate(session.role, RbacAction.manageRfq)) redirect("/app/tickets");
 
   const sp = await searchParams;
-  const msg = await tenantMessages(session.tenantId);
+  const [msg, prefs] = await Promise.all([
+    tenantMessages(session.tenantId),
+    getTenantI18nPrefs(session.tenantId),
+  ]);
   const vendors = await listVendors(session.tenantId);
 
   return (
@@ -29,9 +34,13 @@ export default async function NewRfqPage({
       </p>
 
       {vendors.length === 0 ? (
-        <p className="mt-6 text-sm text-[var(--muted-foreground)]">
-          {msg.rfq.noVendors}
-        </p>
+        <div className="mt-6">
+          <StatusPanel
+            kind="empty"
+            title={msg.rfq.noVendors}
+            locale={prefs.locale}
+          />
+        </div>
       ) : (
         <form
           action={async (fd) => {
