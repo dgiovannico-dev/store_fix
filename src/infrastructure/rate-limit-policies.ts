@@ -29,6 +29,8 @@ export const RATE_LIMIT = {
   attachmentUrl: { limit: 60, windowMs: MIN15 },
   /** NotificationBell poll (30s) + list/mark-read — shared per user. */
   notifications: { limit: 60, windowMs: 60_000 },
+  /** New-ticket form stores/assets options (DB list). */
+  formOptions: { limit: 30, windowMs: 60_000 },
 } as const satisfies Record<string, RateLimitPolicy>;
 
 export type RateLimitPolicyName = keyof typeof RATE_LIMIT;
