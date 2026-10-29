@@ -36,7 +36,7 @@ export async function transitionVendorStatus(input: {
     assertCan(input.role, RbacAction.vendorStatus);
   } catch (e) {
     if (e instanceof ForbiddenError) {
-      return { ok: false as const, message: e.message, code: e.code };
+      return { ok: false as const, code: e.code ?? "forbidden" };
     }
     throw e;
   }
@@ -44,7 +44,6 @@ export async function transitionVendorStatus(input: {
   if (!VENDOR_STATUS.has(input.to) && input.to !== TicketStatus.in_progress) {
     return {
       ok: false as const,
-      message: "Stato vendor non valido",
       code: "vendorStatusInvalid",
     };
   }
@@ -59,7 +58,6 @@ export async function transitionVendorStatus(input: {
   if (!ticket) {
     return {
       ok: false as const,
-      message: "Ticket non trovato",
       code: "ticketNotFound",
     };
   }
@@ -68,7 +66,7 @@ export async function transitionVendorStatus(input: {
     assertVendorTicketScope(input.membership, ticket, input.role);
   } catch (e) {
     if (e instanceof ForbiddenError) {
-      return { ok: false as const, message: e.message, code: e.code };
+      return { ok: false as const, code: e.code ?? "forbidden" };
     }
     throw e;
   }
@@ -103,7 +101,7 @@ export async function completeVendorWork(input: {
     assertCan(input.role, RbacAction.vendorStatus);
   } catch (e) {
     if (e instanceof ForbiddenError) {
-      return { ok: false as const, message: e.message, code: e.code };
+      return { ok: false as const, code: e.code ?? "forbidden" };
     }
     throw e;
   }
@@ -112,7 +110,6 @@ export async function completeVendorWork(input: {
   if (!parsed.success) {
     return {
       ok: false as const,
-      message: "Dati chiusura non validi (costo e report obbligatori)",
       code: "completeWorkInvalidData",
     };
   }
@@ -132,7 +129,6 @@ export async function completeVendorWork(input: {
   if (!ticket) {
     return {
       ok: false as const,
-      message: "Ticket non trovato",
       code: "ticketNotFound",
     };
   }
@@ -141,7 +137,7 @@ export async function completeVendorWork(input: {
     assertVendorTicketScope(input.membership, ticket, input.role);
   } catch (e) {
     if (e instanceof ForbiddenError) {
-      return { ok: false as const, message: e.message, code: e.code };
+      return { ok: false as const, code: e.code ?? "forbidden" };
     }
     throw e;
   }
@@ -153,18 +149,12 @@ export async function completeVendorWork(input: {
   ) {
     return {
       ok: false as const,
-      message: "Chiusura consentita solo da assigned / in_progress / waiting_parts",
       code: "completeWorkBadStatus",
     };
   }
 
   if (blocksCompleteWork(ticket.quoteStatus)) {
-    return {
-      ok: false as const,
-      message:
-        "Preventivo in attesa di accettazione: attendi lo store o aggiorna il preventivo",
-      code: "quotePendingAcceptance",
-    };
+    return { ok: false as const, code: "quotePendingAcceptance" };
   }
 
   try {
@@ -175,7 +165,7 @@ export async function completeVendorWork(input: {
     });
   } catch (e) {
     if (e instanceof CompleteWorkError) {
-      return { ok: false as const, message: e.message, code: e.code };
+      return { ok: false as const, code: e.code ?? "forbidden" };
     }
     throw e;
   }

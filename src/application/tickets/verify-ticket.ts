@@ -21,7 +21,7 @@ export async function verifyTicket(input: {
     assertCan(input.role, RbacAction.verifyTicket);
   } catch (e) {
     if (e instanceof ForbiddenError) {
-      return { ok: false as const, message: e.message, code: e.code };
+      return { ok: false as const, code: e.code ?? "forbidden" };
     }
     throw e;
   }
@@ -33,14 +33,13 @@ export async function verifyTicket(input: {
       deletedAt: null,
     },
   });
-  if (!ticket) return { ok: false as const, message: "Ticket non trovato", code: "ticketNotFound" };
+  if (!ticket) return { ok: false as const, code: "ticketNotFound" };
   if (!canAccessStore(input.membership, ticket.storeId)) {
-    return { ok: false as const, message: "Ticket fuori scope store", code: "storeOutOfScope" };
+    return { ok: false as const, code: "storeOutOfScope" };
   }
   if (ticket.status !== TicketStatus.done) {
     return {
       ok: false as const,
-      message: "Verifica solo da stato done",
       code: "verifyOnlyFromDone",
     };
   }
@@ -85,14 +84,14 @@ export async function rejectTicket(input: {
     assertCan(input.role, RbacAction.verifyTicket);
   } catch (e) {
     if (e instanceof ForbiddenError) {
-      return { ok: false as const, message: e.message, code: e.code };
+      return { ok: false as const, code: e.code ?? "forbidden" };
     }
     throw e;
   }
 
   const parsed = rejectSchema.safeParse({ reason: input.reason });
   if (!parsed.success) {
-    return { ok: false as const, message: "Motivo rifiuto obbligatorio", code: "rejectReasonRequired" };
+    return { ok: false as const, code: "rejectReasonRequired" };
   }
 
   const ticket = await prisma.ticket.findFirst({
@@ -102,14 +101,13 @@ export async function rejectTicket(input: {
       deletedAt: null,
     },
   });
-  if (!ticket) return { ok: false as const, message: "Ticket non trovato", code: "ticketNotFound" };
+  if (!ticket) return { ok: false as const, code: "ticketNotFound" };
   if (!canAccessStore(input.membership, ticket.storeId)) {
-    return { ok: false as const, message: "Ticket fuori scope store", code: "storeOutOfScope" };
+    return { ok: false as const, code: "storeOutOfScope" };
   }
   if (ticket.status !== TicketStatus.done) {
     return {
       ok: false as const,
-      message: "Rifiuto solo da stato done",
       code: "rejectOnlyFromDone",
     };
   }
