@@ -24,3 +24,35 @@
 		format console
 	}
 }
+
+# SeaweedFS S3 pubblico (browser PUT/GET firmate). DNS: s3.<FF_DOMAIN>
+# App: S3_PUBLIC_ENDPOINT=https://s3.<FF_DOMAIN> (firmare sull'host pubblico — SigV4).
+# SeaweedFS: preferibile -s3.externalUrl=$S3_PUBLIC_ENDPOINT su VPS.
+s3.{$FF_DOMAIN:localhost} {
+	@options {
+		method OPTIONS
+	}
+	handle @options {
+		header Access-Control-Allow-Origin "{header.Origin}"
+		header Access-Control-Allow-Methods "GET, PUT, HEAD, OPTIONS"
+		header Access-Control-Allow-Headers "Content-Type, *"
+		header Access-Control-Max-Age "86400"
+		header Access-Control-Allow-Credentials "true"
+		respond 204
+	}
+
+	header Access-Control-Allow-Origin "{header.Origin}"
+	header Access-Control-Expose-Headers "ETag, x-amz-request-id"
+	header Access-Control-Allow-Credentials "true"
+
+	reverse_proxy seaweedfs:8333 {
+		# Host pubblico nella firma SigV4 (non riscrivere a seaweedfs:8333)
+		header_up Host {host}
+		header_up X-Forwarded-Port {port}
+	}
+
+	log {
+		output stdout
+		format console
+	}
+}
