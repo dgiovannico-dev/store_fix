@@ -6,18 +6,26 @@ import {
   verifyTicketAction,
   type VerifyActionState,
 } from "@/app/actions/verify-tickets";
-import type { MessageCatalog } from "@/i18n";
+import { StatusPanel } from "@/components/ui/status-panel";
+import type { Locale, MessageCatalog } from "@/i18n";
 
 type Props = {
   ticketId: string;
   status: string;
   canVerify: boolean;
   labels: MessageCatalog["ticketPanels"];
+  locale?: Locale;
 };
 
 const initial: VerifyActionState = {};
 
-export function VerifyPanel({ ticketId, status, canVerify, labels }: Props) {
+export function VerifyPanel({
+  ticketId,
+  status,
+  canVerify,
+  labels,
+  locale = "it",
+}: Props) {
   const [verifyState, verifyAction, verifyPending] = useActionState(
     verifyTicketAction,
     initial,
@@ -45,9 +53,11 @@ export function VerifyPanel({ ticketId, status, canVerify, labels }: Props) {
         </button>
       </form>
       {verifyState.error ? (
-        <p className="text-sm text-[var(--critical)]" role="alert">
-          {verifyState.error}
-        </p>
+        <StatusPanel
+          kind="error"
+          title={verifyState.error}
+          locale={locale}
+        />
       ) : null}
 
       <form action={rejectAction} className="space-y-2">
@@ -63,9 +73,11 @@ export function VerifyPanel({ ticketId, status, canVerify, labels }: Props) {
           />
         </label>
         {rejectState.error ? (
-          <p className="text-sm text-[var(--critical)]" role="alert">
-            {rejectState.error}
-          </p>
+          <StatusPanel
+            kind="error"
+            title={rejectState.error}
+            locale={locale}
+          />
         ) : null}
         <button
           type="submit"

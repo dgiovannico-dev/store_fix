@@ -5,13 +5,15 @@ import {
   relaunchSlaAction,
   type RelaunchState,
 } from "@/app/actions/sla-ops";
-import type { MessageCatalog } from "@/i18n";
+import { StatusPanel } from "@/components/ui/status-panel";
+import type { Locale, MessageCatalog } from "@/i18n";
 
 type Props = {
   ticketId: string;
   breached: boolean;
   canOps: boolean;
   labels: MessageCatalog["ticketPanels"];
+  locale?: Locale;
 };
 
 const initial: RelaunchState = {};
@@ -21,6 +23,7 @@ export function SlaRelaunchPanel({
   breached,
   canOps,
   labels,
+  locale = "it",
 }: Props) {
   const [state, action, pending] = useActionState(relaunchSlaAction, initial);
   if (!canOps || !breached) return null;
@@ -43,9 +46,7 @@ export function SlaRelaunchPanel({
           />
         </label>
         {state.error ? (
-          <p className="text-sm text-[var(--critical)]" role="alert">
-            {state.error}
-          </p>
+          <StatusPanel kind="error" title={state.error} locale={locale} />
         ) : null}
         {state.ok ? (
           <p className="text-sm text-[var(--success)]" role="status">

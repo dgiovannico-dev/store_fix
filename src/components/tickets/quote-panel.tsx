@@ -7,6 +7,7 @@ import {
   type QuoteActionState,
 } from "@/app/actions/ticket-quote";
 import { QuoteAmountFields } from "@/components/tickets/quote-amount-fields";
+import { StatusPanel } from "@/components/ui/status-panel";
 import { quoteStatusLabel } from "@/domain/ticket/quote-status-labels";
 import type { Locale, MessageCatalog } from "@/i18n";
 
@@ -73,9 +74,11 @@ export function QuotePanel({
             noteLabel={labels.noteLabel}
           />
           {proposeState.error ? (
-            <p className="text-sm text-[var(--critical)]" role="alert">
-              {proposeState.error}
-            </p>
+            <StatusPanel
+              kind="error"
+              title={proposeState.error}
+              locale={locale}
+            />
           ) : null}
           <button
             type="submit"
@@ -99,9 +102,11 @@ export function QuotePanel({
             />
           </label>
           {decideState.error ? (
-            <p className="text-sm text-[var(--critical)]" role="alert">
-              {decideState.error}
-            </p>
+            <StatusPanel
+              kind="error"
+              title={decideState.error}
+              locale={locale}
+            />
           ) : null}
           <div className="flex flex-wrap gap-2">
             <button
