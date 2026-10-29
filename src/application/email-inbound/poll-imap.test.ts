@@ -36,7 +36,17 @@ describe("pollImapInbound", () => {
       openMailbox: async () => fakeMailbox([]),
     });
     expect(r.skipped).toBe(true);
+    expect(r.reason).toBe("imap_host_unconfigured");
     expect(r.fetched).toBe(0);
+  });
+
+  it("skip se tenant IMAP assente", async () => {
+    const r = await pollImapInbound({
+      config: { ...baseConfig, tenantSlug: undefined, tenantId: undefined },
+      openMailbox: async () => fakeMailbox([]),
+    });
+    expect(r.skipped).toBe(true);
+    expect(r.reason).toBe("imap_tenant_unconfigured");
   });
 
   it("processa UNSEEN, dedup e markSeen solo su ok", async () => {

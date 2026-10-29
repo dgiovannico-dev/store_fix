@@ -245,6 +245,9 @@ export const en = {
     credentialsEmailRequired: "Email is required",
     vendorCoverageInvalid:
       "Coverage includes stores not valid for this tenant",
+    storeWebhookUrlInvalid: "webhookUrl must be http(s)",
+    storeNtfyTopicInvalid: "ntfyTopic is invalid",
+    tenantIdRequired: "tenantId is required",
   },
   gdpr: {
     exportTitle: "Tenant data export (GDPR)",

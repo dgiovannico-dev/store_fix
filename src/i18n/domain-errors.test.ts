@@ -95,4 +95,9 @@ describe("domainErrors catalog", () => {
     );
     expect(domainErrorFor("vendorCoverageInvalid", "en")).toContain("Coverage");
   });
+
+  it("store webhook/ntfy + tenantId codes", () => {
+    expect(domainErrorFor("storeWebhookUrlInvalid", "en")).toContain("http");
+    expect(domainErrorFor("tenantIdRequired", "it")).toBe("tenantId obbligatorio");
+  });
 });

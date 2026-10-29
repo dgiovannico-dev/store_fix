@@ -60,6 +60,7 @@ export async function updateMembership(input: {
     return {
       ok: false as const,
       message: "vendorId obbligatorio per ruolo vendor",
+      code: "vendorIdRequiredForVendor",
     };
   }
 
