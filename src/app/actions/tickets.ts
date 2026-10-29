@@ -11,8 +11,8 @@ import {
   triageTicket,
 } from "@/application/tickets/transition-ticket";
 import { getActiveMembership } from "@/domain/memberships/membership-service";
+import { checkRateLimitPolicyAsync } from "@/infrastructure/rate-limit-async";
 import { RATE_LIMIT } from "@/infrastructure/rate-limit-policies";
-import { checkRateLimitPolicy } from "@/infrastructure/rate-limit";
 import { actionError } from "@/i18n/action-errors";
 import { actionResultError } from "@/i18n/domain-errors";
 
@@ -46,7 +46,7 @@ export async function createTicketAction(
   const ctx = await sessionContext();
   if (!ctx) return { error: await actionError("accessRequired") };
 
-  const intakeLimit = checkRateLimitPolicy(
+  const intakeLimit = await checkRateLimitPolicyAsync(
     `intake:${ctx.session.tenantId}:${ctx.session.user!.id}`,
     RATE_LIMIT.intake,
   );

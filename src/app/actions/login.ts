@@ -4,12 +4,12 @@ import { AuthError } from "next-auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { signIn } from "@/auth";
+import { checkRateLimitPolicyAsync } from "@/infrastructure/rate-limit-async";
 import { RATE_LIMIT } from "@/infrastructure/rate-limit-policies";
-import { checkRateLimitPolicy } from "@/infrastructure/rate-limit";
 import { rateLimitKey } from "@/infrastructure/security/client-ip";
 
 export async function loginAction(formData: FormData): Promise<void> {
-  const limit = checkRateLimitPolicy(
+  const limit = await checkRateLimitPolicyAsync(
     rateLimitKey("login", await headers()),
     RATE_LIMIT.login,
   );

@@ -7,8 +7,8 @@ Policy nominate: `src/infrastructure/rate-limit-policies.ts` (`RATE_LIMIT.*`).
 | **memory** (default) | `FF_RATE_LIMIT_STORE` unset / `memory` | `checkRateLimit` in-process — single-node Compose |
 | **postgres** | `FF_RATE_LIMIT_STORE=postgres` | tabella `RateLimitBucket` + `pg_advisory_xact_lock` — multi-replica sullo stesso Postgres OSS |
 
-Route async (`/logout`, `/api/*` rate-limited): `checkRateLimitPolicyAsync` (rispetta lo store).  
-Server Actions sync (login/signup/intake/…): restano **memory** finché non migrati ad async (accettabile MVP single-node).
+Tutte le superfici rate-limited usano `checkRateLimitPolicyAsync` (rispetta `FF_RATE_LIMIT_STORE`).  
+GC bucket scaduti: job pg-boss `rate_limit.gc` (orario `:15`, Europe/Rome) → `gcExpiredRateLimitBuckets`. Dry-run: `RATE_LIMIT_GC_DRY_RUN=true`.
 
 | Chiave | Limite | Finestra | Policy | Dove |
 |--------|--------|----------|--------|------|
@@ -31,6 +31,6 @@ Route JSON (`/api/*`, `/logout`): `tooManyRequestsJson` — header **`Retry-Afte
 
 ## Note ops
 
-- Default **per processo** (memory). Con `FF_RATE_LIMIT_STORE=postgres` le route async condividono i bucket su Postgres (no Redis SaaS). GC chiavi scadute: opzionale `DELETE FROM "RateLimitBucket" WHERE "resetAt" < now()` (manuale/job futuro).
+- Default **per processo** (memory). Con `FF_RATE_LIMIT_STORE=postgres` tutte le chiavi condividono i bucket su Postgres (no Redis SaaS). GC: coda `rate_limit.gc` (worker).
 - Chiave IP: `clientIpFromHeaders` (`src/infrastructure/security/client-ip.ts`) — preferisce `X-Real-IP`, altrimenti **rightmost** di `X-Forwarded-For` (hop aggiunto dal proxy fidato). `FF_TRUSTED_PROXY_COUNT` (default `1`, tipico Caddy). Non usare leftmost (spoofabile).
 - CSRF su `/api/*` mutanti + `POST /logout`: vedi [`SECURITY_HEADERS.md`](./SECURITY_HEADERS.md) — indipendente dai rate limit.
