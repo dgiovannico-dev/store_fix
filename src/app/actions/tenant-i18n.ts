@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { auth } from "@/auth";
 import { updateTenantI18nPrefs } from "@/application/tenant/i18n-prefs";
 import { actionError } from "@/i18n/action-errors";
+import { actionResultError } from "@/i18n/domain-errors";
 
 export async function updateTenantI18nAction(
   _prev: { error?: string; ok?: boolean },
@@ -24,7 +25,7 @@ export async function updateTenantI18nAction(
       dateLocale: formData.get("dateLocale") || undefined,
     },
   });
-  if (!result.ok) return { error: result.message };
+  if (!result.ok) return { error: await actionResultError(result) };
   revalidatePath("/app");
   revalidatePath("/app/settings/locale");
   return { ok: true };

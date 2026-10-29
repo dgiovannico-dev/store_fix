@@ -1,0 +1,19 @@
+import { describe, expect, it } from "vitest";
+import { en } from "./en";
+import { it as itCatalog } from "./it";
+import { domainErrorFor, isDomainErrorKey } from "./domain-errors";
+
+describe("domainErrors catalog", () => {
+  it("IT/EN condividono le chiavi", () => {
+    expect(Object.keys(itCatalog.domainErrors).sort()).toEqual(
+      Object.keys(en.domainErrors).sort(),
+    );
+  });
+
+  it("resolve sync per locale", () => {
+    expect(domainErrorFor("ticketNotFound", "it")).toBe("Ticket non trovato");
+    expect(domainErrorFor("ticketNotFound", "en")).toBe("Ticket not found");
+    expect(isDomainErrorKey("ticketImmutableVerified")).toBe(true);
+    expect(isDomainErrorKey("nope")).toBe(false);
+  });
+});

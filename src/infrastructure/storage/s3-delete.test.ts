@@ -5,7 +5,7 @@ import { deleteAttachmentObject } from "./s3";
 describe("deleteAttachmentObject", () => {
   it("invia DeleteObjectCommand con bucket/key", async () => {
     process.env.S3_BUCKET = "facilityflow-attachments";
-    const send = vi.fn(async (_cmd: unknown) => ({}));
+    const send = vi.fn(async () => ({}));
     const client = { send } as unknown as S3Client;
 
     await deleteAttachmentObject("tenants/t1/tickets/tk/a.jpg", client);

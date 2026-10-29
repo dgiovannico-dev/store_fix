@@ -9,6 +9,7 @@ import {
 } from "@/domain/pm/pm-event-service";
 import { createPmSeries } from "@/domain/pm/pm-series-service";
 import { actionError } from "@/i18n/action-errors";
+import { actionResultError } from "@/i18n/domain-errors";
 
 async function sessionTenant() {
   const session = await auth();
@@ -39,7 +40,7 @@ export async function createPmEventAction(
         vendorId: formData.get("vendorId") || null,
       },
     });
-    if (!result.ok) return { error: result.message };
+    if (!result.ok) return { error: await actionResultError(result) };
     revalidatePath("/app/calendario");
     return {};
   }
@@ -55,7 +56,7 @@ export async function createPmEventAction(
       notes: formData.get("notes") || null,
     },
   });
-  if (!result.ok) return { error: result.message };
+  if (!result.ok) return { error: await actionResultError(result) };
   revalidatePath("/app/calendario");
   return {};
 }
@@ -70,7 +71,7 @@ export async function completePmEventAction(
     role: session.role!,
     eventId,
   });
-  if (!result.ok) return { error: result.message };
+  if (!result.ok) return { error: await actionResultError(result) };
   revalidatePath("/app/calendario");
   return {};
 }
@@ -85,7 +86,7 @@ export async function cancelPmEventAction(
     role: session.role!,
     eventId,
   });
-  if (!result.ok) return { error: result.message };
+  if (!result.ok) return { error: await actionResultError(result) };
   revalidatePath("/app/calendario");
   return {};
 }

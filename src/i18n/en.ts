@@ -108,6 +108,13 @@ export const en = {
     unauthorized: "Unauthorized",
     invalidJson: "Invalid JSON",
   },
+  domainErrors: {
+    ticketNotFound: "Ticket not found",
+    ticketImmutableVerified:
+      "Verified ticket: key fields are immutable",
+    ticketImmutableCancelled: "Cancelled ticket: not editable",
+    vendorInvalid: "Invalid vendor",
+  },
   gdpr: {
     exportTitle: "Tenant data export (GDPR)",
     exportHint: "Download JSON of core entities for your tenant.",
