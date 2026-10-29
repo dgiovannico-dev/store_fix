@@ -8,13 +8,20 @@
 /** Directives as `feature=()` deny-all allowlists. */
 export const PERMISSIONS_POLICY_DENY_FEATURES = [
   "accelerometer",
+  "ambient-light-sensor",
+  "attribution-reporting",
   "autoplay",
+  "battery",
+  "bluetooth",
   "browsing-topics",
   "camera",
+  "compute-pressure",
   "display-capture",
   "encrypted-media",
+  "gamepad",
   "geolocation",
   "gyroscope",
+  "hid",
   "interest-cohort",
   "magnetometer",
   "microphone",
@@ -23,7 +30,10 @@ export const PERMISSIONS_POLICY_DENY_FEATURES = [
   "picture-in-picture",
   "publickey-credentials-get",
   "screen-wake-lock",
+  "serial",
   "usb",
+  "web-share",
+  "window-management",
   "xr-spatial-tracking",
 ] as const;
 
