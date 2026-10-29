@@ -45,10 +45,10 @@ export async function createStoreAction(
 export async function updateStoreAction(
   storeId: string,
   formData: FormData,
-): Promise<void> {
+): Promise<{ error?: string }> {
   const session = await sessionTenant();
-  if (!session) return;
-  await updateStore({
+  if (!session) return { error: "Accesso richiesto" };
+  const result = await updateStore({
     tenantId: session.tenantId!,
     role: session.role!,
     storeId,
@@ -63,7 +63,10 @@ export async function updateStoreAction(
       ntfyTopic: formData.get("ntfyTopic") || null,
     },
   });
+  if (!result.ok) return { error: result.message };
   revalidatePath("/app/stores");
+  revalidatePath(`/app/stores/${storeId}`);
+  return {};
 }
 
 export async function deleteStoreAction(storeId: string): Promise<void> {

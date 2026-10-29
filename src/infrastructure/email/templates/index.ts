@@ -7,7 +7,8 @@ export type EmailTemplateId =
   | "ticket_verified"
   | "ticket_rejected"
   | "email_verify"
-  | "pm_reminder";
+  | "pm_reminder"
+  | "rfq_invite";
 
 export type TemplateVars = {
   ticketId?: string;
@@ -15,6 +16,7 @@ export type TemplateVars = {
   vendorName?: string;
   summary?: string;
   verifyUrl?: string;
+  rfqUrl?: string;
 };
 
 const brand = "FacilityFlow";
@@ -28,6 +30,7 @@ export function renderEmailTemplate(
   const vendor = vars.vendorName ?? "fornitore";
   const summary = vars.summary ?? "";
   const verifyUrl = vars.verifyUrl ?? "#";
+  const rfqUrl = vars.rfqUrl ?? "#";
 
   const templates: Record<
     EmailTemplateId,
@@ -77,6 +80,11 @@ export function renderEmailTemplate(
       subject: `[${brand}] Promemoria PM — ${store}`,
       text: `Visita di manutenzione programmata per ${store}.\n${summary}\n\nApri FacilityFlow → Calendario.`,
       html: `<p>Visita di manutenzione programmata per <strong>${store}</strong>.</p><p>${summary}</p><p>Apri FacilityFlow → Calendario.</p>`,
+    },
+    rfq_invite: {
+      subject: `[${brand}] Richiesta preventivo — ${summary || "RFQ"}`,
+      text: `Ciao ${vendor},\nsei invitato a presentare un preventivo.\n${summary}\n\nApri: ${rfqUrl}\n`,
+      html: `<p>Ciao <strong>${vendor}</strong>,</p><p>sei invitato a presentare un preventivo.</p><p>${summary}</p><p><a href="${rfqUrl}">Apri RFQ</a></p>`,
     },
   };
 

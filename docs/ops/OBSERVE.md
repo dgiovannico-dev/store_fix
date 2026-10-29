@@ -29,7 +29,8 @@ UI: `http://localhost:${GLITCHTIP_PORT:-8000}` — crea progetto e copia DSN.
 | `GLITCHTIP_DOMAIN` | `http://localhost:8000` | URL pubblico HTTPS in VPS |
 | `GLITCHTIP_PORT` | `8000` | Host bind |
 
-App FacilityFlow: quando avrai un DSN, imposta `SENTRY_DSN=http://…@glitchtip-host:8000/1` (SDK opzionale follow-up; path critico resta log-only senza DSN).
+App FacilityFlow: imposta `SENTRY_DSN=http://key@host:8000/1` (DSN progetto GlitchTip).  
+`src/instrumentation.ts` inizializza `@sentry/node` solo se DSN presente; `reportError()` per capture esplicito. Senza DSN → log-only.
 
 ```bash
 docker compose --profile observe down

@@ -12,12 +12,20 @@ import { assertCan, assertCanMutate, ForbiddenError } from "@/domain/rbac/guards
 import { canAwardRfqBid, canSubmitRfqBid } from "@/domain/rfq/rules";
 import { parseQuoteAmount } from "@/domain/ticket/quote";
 import { TicketEventType } from "@/domain/ticket/event-types";
+import { enqueueEmail } from "@/infrastructure/email/outbox";
 import { appendTicketEvent } from "@/infrastructure/db/ticket-event-repository";
 import { prisma } from "@/infrastructure/db/prisma";
 import {
   requireTenantId,
   tenantActiveWhere,
 } from "@/infrastructure/db/tenant-scope";
+
+function appBaseUrl(): string {
+  return (
+    process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, "") ||
+    "http://localhost:3000"
+  );
+}
 
 const createSchema = z.object({
   title: z.string().trim().min(2).max(200),
@@ -92,8 +100,29 @@ export async function createQuoteRequest(input: {
         })),
       },
     },
-    include: { bids: true },
+    include: {
+      bids: { include: { vendor: { select: { id: true, name: true, email: true } } } },
+    },
   });
+
+  const rfqUrl = `${appBaseUrl()}/vendor/rfq/${request.id}`;
+  await Promise.all(
+    request.bids.map(async (bid) => {
+      const to = bid.vendor.email?.trim();
+      if (!to) return;
+      await enqueueEmail({
+        to,
+        template: "rfq_invite",
+        vars: {
+          vendorName: bid.vendor.name,
+          summary: request.title,
+          rfqUrl,
+          ticketId: request.ticketId ?? request.id,
+        },
+        idempotencyKey: `rfq_invite:${request.id}:${bid.vendorId}`,
+      }).catch((e) => console.error("[rfq.invite]", e));
+    }),
+  );
 
   return { ok: true as const, request };
 }

@@ -93,7 +93,18 @@ export default async function StoresPage() {
               className="flex flex-wrap items-center justify-between gap-3 py-4"
             >
               <div>
-                <p className="font-medium">{s.name}</p>
+                <p className="font-medium">
+                  {canEdit ? (
+                    <Link
+                      href={`/app/stores/${s.id}`}
+                      className="text-[var(--primary)] hover:underline"
+                    >
+                      {s.name}
+                    </Link>
+                  ) : (
+                    s.name
+                  )}
+                </p>
                 <p className="text-sm text-[var(--muted-foreground)]">
                   {[s.city, s.address].filter(Boolean).join(" · ") || "—"}
                   {s.webhookUrl || s.ntfyTopic
@@ -102,19 +113,27 @@ export default async function StoresPage() {
                 </p>
               </div>
               {canEdit ? (
-                <form
-                  action={async () => {
-                    "use server";
-                    await deleteStoreAction(s.id);
-                  }}
-                >
-                  <button
-                    type="submit"
-                    className="text-sm text-[var(--critical)] underline-offset-4 hover:underline"
+                <div className="flex items-center gap-3">
+                  <Link
+                    href={`/app/stores/${s.id}`}
+                    className="text-sm text-[var(--primary)] underline-offset-4 hover:underline"
                   >
-                    {msg.stores.archive}
-                  </button>
-                </form>
+                    Modifica
+                  </Link>
+                  <form
+                    action={async () => {
+                      "use server";
+                      await deleteStoreAction(s.id);
+                    }}
+                  >
+                    <button
+                      type="submit"
+                      className="text-sm text-[var(--critical)] underline-offset-4 hover:underline"
+                    >
+                      {msg.stores.archive}
+                    </button>
+                  </form>
+                </div>
               ) : null}
             </li>
           ))
