@@ -26,7 +26,7 @@ export async function confirmAttachmentUpload(input: {
   requireTenantId(input.tenantId);
   const parsed = confirmAttachmentSchema.safeParse(input.data);
   if (!parsed.success) {
-    return { ok: false as const, message: "Metadati allegato non validi", code: "invalidAttachmentMeta" };
+    return { ok: false as const, code: "invalidAttachmentMeta" };
   }
 
   try {
@@ -35,16 +35,11 @@ export async function confirmAttachmentUpload(input: {
     if (e instanceof StorageValidationError) {
       return {
         ok: false as const,
-        message: e.message,
         code: e.code,
         params: e.params,
       };
     }
-    return {
-      ok: false as const,
-      message: e instanceof Error ? e.message : "Upload non valido",
-      code: "uploadInvalid",
-    };
+    return { ok: false as const, code: "uploadInvalid" };
   }
 
   const ticket = await prisma.ticket.findFirst({
@@ -55,7 +50,7 @@ export async function confirmAttachmentUpload(input: {
     },
   });
   if (!ticket) {
-    return { ok: false as const, message: "Ticket non trovato", code: "ticketNotFound" };
+    return { ok: false as const, code: "ticketNotFound" };
   }
 
   if (input.role === "vendor") {
@@ -63,15 +58,15 @@ export async function confirmAttachmentUpload(input: {
       !input.membership.vendorId ||
       ticket.vendorId !== input.membership.vendorId
     ) {
-      throw new ForbiddenError("Ticket fuori scope vendor", "vendorOutOfScope");
+      throw new ForbiddenError(undefined, "vendorOutOfScope");
     }
   } else if (!canAccessStore(input.membership, ticket.storeId)) {
-    throw new ForbiddenError("Ticket fuori scope store", "storeOutOfScope");
+    throw new ForbiddenError(undefined, "storeOutOfScope");
   }
 
   // storageKey must belong to tenant path
   if (!parsed.data.storageKey.startsWith(`tenants/${input.tenantId}/`)) {
-    return { ok: false as const, message: "storageKey non valido", code: "invalidStorageKey" };
+    return { ok: false as const, code: "invalidStorageKey" };
   }
 
   const attachment = await prisma.attachment.create({
@@ -100,7 +95,7 @@ export async function softDeleteAttachment(input: {
     },
   });
   if (!existing) {
-    return { ok: false as const, message: "Allegato non trovato", code: "attachmentNotFound" };
+    return { ok: false as const, code: "attachmentNotFound" };
   }
   await prisma.attachment.update({
     where: { id: existing.id },

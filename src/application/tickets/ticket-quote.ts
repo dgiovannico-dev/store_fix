@@ -39,18 +39,18 @@ export async function proposeTicketQuote(input: {
     assertCan(input.role, RbacAction.vendorStatus);
   } catch (e) {
     if (e instanceof ForbiddenError) {
-      return { ok: false as const, message: e.message, code: e.code };
+      return { ok: false as const, code: e.code ?? "forbidden" };
     }
     throw e;
   }
 
   const parsed = proposeSchema.safeParse(input.data);
   if (!parsed.success) {
-    return { ok: false as const, message: "Importo preventivo non valido", code: "quoteAmountInvalid" };
+    return { ok: false as const, code: "quoteAmountInvalid" };
   }
   const amount = parseQuoteAmount(parsed.data.amountEur);
   if (amount == null) {
-    return { ok: false as const, message: "Importo preventivo non valido", code: "quoteAmountInvalid" };
+    return { ok: false as const, code: "quoteAmountInvalid" };
   }
 
   const ticket = await prisma.ticket.findFirst({
@@ -60,13 +60,13 @@ export async function proposeTicketQuote(input: {
       deletedAt: null,
     },
   });
-  if (!ticket) return { ok: false as const, message: "Ticket non trovato", code: "ticketNotFound" };
+  if (!ticket) return { ok: false as const, code: "ticketNotFound" };
 
   try {
     assertVendorTicketScope(input.membership, ticket, input.role);
   } catch (e) {
     if (e instanceof ForbiddenError) {
-      return { ok: false as const, message: e.message, code: e.code };
+      return { ok: false as const, code: e.code ?? "forbidden" };
     }
     throw e;
   }
@@ -74,7 +74,6 @@ export async function proposeTicketQuote(input: {
   if (!canProposeQuote(ticket.status)) {
     return {
       ok: false as const,
-      message: "Preventivo consentito solo su ticket assegnato / in corso",
       code: "quoteOnlyAssigned",
     };
   }
@@ -130,14 +129,14 @@ export async function decideTicketQuote(input: {
     assertCan(input.role, RbacAction.acceptQuote);
   } catch (e) {
     if (e instanceof ForbiddenError) {
-      return { ok: false as const, message: e.message, code: e.code };
+      return { ok: false as const, code: e.code ?? "forbidden" };
     }
     throw e;
   }
 
   const parsed = decideSchema.safeParse(input.data);
   if (!parsed.success) {
-    return { ok: false as const, message: "Decisione non valida", code: "quoteDecisionInvalid" };
+    return { ok: false as const, code: "quoteDecisionInvalid" };
   }
 
   const ticket = await prisma.ticket.findFirst({
@@ -147,16 +146,15 @@ export async function decideTicketQuote(input: {
       deletedAt: null,
     },
   });
-  if (!ticket) return { ok: false as const, message: "Ticket non trovato", code: "ticketNotFound" };
+  if (!ticket) return { ok: false as const, code: "ticketNotFound" };
 
   if (!canAccessStore(input.membership, ticket.storeId)) {
-    return { ok: false as const, message: "Store fuori scope", code: "storeOutOfScope" };
+    return { ok: false as const, code: "storeOutOfScope" };
   }
 
   if (!canDecideQuote(ticket.status, ticket.quoteStatus)) {
     return {
       ok: false as const,
-      message: "Nessun preventivo in attesa su questo ticket",
       code: "noPendingQuote",
     };
   }

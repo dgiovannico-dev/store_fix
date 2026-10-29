@@ -35,17 +35,16 @@ async function loadTicket(tenantId: string, ticketId: string) {
 
 function failTransition(e: unknown): {
   ok: false;
-  message: string;
-  code?: string;
+  code: string;
   params?: Record<string, string>;
+  message?: string;
 } {
   if (e instanceof TicketImmutableError) {
-    return { ok: false, message: e.message, code: e.code };
+    return { ok: false, code: e.code };
   }
   if (e instanceof IllegalTransitionError) {
     return {
       ok: false,
-      message: e.message,
       code: e.code,
       params:
         e.code === "illegalTransition"
@@ -54,7 +53,7 @@ function failTransition(e: unknown): {
     };
   }
   if (e instanceof ForbiddenError) {
-    return { ok: false, message: e.message, code: e.code };
+    return { ok: false, code: e.code ?? "forbidden" };
   }
   throw e;
 }
@@ -86,7 +85,6 @@ export async function transitionTicket(input: {
   if (!ticket) {
     return {
       ok: false as const,
-      message: "Ticket non trovato",
       code: "ticketNotFound",
     };
   }
@@ -220,7 +218,6 @@ export async function assignTicket(input: {
   if (!vendor) {
     return {
       ok: false as const,
-      message: "Fornitore non valido",
       code: "vendorInvalid",
     };
   }
@@ -272,7 +269,7 @@ export async function cancelTicket(input: {
 
   const parsed = cancelSchema.safeParse({ reason: input.reason });
   if (!parsed.success) {
-    return { ok: false as const, message: "Motivo obbligatorio", code: "cancelReasonRequired" };
+    return { ok: false as const, code: "cancelReasonRequired" };
   }
 
   const result = await transitionTicket({

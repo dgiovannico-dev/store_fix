@@ -13,6 +13,6 @@ export function assertVendorTicketScope(
     !ticket.vendorId ||
     membership.vendorId !== ticket.vendorId
   ) {
-    throw new ForbiddenError("Ticket fuori scope vendor", "vendorOutOfScope");
+    throw new ForbiddenError(undefined, "vendorOutOfScope");
   }
 }
