@@ -54,6 +54,8 @@ npm run dev              # terminale 1 → :3000 hot reload
 
 Build Docker `app`/`worker`: context snello via [`.dockerignore`](../../.dockerignore) (esclude `node_modules`/`.next`/`.git`).
 
+`seaweedfs` healthcheck: `wget --spider http://127.0.0.1:9333/cluster/healthz` (master readiness). Profile `full` `app` attende `service_healthy` su postgres + seaweed.
+
 ## Porte
 
 Pubblicate su **`127.0.0.1` only** in `docker-compose.yml` (lab): evita bind `0.0.0.0` che bypassa UFW ([Docker publish ports](https://docs.docker.com/get-started/docker-concepts/running-containers/publishing-ports/)). Tra container resta la rete Compose (`postgres:5432`, `seaweedfs:8333`).

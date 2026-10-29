@@ -45,5 +45,27 @@ describe("compose.prod.yaml hardening", () => {
   it("app espone solo loopback 3000", () => {
     expect(raw).toMatch(/127\.0\.0\.1:3000:3000/);
   });
+
+  it("seaweedfs usa cluster/healthz e app attende healthy", () => {
+    expect(raw).toMatch(/cluster\/healthz/);
+    expect(raw).toMatch(
+      /seaweedfs:[\s\S]*?condition:\s*service_healthy/,
+    );
+  });
 });
+
+describe("docker-compose.yml seaweedfs health", () => {
+  const raw = readFileSync(
+    path.join(process.cwd(), "docker-compose.yml"),
+    "utf8",
+  );
+
+  it("healthcheck master healthz + app depends_on healthy", () => {
+    expect(raw).toMatch(/cluster\/healthz/);
+    expect(raw).toMatch(
+      /seaweedfs:[\s\S]*?condition:\s*service_healthy/,
+    );
+  });
+});
+
 

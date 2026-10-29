@@ -54,6 +54,19 @@ services:
       WEED_S3_EXTERNAL_URL: ${S3_PUBLIC_ENDPOINT:-}
     volumes:
       - seaweed_data:/data
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "wget",
+          "--spider",
+          "-q",
+          "http://127.0.0.1:9333/cluster/healthz",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 10s
     deploy:
       resources:
         limits:
@@ -75,7 +88,7 @@ services:
       postgres:
         condition: service_healthy
       seaweedfs:
-        condition: service_started
+        condition: service_healthy
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-facilityflow}?schema=public
       NODE_ENV: production
