@@ -21,6 +21,10 @@ echo "$HDR" | grep -qi "worker-src 'self'" || {
   echo "missing CSP worker-src 'self'"
   exit 1
 }
+echo "$HDR" | grep -qi "manifest-src 'self'" || {
+  echo "missing CSP manifest-src 'self'"
+  exit 1
+}
 echo "$HDR" | grep -qi "base-uri 'none'" || {
   echo "missing CSP base-uri 'none'"
   exit 1

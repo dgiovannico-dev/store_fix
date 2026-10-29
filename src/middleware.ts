@@ -1,15 +1,12 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { buildContentSecurityPolicy } from "@/infrastructure/security/csp-policy";
+import { applyBaselineSecurityHeaders } from "@/infrastructure/security/apply-baseline-security-headers";
 import { evaluateApiCsrf } from "@/infrastructure/security/csrf-origin";
-import { buildPermissionsPolicyHeader } from "@/infrastructure/security/permissions-policy";
-import { referrerPolicyForPath } from "@/infrastructure/security/referrer-policy";
 import { resolveServerActionsAllowedOrigins } from "@/infrastructure/security/server-actions-origins";
-import { applyNoStore } from "@/infrastructure/security/session-cleanup-headers";
 
 /**
  * Security baseline headers (US-E10-07 / T4.6) + CSRF gate on mutating `/api/*` + `/logout`.
- * CSP permissiva per Next.js + Tailwind inline; frame deny; nosniff.
+ * Header values: `applyBaselineSecurityHeaders` · docs/ops/SECURITY_HEADERS.md
  */
 export function middleware(request: NextRequest) {
   const requestId =
@@ -51,40 +48,15 @@ export function middleware(request: NextRequest) {
     },
   });
 
-  response.headers.set(
-    "Content-Security-Policy",
-    buildContentSecurityPolicy({
+  applyBaselineSecurityHeaders(response.headers, {
+    pathname: request.nextUrl.pathname,
+    requestId,
+    env: {
       NODE_ENV: process.env.NODE_ENV,
       FF_DOMAIN: process.env.FF_DOMAIN,
       FF_CSP_UPGRADE_INSECURE: process.env.FF_CSP_UPGRADE_INSECURE,
-    }),
-  );
-  response.headers.set("X-Frame-Options", "DENY");
-  response.headers.set("X-Content-Type-Options", "nosniff");
-  response.headers.set(
-    "Referrer-Policy",
-    referrerPolicyForPath(request.nextUrl.pathname),
-  );
-  response.headers.set("X-Request-Id", requestId);
-  // Powerful APIs off (OWASP SHP subset); clipboard left unrestricted for paste/copy UX
-  response.headers.set(
-    "Permissions-Policy",
-    buildPermissionsPolicyHeader(),
-  );
-  // XS-Leak isolation; no OAuth popup SoR → same-origin (not allow-popups)
-  response.headers.set("Cross-Origin-Opener-Policy", "same-origin");
-  // Spectre/resource isolation for document responses (not Seaweed signed URLs)
-  response.headers.set("Cross-Origin-Resource-Policy", "same-origin");
-  // Legacy Flash/Acrobat crossdomain.xml meta-policy — deny all (OWASP SHP)
-  response.headers.set("X-Permitted-Cross-Domain-Policies", "none");
-  // Origin-keyed process hint (all responses; not a Spectre guarantee)
-  response.headers.set("Origin-Agent-Cluster", "?1");
-  // Chromium DNS prefetch off — reduce link/domain leakage (OWASP SHP)
-  response.headers.set("X-DNS-Prefetch-Control", "off");
-  // Private SoR — ask crawlers not to index (not a substitute for auth)
-  response.headers.set("X-Robots-Tag", "noindex, nofollow");
-  // Dynamic SoR / auth surfaces — never store in shared or private HTTP cache
-  applyNoStore(response.headers);
+    },
+  });
 
   return response;
 }
