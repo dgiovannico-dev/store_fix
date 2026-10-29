@@ -176,6 +176,7 @@ export default async function TicketDetailPage({
             ticket.estimatedCost != null ? Number(ticket.estimatedCost) : null
           }
           labels={msg.ticketPanels}
+          locale={prefs.locale}
           dateLocale={prefs.dateLocale}
           currency={prefs.currency}
         />

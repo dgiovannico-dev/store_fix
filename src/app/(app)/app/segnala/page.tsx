@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
+import { getTenantI18nPrefs } from "@/application/tenant/i18n-prefs";
+import { StatusPanel } from "@/components/ui/status-panel";
 import { getActiveMembership } from "@/domain/memberships/membership-service";
 import { listStores } from "@/domain/stores/store-service";
 import { tenantMessages } from "@/i18n/tenant-messages";
@@ -19,8 +21,9 @@ export default async function SegnalaHubPage() {
   );
   if (!membership) redirect("/login");
 
-  const [msg, stores] = await Promise.all([
+  const [msg, prefs, stores] = await Promise.all([
     tenantMessages(session.tenantId),
+    getTenantI18nPrefs(session.tenantId),
     listStores(session.tenantId, membership),
   ]);
   const base =
@@ -37,9 +40,13 @@ export default async function SegnalaHubPage() {
       </p>
 
       {stores.length === 0 ? (
-        <p className="mt-8 text-sm text-[var(--muted-foreground)]">
-          {msg.intake.noStores}
-        </p>
+        <div className="mt-8">
+          <StatusPanel
+            kind="empty"
+            title={msg.intake.noStores}
+            locale={prefs.locale}
+          />
+        </div>
       ) : (
         <ul className="mt-8 space-y-4">
           {stores.map((s) => {
