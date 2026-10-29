@@ -32,9 +32,3 @@ export function parseQuoteAmount(
   if (!Number.isFinite(n) || n <= 0) return null;
   return Math.round(n * 100) / 100;
 }
-
-export const QUOTE_STATUS_LABEL_IT: Record<QuoteStatus, string> = {
-  pending: "In attesa",
-  accepted: "Accettato",
-  rejected: "Rifiutato",
-};

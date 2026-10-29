@@ -459,6 +459,12 @@ export const en = {
     submitted: "Submitted",
     withdrawn: "Withdrawn",
   },
+  quoteStatus: {
+    none: "None",
+    pending: "Pending",
+    accepted: "Accepted",
+    rejected: "Rejected",
+  },
   localeSettings: {
     title: "Language & region",
     hint: "Tenant prefs for UI catalog, currency and date format.",

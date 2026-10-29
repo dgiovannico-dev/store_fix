@@ -459,6 +459,12 @@ export const it = {
     submitted: "Inviata",
     withdrawn: "Ritirata",
   },
+  quoteStatus: {
+    none: "Nessuno",
+    pending: "In attesa",
+    accepted: "Accettato",
+    rejected: "Rifiutato",
+  },
   localeSettings: {
     title: "Lingua e regione",
     hint: "Preferenze tenant per catalogo UI, valuta e formato date.",
