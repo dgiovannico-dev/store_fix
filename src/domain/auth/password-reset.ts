@@ -2,7 +2,7 @@ import { createHash, randomBytes } from "crypto";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/infrastructure/db/prisma";
 import { enqueueEmail } from "@/infrastructure/email/outbox";
-import { checkRateLimitPolicyAsync } from "@/infrastructure/rate-limit-async";
+import { checkActionRateLimit } from "@/infrastructure/rate-limit-action";
 import { RATE_LIMIT } from "@/infrastructure/rate-limit-policies";
 
 const RESET_TTL_MS = 60 * 60 * 1000;
@@ -25,11 +25,11 @@ function appBaseUrl(): string {
  */
 export async function requestPasswordReset(emailRaw: string): Promise<void> {
   const email = emailRaw.trim().toLowerCase();
-  const limit = await checkRateLimitPolicyAsync(
+  const limit = await checkActionRateLimit(
     `pwdreset:${email}`,
     RATE_LIMIT.pwdreset,
   );
-  if (!limit.ok) return;
+  if (limit.limited) return;
 
   const user = await prisma.user.findUnique({ where: { email } });
   if (!user) return;
