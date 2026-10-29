@@ -11,7 +11,7 @@
 | `compose.lab.yaml` merge | PASS | porte 8080/8443 |
 | Caddyfile `caddy validate` | PASS | image `caddy:2.9-alpine` (`npm run caddy:validate` / CI) |
 | `/api/health/live` + `ready` | PASS | ready `db:up` |
-| Security headers | PASS | CSP (`object-src`/`base-uri` none)/XFO/nosniff/COOP/CORP/XPCDP/Permissions-Policy/OAC/`Cache-Control: no-store` + logout `Clear-Site-Data` (`verify-security-headers.sh` + middleware/logout tests); **HSTS** Caddyfile; HTTPS+HSTS live = gap VPS |
+| Security headers | PASS | CSP/XFO/nosniff/COOP/CORP/XPCDP/Permissions-Policy/OAC/`Cache-Control`/`X-DNS-Prefetch-Control`/`X-Robots-Tag` + `/robots.txt` Disallow (`verify-security-headers.sh`); logout CSRF+RL+`Clear-Site-Data`; **HSTS** Caddyfile; HTTPS+HSTS live = gap VPS |
 | p95 lista HQ seed | PASS | ≪ 300 ms (`npm run perf:hq-list`); **anche in CI** PR/`develop`; stress 50×100 → p95 ~4 ms; **50×5000** locale 2026-10-29 → p95 **~6.4 ms** (`stress-retail`) |
 | Flusso A domain test | PASS | `flusso-a-verified.test.ts` |
 | Flusso A HTTP curl+session | PASS (locale + **CI** 2026-10-29) | `npm run smoke:http` dopo `next start` in `.github/workflows/ci.yml`; lifecycle resta domain test |
