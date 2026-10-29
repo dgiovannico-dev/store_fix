@@ -1,15 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { formatMoney } from "./format";
+import { withCurrency } from "./format";
 
-describe("formatMoney", () => {
-  it("EUR it-IT", () => {
-    const s = formatMoney(12.5, { dateLocale: "it-IT", currency: "EUR" });
-    expect(s).toContain("12");
-    expect(s).toMatch(/€|EUR/);
-  });
-
-  it("GBP en-GB", () => {
-    const s = formatMoney(10, { dateLocale: "en-GB", currency: "GBP" });
-    expect(s).toMatch(/£|GBP/);
+describe("withCurrency", () => {
+  it("sostituisce {currency} e normalizza uppercase", () => {
+    expect(withCurrency("Importo {currency} *", "eur")).toBe("Importo EUR *");
+    expect(withCurrency("Amount {currency} *", "USD")).toBe("Amount USD *");
+    expect(withCurrency("Fee {currency}", "")).toBe("Fee EUR");
   });
 });
