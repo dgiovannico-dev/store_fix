@@ -18,6 +18,8 @@ describe("assertAllowedUpload", () => {
       expect(e).toBeInstanceOf(StorageValidationError);
       expect((e as StorageValidationError).code).toBe("uploadMimeNotAllowed");
       expect((e as StorageValidationError).params?.mime).toBe("application/pdf");
+      expect((e as StorageValidationError).message).toMatch(/MIME not allowed/i);
+      expect((e as StorageValidationError).message).not.toMatch(/consentito/i);
     }
   });
 

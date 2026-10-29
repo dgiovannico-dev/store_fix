@@ -12,16 +12,25 @@ export type StorageValidationCode =
   | "uploadMimeNotAllowed"
   | "uploadSizeInvalid";
 
+/** EN diagnostics for logs/tests; UI uses `code` (+ params) → domainErrors. */
+function storageDiagnostic(
+  code: StorageValidationCode,
+  params?: Record<string, string>,
+): string {
+  switch (code) {
+    case "uploadMimeNotAllowed":
+      return `MIME not allowed: ${params?.mime ?? "?"}`;
+    case "uploadSizeInvalid":
+      return `Invalid size (max ${params?.maxBytes ?? MAX_ATTACHMENT_BYTES} bytes)`;
+  }
+}
+
 export class StorageValidationError extends Error {
   readonly code: StorageValidationCode;
   readonly params?: Record<string, string>;
 
-  constructor(
-    message: string,
-    code: StorageValidationCode,
-    params?: Record<string, string>,
-  ) {
-    super(message);
+  constructor(code: StorageValidationCode, params?: Record<string, string>) {
+    super(storageDiagnostic(code, params));
     this.name = "StorageValidationError";
     this.code = code;
     this.params = params;
@@ -30,18 +39,11 @@ export class StorageValidationError extends Error {
 
 export function assertAllowedUpload(mime: string, sizeBytes: number): void {
   if (!ALLOWED_ATTACHMENT_MIME.includes(mime as AllowedAttachmentMime)) {
-    // Diagnostic EN for logs/tests; UI uses `code` + domainErrors
-    throw new StorageValidationError(
-      `MIME not allowed: ${mime}`,
-      "uploadMimeNotAllowed",
-      { mime },
-    );
+    throw new StorageValidationError("uploadMimeNotAllowed", { mime });
   }
   if (sizeBytes <= 0 || sizeBytes > MAX_ATTACHMENT_BYTES) {
-    throw new StorageValidationError(
-      `Invalid size (max ${MAX_ATTACHMENT_BYTES} bytes)`,
-      "uploadSizeInvalid",
-      { maxBytes: String(MAX_ATTACHMENT_BYTES) },
-    );
+    throw new StorageValidationError("uploadSizeInvalid", {
+      maxBytes: String(MAX_ATTACHMENT_BYTES),
+    });
   }
 }
