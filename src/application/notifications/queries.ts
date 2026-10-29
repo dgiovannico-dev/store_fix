@@ -47,7 +47,7 @@ export async function markNotificationRead(input: {
       deletedAt: null,
     },
   });
-  if (!row) return { ok: false as const, message: "Notifica non trovata", code: "notificationNotFound" };
+  if (!row) return { ok: false as const, code: "notificationNotFound" };
   await prisma.notification.update({
     where: { id: row.id },
     data: { readAt: new Date() },
