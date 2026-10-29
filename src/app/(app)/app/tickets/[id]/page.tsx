@@ -267,6 +267,7 @@ export default async function TicketDetailPage({
         breached={!!ticket.slaBreachedAt}
         canOps={canOps}
         labels={msg.ticketPanels}
+        locale={prefs.locale}
       />
 
       <VerifyPanel
@@ -274,6 +275,7 @@ export default async function TicketDetailPage({
         status={ticket.status}
         canVerify={can(session.role, RbacAction.verifyTicket)}
         labels={msg.ticketPanels}
+        locale={prefs.locale}
       />
     </main>
   );

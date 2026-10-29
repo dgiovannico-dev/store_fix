@@ -2,6 +2,7 @@ import { StatusPanel } from "@/components/ui/status-panel";
 import { ticketEventLabel } from "@/domain/ticket/event-labels";
 import { ticketStatusLabel } from "@/domain/ticket/status-labels";
 import {
+  formatDateTime,
   formatMoney,
   type FormatPrefs,
   type Locale,
@@ -80,7 +81,7 @@ export function TicketTimeline({
             ) : null}
             <span className="text-[var(--muted-foreground)]">
               {" "}
-              · {e.createdAt.toLocaleString(dateLocale)}
+              · {formatDateTime(e.createdAt, moneyPrefs)}
             </span>
             {showInternalNotes && meta?.noteInternal ? (
               <p className="mt-0.5 text-[var(--muted-foreground)]">
