@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { shouldUpgradeInsecureRequests } from "@/infrastructure/security/csp-upgrade";
+import { buildContentSecurityPolicy } from "@/infrastructure/security/csp-policy";
 import { evaluateApiCsrf } from "@/infrastructure/security/csrf-origin";
 import { buildPermissionsPolicyHeader } from "@/infrastructure/security/permissions-policy";
 import { referrerPolicyForPath } from "@/infrastructure/security/referrer-policy";
@@ -51,36 +51,14 @@ export function middleware(request: NextRequest) {
     },
   });
 
-  // unsafe-eval solo in dev (HMR); prod stringe CSP (docs/ops/SECURITY_HEADERS.md)
-  const scriptSrc =
-    process.env.NODE_ENV === "production"
-      ? "script-src 'self' 'unsafe-inline'"
-      : "script-src 'self' 'unsafe-inline' 'unsafe-eval'";
-
-  const cspParts = [
-    "default-src 'self'",
-    scriptSrc,
-    "style-src 'self' 'unsafe-inline'",
-    "img-src 'self' data: blob: http: https:",
-    "font-src 'self' data:",
-    "connect-src 'self' http: https:",
-    "object-src 'none'",
-    "frame-ancestors 'none'",
-    "base-uri 'none'",
-    "form-action 'self'",
-  ];
-  if (
-    shouldUpgradeInsecureRequests({
+  response.headers.set(
+    "Content-Security-Policy",
+    buildContentSecurityPolicy({
       NODE_ENV: process.env.NODE_ENV,
       FF_DOMAIN: process.env.FF_DOMAIN,
       FF_CSP_UPGRADE_INSECURE: process.env.FF_CSP_UPGRADE_INSECURE,
-    })
-  ) {
-    cspParts.push("upgrade-insecure-requests");
-  }
-  const csp = cspParts.join("; ");
-
-  response.headers.set("Content-Security-Policy", csp);
+    }),
+  );
   response.headers.set("X-Frame-Options", "DENY");
   response.headers.set("X-Content-Type-Options", "nosniff");
   response.headers.set(

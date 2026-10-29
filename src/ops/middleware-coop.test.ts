@@ -48,14 +48,8 @@ describe("middleware cross-origin isolation headers", () => {
     expect(raw).toMatch(/applyNoStore\s*\(\s*response\.headers\s*\)/);
   });
 
-  it("CSP object-src e base-uri none", () => {
-    expect(raw).toMatch(/object-src 'none'/);
-    expect(raw).toMatch(/base-uri 'none'/);
-  });
-
-  it("condiziona upgrade-insecure-requests via shouldUpgradeInsecureRequests", () => {
-    expect(raw).toMatch(/shouldUpgradeInsecureRequests/);
-    expect(raw).toMatch(/upgrade-insecure-requests/);
+  it("usa buildContentSecurityPolicy", () => {
+    expect(raw).toMatch(/buildContentSecurityPolicy\s*\(/);
   });
 
   it("usa referrerPolicyForPath", () => {
