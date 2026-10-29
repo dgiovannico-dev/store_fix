@@ -5,6 +5,7 @@ In-process (`checkRateLimit` in `src/infrastructure/rate-limit.ts`) — single-n
 | Chiave | Limite | Finestra | Dove |
 |--------|--------|----------|------|
 | `login:*` (IP) | **10** | **15 min** | `src/app/actions/login.ts` |
+| `logout:*` (IP) | **20** | **15 min** | `src/app/logout/route.ts` (GET/POST) |
 | `signup:*` (IP) | **10** | **15 min** | `src/app/actions/signup.ts` |
 | `pwdreset:*` (email) | **5** | **15 min** | `src/domain/auth/password-reset.ts` |
 | `store-csv:{tenantId}` | **5** | **15 min** | `src/domain/stores/csv-import.ts` |
@@ -22,4 +23,4 @@ Superamento → redirect o risposta **429** / copy IT “Troppe richieste” (`r
 ## Note ops
 
 - Limiti **per processo**: dietro più replica `app` i bucket non sono condivisi (accettabile MVP; Fase 4 Redis solo se metriche lo chiedono).
-- CSRF su `/api/*` mutanti: vedi [`SECURITY_HEADERS.md`](./SECURITY_HEADERS.md) — indipendente dai rate limit.
+- CSRF su `/api/*` mutanti + `POST /logout`: vedi [`SECURITY_HEADERS.md`](./SECURITY_HEADERS.md) — indipendente dai rate limit.

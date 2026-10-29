@@ -7,13 +7,15 @@ import { describe, expect, it } from "vitest";
  * @see docs/ops/AUTH.md
  */
 describe("logout Clear-Site-Data wiring", () => {
-  it("route /logout applies applyLogoutClearSiteData", () => {
+  it("route /logout applies applyLogoutClearSiteData + rate limit", () => {
     const raw = readFileSync(
       path.join(process.cwd(), "src/app/logout/route.ts"),
       "utf8",
     );
     expect(raw).toMatch(/applyLogoutClearSiteData/);
     expect(raw).toMatch(/signOut\s*\(/);
+    expect(raw).toMatch(/checkRateLimit/);
+    expect(raw).toMatch(/logout:/);
   });
 
   it("Auth.js POST signout applies Clear-Site-Data", () => {

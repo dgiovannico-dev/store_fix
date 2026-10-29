@@ -7,7 +7,7 @@ Implementati in `src/middleware.ts`:
 | `Content-Security-Policy` | `default-src 'self'`; script/style `'unsafe-inline'` (Next/Tailwind); **prod senza** `'unsafe-eval'`; `object-src 'none'`; `base-uri 'none'`; `frame-ancestors 'none'`; **`upgrade-insecure-requests`** solo con `FF_DOMAIN` reale (o `FF_CSP_UPGRADE_INSECURE=1`) — off su lab HTTP |
 | `X-Frame-Options` | `DENY` (legacy + CSP) |
 | `X-Content-Type-Options` | `nosniff` |
-| `Referrer-Policy` | `strict-origin-when-cross-origin` |
+| `Referrer-Policy` | default `strict-origin-when-cross-origin`; auth token pages (`/reset-password`, `/verify-email`, `/invite`) → `no-referrer`; `/login` `/register` `/logout` → `strict-origin` |
 | `Permissions-Policy` | subset OWASP: camera/mic/geo/payment/usb/… off; clipboard non bloccato (UX paste) |
 | `Cross-Origin-Opener-Policy` | `same-origin` (XS-Leak; no popup OAuth SoR) |
 | `Cross-Origin-Resource-Policy` | `same-origin` (document isolation; storage firmato resta fuori middleware) |

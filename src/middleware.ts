@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { shouldUpgradeInsecureRequests } from "@/infrastructure/security/csp-upgrade";
 import { evaluateApiCsrf } from "@/infrastructure/security/csrf-origin";
+import { referrerPolicyForPath } from "@/infrastructure/security/referrer-policy";
 import { resolveServerActionsAllowedOrigins } from "@/infrastructure/security/server-actions-origins";
 import { applyNoStore } from "@/infrastructure/security/session-cleanup-headers";
 
@@ -81,7 +82,10 @@ export function middleware(request: NextRequest) {
   response.headers.set("Content-Security-Policy", csp);
   response.headers.set("X-Frame-Options", "DENY");
   response.headers.set("X-Content-Type-Options", "nosniff");
-  response.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
+  response.headers.set(
+    "Referrer-Policy",
+    referrerPolicyForPath(request.nextUrl.pathname),
+  );
   response.headers.set("X-Request-Id", requestId);
   // Powerful APIs off (OWASP SHP subset); clipboard left unrestricted for paste/copy UX
   response.headers.set(
