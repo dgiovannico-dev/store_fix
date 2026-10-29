@@ -4,20 +4,21 @@ import { getActiveMembership } from "@/domain/memberships/membership-service";
 import { canAccessStore } from "@/domain/rbac/store-scope";
 import { prisma } from "@/infrastructure/db/prisma";
 import { getSignedGetUrl } from "@/infrastructure/storage/s3";
+import { actionError } from "@/i18n/action-errors";
 
 type Ctx = { params: Promise<{ id: string; attachmentId: string }> };
 
 export async function GET(_req: Request, ctx: Ctx) {
   const session = await auth();
   if (!session?.user?.id || !session.tenantId || !session.role) {
-    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+    return NextResponse.json({ error: await actionError("unauthorized") }, { status: 401 });
   }
   const membership = await getActiveMembership(
     session.user.id,
     session.tenantId,
   );
   if (!membership) {
-    return NextResponse.json({ error: "no membership" }, { status: 403 });
+    return NextResponse.json({ error: await actionError("membershipMissing") }, { status: 403 });
   }
 
   const { id: ticketId, attachmentId } = await ctx.params;

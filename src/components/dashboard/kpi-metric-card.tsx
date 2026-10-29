@@ -16,10 +16,16 @@ export function KpiMetricCard({ label, value }: KpiMetric) {
   );
 }
 
-export function DashboardKpiGrid({ items }: { items: KpiMetric[] }) {
+export function DashboardKpiGrid({
+  items,
+  ariaLabel,
+}: {
+  items: KpiMetric[];
+  ariaLabel: string;
+}) {
   return (
     <section
-      aria-label="KPI"
+      aria-label={ariaLabel}
       className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5"
     >
       {items.map((k) => (

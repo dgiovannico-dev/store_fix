@@ -51,7 +51,10 @@ export async function createTicketAction(
   );
   if (!intakeLimit.ok) {
     return {
-      error: `Troppe richieste. Riprova tra ${intakeLimit.retryAfterSec}s.`,
+      error: (await actionError("rateLimitedRetry")).replace(
+        "{sec}",
+        String(intakeLimit.retryAfterSec),
+      ),
     };
   }
 
