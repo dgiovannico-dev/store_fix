@@ -19,6 +19,10 @@ echo "$HDR" | grep -qi 'cross-origin-resource-policy:.*same-origin' || {
   echo "missing CORP same-origin"
   exit 1
 }
+echo "$HDR" | grep -qi 'x-permitted-cross-domain-policies:.*none' || {
+  echo "missing X-Permitted-Cross-Domain-Policies none"
+  exit 1
+}
 if [[ "$MODE" == "--prod" ]]; then
   CSP=$(echo "$HDR" | grep -i '^content-security-policy:' || true)
   echo "$CSP" | grep -qi "unsafe-eval" && {
