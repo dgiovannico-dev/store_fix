@@ -14,7 +14,7 @@ export default async function VerifyEmailPage({ searchParams }: Props) {
   if (token && email) {
     const result = await confirmEmailVerification(email, token);
     if (result.ok) status = "ok";
-    else status = result.code === "EXPIRED" ? "expired" : "invalid";
+    else status = result.code === "emailVerifyExpired" ? "expired" : "invalid";
   }
 
   const copy =

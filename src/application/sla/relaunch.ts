@@ -33,7 +33,7 @@ export async function relaunchSlaTicket(input: {
 
   const parsed = relaunchSchema.safeParse({ note: input.note });
   if (!parsed.success) {
-    return { ok: false as const, message: "Nota rilancio obbligatoria" };
+    return { ok: false as const, message: "Nota rilancio obbligatoria", code: "relaunchNoteRequired" };
   }
 
   const ticket = await prisma.ticket.findFirst({
@@ -44,11 +44,12 @@ export async function relaunchSlaTicket(input: {
     },
     include: { store: true, vendor: true },
   });
-  if (!ticket) return { ok: false as const, message: "Ticket non trovato" };
+  if (!ticket) return { ok: false as const, message: "Ticket non trovato", code: "ticketNotFound" };
   if (!ticket.slaBreachedAt) {
     return {
       ok: false as const,
       message: "Rilancio solo su ticket in breach",
+      code: "relaunchOnlyOnBreach",
     };
   }
 
@@ -123,11 +124,12 @@ export async function reassignBreachedTicket(input: {
       deletedAt: null,
     },
   });
-  if (!ticket) return { ok: false as const, message: "Ticket non trovato" };
+  if (!ticket) return { ok: false as const, message: "Ticket non trovato", code: "ticketNotFound" };
   if (!ticket.slaBreachedAt) {
     return {
       ok: false as const,
       message: "Riassegnazione da breach solo se SLA superato",
+      code: "reassignOnlyOnBreach",
     };
   }
 
@@ -137,6 +139,7 @@ export async function reassignBreachedTicket(input: {
     return {
       ok: false as const,
       message: "Fai triage prima di riassegnare",
+      code: "triageBeforeReassign",
     };
   }
 
@@ -168,7 +171,7 @@ export async function reassignBreachedTicket(input: {
       deletedAt: null,
     },
   });
-  if (!vendor) return { ok: false as const, message: "Fornitore non valido" };
+  if (!vendor) return { ok: false as const, message: "Fornitore non valido", code: "vendorInvalid" };
 
   const updated = await prisma.ticket.update({
     where: { id: ticket.id },

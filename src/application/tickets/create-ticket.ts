@@ -39,7 +39,7 @@ export async function createTicket(input: {
 
   const parsed = createTicketSchema.safeParse(input.data);
   if (!parsed.success) {
-    return { ok: false as const, message: "Dati ticket non validi" };
+    return { ok: false as const, message: "Dati ticket non validi", code: "invalidTicketData" };
   }
 
   if (!canAccessStore(input.membership, parsed.data.storeId)) {
@@ -70,7 +70,7 @@ export async function createTicket(input: {
       },
     });
     if (!asset) {
-      return { ok: false as const, message: "Asset non valido per lo store" };
+      return { ok: false as const, message: "Asset non valido per lo store", code: "assetInvalidForStore" };
     }
   }
 
