@@ -22,6 +22,7 @@ import {
 } from "@/domain/intake/chat-steps";
 import { computeSlaBadge } from "@/domain/sla/badge";
 import { canReadTicketCosts } from "@/domain/ticket/costs";
+import { ticketStatusLabel } from "@/domain/ticket/status-labels";
 import { formatMoney } from "@/i18n/format";
 import { canDecideQuote } from "@/domain/ticket/quote";
 import { listTicketEvents } from "@/infrastructure/db/ticket-event-repository";
@@ -130,7 +131,7 @@ export default async function TicketDetailPage({
       </h1>
       <p className="mt-1 text-sm text-[var(--muted-foreground)]">
         {ticket.store.name} · {copy.statusPrefix}{" "}
-        <strong>{ticket.status}</strong>
+        <strong>{ticketStatusLabel(ticket.status, prefs.locale)}</strong>
         {ticket.vendor ? ` · ${ticket.vendor.name}` : ""}
       </p>
       <p

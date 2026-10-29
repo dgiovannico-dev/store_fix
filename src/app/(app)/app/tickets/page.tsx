@@ -14,6 +14,7 @@ import {
 } from "@/domain/intake/chat-steps";
 import { can } from "@/domain/rbac/can";
 import { RbacAction } from "@/domain/rbac/actions";
+import { ticketStatusLabel } from "@/domain/ticket/status-labels";
 import { getTenantI18nPrefs } from "@/application/tenant/i18n-prefs";
 import { dateLocaleFor } from "@/i18n";
 import { tenantMessages } from "@/i18n/tenant-messages";
@@ -120,7 +121,7 @@ export default async function TicketsListPage({ searchParams }: Props) {
             value={filters.status ?? ""}
             options={Object.values(TicketStatus).map((s) => ({
               value: s,
-              label: s,
+              label: ticketStatusLabel(s, prefs.locale),
             }))}
           />
           <FilterSelect
@@ -207,7 +208,8 @@ export default async function TicketsListPage({ searchParams }: Props) {
                 {intakePriorityLabel(tk.priority, prefs.locale)}
               </Link>
               <p className="text-sm text-[var(--muted-foreground)]">
-                {tk.store.name} · {tk.status}
+                {tk.store.name} ·{" "}
+                {ticketStatusLabel(tk.status, prefs.locale)}
                 {tk.vendor ? ` · ${tk.vendor.name}` : ""} ·{" "}
                 {tk.slaDueAt
                   ? `SLA ${tk.slaDueAt.toLocaleString(dLocale)}`

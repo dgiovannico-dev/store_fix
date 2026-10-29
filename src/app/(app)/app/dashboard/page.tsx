@@ -10,6 +10,7 @@ import {
 import { intakeCategoryLabel } from "@/domain/intake/chat-steps";
 import { can } from "@/domain/rbac/can";
 import { RbacAction } from "@/domain/rbac/actions";
+import { ticketStatusLabel } from "@/domain/ticket/status-labels";
 import { getOnboardingSnapshot } from "@/domain/onboarding/progress";
 import { DashboardKpiGrid } from "@/components/dashboard/kpi-metric-card";
 import { StatusPanel } from "@/components/ui/status-panel";
@@ -237,7 +238,7 @@ export default async function DashboardPage() {
                   <span>
                     {tk.store.name} ·{" "}
                     {intakeCategoryLabel(tk.category, prefs.locale)} ·{" "}
-                    {tk.status}
+                    {ticketStatusLabel(tk.status, prefs.locale)}
                   </span>
                   <span className="tabular-nums text-[var(--muted-foreground)]">
                     {tk.actualCost != null ? eur(Number(tk.actualCost)) : "—"}
