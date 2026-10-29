@@ -106,6 +106,11 @@ export const it = {
     unauthorized: "Non autorizzato",
     invalidJson: "JSON non valido",
     exportFailed: "Export fallito",
+    ticketIdRequired: "ticketId obbligatorio",
+    storeIdCategoryRequired: "storeId e category obbligatori",
+    descriptionTooShort: "Descrizione troppo corta",
+    inboundEmailNotConfigured: "Inbound email non configurato",
+    notFound: "Non trovato",
   },
   /** Codici dominio → copy UI (boundary actions; dominio espone `code`). */
   domainErrors: {
