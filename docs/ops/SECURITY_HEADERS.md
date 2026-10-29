@@ -4,7 +4,7 @@ Applicati da `applyBaselineSecurityHeaders` (`src/infrastructure/security/apply-
 
 | Header | Valore |
 |--------|--------|
-| `Content-Security-Policy` | `buildContentSecurityPolicy()` (`src/infrastructure/security/csp-policy.ts`) — `default-src 'self'`; script/style `'unsafe-inline'` (Next/Tailwind); **prod senza** `'unsafe-eval'`; `object-src 'none'`; `frame-src 'none'`; `worker-src 'self'` (no `blob:`); `manifest-src 'self'` (PWA F2-06); `base-uri 'none'`; `frame-ancestors 'none'`; **`upgrade-insecure-requests`** via `shouldUpgradeInsecureRequests` (`FF_DOMAIN` / `FF_CSP_UPGRADE_INSECURE`) — off su lab HTTP. Nonce/`strict-dynamic` = debt futuro |
+| `Content-Security-Policy` | `buildContentSecurityPolicy()` (`src/infrastructure/security/csp-policy.ts`) — `default-src 'self'`; script/style `'unsafe-inline'` (Next/Tailwind); **prod senza** `'unsafe-eval'`; `object-src 'none'`; `frame-src 'none'`; `media-src 'none'` (no audio/video SoR); `worker-src 'self'` (no `blob:`); `manifest-src 'self'` (PWA F2-06); `base-uri 'none'`; `frame-ancestors 'none'`; **`upgrade-insecure-requests`** via `shouldUpgradeInsecureRequests` (`FF_DOMAIN` / `FF_CSP_UPGRADE_INSECURE`) — off su lab HTTP. Nonce/`strict-dynamic` = debt futuro |
 | `X-Frame-Options` | `DENY` (legacy + CSP) |
 | `X-Content-Type-Options` | `nosniff` |
 | `Referrer-Policy` | default `strict-origin-when-cross-origin`; auth token pages (`/reset-password`, `/verify-email`, `/invite`) → `no-referrer`; `/login` `/register` `/logout` → `strict-origin` |
