@@ -1,4 +1,6 @@
 import { Role } from "@prisma/client";
+import { canMutate } from "@/domain/rbac/can";
+import { RbacAction } from "@/domain/rbac/actions";
 import { t, type Locale } from "@/i18n";
 
 export type NavLink = { href: string; label: string };
@@ -25,15 +27,16 @@ export function navLinksForRole(
       ],
     };
   }
-  return {
-    home: "/app/dashboard",
-    links: [
-      { href: "/app/dashboard", label: msg.nav.dashboard },
-      { href: "/app/tickets", label: msg.nav.tickets },
-      { href: "/app/stores", label: msg.nav.stores },
-      { href: "/app/contratti", label: msg.nav.contracts },
-      { href: "/app/calendario", label: msg.nav.calendar },
-      { href: "/app/segnala", label: msg.nav.segnala },
-    ],
-  };
+  const links: NavLink[] = [
+    { href: "/app/dashboard", label: msg.nav.dashboard },
+    { href: "/app/tickets", label: msg.nav.tickets },
+    { href: "/app/stores", label: msg.nav.stores },
+    { href: "/app/contratti", label: msg.nav.contracts },
+    { href: "/app/calendario", label: msg.nav.calendar },
+    { href: "/app/segnala", label: msg.nav.segnala },
+  ];
+  if (role && canMutate(role, RbacAction.manageTenant)) {
+    links.push({ href: "/app/settings/locale", label: msg.nav.locale });
+  }
+  return { home: "/app/dashboard", links };
 }

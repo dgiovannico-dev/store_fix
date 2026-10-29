@@ -17,7 +17,7 @@ describe("navLinksForRole", () => {
     expect(hrefs).not.toContain("/app/segnala");
   });
 
-  it("owner ha dashboard ticket store contratti calendario segnala", () => {
+  it("owner ha dashboard ticket store contratti calendario segnala + lingua", () => {
     const hrefs = navLinksForRole(Role.owner).links.map((l) => l.href);
     expect(hrefs).toEqual([
       "/app/dashboard",
@@ -26,6 +26,7 @@ describe("navLinksForRole", () => {
       "/app/contratti",
       "/app/calendario",
       "/app/segnala",
+      "/app/settings/locale",
     ]);
   });
 });

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { auth } from "@/auth";
+import { getTenantI18nPrefs } from "@/application/tenant/i18n-prefs";
 import { NotificationBell } from "@/components/notifications/notification-bell";
 import { t } from "@/i18n";
 import { navLinksForRole } from "./nav-links";
@@ -8,8 +9,11 @@ export async function AppChrome({ children }: { children: React.ReactNode }) {
   const session = await auth();
   if (!session?.user) return <>{children}</>;
 
-  const msg = t("it");
-  const { home, links } = navLinksForRole(session.role);
+  const prefs = session.tenantId
+    ? await getTenantI18nPrefs(session.tenantId)
+    : { locale: "it" as const, currency: "EUR", dateLocale: "it-IT" };
+  const msg = t(prefs.locale);
+  const { home, links } = navLinksForRole(session.role, prefs.locale);
 
   return (
     <div className="min-h-dvh">

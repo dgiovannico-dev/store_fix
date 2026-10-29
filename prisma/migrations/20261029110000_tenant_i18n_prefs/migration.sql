@@ -1,0 +1,4 @@
+-- AlterTable
+ALTER TABLE "Tenant" ADD COLUMN "defaultLocale" TEXT NOT NULL DEFAULT 'it';
+ALTER TABLE "Tenant" ADD COLUMN "currency" TEXT NOT NULL DEFAULT 'EUR';
+ALTER TABLE "Tenant" ADD COLUMN "dateLocale" TEXT NOT NULL DEFAULT 'it-IT';

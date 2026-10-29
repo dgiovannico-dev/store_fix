@@ -13,6 +13,7 @@ export const en = {
     segnala: "Report fault",
     inbox: "Inbox",
     notifications: "Notifications",
+    locale: "Language",
   },
   dashboard: {
     title: "HQ Dashboard",

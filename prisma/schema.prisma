@@ -46,13 +46,19 @@ enum QuoteStatus {
 }
 
 model Tenant {
-  id        String   @id @default(cuid())
-  name      String
-  slug      String   @unique
-  region    String   @default("EU")
-  active    Boolean  @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id            String   @id @default(cuid())
+  name          String
+  slug          String   @unique
+  region        String   @default("EU")
+  /// UI catalog locale (F3-06): it | en
+  defaultLocale String   @default("it")
+  /// ISO 4217
+  currency      String   @default("EUR")
+  /// BCP 47 for Intl dates
+  dateLocale    String   @default("it-IT")
+  active        Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
   memberships   Membership[]
   stores        Store[]

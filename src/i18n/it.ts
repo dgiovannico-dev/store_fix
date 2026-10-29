@@ -11,6 +11,7 @@ export const it = {
     segnala: "Segnala",
     inbox: "Inbox",
     notifications: "Notifiche",
+    locale: "Lingua",
   },
   dashboard: {
     title: "Dashboard HQ",
