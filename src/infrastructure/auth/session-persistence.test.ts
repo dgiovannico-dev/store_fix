@@ -4,9 +4,10 @@ import { prisma } from "@/infrastructure/db/prisma";
 
 /**
  * Verifica AC T1.11: sessioni Auth persistite in Postgres e revocabili.
- * Richiede DATABASE_URL (Compose postgres).
+ * Self-contained (no seed pilota) — CI migrate-only.
  */
 describe("session persistence (Postgres)", () => {
+  const cleanupUserIds: string[] = [];
   const createdSessionIds: string[] = [];
 
   afterAll(async () => {
@@ -15,15 +16,25 @@ describe("session persistence (Postgres)", () => {
         where: { id: { in: createdSessionIds } },
       });
     }
+    if (cleanupUserIds.length) {
+      await prisma.session.deleteMany({
+        where: { userId: { in: cleanupUserIds } },
+      });
+      await prisma.user.deleteMany({ where: { id: { in: cleanupUserIds } } });
+    }
     await prisma.$disconnect();
   });
 
-  it("crea e revoca una Session collegata allo user seed", async () => {
-    const user = await prisma.user.findUnique({
-      where: { email: "owner@demo.facilityflow.local" },
+  it("crea e revoca una Session collegata a uno user", async () => {
+    const stamp = Date.now().toString(36);
+    const user = await prisma.user.create({
+      data: {
+        email: `session-${stamp}@test.facilityflow.local`,
+        name: "Session Test",
+        passwordHash: "x",
+      },
     });
-    expect(user).toBeTruthy();
-    if (!user) return;
+    cleanupUserIds.push(user.id);
 
     const sessionToken = randomUUID();
     const row = await prisma.session.create({

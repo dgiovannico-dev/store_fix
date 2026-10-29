@@ -1,19 +1,19 @@
 ---
-description: GitFlow e convenzioni git per FacilityFlow Retail (store_fix)
+description: GitFlow senza PR per FacilityFlow Retail (store_fix)
 alwaysApply: true
 ---
 
-# GitFlow — FacilityFlow Retail
+# GitFlow — FacilityFlow Retail (no Pull Request)
 
-Modello di branching per questo repo Next.js multi-tenant. Segui sempre queste regole quando crei branch, commit o PR.
+Modello di branching **senza PR / senza `gh pr create`**. Integrazione = merge locale + `git push` sul branch di destinazione.
 
 ## Branch
 
 | Branch | Ruolo |
 |--------|--------|
 | `main` | Produzione — solo merge da `release/*` o `hotfix/*` |
-| `develop` | Integrazione — destinazione di feature/bugfix |
-| `feature/*` | Nuove funzionalità |
+| `develop` | Integrazione quotidiana — destinazione di feature/bugfix |
+| `feature/*` | Nuove funzionalità (opzionale; slice sottili possono andare dirette su `develop`) |
 | `bugfix/*` | Fix non urgenti (verso `develop`) |
 | `release/*` | Preparazione rilascio (es. `release/1.2.0`) |
 | `hotfix/*` | Fix urgenti su produzione |
@@ -32,62 +32,77 @@ Modello di branching per questo repo Next.js multi-tenant. Segui sempre queste r
 ❌ main-fix / develop-temp
 ```
 
-## Flusso PR
+## Flusso (senza PR)
 
-1. **Feature / bugfix** → PR verso `develop`
-2. **Release** → PR verso `main`, poi merge anche in `develop`
-3. **Hotfix** → PR verso `main`, poi merge anche in `develop`
+1. **Feature / bugfix** → merge in `develop` + `git push origin develop`
+2. **Lavoro quotidiano sottile** → commit diretti su `develop` + `git push origin develop` (ok se esplicitamente richiesto o in sessione “continua” post-policy)
+3. **Release** → da `develop` crea `release/x.y.z` → merge in `main` + push `main` → merge `main` in `develop` + push `develop` → tag
+4. **Hotfix** → da `main` crea `hotfix/*` → merge in `main` + push → merge in `develop` + push
 
 ```
-✅ feature/FF-12-… → develop
-✅ release/1.3.0 → main (+ sync develop)
-✅ hotfix/FF-99-… → main (+ sync develop)
-❌ feature/* → main
-❌ commit diretti su main (eccetto merge/hotfix)
+✅ feature/* ──merge──► develop ──push──► origin/develop
+✅ release/* ──merge──► main ──push──► origin/main  (+ sync develop)
+✅ hotfix/*  ──merge──► main ──push──► origin/main  (+ sync develop)
+❌ gh pr create / PR GitHub come gate di integrazione
+❌ feature/* → main (salta develop)
+❌ commit sparsi su main fuori da release/hotfix
+```
+
+### Comandi tipici
+
+```bash
+# Feature → develop
+git checkout develop && git pull origin develop
+git merge --no-ff feature/FF-…
+git push origin develop
+
+# Release → main (quando consolidato)
+git checkout -b release/x.y.z develop
+# … harden / bump …
+git checkout main && git pull origin main
+git merge --no-ff release/x.y.z
+git push origin main
+git tag -a vx.y.z -m "…"
+git push origin vx.y.z
+git checkout develop && git merge --no-ff main && git push origin develop
 ```
 
 ## Protezioni branch
 
 - **Mai** `git push --force` su `main` o `develop`
-- **Nessun** commit diretto su `main` tranne merge di release/hotfix
-- Lavoro quotidiano: branch da `develop` (o da `main` solo per hotfix)
+- Su `main`: solo merge release/hotfix (niente feature sparse)
+- Preferire `--no-ff` sui merge di integrazione per storia leggibile
 
 ```
 ❌ git push --force origin main
 ❌ git push --force origin develop
-✅ git push -u origin HEAD   # sul proprio feature branch
+✅ git push origin develop
+✅ git push origin main   # solo dopo merge release/hotfix
 ```
 
 ## Commit
 
 Preferire [Conventional Commits](https://www.conventionalcommits.org/):
 
-- `feat:` nuova funzionalità
-- `fix:` correzione bug
-- `chore:` manutenzione / tooling
-- `docs:` documentazione
-- `refactor:` refactor senza cambio comportamento
-- `test:` test
+- `feat:` / `fix:` / `chore:` / `docs:` / `refactor:` / `test:`
 
 ```
 ✅ feat: aggiungi filtro tenant sulla lista store
-✅ fix: correggi redirect post-login multi-tenant
 ❌ updated stuff / wip / asd
 ```
 
-## Regole agente (allineate alle user rule)
+## Regole agente
 
-- **Commit solo se richiesto** esplicitamente dall’utente
-- **Mai** saltare hook (`--no-verify`, `--no-gpg-sign`, ecc.)
-- **Mai** `amend` salvo condizioni user rule (richiesta esplicita / hook che ha modificato file + commit tuo non pushato)
-- **Mai** aggiornare `git config`
-- **Mai** push force su `main`/`develop`; avvisa se richiesto su quei branch
-- PR: usare `gh`; push con `-u` solo se necessario; non pushare senza richiesta
+- **Commit / push** quando la sessione lo richiede (es. “continua”, “pusha”, consolidamento) o a fine slice verificata — **senza aprire PR**
+- **Mai** `gh pr create` / merge via PR per questo repo (policy prodotto)
+- **Mai** saltare hook; **mai** amend salvo regole user; **mai** aggiornare `git config`
+- **Mai** push force su `main`/`develop`
+- Consolidamento **main**: solo su richiesta esplicita (“rilascia”, “merge su main”, “release …”) o checklist release E14 GO
 
 ## Checklist rapida
 
-1. Branch corretto dal base giusto (`develop` o `main` per hotfix)
-2. Naming conforme
-3. Commit conventional (se ti viene chiesto di committare)
-4. PR verso il target giusto
-5. Dopo release/hotfix: allineare `develop`
+1. Base corretta (`develop` quotidiano; `main` solo release/hotfix)
+2. Naming conforme se usi feature/bugfix/release
+3. Commit conventional
+4. Merge locale + push (niente PR)
+5. Dopo release/hotfix: allineare `develop` a `main`

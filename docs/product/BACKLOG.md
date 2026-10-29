@@ -8,7 +8,7 @@
 > **Scope:** MVP (Fase 1) + production-ready (**E14 / S5**). **Fase 2 Done** (F2-01…F2-09, 2026-10-29). **Fase 3 = draft** (sotto; gate VPS).  
 > **Lingua UI MVP:** italiano. Mercato: Italia / EUR.  
 > **Go prod:** NO-GO finché VPS — [`sprints/S5-EXIT-GAPS.md`](./sprints/S5-EXIT-GAPS.md) · [`../ops/NEXT_VPS.md`](../ops/NEXT_VPS.md).  
-> **PR integrazione:** [#1](https://github.com/dgiovannico-dev/store_fix/pull/1) → `develop`.
+> **Integrazione:** GitFlow **senza PR** — push su `develop`; `main` solo via `release/*` / `hotfix/*`.
 
 ---
 

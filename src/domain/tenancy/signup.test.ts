@@ -58,11 +58,23 @@ describe("signupHqOwner", () => {
   });
 
   it("rifiuta email già registrata senza leak esplicito", async () => {
+    const stamp = Date.now().toString(36);
+    const email = `dup-${stamp}@test.facilityflow.local`;
+    const first = await signupHqOwner({
+      name: "Owner Dup",
+      email,
+      password: "TestPass123!",
+      workspaceName: `Dup WS ${stamp}`,
+    });
+    expect(first.ok).toBe(true);
+    if (!first.ok) return;
+    cleanup.push({ email, tenantId: first.tenantId });
+
     const result = await signupHqOwner({
       name: "Altro Owner",
-      email: "owner@demo.facilityflow.local",
-      password: "DemoOwner123!",
-      workspaceName: "Altro Workspace",
+      email,
+      password: "OtherPass123!",
+      workspaceName: `Altro WS ${stamp}`,
     });
     expect(result.ok).toBe(false);
     if (result.ok) return;
