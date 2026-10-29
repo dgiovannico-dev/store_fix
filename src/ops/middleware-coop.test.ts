@@ -33,4 +33,16 @@ describe("middleware cross-origin isolation headers", () => {
       /["']X-Permitted-Cross-Domain-Policies["']\s*,\s*["']none["']/,
     );
   });
+
+  it("espande Permissions-Policy (payment/usb off)", () => {
+    expect(raw).toMatch(/payment=\(\)/);
+    expect(raw).toMatch(/usb=\(\)/);
+    expect(raw).toMatch(/interest-cohort=\(\)/);
+  });
+
+  it("imposta Origin-Agent-Cluster ?1", () => {
+    expect(raw).toMatch(
+      /["']Origin-Agent-Cluster["']\s*,\s*["']\?1["']/,
+    );
+  });
 });
