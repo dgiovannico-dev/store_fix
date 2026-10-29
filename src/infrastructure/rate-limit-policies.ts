@@ -10,7 +10,10 @@ export type RateLimitPolicy = {
 const MIN15 = 15 * 60 * 1000;
 
 export const RATE_LIMIT = {
+  /** Per-IP login attempts (credential stuffing sweep). */
   login: { limit: 10, windowMs: MIN15 },
+  /** Per-email login attempts (targeted account spray). Independent of IP. */
+  loginUser: { limit: 10, windowMs: MIN15 },
   logout: { limit: 20, windowMs: MIN15 },
   signup: { limit: 10, windowMs: MIN15 },
   pwdreset: { limit: 5, windowMs: MIN15 },

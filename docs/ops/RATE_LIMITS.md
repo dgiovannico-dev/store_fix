@@ -14,7 +14,8 @@ GC bucket scaduti: job pg-boss `rate_limit.gc` (orario `:15`, Europe/Rome) → `
 
 | Chiave | Limite | Finestra | Policy | Dove |
 |--------|--------|----------|--------|------|
-| `login:*` (IP) | **10** | **15 min** | `login` | `src/app/actions/login.ts` |
+| `login:*` (IP) | **10** | **15 min** | `login` | `src/app/actions/login.ts` (credential stuffing) |
+| `login-user:{email}` | **10** | **15 min** | `loginUser` | stesso login — bucket indipendente per account (targeted spray) |
 | `logout:*` (IP) | **20** | **15 min** | `logout` | `src/app/logout/route.ts` (GET/POST) |
 | `signup:*` (IP) | **10** | **15 min** | `signup` | `src/app/actions/signup.ts` |
 | `pwdreset:*` (email) | **5** | **15 min** | `pwdreset` | `src/domain/auth/password-reset.ts` |
