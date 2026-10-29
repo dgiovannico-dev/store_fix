@@ -45,4 +45,12 @@ describe("domainErrors catalog", () => {
     );
     expect(domainErrorFor("vendorNotFound", "en")).toBe("Vendor not found");
   });
+
+  it("invite/PM/password-reset codes risolvono IT/EN", () => {
+    expect(domainErrorFor("inviteExpired", "it")).toBe("Invito scaduto");
+    expect(domainErrorFor("pmVisitNotFound", "en")).toBe("Visit not found");
+    expect(domainErrorFor("passwordTooShort", "en")).toBe(
+      "Password too short",
+    );
+  });
 });

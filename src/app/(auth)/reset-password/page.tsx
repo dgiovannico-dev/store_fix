@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { resetPassword } from "@/domain/auth/password-reset";
 import { StatusPanel } from "@/components/ui/status-panel";
+import { actionResultError } from "@/i18n/domain-errors";
 import { requestLocale, requestMessages } from "@/i18n/request-locale";
 
 type Props = {
@@ -46,8 +47,9 @@ export default async function ResetPasswordPage({ searchParams }: Props) {
             newPassword: String(fd.get("password") ?? ""),
           });
           if (!result.ok) {
+            const error = await actionResultError(result);
             redirect(
-              `/reset-password?token=${params.token}&email=${encodeURIComponent(params.email!)}&error=${encodeURIComponent(result.message)}`,
+              `/reset-password?token=${params.token}&email=${encodeURIComponent(params.email!)}&error=${encodeURIComponent(error)}`,
             );
           }
           redirect("/login");
