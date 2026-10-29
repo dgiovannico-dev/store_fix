@@ -3,7 +3,12 @@ import { afterAll, describe, expect, it } from "vitest";
 import { ForbiddenError } from "@/domain/rbac/guards";
 import { prisma } from "@/infrastructure/db/prisma";
 import { signupHqOwner } from "@/domain/tenancy/signup";
-import { createStore, listStores, softDeleteStore } from "./store-service";
+import {
+  createStore,
+  listStores,
+  softDeleteStore,
+  updateStore,
+} from "./store-service";
 import { cleanupTenant } from "@/test-utils/cleanup-tenant";
 
 describe("store-service", () => {
@@ -40,6 +45,14 @@ describe("store-service", () => {
       }),
     ).rejects.toThrow(ForbiddenError);
 
+    expect(
+      await createStore({
+        tenantId,
+        role: Role.owner,
+        data: { name: "X" },
+      }),
+    ).toEqual({ ok: false, code: "storeNameRequired" });
+
     const created = await createStore({
       tenantId,
       role: Role.owner,
@@ -47,6 +60,15 @@ describe("store-service", () => {
     });
     expect(created.ok).toBe(true);
     if (!created.ok) return;
+
+    expect(
+      await updateStore({
+        tenantId,
+        role: Role.owner,
+        storeId: "missing-store-id",
+        data: { name: "PV Ghost" },
+      }),
+    ).toEqual({ ok: false, code: "storeNotFound" });
 
     const listed = await listStores(tenantId);
     expect(listed.some((s) => s.id === created.store.id)).toBe(true);
