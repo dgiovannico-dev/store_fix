@@ -1,9 +1,17 @@
-import { describe, expect, it } from "vitest";
-import manifest from "./manifest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+
+vi.mock("@/i18n/request-locale", () => ({
+  requestLocale: vi.fn(async () => "it" as const),
+}));
 
 describe("web app manifest F2-06", () => {
-  it("espone nome IT, standalone e icone 192/512", () => {
-    const m = manifest();
+  beforeEach(() => {
+    vi.resetModules();
+  });
+
+  it("espone nome, standalone e icone 192/512 (locale richiesta)", async () => {
+    const { default: manifest } = await import("./manifest");
+    const m = await manifest();
     expect(m.name).toBe("FacilityFlow");
     expect(m.short_name).toBe("FacilityFlow");
     expect(m.lang).toBe("it");

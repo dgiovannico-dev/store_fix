@@ -14,7 +14,8 @@ type Props = {
   ticketId: string;
   items: Item[];
   labels: MessageCatalog["ticketPanels"];
-  photoWord?: string;
+  /** Passare da catalogo (`ticketDetail.photos`) — niente default IT. */
+  photoWord: string;
   locale?: Locale;
 };
 
@@ -22,7 +23,7 @@ export function AttachmentGallery({
   ticketId,
   items,
   labels,
-  photoWord = "Foto",
+  photoWord,
   locale = "it",
 }: Props) {
   const [urls, setUrls] = useState<Record<string, string>>({});

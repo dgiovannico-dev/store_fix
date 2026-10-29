@@ -161,6 +161,7 @@ export default async function DashboardPage() {
       ) : (
         <>
           <DashboardKpiGrid
+            ariaLabel={msg.dashboard.kpiAria}
             items={[
               { label: msg.dashboard.open, value: String(overview.openCount) },
               {

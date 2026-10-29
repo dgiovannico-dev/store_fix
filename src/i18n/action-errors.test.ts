@@ -9,5 +9,7 @@ describe("actionErrors catalog", () => {
     );
     expect(itCatalog.actionErrors.accessRequired).toBe("Accesso richiesto");
     expect(en.actionErrors.accessRequired).toBe("Sign-in required");
+    expect(en.actionErrors.tooManyRequests).toBe("Too many requests");
+    expect(itCatalog.actionErrors.unauthorized).toBe("Non autorizzato");
   });
 });

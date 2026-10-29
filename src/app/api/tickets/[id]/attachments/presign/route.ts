@@ -3,20 +3,21 @@ import { auth } from "@/auth";
 import { requestAttachmentPresign } from "@/application/attachments/request-presign";
 import { getActiveMembership } from "@/domain/memberships/membership-service";
 import { ForbiddenError } from "@/domain/rbac/guards";
+import { actionError } from "@/i18n/action-errors";
 
 type Ctx = { params: Promise<{ id: string }> };
 
 export async function POST(req: Request, ctx: Ctx) {
   const session = await auth();
   if (!session?.user?.id || !session.tenantId || !session.role) {
-    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+    return NextResponse.json({ error: await actionError("unauthorized") }, { status: 401 });
   }
   const membership = await getActiveMembership(
     session.user.id,
     session.tenantId,
   );
   if (!membership) {
-    return NextResponse.json({ error: "no membership" }, { status: 403 });
+    return NextResponse.json({ error: await actionError("membershipMissing") }, { status: 403 });
   }
 
   const { id: ticketId } = await ctx.params;

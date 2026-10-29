@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { processInboundEmail } from "@/application/email-inbound/process-inbound";
 import { checkRateLimit } from "@/infrastructure/rate-limit";
 import { logJson } from "@/infrastructure/log";
+import { actionError } from "@/i18n/action-errors";
 
 /**
  * Webhook inbound email → ticket (F2-08).
@@ -20,7 +21,7 @@ export async function POST(req: Request) {
   const auth = req.headers.get("authorization") ?? "";
   const token = auth.startsWith("Bearer ") ? auth.slice(7).trim() : "";
   if (token !== secret) {
-    return NextResponse.json({ error: "Non autorizzato" }, { status: 401 });
+    return NextResponse.json({ error: await actionError("unauthorized") }, { status: 401 });
   }
 
   const requestId = req.headers.get("x-request-id") ?? crypto.randomUUID();
@@ -28,14 +29,14 @@ export async function POST(req: Request) {
   const ip = fwd || req.headers.get("x-real-ip") || "local";
   const limit = checkRateLimit(`inbound-email:${ip}`, 60, 60_000);
   if (!limit.ok) {
-    return NextResponse.json({ error: "Troppe richieste" }, { status: 429 });
+    return NextResponse.json({ error: await actionError("tooManyRequests") }, { status: 429 });
   }
 
   let body: unknown;
   try {
     body = await req.json();
   } catch {
-    return NextResponse.json({ error: "JSON non valido" }, { status: 400 });
+    return NextResponse.json({ error: await actionError("invalidJson") }, { status: 400 });
   }
 
   const b = body as Record<string, unknown>;
