@@ -5,21 +5,36 @@ import { ensureDefaultSlaPolicies } from "@/domain/sla/defaults";
 import { prisma } from "@/infrastructure/db/prisma";
 import { slugifyTenantName } from "./slug";
 
+/** Messaggi Zod = chiavi `domainErrors` (risolte al boundary UI). */
+const SignupField = {
+  nameRequired: "signupNameRequired",
+  emailInvalid: "signupEmailInvalid",
+  passwordTooShort: "signupPasswordTooShort",
+  passwordTooLong: "signupPasswordTooLong",
+  workspaceRequired: "signupWorkspaceRequired",
+} as const;
+
 export const signupInputSchema = z.object({
-  name: z.string().trim().min(2, "Nome obbligatorio").max(120),
-  email: z.string().trim().email("Email non valida").max(254),
+  name: z.string().trim().min(2, SignupField.nameRequired).max(120),
+  email: z.string().trim().email(SignupField.emailInvalid).max(254),
   password: z
     .string()
-    .min(8, "Password di almeno 8 caratteri")
-    .max(72, "Password troppo lunga"),
+    .min(8, SignupField.passwordTooShort)
+    .max(72, SignupField.passwordTooLong),
   workspaceName: z
     .string()
     .trim()
-    .min(2, "Nome workspace obbligatorio")
+    .min(2, SignupField.workspaceRequired)
     .max(120),
 });
 
 export type SignupInput = z.infer<typeof signupInputSchema>;
+
+export type SignupFailCode =
+  | "signupEmailTaken"
+  | "signupSlugTaken"
+  | "signupValidation"
+  | (typeof SignupField)[keyof typeof SignupField];
 
 export type SignupResult =
   | {
@@ -31,7 +46,7 @@ export type SignupResult =
     }
   | {
       ok: false;
-      code: "signupEmailTaken" | "signupSlugTaken" | "signupValidation";
+      code: SignupFailCode;
       message: string;
     };
 
@@ -41,10 +56,15 @@ export type SignupResult =
 export async function signupHqOwner(raw: unknown): Promise<SignupResult> {
   const parsed = signupInputSchema.safeParse(raw);
   if (!parsed.success) {
+    const issue = parsed.error.issues[0]?.message ?? "signupValidation";
+    const fieldCodes = new Set<string>(Object.values(SignupField));
+    const code = (
+      fieldCodes.has(issue) ? issue : "signupValidation"
+    ) as SignupFailCode;
     return {
       ok: false,
-      code: "signupValidation",
-      message: parsed.error.issues[0]?.message ?? "Dati non validi",
+      code,
+      message: issue,
     };
   }
 
