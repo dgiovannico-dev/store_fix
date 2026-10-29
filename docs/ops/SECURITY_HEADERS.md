@@ -4,7 +4,7 @@ Implementati in `src/middleware.ts`:
 
 | Header | Valore |
 |--------|--------|
-| `Content-Security-Policy` | `default-src 'self'`; script/style `'unsafe-inline'` (Next/Tailwind); **prod senza** `'unsafe-eval'`; `frame-ancestors 'none'` |
+| `Content-Security-Policy` | `default-src 'self'`; script/style `'unsafe-inline'` (Next/Tailwind); **prod senza** `'unsafe-eval'`; `object-src 'none'`; `base-uri 'none'`; `frame-ancestors 'none'` |
 | `X-Frame-Options` | `DENY` (legacy + CSP) |
 | `X-Content-Type-Options` | `nosniff` |
 | `Referrer-Policy` | `strict-origin-when-cross-origin` |
