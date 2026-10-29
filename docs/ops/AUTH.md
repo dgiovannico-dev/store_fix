@@ -42,5 +42,5 @@ Per attivarlo in un fork: aggiungere `Email({ server: { host, port }, from })` i
 
 ## Rate limit
 
-Login e signup: `RATE_LIMIT.login` / `signup` via `checkRateLimitPolicy` — 10 req / 15 min per IP. Vedi [`RATE_LIMITS.md`](./RATE_LIMITS.md).  
-In multi-replica sostituire lo store in-process con Postgres/Valkey OSS (senza SaaS) solo se metriche lo chiedono.
+Login e signup: `RATE_LIMIT.login` / `signup` via `checkRateLimitPolicyAsync` — 10 req / 15 min per IP. Vedi [`RATE_LIMITS.md`](./RATE_LIMITS.md).  
+Multi-replica: `FF_RATE_LIMIT_STORE=postgres` (tabella `RateLimitBucket` + job `rate_limit.gc`).

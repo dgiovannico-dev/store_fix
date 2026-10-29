@@ -8,6 +8,7 @@
 | `pm.maintain` | `0 * * * *` Europe/Rome | Espande serie RRULE + reminder email HQ (48h) |
 | `gdpr.purge` | `0 3 * * *` Europe/Rome | Soft-delete ticket `verified` oltre 24 mesi + allegati; dry-run `GDPR_PURGE_DRY_RUN=true` — [`GDPR_RETENTION.md`](./GDPR_RETENTION.md) |
 | `attachment.gc` | `0 4 * * *` Europe/Rome | DeleteObject SeaweedFS per allegati soft-deleted oltre grace (default 7g); dry-run `ATTACHMENT_GC_DRY_RUN=true` — [`ATTACHMENTS.md`](./ATTACHMENTS.md) |
+| `rate_limit.gc` | `15 * * * *` Europe/Rome | Delete `RateLimitBucket` con `resetAt` scaduto; utile con `FF_RATE_LIMIT_STORE=postgres`; dry-run `RATE_LIMIT_GC_DRY_RUN=true` — [`RATE_LIMITS.md`](./RATE_LIMITS.md) |
 
 ## Chiavi
 
