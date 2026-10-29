@@ -3,10 +3,21 @@
 ## Sessioni
 
 - Provider: **Credentials** (email/password).
-- Cookie `authjs.session-token` **httpOnly**, `SameSite=Lax`.
+- Cookie sessione: **httpOnly**, `SameSite=Lax`, `Path=/` — vedi tabella cookie sotto.
 - Strategy: **JWT** (Auth.js) + riga `Session` in Postgres (token in JWT) per revoke — AC T1.11.
 - Claim sessione: `tenantId`, `role`, `membershipId` (Membership attiva).
 - UI logout: **`POST /logout`** (o Auth.js `POST /api/auth/signout`) — revoke DB + `Clear-Site-Data` + redirect `/login`. Controlo **Esci** in `AppChrome` (HQ + vendor, tutte le pagine auth) + onboarding. Risposte dinamiche: `Cache-Control: no-store` (middleware). `POST /logout` passa dal gate CSRF Origin/Sec-Fetch-Site + rate limit `logout:{ip}` 20/15 min → **429**.
+
+### Cookie sessione (Secure)
+
+| Ambiente | Nome cookie | `Secure` | Come si decide |
+|----------|-------------|----------|----------------|
+| Lab HTTP (`localhost`, Compose) | `authjs.session-token` | off | `NEXT_PUBLIC_APP_URL`/`AUTH_URL` http + `FF_DOMAIN` localhost |
+| Staging/prod HTTPS | `__Secure-authjs.session-token` | on | URL `https://…` **oppure** `NODE_ENV=production` + `FF_DOMAIN` reale |
+| Override | — | — | `AUTH_SECURE_COOKIES=1` / `0` |
+
+Logica: `shouldUseSecureAuthCookies` / `sessionTokenCookie` in `src/infrastructure/auth/secure-cookies.ts`.  
+**Non** usare solo `NODE_ENV=production` (Compose lab è già `production` su HTTP). Fonte: [Auth.js useSecureCookies](https://authjs.dev/reference/core#usesecurecookies).
 
 ### Durata / timeout (MVP)
 

@@ -5,6 +5,10 @@ import bcrypt from "bcryptjs";
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import type { JWT } from "next-auth/jwt";
+import {
+  sessionTokenCookie,
+  shouldUseSecureAuthCookies,
+} from "@/infrastructure/auth/secure-cookies";
 import { SESSION_MAX_AGE_SEC } from "@/infrastructure/auth/session-max-age";
 import { prisma } from "@/infrastructure/db/prisma";
 import { credentialsSchema } from "@/lib/auth/credentials";
@@ -135,18 +139,15 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     },
   },
   cookies: {
-    sessionToken: {
-      name:
-        process.env.NODE_ENV === "production"
-          ? "__Secure-authjs.session-token"
-          : "authjs.session-token",
-      options: {
-        httpOnly: true,
-        sameSite: "lax",
-        path: "/",
-        secure: process.env.NODE_ENV === "production",
-      },
-    },
+    sessionToken: sessionTokenCookie(
+      shouldUseSecureAuthCookies({
+        NODE_ENV: process.env.NODE_ENV,
+        AUTH_URL: process.env.AUTH_URL,
+        NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
+        FF_DOMAIN: process.env.FF_DOMAIN,
+        AUTH_SECURE_COOKIES: process.env.AUTH_SECURE_COOKIES,
+      }),
+    ),
   },
   trustHost: true,
 });
