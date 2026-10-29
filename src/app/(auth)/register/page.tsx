@@ -3,11 +3,13 @@
 import Link from "next/link";
 import { useActionState } from "react";
 import { signupAction, type SignupActionState } from "@/app/actions/signup";
+import { t } from "@/i18n";
 
 const initial: SignupActionState = {};
 
 export default function RegisterPage() {
   const [state, formAction, pending] = useActionState(signupAction, initial);
+  const msg = t("it").auth;
 
   return (
     <main className="relative flex min-h-dvh flex-col items-center justify-center overflow-hidden px-6 py-16">
@@ -20,23 +22,21 @@ export default function RegisterPage() {
         <p className="font-[family-name:var(--font-sora)] text-4xl font-semibold tracking-tight text-[var(--primary)] sm:text-5xl">
           FacilityFlow
         </p>
-        <p className="mt-3 text-[var(--muted-foreground)]">
-          Crea il workspace HQ della tua rete retail.
-        </p>
+        <p className="mt-3 text-[var(--muted-foreground)]">{msg.registerHint}</p>
 
         <form action={formAction} className="mt-10 space-y-4">
           <Field
             id="workspaceName"
             name="workspaceName"
-            label="Nome workspace"
-            placeholder="Es. Retail Nord Italia"
+            label={msg.workspaceName}
+            placeholder={msg.workspacePlaceholder}
             required
           />
-          <Field id="name" name="name" label="Il tuo nome" required />
+          <Field id="name" name="name" label={msg.yourName} required />
           <Field
             id="email"
             name="email"
-            label="Email lavoro"
+            label={msg.workEmail}
             type="email"
             autoComplete="email"
             required
@@ -44,7 +44,7 @@ export default function RegisterPage() {
           <Field
             id="password"
             name="password"
-            label="Password"
+            label={msg.password}
             type="password"
             autoComplete="new-password"
             minLength={8}
@@ -62,17 +62,17 @@ export default function RegisterPage() {
             disabled={pending}
             className="w-full rounded-[var(--radius)] bg-[var(--primary)] px-4 py-3 text-base font-medium text-[var(--primary-foreground)] transition hover:opacity-90 disabled:opacity-60"
           >
-            {pending ? "Creazione…" : "Crea workspace"}
+            {pending ? msg.creating : msg.createWorkspace}
           </button>
         </form>
 
         <p className="mt-6 text-sm text-[var(--muted-foreground)]">
-          Hai già un account?{" "}
+          {msg.haveAccount}{" "}
           <Link
             href="/login"
             className="font-medium text-[var(--primary)] underline-offset-4 hover:underline"
           >
-            Accedi
+            {msg.signIn}
           </Link>
         </p>
       </div>

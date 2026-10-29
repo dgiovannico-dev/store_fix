@@ -53,7 +53,7 @@ export default async function CalendarioPmPage() {
             name="title"
             required
             minLength={2}
-            placeholder="Titolo visita"
+            placeholder={msg.pm.titlePlaceholder}
             className="w-full rounded-[var(--radius)] border border-[var(--border)] px-3 py-2 text-sm"
           />
           <select
@@ -63,7 +63,7 @@ export default async function CalendarioPmPage() {
             defaultValue=""
           >
             <option value="" disabled>
-              Punto vendita
+              {msg.pm.storePlaceholder}
             </option>
             {stores.map((s) => (
               <option key={s.id} value={s.id}>
@@ -76,7 +76,7 @@ export default async function CalendarioPmPage() {
             className="w-full rounded-[var(--radius)] border border-[var(--border)] px-3 py-2 text-sm"
             defaultValue=""
           >
-            <option value="">Fornitore (opz.)</option>
+            <option value="">{msg.pm.vendorPlaceholder}</option>
             {vendors.map((v) => (
               <option key={v.id} value={v.id}>
                 {v.name}

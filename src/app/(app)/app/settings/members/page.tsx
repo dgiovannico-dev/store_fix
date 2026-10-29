@@ -10,6 +10,7 @@ import { can, canMutate } from "@/domain/rbac/can";
 import { listMemberships } from "@/domain/memberships/membership-service";
 import { listStores } from "@/domain/stores/store-service";
 import { listVendors } from "@/domain/vendors/vendor-service";
+import { tenantMessages } from "@/i18n/tenant-messages";
 
 export default async function MembersPage() {
   const session = await auth();
@@ -19,21 +20,23 @@ export default async function MembersPage() {
   if (!canEdit) redirect("/onboarding");
   const canAudit = can(session.role, RbacAction.viewConfigAudit);
 
-  const [members, stores, vendors] = await Promise.all([
+  const [msg, members, stores, vendors] = await Promise.all([
+    tenantMessages(session.tenantId),
     listMemberships(session.tenantId),
     listStores(session.tenantId),
     listVendors(session.tenantId),
   ]);
+  const copy = msg.members;
 
   return (
     <main className="mx-auto max-w-3xl px-6 py-12">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <h1 className="font-[family-name:var(--font-sora)] text-2xl font-semibold text-[var(--primary)]">
-            Membri workspace
+            {copy.title}
           </h1>
           <p className="mt-2 text-sm text-[var(--muted-foreground)]">
-            Assegna store (vuoto = HQ) e vendor per ruolo vendor
+            {copy.hint}
           </p>
         </div>
         {canAudit ? (
@@ -41,7 +44,7 @@ export default async function MembersPage() {
             href="/app/settings/audit"
             className="text-sm text-[var(--primary)] underline-offset-4 hover:underline"
           >
-            Audit config
+            {copy.auditLink}
           </Link>
         ) : null}
       </div>
@@ -58,7 +61,7 @@ export default async function MembersPage() {
                   {m.user.name ?? m.user.email}{" "}
                   <span className="text-sm font-normal text-[var(--muted-foreground)]">
                     · {m.role}
-                    {m.deletedAt ? " · disabilitato" : ""}
+                    {m.deletedAt ? ` · ${copy.disabled}` : ""}
                   </span>
                 </p>
                 <p className="text-sm text-[var(--muted-foreground)]">
@@ -76,7 +79,7 @@ export default async function MembersPage() {
                     type="submit"
                     className="text-sm text-[var(--critical)] underline-offset-4 hover:underline"
                   >
-                    Disabilita
+                    {copy.disable}
                   </button>
                 </form>
               ) : null}
@@ -91,7 +94,7 @@ export default async function MembersPage() {
                 }}
               >
                 <fieldset className="space-y-2">
-                  <legend className="text-sm font-medium">Store scope</legend>
+                  <legend className="text-sm font-medium">{copy.storeScope}</legend>
                   <div className="flex flex-wrap gap-3">
                     {stores.map((s) => (
                       <label key={s.id} className="flex items-center gap-2 text-sm">
@@ -108,7 +111,7 @@ export default async function MembersPage() {
                 </fieldset>
                 {m.role === "vendor" || vendors.length > 0 ? (
                   <label className="block text-sm">
-                    Vendor collegato
+                    {copy.vendorLinked}
                     <select
                       name="vendorId"
                       defaultValue={m.vendorId ?? ""}
@@ -127,7 +130,7 @@ export default async function MembersPage() {
                   type="submit"
                   className="rounded-[var(--radius)] bg-[var(--primary)] px-3 py-1.5 text-sm font-medium text-[var(--primary-foreground)]"
                 >
-                  Salva scope
+                  {copy.saveScope}
                 </button>
               </form>
             ) : null}

@@ -100,7 +100,7 @@ export default async function ContrattiPage({ searchParams }: Props) {
             className="w-full rounded-[var(--radius)] border border-[var(--border)] px-3 py-2 text-sm"
             defaultValue=""
           >
-            <option value="">Tutta la rete</option>
+            <option value="">{msg.contracts.networkWide}</option>
             {stores.map((s) => (
               <option key={s.id} value={s.id}>
                 {s.name}
@@ -111,17 +111,17 @@ export default async function ContrattiPage({ searchParams }: Props) {
             name="title"
             required
             minLength={2}
-            placeholder="Titolo (es. Manutenzione HVAC)"
+            placeholder={msg.contracts.titlePlaceholder}
             className="w-full rounded-[var(--radius)] border border-[var(--border)] px-3 py-2 text-sm"
           />
           <input
             name="reference"
-            placeholder="Riferimento"
+            placeholder={msg.contracts.referencePlaceholder}
             className="w-full rounded-[var(--radius)] border border-[var(--border)] px-3 py-2 text-sm"
           />
           <div className="grid gap-3 sm:grid-cols-2">
             <label className="text-sm">
-              Inizio
+              {msg.contracts.startsOn}
               <input
                 name="startsOn"
                 type="date"
@@ -130,7 +130,7 @@ export default async function ContrattiPage({ searchParams }: Props) {
               />
             </label>
             <label className="text-sm">
-              Scadenza
+              {msg.contracts.endsOn}
               <input
                 name="endsOn"
                 type="date"
@@ -144,14 +144,14 @@ export default async function ContrattiPage({ searchParams }: Props) {
             type="number"
             step="0.01"
             min="0"
-            placeholder="Canone annuo EUR (opz.)"
+            placeholder={msg.contracts.feePlaceholder}
             className="w-full rounded-[var(--radius)] border border-[var(--border)] px-3 py-2 text-sm"
           />
           <button
             type="submit"
             className="rounded-[var(--radius)] bg-[var(--primary)] px-4 py-2 text-sm font-medium text-[var(--primary-foreground)]"
           >
-            Salva contratto
+            {msg.contracts.save}
           </button>
         </form>
       ) : null}

@@ -64,12 +64,12 @@ export default async function StoresPage() {
           />
           <input
             name="webhookUrl"
-            placeholder="Webhook push (https://…)"
+            placeholder={msg.stores.webhookPlaceholder}
             className="rounded-[var(--radius)] border border-[var(--border)] px-3 py-2 text-sm"
           />
           <input
             name="ntfyTopic"
-            placeholder="Topic ntfy (es. pv-milano-1)"
+            placeholder={msg.stores.ntfyPlaceholder}
             className="rounded-[var(--radius)] border border-[var(--border)] px-3 py-2 text-sm"
           />
           <button

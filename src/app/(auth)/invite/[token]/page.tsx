@@ -4,21 +4,21 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 import { acceptInviteAction } from "@/app/actions/invite";
+import { t } from "@/i18n";
 
 export default function AcceptInvitePage() {
   const { token } = useParams<{ token: string }>();
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
+  const msg = t("it").auth;
 
   return (
     <main className="mx-auto flex min-h-dvh max-w-md flex-col justify-center gap-6 px-6">
       <h1 className="font-[family-name:var(--font-sora)] text-3xl font-semibold text-[var(--primary)]">
         FacilityFlow
       </h1>
-      <p className="text-[var(--muted-foreground)]">
-        Accetta l&apos;invito e imposta la password.
-      </p>
+      <p className="text-[var(--muted-foreground)]">{msg.inviteHint}</p>
       <form
         className="space-y-4"
         onSubmit={async (e) => {
@@ -42,7 +42,7 @@ export default function AcceptInvitePage() {
         <input
           name="name"
           required
-          placeholder="Nome"
+          placeholder={msg.namePlaceholder}
           className="w-full rounded-[var(--radius)] border border-[var(--border)] px-3 py-2.5"
         />
         <input
@@ -50,7 +50,7 @@ export default function AcceptInvitePage() {
           type="password"
           required
           minLength={8}
-          placeholder="Password"
+          placeholder={msg.password}
           className="w-full rounded-[var(--radius)] border border-[var(--border)] px-3 py-2.5"
         />
         {error ? (
@@ -63,11 +63,11 @@ export default function AcceptInvitePage() {
           disabled={pending}
           className="w-full rounded-[var(--radius)] bg-[var(--primary)] px-4 py-3 font-medium text-[var(--primary-foreground)] disabled:opacity-60"
         >
-          {pending ? "…" : "Accetta invito"}
+          {pending ? msg.accepting : msg.acceptInvite}
         </button>
       </form>
       <Link href="/login" className="text-sm text-[var(--muted-foreground)]">
-        Hai già un account? Accedi
+        {msg.inviteHaveAccount}
       </Link>
     </main>
   );

@@ -142,8 +142,8 @@ export default async function TicketsListPage({ searchParams }: Props) {
             label="SLA"
             value={filters.slaRisk ?? ""}
             options={[
-              { value: "overdue", label: "Scaduti" },
-              { value: "due_soon", label: "Entro 4h" },
+              { value: "overdue", label: msg.ticketsList.slaOverdue },
+              { value: "due_soon", label: msg.ticketsList.slaDueSoon },
             ]}
           />
           <div className="flex items-end gap-2">
@@ -151,7 +151,7 @@ export default async function TicketsListPage({ searchParams }: Props) {
               type="submit"
               className="rounded-[var(--radius)] border border-[var(--border)] px-4 py-2 text-sm"
             >
-              Filtra
+              {msg.ticketsList.filter}
             </button>
             <Link
               href="/app/tickets"

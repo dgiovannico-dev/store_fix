@@ -1,18 +1,20 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { resetPassword } from "@/domain/auth/password-reset";
+import { t } from "@/i18n";
 
 type Props = {
   searchParams: Promise<{ token?: string; email?: string; error?: string }>;
 };
 
 export default async function ResetPasswordPage({ searchParams }: Props) {
+  const msg = t("it").auth;
   const params = await searchParams;
   if (!params.token || !params.email) {
     return (
       <main className="mx-auto flex min-h-dvh max-w-md flex-col justify-center gap-4 px-6">
-        <p className="text-[var(--critical)]">Link incompleto.</p>
-        <Link href="/forgot-password">Richiedi un nuovo link</Link>
+        <p className="text-[var(--critical)]">{msg.resetIncomplete}</p>
+        <Link href="/forgot-password">{msg.requestNewLink}</Link>
       </main>
     );
   }
@@ -20,7 +22,7 @@ export default async function ResetPasswordPage({ searchParams }: Props) {
   return (
     <main className="mx-auto flex min-h-dvh max-w-md flex-col justify-center gap-6 px-6">
       <h1 className="font-[family-name:var(--font-sora)] text-2xl font-semibold text-[var(--primary)]">
-        Nuova password
+        {msg.newPasswordTitle}
       </h1>
       {params.error ? (
         <p className="text-sm text-[var(--critical)]" role="alert">
@@ -50,14 +52,14 @@ export default async function ResetPasswordPage({ searchParams }: Props) {
           required
           minLength={8}
           autoComplete="new-password"
-          placeholder="Nuova password"
+          placeholder={msg.newPasswordPlaceholder}
           className="w-full rounded-[var(--radius)] border border-[var(--border)] bg-white px-3 py-2.5"
         />
         <button
           type="submit"
           className="w-full rounded-[var(--radius)] bg-[var(--primary)] px-4 py-3 font-medium text-[var(--primary-foreground)]"
         >
-          Salva password
+          {msg.savePassword}
         </button>
       </form>
     </main>

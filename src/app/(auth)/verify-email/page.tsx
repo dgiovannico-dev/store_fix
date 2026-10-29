@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { confirmEmailVerification } from "@/domain/tenancy/email-verification";
+import { t } from "@/i18n";
 
 type Props = {
   searchParams: Promise<{ token?: string; email?: string }>;
@@ -7,6 +8,7 @@ type Props = {
 
 export default async function VerifyEmailPage({ searchParams }: Props) {
   const { token, email } = await searchParams;
+  const msg = t("it").auth;
 
   let status: "ok" | "invalid" | "expired" | "missing" = "missing";
   if (token && email) {
@@ -17,26 +19,30 @@ export default async function VerifyEmailPage({ searchParams }: Props) {
 
   const copy =
     status === "ok"
-      ? "Email confermata. Puoi accedere al workspace."
+      ? msg.verifyOk
       : status === "expired"
-        ? "Il link di conferma è scaduto. Richiedine uno nuovo dall'account."
+        ? msg.verifyExpired
         : status === "invalid"
-          ? "Link non valido."
-          : "Manca il token di conferma.";
+          ? msg.verifyInvalid
+          : msg.verifyMissing;
 
   return (
     <main className="mx-auto flex min-h-dvh max-w-md flex-col justify-center gap-6 px-6 py-16">
       <h1 className="font-[family-name:var(--font-sora)] text-2xl font-semibold text-[var(--primary)]">
         FacilityFlow
       </h1>
-      <p className={status === "ok" ? "text-[var(--success)]" : "text-[var(--critical)]"}>
+      <p
+        className={
+          status === "ok" ? "text-[var(--success)]" : "text-[var(--critical)]"
+        }
+      >
         {copy}
       </p>
       <Link
         href="/login"
         className="w-fit rounded-[var(--radius)] bg-[var(--primary)] px-4 py-2 text-sm font-medium text-[var(--primary-foreground)]"
       >
-        Vai al login
+        {msg.goLogin}
       </Link>
     </main>
   );

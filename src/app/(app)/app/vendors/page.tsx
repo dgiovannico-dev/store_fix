@@ -54,25 +54,25 @@ export default async function VendorsPage() {
           <input
             name="name"
             required
-            placeholder="Ragione sociale"
+            placeholder={msg.vendor.namePlaceholder}
             className="w-full rounded-[var(--radius)] border border-[var(--border)] px-3 py-2"
           />
           <div className="grid gap-3 sm:grid-cols-2">
             <input
               name="email"
               type="email"
-              placeholder="Email"
+              placeholder={msg.vendor.emailPlaceholder}
               className="rounded-[var(--radius)] border border-[var(--border)] px-3 py-2"
             />
             <input
               name="phone"
-              placeholder="Telefono"
+              placeholder={msg.vendor.phonePlaceholder}
               className="rounded-[var(--radius)] border border-[var(--border)] px-3 py-2"
             />
           </div>
           <input
             name="trades"
-            placeholder="Mestieri (es. frigo, hvac)"
+            placeholder={msg.vendor.tradesPlaceholder}
             className="w-full rounded-[var(--radius)] border border-[var(--border)] px-3 py-2"
           />
           {stores.length > 0 ? (

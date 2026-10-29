@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { loginAction } from "@/app/actions/login";
+import { t } from "@/i18n";
 
 type Props = {
   searchParams: Promise<{ error?: string; callbackUrl?: string }>;
@@ -13,14 +14,15 @@ export default async function LoginPage({ searchParams }: Props) {
     redirect("/onboarding");
   }
 
+  const msg = t("it").auth;
   const params = await searchParams;
   const error =
     params.error === "CredentialsSignin"
-      ? "Email o password non corretti."
+      ? msg.errCredentials
       : params.error === "RateLimit"
-        ? "Troppi tentativi di accesso. Riprova tra qualche minuto."
+        ? msg.errRateLimit
         : params.error
-          ? "Accesso non riuscito. Riprova."
+          ? msg.errGeneric
           : null;
 
   return (
@@ -35,8 +37,7 @@ export default async function LoginPage({ searchParams }: Props) {
           FacilityFlow
         </p>
         <p className="mt-3 max-w-sm text-[var(--muted-foreground)]">
-          Manutenzione retail, un solo sistema di verità per store, HQ e
-          fornitori.
+          {msg.tagline}
         </p>
 
         <form className="mt-10 space-y-5" action={loginAction}>
@@ -51,7 +52,7 @@ export default async function LoginPage({ searchParams }: Props) {
               htmlFor="email"
               className="block text-sm font-medium text-[var(--foreground)]"
             >
-              Email
+              {msg.email}
             </label>
             <input
               id="email"
@@ -68,7 +69,7 @@ export default async function LoginPage({ searchParams }: Props) {
               htmlFor="password"
               className="block text-sm font-medium text-[var(--foreground)]"
             >
-              Password
+              {msg.password}
             </label>
             <input
               id="password"
@@ -91,7 +92,7 @@ export default async function LoginPage({ searchParams }: Props) {
             type="submit"
             className="w-full rounded-[var(--radius)] bg-[var(--primary)] px-4 py-3 text-base font-medium text-[var(--primary-foreground)] transition hover:opacity-90"
           >
-            Accedi
+            {msg.signIn}
           </button>
         </form>
 
@@ -100,14 +101,14 @@ export default async function LoginPage({ searchParams }: Props) {
             href="/forgot-password"
             className="font-medium text-[var(--primary)] underline-offset-4 hover:underline"
           >
-            Password dimenticata?
+            {msg.forgot}
           </Link>
           {" · "}
           <Link
             href="/register"
             className="font-medium text-[var(--primary)] underline-offset-4 hover:underline"
           >
-            Crea workspace
+            {msg.createWorkspace}
           </Link>
         </p>
       </div>
