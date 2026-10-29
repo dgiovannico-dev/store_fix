@@ -63,4 +63,10 @@ describe("middleware cross-origin isolation headers", () => {
   it("usa referrerPolicyForPath", () => {
     expect(raw).toMatch(/referrerPolicyForPath/);
   });
+
+  it("imposta X-DNS-Prefetch-Control off", () => {
+    expect(raw).toMatch(
+      /["']X-DNS-Prefetch-Control["']\s*,\s*["']off["']/,
+    );
+  });
 });

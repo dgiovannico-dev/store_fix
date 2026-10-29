@@ -1,5 +1,19 @@
 # FacilityFlow — reverse proxy TLS (US-E14-01 / T5.4)
 # FF_DOMAIN: dominio pubblico (staging/prod). Lab locale: localhost → cert interno Caddy.
+#
+# Client IP / X-Forwarded-*: with Caddy as the public edge (default), reverse_proxy
+# ignores inbound XFF spoofing and sets trusted values for `app`.
+# If a CDN sits in front of Caddy, uncomment global trusted_proxies (CDN CIDRs)
+# + trusted_proxies_strict — see docs/ops/PROXY.md. App rate-limits use
+# FF_TRUSTED_PROXY_COUNT (default 1) via clientIpFromHeaders.
+#
+# {
+# 	servers {
+# 		trusted_proxies static 173.245.48.0/20 103.21.244.0/22
+# 		trusted_proxies_strict
+# 	}
+# }
+
 {$FF_DOMAIN:localhost} {
 	encode gzip zstd
 
@@ -16,6 +30,7 @@
 		X-Content-Type-Options "nosniff"
 		X-Frame-Options "DENY"
 		Referrer-Policy "strict-origin-when-cross-origin"
+		X-DNS-Prefetch-Control "off"
 		-Server
 	}
 

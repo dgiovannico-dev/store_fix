@@ -11,6 +11,15 @@ npm run caddy:validate
 
 HSTS e header proxy sono nel Caddyfile; CSP/Permissions-Policy restano sull’app (`SECURITY_HEADERS.md`). Smoke HTTPS+HSTS su VPS: `verify:headers https://$FF_DOMAIN/... --prod`.
 
+## Client IP / `X-Forwarded-*`
+
+| Topologia | Comportamento |
+|-----------|----------------|
+| **Caddy = edge** (default VPS) | `reverse_proxy` **ignora** XFF spoofati dal client e valorizza header fidati verso `app`. Rate-limit app: `FF_TRUSTED_PROXY_COUNT=1` ([`RATE_LIMITS.md`](./RATE_LIMITS.md)). |
+| **CDN → Caddy → app** | Abilitare nel Caddyfile globale `servers.trusted_proxies` con CIDR del CDN + `trusted_proxies_strict` (snippet commentato in `deploy/Caddyfile`). Aggiornare `FF_TRUSTED_PROXY_COUNT` se compaiono hop extra. |
+
+Fonti: [Caddy `trusted_proxies`](https://caddyserver.com/docs/caddyfile/options#trusted-proxies), [MDN X-Forwarded-For](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Forwarded-For).
+
 ## DNS / porte
 
 | Porta host | Servizio | Note |
