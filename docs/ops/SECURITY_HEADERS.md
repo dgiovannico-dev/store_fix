@@ -11,6 +11,7 @@ Implementati in `src/middleware.ts`:
 | `Permissions-Policy` | camera/mic/geo off |
 | `Cross-Origin-Opener-Policy` | `same-origin` (XS-Leak; no popup OAuth SoR) |
 | `Cross-Origin-Resource-Policy` | `same-origin` (document isolation; storage firmato resta fuori middleware) |
+| `X-Permitted-Cross-Domain-Policies` | `none` (no `crossdomain.xml` / Flash–Acrobat meta-policy) |
 | `X-Request-Id` | UUID correlabile nei log JSON |
 
 ## CSRF (API + Server Actions)

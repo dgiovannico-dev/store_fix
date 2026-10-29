@@ -78,6 +78,8 @@ export function middleware(request: NextRequest) {
   response.headers.set("Cross-Origin-Opener-Policy", "same-origin");
   // Spectre/resource isolation for document responses (not Seaweed signed URLs)
   response.headers.set("Cross-Origin-Resource-Policy", "same-origin");
+  // Legacy Flash/Acrobat crossdomain.xml meta-policy — deny all (OWASP SHP)
+  response.headers.set("X-Permitted-Cross-Domain-Policies", "none");
 
   return response;
 }
