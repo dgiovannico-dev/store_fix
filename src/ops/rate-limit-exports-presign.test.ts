@@ -41,4 +41,41 @@ describe("rate-limit exports + presign wiring", () => {
     expect(raw).toMatch(/RATE_LIMIT\.attachmentPresign/);
     expect(raw).toMatch(/attachment-presign:/);
   });
+
+  it("attachment confirm condivide budget attachmentPresign", () => {
+    const raw = readFileSync(
+      path.join(
+        root,
+        "src/app/api/tickets/[id]/attachments/confirm/route.ts",
+      ),
+      "utf8",
+    );
+    expect(raw).toMatch(/RATE_LIMIT\.attachmentPresign/);
+    expect(raw).toMatch(/attachment-presign:/);
+  });
+
+  it("attachment url usa attachmentUrl", () => {
+    const raw = readFileSync(
+      path.join(
+        root,
+        "src/app/api/tickets/[id]/attachments/[attachmentId]/url/route.ts",
+      ),
+      "utf8",
+    );
+    expect(raw).toMatch(/RATE_LIMIT\.attachmentUrl/);
+    expect(raw).toMatch(/attachment-url:/);
+  });
+
+  it("notifications* usano notifications", () => {
+    for (const rel of [
+      "src/app/api/notifications/route.ts",
+      "src/app/api/notifications/unread-count/route.ts",
+      "src/app/api/notifications/read-all/route.ts",
+      "src/app/api/notifications/[id]/read/route.ts",
+    ]) {
+      const raw = readFileSync(path.join(root, rel), "utf8");
+      expect(raw).toMatch(/RATE_LIMIT\.notifications/);
+      expect(raw).toMatch(/notifications:/);
+    }
+  });
 });

@@ -17,5 +17,10 @@ describe("RATE_LIMIT policies", () => {
       limit: 40,
       windowMs: 15 * 60 * 1000,
     });
+    expect(RATE_LIMIT.attachmentUrl).toEqual({
+      limit: 60,
+      windowMs: 15 * 60 * 1000,
+    });
+    expect(RATE_LIMIT.notifications).toEqual({ limit: 60, windowMs: 60_000 });
   });
 });
