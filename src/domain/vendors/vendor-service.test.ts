@@ -53,6 +53,17 @@ describe("vendor-service", () => {
       }),
     ).rejects.toThrow(ForbiddenError);
 
+    expect(
+      await createVendor({
+        tenantId,
+        role: Role.ops_coordinator,
+        data: {
+          name: "Frigo SpA",
+          storeCoverageIds: ["not-a-real-store"],
+        },
+      }),
+    ).toEqual({ ok: false, code: "vendorCoverageInvalid" });
+
     const created = await createVendor({
       tenantId,
       role: Role.ops_coordinator,
