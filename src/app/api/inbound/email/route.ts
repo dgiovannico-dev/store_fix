@@ -13,7 +13,7 @@ export async function POST(req: Request) {
   const secret = process.env.INBOUND_EMAIL_WEBHOOK_SECRET;
   if (!secret) {
     return NextResponse.json(
-      { error: "Inbound email non configurato" },
+      { error: await actionError("inboundEmailNotConfigured") },
       { status: 503 },
     );
   }

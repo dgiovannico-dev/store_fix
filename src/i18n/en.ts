@@ -108,6 +108,11 @@ export const en = {
     unauthorized: "Unauthorized",
     invalidJson: "Invalid JSON",
     exportFailed: "Export failed",
+    ticketIdRequired: "ticketId is required",
+    storeIdCategoryRequired: "storeId and category are required",
+    descriptionTooShort: "Description too short",
+    inboundEmailNotConfigured: "Inbound email not configured",
+    notFound: "Not found",
   },
   domainErrors: {
     ticketNotFound: "Ticket not found",
