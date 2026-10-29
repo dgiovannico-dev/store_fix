@@ -14,6 +14,7 @@ Implementati in `src/middleware.ts`:
 | `X-Permitted-Cross-Domain-Policies` | `none` (no `crossdomain.xml` / Flash–Acrobat meta-policy) |
 | `Origin-Agent-Cluster` | `?1` (hint isolamento processo per-origin; non garanzia Spectre) |
 | `X-DNS-Prefetch-Control` | `off` (Chromium; riduce prefetch DNS su link — OWASP SHP) |
+| `X-Robots-Tag` | `noindex, nofollow` (SoR privato; **non** sostituisce auth). Anche `GET /robots.txt` → `Disallow: /` |
 | `Cache-Control` | `no-store` su tutte le risposte middleware (SoR dinamico / auth; static `_next` escluso dal matcher) |
 | `Clear-Site-Data` | `"cache", "cookies", "storage"` su `/logout` e `POST /api/auth/signout` (HTTPS; PWA SW si ri-registra al prossimo visit) |
 | `X-Request-Id` | UUID correlabile nei log JSON |

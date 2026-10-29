@@ -47,6 +47,10 @@ echo "$HDR" | grep -qiE 'x-dns-prefetch-control:[[:space:]]*off' || {
   echo "missing X-DNS-Prefetch-Control off"
   exit 1
 }
+echo "$HDR" | grep -qiE 'x-robots-tag:.*noindex' || {
+  echo "missing X-Robots-Tag noindex"
+  exit 1
+}
 if [[ "$MODE" == "--prod" ]]; then
   CSP=$(echo "$HDR" | grep -i '^content-security-policy:' || true)
   echo "$CSP" | grep -qi "unsafe-eval" && {

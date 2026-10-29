@@ -69,4 +69,10 @@ describe("middleware cross-origin isolation headers", () => {
       /["']X-DNS-Prefetch-Control["']\s*,\s*["']off["']/,
     );
   });
+
+  it("imposta X-Robots-Tag noindex, nofollow", () => {
+    expect(raw).toMatch(
+      /["']X-Robots-Tag["']\s*,\s*["']noindex, nofollow["']/,
+    );
+  });
 });

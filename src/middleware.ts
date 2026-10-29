@@ -120,6 +120,8 @@ export function middleware(request: NextRequest) {
   response.headers.set("Origin-Agent-Cluster", "?1");
   // Chromium DNS prefetch off — reduce link/domain leakage (OWASP SHP)
   response.headers.set("X-DNS-Prefetch-Control", "off");
+  // Private SoR — ask crawlers not to index (not a substitute for auth)
+  response.headers.set("X-Robots-Tag", "noindex, nofollow");
   // Dynamic SoR / auth surfaces — never store in shared or private HTTP cache
   applyNoStore(response.headers);
 
