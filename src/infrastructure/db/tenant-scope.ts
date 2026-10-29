@@ -1,11 +1,12 @@
 /**
  * Fail-closed tenancy: ogni query data-layer deve passare da qui (T1.15).
+ * `code` → catalogo UI; `message` diagnostica EN (log/test).
  */
 export class TenantRequiredError extends Error {
   readonly code = "tenantIdRequired" as const;
 
-  constructor(message = "tenantId obbligatorio") {
-    super(message);
+  constructor() {
+    super("tenantId is required");
     this.name = "TenantRequiredError";
   }
 }
