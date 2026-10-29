@@ -8,10 +8,11 @@ Implementati in `src/middleware.ts`:
 | `X-Frame-Options` | `DENY` (legacy + CSP) |
 | `X-Content-Type-Options` | `nosniff` |
 | `Referrer-Policy` | `strict-origin-when-cross-origin` |
-| `Permissions-Policy` | camera/mic/geo off |
+| `Permissions-Policy` | subset OWASP: camera/mic/geo/payment/usb/… off; clipboard non bloccato (UX paste) |
 | `Cross-Origin-Opener-Policy` | `same-origin` (XS-Leak; no popup OAuth SoR) |
 | `Cross-Origin-Resource-Policy` | `same-origin` (document isolation; storage firmato resta fuori middleware) |
 | `X-Permitted-Cross-Domain-Policies` | `none` (no `crossdomain.xml` / Flash–Acrobat meta-policy) |
+| `Origin-Agent-Cluster` | `?1` (hint isolamento processo per-origin; non garanzia Spectre) |
 | `X-Request-Id` | UUID correlabile nei log JSON |
 
 ## CSRF (API + Server Actions)

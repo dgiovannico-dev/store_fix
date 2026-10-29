@@ -70,9 +70,28 @@ export function middleware(request: NextRequest) {
   response.headers.set("X-Content-Type-Options", "nosniff");
   response.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
   response.headers.set("X-Request-Id", requestId);
+  // Powerful APIs off (OWASP SHP subset); clipboard left unrestricted for paste/copy UX
   response.headers.set(
     "Permissions-Policy",
-    "camera=(), microphone=(), geolocation=()",
+    [
+      "accelerometer=()",
+      "autoplay=()",
+      "camera=()",
+      "display-capture=()",
+      "encrypted-media=()",
+      "geolocation=()",
+      "gyroscope=()",
+      "interest-cohort=()",
+      "magnetometer=()",
+      "microphone=()",
+      "midi=()",
+      "payment=()",
+      "picture-in-picture=()",
+      "publickey-credentials-get=()",
+      "screen-wake-lock=()",
+      "usb=()",
+      "xr-spatial-tracking=()",
+    ].join(", "),
   );
   // XS-Leak isolation; no OAuth popup SoR → same-origin (not allow-popups)
   response.headers.set("Cross-Origin-Opener-Policy", "same-origin");
@@ -80,6 +99,8 @@ export function middleware(request: NextRequest) {
   response.headers.set("Cross-Origin-Resource-Policy", "same-origin");
   // Legacy Flash/Acrobat crossdomain.xml meta-policy — deny all (OWASP SHP)
   response.headers.set("X-Permitted-Cross-Domain-Policies", "none");
+  // Origin-keyed process hint (all responses; not a Spectre guarantee)
+  response.headers.set("Origin-Agent-Cluster", "?1");
 
   return response;
 }
