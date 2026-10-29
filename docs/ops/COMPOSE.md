@@ -31,6 +31,14 @@ curl -sf http://localhost:3000/api/health
 
 ## Dev locale consigliato (hot reload)
 
+Se era su `--profile full`, ferma i container Next/worker (evita conflitto porta 3000):
+
+```bash
+docker compose --profile full stop app worker
+```
+
+Poi solo infra + UI locale:
+
 ```bash
 cp .env.example .env
 docker compose up -d postgres seaweedfs
@@ -38,11 +46,13 @@ docker compose --profile dev up -d mailpit
 
 npm install
 npx prisma migrate deploy
-npm run db:seed
-npm run storage:init
-npm run worker    # terminale 2
-npm run dev       # terminale 1 → :3000
+npm run db:seed          # opzionale se DB già seedato
+npm run storage:init     # opzionale se bucket già ok
+npm run worker           # terminale 2 (opz.)
+npm run dev              # terminale 1 → :3000 hot reload
 ```
+
+Build Docker `app`/`worker`: context snello via [`.dockerignore`](../../.dockerignore) (esclude `node_modules`/`.next`/`.git`).
 
 ## Porte
 
