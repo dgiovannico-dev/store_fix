@@ -1,3 +1,5 @@
+import type { MessageCatalog } from "@/i18n";
+
 type EventRow = {
   id: string;
   type: string;
@@ -8,37 +10,44 @@ type EventRow = {
   showInternalNotes?: boolean;
 };
 
-const TYPE_IT: Record<string, string> = {
-  "ticket.created": "Apertura",
-  "ticket.triaged": "Triage",
-  "ticket.assigned": "Assegnazione",
-  "ticket.cancelled": "Annullamento",
-  status_changed: "Cambio stato",
-  assigned: "Assegnazione",
-  cost_set: "Costo impostato",
-  sla_breached: "SLA superato",
-  sla_relaunch: "Rilancio SLA",
-  verified: "Verificato",
-  rejected: "Verifica rifiutata",
-  note_added: "Nota",
-  attachment_added: "Allegato",
-  quote_proposed: "Preventivo proposto",
-  quote_accepted: "Preventivo accettato",
-  quote_rejected: "Preventivo rifiutato",
-};
+type TimelineLabels = MessageCatalog["ticketTimeline"];
+
+function eventLabel(labels: TimelineLabels, type: string): string {
+  const map: Record<string, string> = {
+    "ticket.created": labels.evtCreated,
+    "ticket.triaged": labels.evtTriaged,
+    "ticket.assigned": labels.evtAssigned,
+    "ticket.cancelled": labels.evtCancelled,
+    status_changed: labels.evtStatusChanged,
+    assigned: labels.evtAssignedLegacy,
+    cost_set: labels.evtCostSet,
+    sla_breached: labels.evtSlaBreached,
+    sla_relaunch: labels.evtSlaRelaunch,
+    verified: labels.evtVerified,
+    rejected: labels.evtRejected,
+    note_added: labels.evtNote,
+    attachment_added: labels.evtAttachment,
+    quote_proposed: labels.evtQuoteProposed,
+    quote_accepted: labels.evtQuoteAccepted,
+    quote_rejected: labels.evtQuoteRejected,
+  };
+  return map[type] ?? type;
+}
 
 export function TicketTimeline({
   events,
   showInternalNotes = false,
+  labels,
+  dateLocale = "it-IT",
 }: {
   events: EventRow[];
   showInternalNotes?: boolean;
+  labels: TimelineLabels;
+  dateLocale?: string;
 }) {
   if (events.length === 0) {
     return (
-      <p className="text-sm text-[var(--muted-foreground)]">
-        Nessun evento in timeline.
-      </p>
+      <p className="text-sm text-[var(--muted-foreground)]">{labels.empty}</p>
     );
   }
 
@@ -53,7 +62,7 @@ export function TicketTimeline({
           amountEur?: number;
           completionReport?: string;
         } | null;
-        const label = TYPE_IT[e.type] ?? e.type;
+        const label = eventLabel(labels, e.type);
         return (
           <li key={e.id} className="text-sm">
             <span className="font-medium">{label}</span>
@@ -65,11 +74,11 @@ export function TicketTimeline({
             ) : null}
             <span className="text-[var(--muted-foreground)]">
               {" "}
-              · {e.createdAt.toLocaleString("it-IT")}
+              · {e.createdAt.toLocaleString(dateLocale)}
             </span>
             {showInternalNotes && meta?.noteInternal ? (
               <p className="mt-0.5 text-[var(--muted-foreground)]">
-                Nota interna: {meta.noteInternal}
+                {labels.noteInternal} {meta.noteInternal}
               </p>
             ) : null}
             {meta?.reason || meta?.note ? (
@@ -79,17 +88,17 @@ export function TicketTimeline({
             ) : null}
             {meta?.actualCost != null ? (
               <p className="mt-0.5 text-[var(--muted-foreground)]">
-                Costo: {meta.actualCost} EUR
+                {labels.cost} {meta.actualCost} EUR
               </p>
             ) : null}
             {meta?.amountEur != null ? (
               <p className="mt-0.5 text-[var(--muted-foreground)]">
-                Preventivo: {meta.amountEur} EUR
+                {labels.quote} {meta.amountEur} EUR
               </p>
             ) : null}
             {meta?.completionReport ? (
               <p className="mt-0.5 text-[var(--muted-foreground)]">
-                Report: {meta.completionReport}
+                {labels.report} {meta.completionReport}
               </p>
             ) : null}
           </li>

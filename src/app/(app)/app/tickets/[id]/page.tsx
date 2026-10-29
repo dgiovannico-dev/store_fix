@@ -3,6 +3,7 @@ import { Role } from "@prisma/client";
 import { notFound, redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { preferredVendorHint } from "@/application/tickets/transition-ticket";
+import { getTenantI18nPrefs } from "@/application/tenant/i18n-prefs";
 import { TicketOpsPanel } from "@/components/ops/ticket-ops-panel";
 import { SlaRelaunchPanel } from "@/components/ops/sla-relaunch-panel";
 import { AttachmentGallery } from "@/components/tickets/attachment-gallery";
@@ -24,6 +25,7 @@ import { canReadTicketCosts, formatEur } from "@/domain/ticket/costs";
 import { canDecideQuote } from "@/domain/ticket/quote";
 import { listTicketEvents } from "@/infrastructure/db/ticket-event-repository";
 import { prisma } from "@/infrastructure/db/prisma";
+import { tenantMessages } from "@/i18n/tenant-messages";
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -68,7 +70,12 @@ export default async function TicketDetailPage({
   if (!ticket) notFound();
   if (!canAccessStore(membership, ticket.storeId)) notFound();
 
-  const events = await listTicketEvents(session.tenantId, ticket.id);
+  const [events, msg, prefs] = await Promise.all([
+    listTicketEvents(session.tenantId, ticket.id),
+    tenantMessages(session.tenantId),
+    getTenantI18nPrefs(session.tenantId),
+  ]);
+  const copy = msg.ticketDetail;
   const canOps = HQ_OPS.has(session.role);
   const showInternalNotes = can(session.role, RbacAction.triageTicket);
 
@@ -85,6 +92,13 @@ export default async function TicketDetailPage({
     slaDueAt: ticket.slaDueAt,
     slaBreachedAt: ticket.slaBreachedAt,
     openedAt: ticket.openedAt,
+    dateLocale: prefs.dateLocale,
+    labels: {
+      breached: copy.slaBreached,
+      none: copy.slaNone,
+      riskPrefix: copy.slaRiskPrefix,
+      okPrefix: copy.slaOkPrefix,
+    },
   });
   const showCosts = canReadTicketCosts(session.role, ticket.status);
   const canDecide =
@@ -97,7 +111,7 @@ export default async function TicketDetailPage({
         href="/app/tickets"
         className="text-sm text-[var(--muted-foreground)] underline-offset-4 hover:underline"
       >
-        ← Ticket
+        {copy.back}
       </Link>
 
       {sp.created === "1" ? (
@@ -105,7 +119,7 @@ export default async function TicketDetailPage({
           className="mt-4 rounded-[var(--radius)] border border-[var(--success)] px-3 py-2 text-sm text-[var(--success)]"
           role="status"
         >
-          Ticket aperto. ID: <code className="text-xs">{ticket.id}</code>
+          {copy.createdBanner} <code className="text-xs">{ticket.id}</code>
         </p>
       ) : null}
 
@@ -114,7 +128,8 @@ export default async function TicketDetailPage({
         {intakePriorityLabel(ticket.priority)}
       </h1>
       <p className="mt-1 text-sm text-[var(--muted-foreground)]">
-        {ticket.store.name} · stato <strong>{ticket.status}</strong>
+        {ticket.store.name} · {copy.statusPrefix}{" "}
+        <strong>{ticket.status}</strong>
         {ticket.vendor ? ` · ${ticket.vendor.name}` : ""}
       </p>
       <p
@@ -135,16 +150,16 @@ export default async function TicketDetailPage({
 
       {ticket.asset ? (
         <p className="mt-4 text-sm text-[var(--muted-foreground)]">
-          Asset: {ticket.asset.label}
+          {copy.assetPrefix} {ticket.asset.label}
         </p>
       ) : null}
 
       {showCosts ? (
         <p className="mt-4 text-sm">
-          Costi:{" "}
-          {formatEur(ticket.actualCost) ?? "effettivo —"}
+          {copy.costsPrefix}{" "}
+          {formatEur(ticket.actualCost) ?? copy.actualDash}
           {ticket.estimatedCost
-            ? ` · stima ${formatEur(ticket.estimatedCost)}`
+            ? ` · ${copy.estimatePrefix} ${formatEur(ticket.estimatedCost)}`
             : ""}
         </p>
       ) : null}
@@ -163,19 +178,19 @@ export default async function TicketDetailPage({
 
       {ticket.completionReport ? (
         <p className="mt-2 text-sm text-[var(--muted-foreground)]">
-          Report: {ticket.completionReport}
+          {copy.reportPrefix} {ticket.completionReport}
         </p>
       ) : null}
 
       {ticket.cancelReason ? (
         <p className="mt-4 text-sm text-[var(--critical)]">
-          Motivo annullamento: {ticket.cancelReason}
+          {copy.cancelReason} {ticket.cancelReason}
         </p>
       ) : null}
 
       <section className="mt-10 space-y-4">
         <h2 className="text-sm font-semibold uppercase tracking-wide text-[var(--muted-foreground)]">
-          Allegati
+          {copy.attachments}
         </h2>
         <AttachmentGallery
           ticketId={ticket.id}
@@ -192,11 +207,13 @@ export default async function TicketDetailPage({
 
       <section className="mt-10">
         <h2 className="text-sm font-semibold uppercase tracking-wide text-[var(--muted-foreground)]">
-          Timeline
+          {copy.timeline}
         </h2>
         <TicketTimeline
           events={events}
           showInternalNotes={showInternalNotes}
+          labels={msg.ticketTimeline}
+          dateLocale={prefs.dateLocale}
         />
       </section>
 
@@ -208,7 +225,7 @@ export default async function TicketDetailPage({
             href={`/app/rfq/new?ticketId=${ticket.id}`}
             className="font-medium text-[var(--primary)] hover:underline"
           >
-            Richiedi preventivi a più fornitori (RFQ)
+            {copy.rfqLink}
           </Link>
         </p>
       ) : null}

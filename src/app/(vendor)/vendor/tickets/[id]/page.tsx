@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Role } from "@prisma/client";
 import { notFound, redirect } from "next/navigation";
 import { auth } from "@/auth";
+import { getTenantI18nPrefs } from "@/application/tenant/i18n-prefs";
 import { AttachmentGallery } from "@/components/tickets/attachment-gallery";
 import { AttachmentUploader } from "@/components/tickets/attachment-uploader";
 import { QuotePanel } from "@/components/tickets/quote-panel";
@@ -17,6 +18,7 @@ import { formatEur } from "@/domain/ticket/costs";
 import { canProposeQuote } from "@/domain/ticket/quote";
 import { listTicketEvents } from "@/infrastructure/db/ticket-event-repository";
 import { prisma } from "@/infrastructure/db/prisma";
+import { tenantMessages } from "@/i18n/tenant-messages";
 
 type Props = { params: Promise<{ id: string }> };
 
@@ -52,11 +54,24 @@ export default async function VendorTicketDetailPage({ params }: Props) {
   });
   if (!ticket) notFound();
 
-  const events = await listTicketEvents(session.tenantId, ticket.id);
+  const [events, msg, prefs] = await Promise.all([
+    listTicketEvents(session.tenantId, ticket.id),
+    tenantMessages(session.tenantId),
+    getTenantI18nPrefs(session.tenantId),
+  ]);
+  const copy = msg.ticketDetail;
+
   const sla = computeSlaBadge({
     slaDueAt: ticket.slaDueAt,
     slaBreachedAt: ticket.slaBreachedAt,
     openedAt: ticket.openedAt,
+    dateLocale: prefs.dateLocale,
+    labels: {
+      breached: copy.slaBreached,
+      none: copy.slaNone,
+      riskPrefix: copy.slaRiskPrefix,
+      okPrefix: copy.slaOkPrefix,
+    },
   });
 
   return (
@@ -65,7 +80,7 @@ export default async function VendorTicketDetailPage({ params }: Props) {
         href="/vendor/inbox"
         className="text-sm text-[var(--muted-foreground)] underline-offset-4 hover:underline"
       >
-        ← Inbox
+        {copy.backInbox}
       </Link>
 
       <h1 className="mt-4 font-[family-name:var(--font-sora)] text-xl font-semibold">
@@ -93,25 +108,25 @@ export default async function VendorTicketDetailPage({ params }: Props) {
       </p>
       {ticket.actualCost != null ? (
         <p className="mt-2 text-sm">
-          Costo: {formatEur(ticket.actualCost)}
+          {copy.costPrefix} {formatEur(ticket.actualCost)}
         </p>
       ) : null}
 
       <p className="mt-6 whitespace-pre-wrap">{ticket.description}</p>
       {ticket.asset ? (
         <p className="mt-3 text-sm text-[var(--muted-foreground)]">
-          Asset: {ticket.asset.label}
+          {copy.assetPrefix} {ticket.asset.label}
         </p>
       ) : null}
       {ticket.rejectReason ? (
         <p className="mt-3 text-sm text-[var(--critical)]">
-          Motivo rifiuto store: {ticket.rejectReason}
+          {copy.rejectReason} {ticket.rejectReason}
         </p>
       ) : null}
 
       <section className="mt-8 space-y-3">
         <h2 className="text-sm font-semibold uppercase tracking-wide text-[var(--muted-foreground)]">
-          Foto
+          {copy.photos}
         </h2>
         <AttachmentGallery
           ticketId={ticket.id}
@@ -150,9 +165,13 @@ export default async function VendorTicketDetailPage({ params }: Props) {
 
       <section className="mt-10">
         <h2 className="text-sm font-semibold uppercase tracking-wide text-[var(--muted-foreground)]">
-          Timeline
+          {copy.timeline}
         </h2>
-        <TicketTimeline events={events} />
+        <TicketTimeline
+          events={events}
+          labels={msg.ticketTimeline}
+          dateLocale={prefs.dateLocale}
+        />
       </section>
     </main>
   );
