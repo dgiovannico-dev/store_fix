@@ -19,6 +19,7 @@ import {
   type IntakeDraft,
   type IntakeStepId,
 } from "@/domain/intake/chat-steps";
+import { StatusPanel } from "@/components/ui/status-panel";
 import type { Locale, MessageCatalog } from "@/i18n";
 
 type AssetOpt = { id: string; label: string };
@@ -335,9 +336,11 @@ export function SegnalaChatWizard({
               </li>
             </ul>
             {state.error ? (
-              <p className="text-sm text-[var(--critical)]" role="alert">
-                {state.error}
-              </p>
+              <StatusPanel
+                kind="error"
+                title={state.error}
+                locale={locale}
+              />
             ) : null}
             <button
               type="submit"
