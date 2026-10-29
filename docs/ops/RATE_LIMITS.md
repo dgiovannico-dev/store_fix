@@ -17,7 +17,8 @@ GC bucket scaduti: job pg-boss `rate_limit.gc` (orario `:15`, Europe/Rome) → `
 | `login:*` (IP) | **10** | **15 min** | `login` | `src/app/actions/login.ts` (credential stuffing) |
 | `login-user:{email}` | **10** | **15 min** | `loginUser` | stesso login — bucket indipendente per account (targeted spray) |
 | `logout:*` (IP) | **20** | **15 min** | `logout` | `src/app/logout/route.ts` (GET/POST) |
-| `signup:*` (IP) | **10** | **15 min** | `signup` | `src/app/actions/signup.ts` |
+| `signup:*` (IP) | **10** | **15 min** | `signup` | `src/app/actions/signup.ts` (workspace spam) |
+| `signup-user:{email}` | **5** | **15 min** | `signupUser` | stesso signup — bucket indipendente per email |
 | `pwdreset:*` (email) | **5** | **15 min** | `pwdreset` | `src/domain/auth/password-reset.ts` |
 | `store-csv:{tenantId}` | **5** | **15 min** | `storeCsv` | `src/domain/stores/csv-import.ts` |
 | `intake:{tenantId}:{userId}` | **20** | **15 min** | `intake` | deep link page + `createTicket` action |
