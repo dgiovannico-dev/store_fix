@@ -21,6 +21,8 @@ export function buildContentSecurityPolicy(env: CspPolicyEnv = {}): string {
   const parts = [
     "default-src 'self'",
     scriptSrc,
+    // React onClick ≠ HTML onclick; block XSS via inline event-handler attributes
+    "script-src-attr 'none'",
     "style-src 'self' 'unsafe-inline'",
     "img-src 'self' data: blob: http: https:",
     "font-src 'self' data:",

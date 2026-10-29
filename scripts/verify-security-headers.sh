@@ -9,6 +9,10 @@ MODE="${2:-}"
 HDR=$(curl -sI "$URL")
 echo "$HDR"
 echo "$HDR" | grep -qi 'content-security-policy' || { echo "missing CSP"; exit 1; }
+echo "$HDR" | grep -qi "script-src-attr 'none'" || {
+  echo "missing CSP script-src-attr 'none'"
+  exit 1
+}
 echo "$HDR" | grep -qi "object-src 'none'" || {
   echo "missing CSP object-src 'none'"
   exit 1
