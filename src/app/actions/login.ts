@@ -4,14 +4,14 @@ import { AuthError } from "next-auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { signIn } from "@/auth";
-import { checkRateLimit } from "@/infrastructure/rate-limit";
+import { RATE_LIMIT } from "@/infrastructure/rate-limit-policies";
+import { checkRateLimitPolicy } from "@/infrastructure/rate-limit";
 import { rateLimitKey } from "@/infrastructure/security/client-ip";
 
 export async function loginAction(formData: FormData): Promise<void> {
-  const limit = checkRateLimit(
+  const limit = checkRateLimitPolicy(
     rateLimitKey("login", await headers()),
-    10,
-    15 * 60 * 1000,
+    RATE_LIMIT.login,
   );
   if (!limit.ok) {
     redirect(`/login?error=RateLimit`);

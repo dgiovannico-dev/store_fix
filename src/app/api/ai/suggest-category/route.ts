@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { suggestTicketCategory } from "@/application/ai/suggest-ticket-category";
-import { checkRateLimit } from "@/infrastructure/rate-limit";
+import { RATE_LIMIT } from "@/infrastructure/rate-limit-policies";
+import { checkRateLimitPolicy } from "@/infrastructure/rate-limit";
+import { tooManyRequestsFromLimit } from "@/infrastructure/rate-limit-response";
 import { logJson } from "@/infrastructure/log";
 import { actionError } from "@/i18n/action-errors";
 
@@ -14,13 +16,12 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: await actionError("unauthorized") }, { status: 401 });
   }
 
-  const limit = checkRateLimit(
+  const limit = checkRateLimitPolicy(
     `ai-suggest:${session.tenantId}:${session.user.id}`,
-    20,
-    60_000,
+    RATE_LIMIT.aiSuggest,
   );
   if (!limit.ok) {
-    return NextResponse.json({ error: await actionError("tooManyRequests") }, { status: 429 });
+    return tooManyRequestsFromLimit(await actionError("tooManyRequests"), limit);
   }
 
   let body: unknown;
