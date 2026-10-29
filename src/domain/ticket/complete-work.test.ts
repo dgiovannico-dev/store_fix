@@ -25,43 +25,57 @@ describe("assertCompleteWorkReady", () => {
     } catch (e) {
       expect(e).toBeInstanceOf(CompleteWorkError);
       expect((e as CompleteWorkError).code).toBe("completeWorkPhotoRequired");
+      expect((e as CompleteWorkError).message).not.toMatch(/foto|chiudere/i);
     }
   });
 
   it("fail mime non immagine", () => {
-    expect(() =>
+    try {
       assertCompleteWorkReady({
         attachments: [{ mime: "application/pdf" }],
         actualCost: 10,
         completionReport: "Fatto ok",
-      }),
-    ).toThrow(/foto/);
+      });
+      expect.unreachable();
+    } catch (e) {
+      expect(e).toBeInstanceOf(CompleteWorkError);
+      expect((e as CompleteWorkError).code).toBe("completeWorkPhotoRequired");
+    }
   });
 
   it("fail costo mancante o zero", () => {
-    expect(() =>
+    try {
       assertCompleteWorkReady({
         attachments: [okPhoto],
         actualCost: null,
         completionReport: "Fatto ok",
-      }),
-    ).toThrow(/Costo/);
-    expect(() =>
+      });
+      expect.unreachable();
+    } catch (e) {
+      expect((e as CompleteWorkError).code).toBe("actualCostRequired");
+    }
+    try {
       assertCompleteWorkReady({
         attachments: [okPhoto],
         actualCost: 0,
         completionReport: "Fatto ok",
-      }),
-    ).toThrow(/maggiore/);
+      });
+      expect.unreachable();
+    } catch (e) {
+      expect((e as CompleteWorkError).code).toBe("actualCostMustBePositive");
+    }
   });
 
   it("fail report corto", () => {
-    expect(() =>
+    try {
       assertCompleteWorkReady({
         attachments: [okPhoto],
         actualCost: 1,
         completionReport: "ok",
-      }),
-    ).toThrow(/Report/);
+      });
+      expect.unreachable();
+    } catch (e) {
+      expect((e as CompleteWorkError).code).toBe("workReportRequired");
+    }
   });
 });
