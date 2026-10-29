@@ -34,7 +34,7 @@ export async function POST(req: Request) {
   ).trim();
   if (description.length < 5) {
     return NextResponse.json(
-      { error: "Descrizione troppo corta" },
+      { error: await actionError("descriptionTooShort") },
       { status: 422 },
     );
   }

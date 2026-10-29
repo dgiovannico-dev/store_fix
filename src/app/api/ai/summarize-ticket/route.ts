@@ -31,7 +31,7 @@ export async function POST(req: Request) {
   }
   const ticketId = String((body as { ticketId?: string }).ticketId ?? "").trim();
   if (!ticketId) {
-    return NextResponse.json({ error: "ticketId obbligatorio" }, { status: 422 });
+    return NextResponse.json({ error: await actionError("ticketIdRequired") }, { status: 422 });
   }
 
   try {

@@ -34,7 +34,7 @@ export async function POST(req: Request) {
   const category = String(b.category ?? "").trim();
   if (!storeId || !category) {
     return NextResponse.json(
-      { error: "storeId e category obbligatori" },
+      { error: await actionError("storeIdCategoryRequired") },
       { status: 422 },
     );
   }

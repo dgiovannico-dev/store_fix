@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
+import { actionError } from "@/i18n/action-errors";
 import { markNotificationRead } from "@/application/notifications/queries";
 
 type Ctx = { params: Promise<{ id: string }> };
@@ -7,7 +8,7 @@ type Ctx = { params: Promise<{ id: string }> };
 export async function POST(_req: Request, ctx: Ctx) {
   const session = await auth();
   if (!session?.user?.id || !session.tenantId) {
-    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+    return NextResponse.json({ error: await actionError("unauthorized") }, { status: 401 });
   }
   const { id } = await ctx.params;
   const result = await markNotificationRead({

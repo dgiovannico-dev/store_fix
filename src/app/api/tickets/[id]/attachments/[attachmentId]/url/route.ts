@@ -26,7 +26,7 @@ export async function GET(_req: Request, ctx: Ctx) {
     where: { id: ticketId, tenantId: session.tenantId, deletedAt: null },
   });
   if (!ticket || !canAccessStore(membership, ticket.storeId)) {
-    return NextResponse.json({ error: "not found" }, { status: 404 });
+    return NextResponse.json({ error: await actionError("notFound") }, { status: 404 });
   }
 
   const attachment = await prisma.attachment.findFirst({
@@ -38,7 +38,7 @@ export async function GET(_req: Request, ctx: Ctx) {
     },
   });
   if (!attachment) {
-    return NextResponse.json({ error: "not found" }, { status: 404 });
+    return NextResponse.json({ error: await actionError("notFound") }, { status: 404 });
   }
 
   const signed = await getSignedGetUrl(attachment.storageKey);
