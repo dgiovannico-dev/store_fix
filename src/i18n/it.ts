@@ -26,6 +26,7 @@ export const it = {
     costs: "Costi periodo",
     range30: "Ultimi 30 giorni",
     byStore: "Per punto vendita",
+    storeCol: "Punto vendita",
     hours: "ore",
     ctaOnboarding: "Vai all'onboarding",
     ctaTicket: "Nuovo ticket",
@@ -62,6 +63,7 @@ export const it = {
     empty: "Nessun punto vendita. Aggiungine uno per l'onboarding.",
     add: "Aggiungi punto vendita",
     importCsv: "Import CSV",
+    edit: "Modifica",
     archive: "Archivia",
     namePlaceholder: "Nome PV",
     cityPlaceholder: "Città",
@@ -84,6 +86,7 @@ export const it = {
     error: "Si è verificato un errore",
     empty: "Nessun elemento",
     back: "Indietro",
+    filterAll: "Tutti",
   },
   gdpr: {
     exportTitle: "Export dati tenant (GDPR)",

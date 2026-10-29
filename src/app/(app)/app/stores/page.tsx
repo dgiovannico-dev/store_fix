@@ -127,7 +127,7 @@ export default async function StoresPage() {
                     href={`/app/stores/${s.id}`}
                     className="text-sm text-[var(--primary)] underline-offset-4 hover:underline"
                   >
-                    Modifica
+                    {msg.stores.edit}
                   </Link>
                   <form
                     action={async () => {
