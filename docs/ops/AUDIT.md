@@ -2,7 +2,7 @@
 
 ## Policy
 
-- CI: `npm audit --audit-level=high` (gate hard — baseline 0 high+)
+- CI: `npm audit --audit-level=high` (gate hard — baseline 0 high+; vedi anche `CI.md` / US-E14-04)
 - Locale: `npm audit --audit-level=high` dopo bump dipendenze
 - **Fail hard** su high/critical nel path runtime **senza** waiver documentato qui
 - Nessun SaaS scanner a pagamento (no Snyk Cloud obbligatorio)
