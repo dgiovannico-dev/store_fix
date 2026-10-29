@@ -23,4 +23,5 @@ Superamento → redirect o risposta **429** / copy IT “Troppe richieste” (`r
 ## Note ops
 
 - Limiti **per processo**: dietro più replica `app` i bucket non sono condivisi (accettabile MVP; Fase 4 Redis solo se metriche lo chiedono).
+- Chiave IP: `clientIpFromHeaders` (`src/infrastructure/security/client-ip.ts`) — preferisce `X-Real-IP`, altrimenti **rightmost** di `X-Forwarded-For` (hop aggiunto dal proxy fidato). `FF_TRUSTED_PROXY_COUNT` (default `1`, tipico Caddy). Non usare leftmost (spoofabile).
 - CSRF su `/api/*` mutanti + `POST /logout`: vedi [`SECURITY_HEADERS.md`](./SECURITY_HEADERS.md) — indipendente dai rate limit.

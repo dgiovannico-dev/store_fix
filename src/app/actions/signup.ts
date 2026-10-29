@@ -7,6 +7,7 @@ import { signIn } from "@/auth";
 import { sendEmailVerification } from "@/domain/tenancy/email-verification";
 import { signupHqOwner } from "@/domain/tenancy/signup";
 import { checkRateLimit } from "@/infrastructure/rate-limit";
+import { rateLimitKey } from "@/infrastructure/security/client-ip";
 import { actionError } from "@/i18n/action-errors";
 import { actionResultError, domainError } from "@/i18n/domain-errors";
 
@@ -18,10 +19,11 @@ export async function signupAction(
   _prev: SignupActionState,
   formData: FormData,
 ): Promise<SignupActionState> {
-  const h = await headers();
-  const fwd = h.get("x-forwarded-for")?.split(",")[0]?.trim();
-  const ip = fwd || h.get("x-real-ip") || "local";
-  const limit = checkRateLimit(`signup:${ip}`, 10, 15 * 60 * 1000);
+  const limit = checkRateLimit(
+    rateLimitKey("signup", await headers()),
+    10,
+    15 * 60 * 1000,
+  );
   if (!limit.ok) {
     const template = await actionError("rateLimitedRetry");
     return {
