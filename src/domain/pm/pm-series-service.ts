@@ -37,18 +37,18 @@ export async function createPmSeries(input: {
   requireTenantId(input.tenantId);
   assertCanMutate(input.role, RbacAction.managePmCalendar);
   if (!canManagePm(input.role)) {
-    return { ok: false as const, message: "Calendario PM non consentito" };
+    return { ok: false as const, message: "Calendario PM non consentito", code: "pmCalendarForbidden" };
   }
 
   const parsed = pmSeriesInputSchema.safeParse(input.data);
   if (!parsed.success) {
-    return { ok: false as const, message: "Dati serie PM non validi" };
+    return { ok: false as const, message: "Dati serie PM non validi", code: "invalidPmSeriesData" };
   }
 
   const store = await prisma.store.findFirst({
     where: { id: parsed.data.storeId, ...tenantActiveWhere(input.tenantId) },
   });
-  if (!store) return { ok: false as const, message: "Punto vendita non valido" };
+  if (!store) return { ok: false as const, message: "Punto vendita non valido", code: "storeInvalid" };
 
   if (parsed.data.vendorId) {
     const v = await prisma.vendor.findFirst({
@@ -57,7 +57,7 @@ export async function createPmSeries(input: {
         ...tenantActiveWhere(input.tenantId),
       },
     });
-    if (!v) return { ok: false as const, message: "Fornitore non valido" };
+    if (!v) return { ok: false as const, message: "Fornitore non valido", code: "vendorInvalid" };
   }
 
   const rule = rrulePreset(parsed.data.recurrence);
