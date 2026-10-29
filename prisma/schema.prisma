@@ -1,0 +1,464 @@
+// FacilityFlow Retail — Prisma schema MVP (OSS Postgres)
+// Soft-delete: deletedAt where listed in BACKLOG. TicketEvent is append-only.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  owner
+  admin_hq
+  ops_coordinator
+  store_manager
+  store_staff
+  vendor
+  viewer_finance
+}
+
+enum TicketStatus {
+  open
+  triaged
+  assigned
+  in_progress
+  waiting_parts
+  done
+  verified
+  cancelled
+}
+
+enum TicketPriority {
+  critical
+  high
+  normal
+  low
+}
+
+/// Preventivo corrente sul ticket (F2-02) — storico in TicketEvent.
+enum QuoteStatus {
+  pending
+  accepted
+  rejected
+}
+
+model Tenant {
+  id        String   @id @default(cuid())
+  name      String
+  slug      String   @unique
+  region    String   @default("EU")
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  memberships   Membership[]
+  stores        Store[]
+  vendors       Vendor[]
+  assets        Asset[]
+  slaPolicies   SlaPolicy[]
+  tickets       Ticket[]
+  ticketEvents      TicketEvent[]
+  attachments       Attachment[]
+  notifications     Notification[]
+  invites           InviteToken[]
+  onboarding        OnboardingProgress?
+  configAuditEvents   ConfigAuditEvent[]
+  inboundEmailMessages InboundEmailMessage[]
+  vendorContracts     VendorContract[]
+  pmEvents            PlannedMaintenanceEvent[]
+}
+
+/// Progress Flusso C — skip esplicito; step “fatti” derivati da SoR (T1.30).
+model OnboardingProgress {
+  tenantId             String    @id
+  skippedAt            DateTime?
+  /// S1: ticket prova non obbligatorio (hard gate = S2)
+  sampleTicketSkipped  Boolean   @default(true)
+  updatedAt            DateTime  @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  passwordHash  String?
+  emailVerified DateTime?
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  memberships   Membership[]
+  accounts      Account[]
+  sessions      Session[]
+  invitesSent   InviteToken[]  @relation("InviteSender")
+  ticketEvents  TicketEvent[]
+  attachments   Attachment[]
+  notifications Notification[]
+}
+
+model Membership {
+  id        String    @id @default(cuid())
+  tenantId  String
+  userId    String
+  role      Role
+  /// null / empty = HQ all-stores scope
+  storeIds  String[]  @default([])
+  vendorId  String?
+  deletedAt DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  tenant Tenant  @relation(fields: [tenantId], references: [id])
+  user   User    @relation(fields: [userId], references: [id])
+  vendor Vendor? @relation(fields: [vendorId], references: [id])
+
+  @@unique([tenantId, userId])
+  @@index([tenantId])
+  @@index([userId])
+}
+
+model Store {
+  id        String    @id @default(cuid())
+  tenantId  String
+  name      String
+  address   String?
+  city      String?
+  zip       String?
+  timezone  String    @default("Europe/Rome")
+  contacts  String?
+  deletedAt DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  tenant Tenant  @relation(fields: [tenantId], references: [id])
+  assets Asset[]
+  tickets Ticket[]
+  contracts VendorContract[]
+  pmEvents PlannedMaintenanceEvent[]
+
+  @@index([tenantId])
+}
+
+model Vendor {
+  id              String    @id @default(cuid())
+  tenantId        String
+  name            String
+  email           String?
+  phone           String?
+  trades          String[]  @default([])
+  storeCoverageIds String[] @default([])
+  deletedAt       DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  tenant       Tenant       @relation(fields: [tenantId], references: [id])
+  memberships  Membership[]
+  assetsPrefer Asset[]      @relation("PreferredVendor")
+  tickets      Ticket[]
+  contracts    VendorContract[]
+  pmEvents     PlannedMaintenanceEvent[]
+
+  @@index([tenantId])
+}
+
+/// Contratto fornitore (F2-04 v1) — lista scadenze; calendario PM = v2.
+model VendorContract {
+  id         String    @id @default(cuid())
+  tenantId   String
+  vendorId   String
+  storeId    String?
+  title      String
+  reference  String?
+  startsOn   DateTime
+  endsOn     DateTime
+  annualFee  Decimal?  @db.Decimal(12, 2)
+  notes      String?
+  deletedAt  DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+  vendor Vendor @relation(fields: [vendorId], references: [id])
+  store  Store? @relation(fields: [storeId], references: [id])
+  pmEvents PlannedMaintenanceEvent[]
+
+  @@index([tenantId])
+  @@index([tenantId, endsOn])
+  @@index([tenantId, vendorId])
+}
+
+enum PmEventStatus {
+  planned
+  done
+  cancelled
+}
+
+/// Visita PM esplicita (F2-04 v2) — no RRULE/engine ricorrenze in v2.
+model PlannedMaintenanceEvent {
+  id               String        @id @default(cuid())
+  tenantId         String
+  storeId          String
+  vendorId         String?
+  vendorContractId String?
+  assetId          String?
+  title            String
+  scheduledAt      DateTime
+  status           PmEventStatus @default(planned)
+  notes            String?
+  ticketId         String?
+  deletedAt        DateTime?
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  tenant         Tenant          @relation(fields: [tenantId], references: [id])
+  store          Store           @relation(fields: [storeId], references: [id])
+  vendor         Vendor?         @relation(fields: [vendorId], references: [id])
+  vendorContract VendorContract? @relation(fields: [vendorContractId], references: [id])
+  asset          Asset?          @relation(fields: [assetId], references: [id])
+
+  @@index([tenantId])
+  @@index([tenantId, scheduledAt])
+  @@index([tenantId, status])
+}
+
+model Asset {
+  id                String    @id @default(cuid())
+  tenantId          String
+  storeId           String
+  category          String
+  label             String
+  brandModel        String?
+  location          String?
+  notes             String?
+  preferredVendorId String?
+  serial            String?
+  deletedAt         DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  tenant          Tenant  @relation(fields: [tenantId], references: [id])
+  store           Store   @relation(fields: [storeId], references: [id])
+  preferredVendor Vendor? @relation("PreferredVendor", fields: [preferredVendorId], references: [id])
+  tickets         Ticket[]
+  pmEvents        PlannedMaintenanceEvent[]
+
+  @@index([tenantId])
+  @@index([storeId])
+}
+
+model SlaPolicy {
+  id               String         @id @default(cuid())
+  tenantId         String
+  category         String
+  priority         TicketPriority
+  resolutionHours  Int
+  deletedAt        DateTime?
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+
+  @@unique([tenantId, category, priority])
+  @@index([tenantId])
+}
+
+model Ticket {
+  id               String         @id @default(cuid())
+  tenantId         String
+  storeId          String
+  assetId          String?
+  category         String
+  priority         TicketPriority @default(normal)
+  status           TicketStatus   @default(open)
+  description      String
+  vendorId         String?
+  slaDueAt         DateTime?
+  slaBreachedAt    DateTime?
+  estimatedCost    Decimal?       @db.Decimal(12, 2)
+  actualCost       Decimal?       @db.Decimal(12, 2)
+  quoteStatus      QuoteStatus?
+  completionReport String?
+  cancelReason     String?
+  rejectReason     String?
+  openedAt         DateTime       @default(now())
+  triagedAt        DateTime?
+  assignedAt       DateTime?
+  inProgressAt     DateTime?
+  waitingPartsAt   DateTime?
+  doneAt           DateTime?
+  verifiedAt       DateTime?
+  cancelledAt      DateTime?
+  deletedAt        DateTime?
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+
+  tenant      Tenant         @relation(fields: [tenantId], references: [id])
+  store       Store          @relation(fields: [storeId], references: [id])
+  asset       Asset?         @relation(fields: [assetId], references: [id])
+  vendor      Vendor?        @relation(fields: [vendorId], references: [id])
+  events      TicketEvent[]
+  attachments Attachment[]
+  notifications Notification[]
+
+  @@index([tenantId])
+  @@index([tenantId, status])
+  @@index([tenantId, storeId])
+  @@index([tenantId, vendorId])
+  @@index([tenantId, slaDueAt])
+  @@index([tenantId, verifiedAt])
+  @@index([storeId])
+  @@index([vendorId])
+  @@index([slaDueAt])
+}
+
+model TicketEvent {
+  id          String   @id @default(cuid())
+  tenantId    String
+  ticketId    String
+  actorUserId String?
+  type        String
+  fromStatus  TicketStatus?
+  toStatus    TicketStatus?
+  meta        Json?
+  createdAt   DateTime @default(now())
+
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+  ticket Ticket @relation(fields: [ticketId], references: [id])
+  actor  User?  @relation(fields: [actorUserId], references: [id])
+
+  @@index([tenantId])
+  @@index([ticketId])
+  @@index([tenantId, ticketId, createdAt])
+}
+
+/// Dedup Message-ID inbound email → ticket (F2-08).
+model InboundEmailMessage {
+  id          String   @id @default(cuid())
+  tenantId    String
+  messageId   String
+  ticketId    String?
+  fromAddress String?
+  subject     String?
+  createdAt   DateTime @default(now())
+
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+
+  @@unique([tenantId, messageId])
+  @@index([tenantId])
+}
+
+/// Append-only config audit (F2-09 / US-E10-08) — no update/delete from app.
+model ConfigAuditEvent {
+  id               String   @id @default(cuid())
+  tenantId         String
+  actorUserId      String?
+  type             String
+  membershipId     String?
+  targetUserId     String?
+  meta             Json?
+  createdAt        DateTime @default(now())
+
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+
+  @@index([tenantId, createdAt])
+  @@index([tenantId, membershipId])
+}
+
+model Attachment {
+  id               String    @id @default(cuid())
+  tenantId         String
+  ticketId         String
+  storageKey       String
+  mime             String
+  sizeBytes        Int
+  uploadedByUserId String?
+  deletedAt        DateTime?
+  createdAt        DateTime  @default(now())
+
+  tenant     Tenant @relation(fields: [tenantId], references: [id])
+  ticket     Ticket @relation(fields: [ticketId], references: [id])
+  uploadedBy User?  @relation(fields: [uploadedByUserId], references: [id])
+
+  @@index([tenantId])
+  @@index([ticketId])
+}
+
+model Notification {
+  id        String    @id @default(cuid())
+  tenantId  String
+  userId    String
+  type      String
+  ticketId  String?
+  payload   Json?
+  readAt    DateTime?
+  deletedAt DateTime?
+  createdAt DateTime  @default(now())
+
+  tenant Tenant  @relation(fields: [tenantId], references: [id])
+  user   User    @relation(fields: [userId], references: [id])
+  ticket Ticket? @relation(fields: [ticketId], references: [id])
+
+  @@index([tenantId])
+  @@index([userId, readAt])
+}
+
+model InviteToken {
+  id          String    @id @default(cuid())
+  tenantId    String
+  email       String
+  role        Role
+  storeIds    String[]  @default([])
+  vendorId    String?
+  tokenHash   String    @unique
+  expiresAt   DateTime
+  acceptedAt  DateTime?
+  createdById String?
+  createdAt   DateTime  @default(now())
+
+  tenant    Tenant @relation(fields: [tenantId], references: [id])
+  createdBy User?  @relation("InviteSender", fields: [createdById], references: [id])
+
+  @@index([tenantId])
+  @@index([email])
+}
+
+// Auth.js adapter models
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}

@@ -1,0 +1,115 @@
+/** Catalogo UI italiano (US-E10-06). Default locale. */
+export const it = {
+  appName: "FacilityFlow",
+  nav: {
+    tickets: "Ticket",
+    stores: "Punti vendita",
+    vendors: "Fornitori",
+    contracts: "Contratti",
+    calendar: "Calendario PM",
+    dashboard: "Dashboard",
+    segnala: "Segnala",
+    inbox: "Inbox",
+    notifications: "Notifiche",
+  },
+  dashboard: {
+    title: "Dashboard HQ",
+    emptyTitle: "Nessun dato operativo",
+    emptyBody:
+      "Completa l'onboarding o apri un ticket di prova per vedere KPI e costi.",
+    open: "Aperti",
+    breached: "SLA superati",
+    atRisk: "A rischio",
+    mttr: "MTTR grezzo",
+    costs: "Costi periodo",
+    range30: "Ultimi 30 giorni",
+    byStore: "Per punto vendita",
+    hours: "ore",
+    ctaOnboarding: "Vai all'onboarding",
+    ctaTicket: "Nuovo ticket",
+    closedList: "Ticket chiusi / verificati",
+  },
+  vendor: {
+    inboxTitle: "Inbox vendor",
+    inboxHint: "Solo ticket assegnati a te",
+    emptyInbox: "Nessun ticket in questa lista",
+    tabTodo: "Da fare",
+    tabProgress: "In corso",
+    tabClosed: "Chiusi",
+    listTitle: "Fornitori",
+    listHint: "Vendor con coverage sui punti vendita",
+    emptyList: "Nessun fornitore. Aggiungine uno per assegnare ticket.",
+    add: "Aggiungi fornitore",
+    archive: "Archivia",
+    coverageLegend: "Coverage store",
+    needStoresHint: "Nessuno store: crea prima i punti vendita.",
+  },
+  stores: {
+    title: "Punti vendita",
+    hint: "Rete store del workspace · timezone default Europe/Rome",
+    empty: "Nessun punto vendita. Aggiungine uno per l'onboarding.",
+    add: "Aggiungi punto vendita",
+    importCsv: "Import CSV",
+    archive: "Archivia",
+    namePlaceholder: "Nome PV",
+    cityPlaceholder: "Città",
+    addressPlaceholder: "Indirizzo",
+  },
+  common: {
+    loading: "Caricamento…",
+    error: "Si è verificato un errore",
+    empty: "Nessun elemento",
+    back: "Indietro",
+  },
+  gdpr: {
+    exportTitle: "Export dati tenant (GDPR)",
+    exportHint: "Scarica JSON delle entità core del tuo tenant.",
+    region: "Regione dati: EU / self-host",
+    retention: "Retention ticket verified: 24 mesi (policy)",
+  },
+  accounting: {
+    exportTitle: "Export contabile CSV",
+    exportHint: "Ticket done/verified con actual_cost (EUR, UTF-8).",
+  },
+  scorecard: {
+    title: "Scorecard fornitori",
+    hint: "KPI operativi sul vendor assegnato (non rating contrattuale)",
+    rangeLabel: "Ultimi giorni selezionati",
+    empty: "Nessun ticket assegnato a fornitori nel periodo.",
+    colVendor: "Fornitore",
+    colClosed: "Chiusi",
+    colDays: "Giorni medi",
+    colSla: "SLA rispettato",
+    colOpen: "Aperti",
+    colCosts: "Costi",
+    linkList: "Scorecard fornitori",
+    sectionTitle: "Performance periodo",
+  },
+  contracts: {
+    title: "Contratti fornitori",
+    hintExpiring: "In scadenza entro 60 giorni (o già scaduti)",
+    hintAll: "Tutti i contratti attivi",
+    filterExpiring: "Solo in scadenza",
+    filterAll: "Mostra tutti",
+    empty: "Nessun contratto in questa vista.",
+    add: "Nuovo contratto",
+    sectionVendor: "Contratti",
+  },
+  intake: {
+    title: "Segnala guasto",
+    chatHint: "Rispondi passo dopo passo — niente WhatsApp Business API",
+  },
+  pm: {
+    title: "Calendario manutenzione",
+    hint: "Visite pianificate nei prossimi 30 giorni (senza ricorrenze automatiche)",
+    add: "Nuova visita PM",
+    empty: "Nessuna visita pianificata in questo periodo.",
+  },
+} as const;
+
+/** Shape strutturale (stringhe) così `en` può divergere nei valori. */
+export type MessageCatalog = {
+  [K in keyof typeof it]: (typeof it)[K] extends string
+    ? string
+    : { [P in keyof (typeof it)[K]]: string };
+};

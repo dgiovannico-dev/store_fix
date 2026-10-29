@@ -1,0 +1,26 @@
+# FacilityFlow — reverse proxy TLS (US-E14-01 / T5.4)
+# FF_DOMAIN: dominio pubblico (staging/prod). Lab locale: localhost → cert interno Caddy.
+{$FF_DOMAIN:localhost} {
+	encode gzip zstd
+
+	reverse_proxy app:3000 {
+		health_uri /api/health/ready
+		health_interval 10s
+		health_timeout 5s
+		health_status 2xx
+		fail_duration 30s
+	}
+
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		-Server
+	}
+
+	log {
+		output stdout
+		format console
+	}
+}

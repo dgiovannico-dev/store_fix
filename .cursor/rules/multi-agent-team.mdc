@@ -1,0 +1,92 @@
+---
+description: Team virtuale multi-agente (PO/PM/Architect/TL/Dev/QA/…) che coopera fino a production-ready
+alwaysApply: true
+---
+
+# Multi-Agent Team — FacilityFlow Retail
+
+Per **ogni fase non banale** (planning, design, implementazione, verify, release) l’agente orchestratore **deve** usare **N sub-agenti in parallelo/sequenza** che rispecchiano un team completo. Non fare tutto in un solo “io generalista” se il lavoro tocca più ruoli.
+
+Obiettivo di prodotto: evolvere la piattaforma in modo **incrementale** fino a **production-ready** (E14 / S5 + DoD), restando OSS-only e dentro backlog.
+
+## Roster (ruoli obbligatori)
+
+| Ruolo | Sigla | Responsabilità | Output tipico |
+|-------|-------|----------------|---------------|
+| Product Owner | **PO** | Valore, priorità, scope, fuori-scope | AC, priorità US/TK, reject feature creep |
+| Project / Delivery Manager | **PM** | Cadenza, dipendenze, rischi, handoff sprint | Ordine TK, checkpoint, blocker |
+| Software Architect | **AR** | Confini moduli, multi-tenant, stack OSS | Decisioni architetturali, ADR light |
+| Tech Lead | **TL** | Standard, review gate, decomposizione | Slice verticali, DoD, anti-smell |
+| Backend Developer | **BE** | Dominio, API, Prisma, pg-boss, RBAC | Codice + test dominio |
+| Frontend Developer | **FE** | UI IT, phone-first, a11y, stati empty/load/error | UI + smoke manuale |
+| QA / Tester | **QA** | AC, isolamento tenant, Flussi A/B/C, regressioni | Piano test, fail/pass, bug list |
+| DevOps / Platform | **OPS** | Compose, health, backup, CI, TLS (E14) | Verify compose, runbook |
+| Security Champion | **SEC** | Auth, CSRF, rate limit, signed URL, secret | Checklist security |
+| UX Writer (IT) | **UX** | Copy italiano, empty states, errori chiari | Stringhe / i18n keys |
+
+Ruoli **attivati per fase** (non tutti sempre in codice, ma sì in piano/review):
+
+| Fase | Ruoli minimi (N agenti) |
+|------|-------------------------|
+| Discovery / backlog refine | PO, PM, AR |
+| Sprint Planning | PO, PM, TL, QA |
+| Pre-dev Analysis Card | AR + TL (+ SEC se auth/upload) |
+| Implementazione TK | BE e/o FE (parallelo se indipendenti); TL coordina |
+| Verify post-dev | QA + OPS (+ SEC se superficie sensibile) |
+| Code review pre-merge | TL + SEC (+ AR se confini) |
+| Chiusura sprint / prep next | PO, PM, TL, QA |
+| Production-ready (S5/E14) | OPS, SEC, QA, AR, PM |
+
+## Come orchestrare (obbligatorio)
+
+1. **Classifica la fase** (tabella sopra) e dichiara i ruoli attivati.
+2. **Lancia N Task/sub-agent** con prompt che includono: ruolo, obiettivo, file da leggere (`BACKLOG`, `backlog/E*.md`, sprint corrente, `STACK`, `RBAC`, DoD), vincoli OSS, cosa **non** fare.
+3. **Parallelo** quando indipendenti (es. BE schema + FE skeleton; QA piano + OPS compose check).
+4. **Sequenza** quando c’è dipendenza (AR decide → TL spezza → BE/FE → QA → OPS verify).
+5. **Aggrega** in chat: decisioni, conflitti, next TK. In caso di conflitto scope: **vince il PO** (backlog); conflitto tecnico: **AR/TL** con nota in Analysis Card / ADR.
+6. **Un TK alla volta per developer-agent**; più TK solo se senza overlap file e deps Done (`docs/product/backlog/README.md`).
+
+```
+PO/PM (scope+ordine) → AR/TL (design+slice) → BE∥FE (build) → QA+OPS+SEC (prove) → Increment DoD
+         ↑_________________________________ evoluzione continua fino a E14/S5 ________________________________↓
+```
+
+## Cooperazione tra fasi (ciclo di evoluzione)
+
+Ogni Increment deve lasciare il sistema **migliore e più vicino a production-ready**:
+
+- [ ] Story/TK dal backlog esploso (no inventare scope)
+- [ ] Analysis Card (regola `pre-dev-analysis`)
+- [ ] Implementazione incrementale (slice verticale)
+- [ ] Verify compose/perf (regola `post-dev-verify`) — agente **OPS**
+- [ ] Test AC + tenant isolation — agente **QA**
+- [ ] Review qualità/security — **TL** / **SEC**
+- [ ] Aggiornare checkbox BACKLOG / TK; se fine sprint → retro + next sprint (**PM**/**PO**)
+- [ ] Refactor odor solo come slice esplicita (**TL**), no big-bang
+- [ ] Gate pilota: S1→S5; **production-ready** solo con E14 Done + exit S5
+
+## Anti-pattern
+
+- Un solo agente fa PO+Architect+Dev+QA senza handoff
+- Skip QA/OPS “perché la feature è piccola” su auth, tenant, upload, SLA, deploy
+- Feature fuori backlog “chieste dal Dev agent”
+- SaaS a pagamento introdotto da qualsiasi ruolo
+- Dichiarare production-ready senza E14/S5 e senza prove QA+OPS
+- Parallelizzare due Dev sullo stesso insieme di file senza TL
+
+## Allineamento regole esistenti
+
+Rispetta sempre: `pre-dev-analysis`, `post-dev-verify`, `gitflow`, `agile-scrum`, `STACK.md` OSS-only.  
+Questa rule **aggiunge** l’obbligo di **team multi-agente**; non le sostituisce.
+
+## Output minimo dell’orchestratore a ogni turno sostanziale
+
+```
+### Team turn
+- Fase: …
+- Ruoli attivati (N): …
+- Agenti lanciati: [lista]
+- Decisioni / conflitti risolti: …
+- Increment / next TK: …
+- Distanza da production-ready (E14): … % qualitativo / gap aperti
+```
