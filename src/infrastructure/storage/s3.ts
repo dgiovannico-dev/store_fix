@@ -1,11 +1,12 @@
 import {
   CreateBucketCommand,
+  DeleteObjectCommand,
+  GetObjectCommand,
   HeadBucketCommand,
   PutObjectCommand,
   S3Client,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import { GetObjectCommand } from "@aws-sdk/client-s3";
 import { assertAllowedUpload } from "./types";
 
 function env(name: string, fallback?: string): string {
@@ -112,4 +113,20 @@ export function buildAttachmentKey(input: {
 }): string {
   const safe = input.filename.replace(/[^a-zA-Z0-9._-]/g, "_").slice(0, 80);
   return `tenants/${input.tenantId}/tickets/${input.ticketId}/${Date.now()}-${safe}`;
+}
+
+/**
+ * Hard-delete oggetto SeaweedFS (S3 DeleteObject).
+ * Idempotente lato S3: chiave assente → 204, non errore.
+ */
+export async function deleteAttachmentObject(
+  key: string,
+  client = createS3Client(),
+): Promise<void> {
+  await client.send(
+    new DeleteObjectCommand({
+      Bucket: attachmentsBucket(),
+      Key: key,
+    }),
+  );
 }

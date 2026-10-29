@@ -6,7 +6,13 @@
 - Nessun blob in Postgres — solo metadata `Attachment`
 - MIME allowlist: `image/jpeg`, `image/png`, `image/webp`
 - Max size: **10 MB**
-- Soft-delete: `Attachment.deletedAt` — oggetto SeaweedFS non eliminato subito (GC futuro)
+- Soft-delete: `Attachment.deletedAt` — oggetto SeaweedFS non eliminato subito
+- GC: job pg-boss `attachment.gc` (`0 4 * * *` Europe/Rome) → `DeleteObject` se `deletedAt` oltre grace e `storagePurgedAt` null
+
+| Env | Default | Note |
+|-----|---------|------|
+| `ATTACHMENT_GC_GRACE_DAYS` | `7` | Giorni dopo soft-delete prima del DeleteObject |
+| `ATTACHMENT_GC_DRY_RUN` | unset | Se `true`, conta candidati senza S3/DB write |
 
 ## Signed URL
 

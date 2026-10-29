@@ -14,7 +14,7 @@
 ## Modalità corrente
 
 **Solo sviluppi in-repo** — niente `vps:wizard` / compose.prod su host remoto finché non richiesto.  
-Autopilot continua su debt / hardening / gap codice (es. job `gdpr.purge` reale) senza inventare nuove Fase 3 fuori tabella F3.
+Autopilot continua su debt / hardening / gap codice senza inventare nuove Fase 3 fuori tabella F3. `gdpr.purge` + `attachment.gc` in-repo.
 
 ### Prove locali
 
