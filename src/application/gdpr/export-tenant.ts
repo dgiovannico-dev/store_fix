@@ -15,7 +15,7 @@ export async function exportTenantGdpr(input: {
 }): Promise<{ exportedAt: string; region: string; data: unknown }> {
   requireTenantId(input.tenantId);
   if (!can(input.role, RbacAction.exportGdpr)) {
-    throw new ForbiddenError("Export GDPR non consentito");
+    throw new ForbiddenError("Export GDPR non consentito", "exportGdprForbidden");
   }
 
   const tenant = await prisma.tenant.findFirstOrThrow({

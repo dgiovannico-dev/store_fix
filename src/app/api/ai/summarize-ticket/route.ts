@@ -5,6 +5,7 @@ import { ForbiddenError } from "@/domain/rbac/guards";
 import { checkRateLimit } from "@/infrastructure/rate-limit";
 import { logJson } from "@/infrastructure/log";
 import { actionError } from "@/i18n/action-errors";
+import { actionResultError } from "@/i18n/domain-errors";
 
 /** Assist riassunto note (F3-03) — non scrive SoR. */
 export async function POST(req: Request) {
@@ -47,7 +48,10 @@ export async function POST(req: Request) {
     return NextResponse.json({ ...result, needsConfirm: true });
   } catch (e) {
     if (e instanceof ForbiddenError) {
-      return NextResponse.json({ error: e.message }, { status: 403 });
+      return NextResponse.json(
+        { error: await actionResultError({ message: e.message, code: e.code }) },
+        { status: 403 },
+      );
     }
     throw e;
   }
