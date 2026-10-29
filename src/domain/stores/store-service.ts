@@ -61,7 +61,7 @@ export async function createStore(input: {
   assertCanMutate(input.role, RbacAction.crudStore);
   const parsed = storeInputSchema.safeParse(input.data);
   if (!parsed.success) {
-    return { ok: false as const, message: "Dati store non validi" };
+    return { ok: false as const, message: "Dati store non validi", code: "invalidStoreData" };
   }
   const store = await prisma.store.create({
     data: {
@@ -89,13 +89,13 @@ export async function updateStore(input: {
   assertCanMutate(input.role, RbacAction.crudStore);
   const parsed = storeInputSchema.safeParse(input.data);
   if (!parsed.success) {
-    return { ok: false as const, message: "Dati store non validi" };
+    return { ok: false as const, message: "Dati store non validi", code: "invalidStoreData" };
   }
   const existing = await prisma.store.findFirst({
     where: { id: input.storeId, ...tenantActiveWhere(input.tenantId) },
   });
   if (!existing) {
-    return { ok: false as const, message: "Punto vendita non trovato" };
+    return { ok: false as const, message: "Punto vendita non trovato", code: "storeNotFound" };
   }
   const store = await prisma.store.update({
     where: { id: existing.id },
@@ -124,7 +124,7 @@ export async function softDeleteStore(input: {
     where: { id: input.storeId, ...tenantActiveWhere(input.tenantId) },
   });
   if (!existing) {
-    return { ok: false as const, message: "Punto vendita non trovato" };
+    return { ok: false as const, message: "Punto vendita non trovato", code: "storeNotFound" };
   }
   await prisma.store.update({
     where: { id: existing.id },
@@ -149,7 +149,7 @@ export async function restoreStore(input: {
     },
   });
   if (!existing) {
-    return { ok: false as const, message: "Store non archiviato o altro tenant" };
+    return { ok: false as const, message: "Store non archiviato o altro tenant", code: "storeNotArchived" };
   }
   await prisma.store.update({
     where: { id: existing.id },

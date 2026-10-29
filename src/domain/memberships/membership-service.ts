@@ -36,14 +36,14 @@ export async function updateMembership(input: {
 
   const parsed = updateMembershipSchema.safeParse(input.data);
   if (!parsed.success) {
-    return { ok: false as const, message: "Dati membership non validi" };
+    return { ok: false as const, message: "Dati membership non validi", code: "invalidMembershipData" };
   }
 
   const existing = await prisma.membership.findFirst({
     where: { id: input.membershipId, tenantId: input.tenantId },
   });
   if (!existing) {
-    return { ok: false as const, message: "Membership non trovata" };
+    return { ok: false as const, message: "Membership non trovata", code: "membershipNotFound" };
   }
 
   const nextRole = parsed.data.role ?? existing.role;
@@ -72,7 +72,7 @@ export async function updateMembership(input: {
       },
     });
     if (!vendor) {
-      return { ok: false as const, message: "Fornitore non valido" };
+      return { ok: false as const, message: "Fornitore non valido", code: "vendorInvalid" };
     }
   }
 
@@ -85,7 +85,7 @@ export async function updateMembership(input: {
       },
     });
     if (count !== nextStoreIds.length) {
-      return { ok: false as const, message: "storeIds non validi per il tenant" };
+      return { ok: false as const, message: "storeIds non validi per il tenant", code: "storeIdsInvalid" };
     }
   }
 
@@ -152,10 +152,10 @@ export async function softDisableMembership(input: {
     where: { id: input.membershipId, tenantId: input.tenantId },
   });
   if (!existing) {
-    return { ok: false as const, message: "Membership non trovata" };
+    return { ok: false as const, message: "Membership non trovata", code: "membershipNotFound" };
   }
   if (existing.role === Role.owner) {
-    return { ok: false as const, message: "Non puoi disabilitare l'owner" };
+    return { ok: false as const, message: "Non puoi disabilitare l'owner", code: "cannotDisableOwner" };
   }
 
   const membership = await prisma.$transaction(async (tx) => {
