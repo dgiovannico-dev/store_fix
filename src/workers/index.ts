@@ -1,9 +1,10 @@
 /**
- * Worker Compose / locale: email.send + sla.check_breaches + email.imap_poll.
+ * Worker Compose / locale: email.send + sla.check_breaches + email.imap_poll + gdpr.purge.
  * Avvio: npm run worker
  */
 import { PgBoss } from "pg-boss";
 import { pollImapInbound } from "../application/email-inbound/poll-imap";
+import { purgeExpiredVerifiedTickets } from "../application/gdpr/purge-expired";
 import { maintainPmJobs } from "../application/pm/maintain-pm";
 import { checkSlaBreaches } from "../application/sla/check-breaches";
 import { sendEmail } from "../infrastructure/email/mailer";
@@ -12,6 +13,7 @@ import { openImapflowMailbox } from "../infrastructure/email/imapflow-mailbox";
 import {
   QUEUE_EMAIL_IMAP_POLL,
   QUEUE_EMAIL_SEND,
+  QUEUE_GDPR_PURGE,
   QUEUE_PM_MAINTAIN,
   QUEUE_SLA_CHECK,
 } from "../infrastructure/jobs/boss";
@@ -29,6 +31,7 @@ async function main() {
   await boss.createQueue(QUEUE_SLA_CHECK);
   await boss.createQueue(QUEUE_EMAIL_IMAP_POLL);
   await boss.createQueue(QUEUE_PM_MAINTAIN);
+  await boss.createQueue(QUEUE_GDPR_PURGE);
 
   await boss.work(
     QUEUE_EMAIL_SEND,
@@ -74,6 +77,13 @@ async function main() {
     );
   });
 
+  await boss.work(QUEUE_GDPR_PURGE, async () => {
+    const result = await purgeExpiredVerifiedTickets();
+    console.log(
+      `[worker] gdpr.purge → dryRun=${result.dryRun} candidates=${result.candidates} purged=${result.purged} attachments=${result.attachments} cutoff=${result.cutoff}`,
+    );
+  });
+
   try {
     await boss.schedule(QUEUE_SLA_CHECK, "*/5 * * * *", null, {
       tz: "Europe/Rome",
@@ -88,6 +98,15 @@ async function main() {
     });
   } catch (e) {
     console.warn("[worker] schedule pm:", (e as Error).message);
+  }
+
+  try {
+    // Soft-delete batch quotidiano 03:00 Europe/Rome (US-E12-01)
+    await boss.schedule(QUEUE_GDPR_PURGE, "0 3 * * *", null, {
+      tz: "Europe/Rome",
+    });
+  } catch (e) {
+    console.warn("[worker] schedule gdpr:", (e as Error).message);
   }
 
   const imapConfig = readImapInboundConfig();
@@ -112,6 +131,7 @@ async function main() {
     QUEUE_SLA_CHECK,
     QUEUE_EMAIL_IMAP_POLL,
     QUEUE_PM_MAINTAIN,
+    QUEUE_GDPR_PURGE,
   );
 }
 

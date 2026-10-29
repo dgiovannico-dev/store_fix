@@ -430,7 +430,7 @@ Eventi: nuovo ticket, assign, breach SLA, done, verified/rifiuto.
 ### US-E12-01 — Export + retention
 **AC**
 - [x] Export tenant JSON/CSV entità core
-- [x] Retention documentata (default 24 mesi verified); hook job pg-boss
+- [x] Retention documentata (default 24 mesi verified); hook job pg-boss (`gdpr.purge` soft-delete + schedule 03:00 Rome — `docs/ops/GDPR_RETENTION.md`)
 - [x] Settings: regione EU / self-host dichiarata
 
 ---

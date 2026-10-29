@@ -12,6 +12,8 @@ export const TicketEventType = {
   quoteProposed: "quote_proposed",
   quoteAccepted: "quote_accepted",
   quoteRejected: "quote_rejected",
+  /** Soft-delete post retention GDPR (US-E12-01 / gdpr.purge) */
+  gdprRetentionPurge: "gdpr_retention_purge",
   /** Legacy S2 — ancora presenti in timeline */
   ticketCreated: "ticket.created",
   ticketTriaged: "ticket.triaged",

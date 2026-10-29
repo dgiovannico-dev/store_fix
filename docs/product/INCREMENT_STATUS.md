@@ -1,6 +1,6 @@
 # Increment status — FacilityFlow Retail
 
-**Aggiornato:** 2026-10-29 — **hard-stop autopilot**: in-repo chiuso; solo F3-01 umano
+**Aggiornato:** 2026-10-29 — **dev-only** (nessun deploy VPS); F3-01 resta tracking umano
 
 | Sprint / fase | Stato | Note |
 |---------------|-------|------|
@@ -9,20 +9,19 @@
 | S5 | Lab PASS / **NO-GO VPS** | Ops E14; gap in [`sprints/S5-EXIT-GAPS.md`](./sprints/S5-EXIT-GAPS.md) |
 | Fase 2 (F2-01…F2-09) | **Done** | Intake, preventivi, scorecard, PM, CSV, PWA, AI, email inbound, audit |
 | Fase 3 (F3-02…F3-08) | **Done in-repo** | observe, summarize, IMAP, RRULE, i18n prefs, RFQ, store push |
-| F3-01 Exit pilota | **Blocked** | Host/DNS/VPS — [`../ops/NEXT_VPS.md`](../ops/NEXT_VPS.md) |
+| F3-01 Exit pilota | **Blocked (skip deploy)** | Host/DNS/VPS — ripresa solo quando richiesto |
 
-## Freeze + ripresa
+## Modalità corrente
 
-Increment lab + Fase 3 + hardening OSS (i18n, stress 5k, Vitest 5, `npm audit` 0, `next build` Sentry) chiusi sotto autopilot.  
-**Hard-stop:** F3-01 richiede IP/DNS/secret/VPS umani — nessun altro item F3/P1/P2/debt in-repo aperto.  
-Retro: [`retros/F3-2026-10-29.md`](./retros/F3-2026-10-29.md).
+**Solo sviluppi in-repo** — niente `vps:wizard` / compose.prod su host remoto finché non richiesto.  
+Autopilot continua su debt / hardening / gap codice (es. job `gdpr.purge` reale) senza inventare nuove Fase 3 fuori tabella F3.
 
-### Prove locali (ripassate 2026-10-29)
+### Prove locali
 
 - `npm run verify:local` · `npm audit` → 0 · `npm run build` OK
-- `compose:prod|lab|observe:config` OK · `vps:preflight` OK
+- `compose:prod|lab|observe:config` OK · `vps:preflight` OK (preflight ≠ deploy)
 
-## Cosa fare adesso (umano)
+## Quando riprenderà il deploy (umano)
 
 1. **VPS EU / staging** — `npm run vps:wizard` → host/DNS/UFW → `compose.prod` → `vps:remote-check`
 2. Opt-in observe su VPS se RAM ≥512 MiB
@@ -34,5 +33,4 @@ Retro: [`retros/F3-2026-10-29.md`](./retros/F3-2026-10-29.md).
 npm run verify:local
 npm run compose:observe:config
 npm run compose:lab:config
-npm run vps:preflight
 ```

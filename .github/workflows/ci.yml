@@ -65,8 +65,7 @@ jobs:
 
       - name: npm audit (high+)
         run: npm audit --audit-level=high
-        continue-on-error: true
-        # US-E14-10: triage + waiver in docs/ops/AUDIT.md (gate stretto post-VPS)
+        # US-E14-10: gate stretto (baseline 0 high+; waiver in docs/ops/AUDIT.md)
 
       - name: Perf p95 lista HQ (seed pilota)
         # US-E14-11 — fallisce se p95 ≥ 300 ms (exit 2). Locale: npm run perf:hq-list

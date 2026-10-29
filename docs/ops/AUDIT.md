@@ -2,7 +2,7 @@
 
 ## Policy
 
-- CI: `npm audit --audit-level=high` (warning / continue-on-error finché non è **0** vulnerabilità high+ senza waiver)
+- CI: `npm audit --audit-level=high` (gate hard — baseline 0 high+)
 - Locale: `npm audit --audit-level=high` dopo bump dipendenze
 - **Fail hard** su high/critical nel path runtime **senza** waiver documentato qui
 - Nessun SaaS scanner a pagamento (no Snyk Cloud obbligatorio)
