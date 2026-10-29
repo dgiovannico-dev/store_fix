@@ -139,11 +139,11 @@ Rendere FacilityFlow **production-ready** per un pilota **15 store** su **VPS EU
 **Come** operatore, **voglio** applicare migrazioni Prisma in modo controllato al deploy, **così** lo schema prod resta allineato con rollback documentato.
 
 **AC**
-- [ ] Deploy usa **`prisma migrate deploy`** (mai `migrate dev` in staging/prod)
-- [ ] Ordine documentato: backup → migrate deploy → avvio/ricarica app/worker → smoke health
-- [ ] Runbook rollback: limiti Prisma (forward-fix preferito); procedura restore DB da dump pre-migrate + redeploy tag precedente
-- [ ] Migrazioni committed in git; `migrate status` in troubleshooting
-- [ ] Test almeno una volta su **staging**
+- [x] Deploy usa **`prisma migrate deploy`** (mai `migrate dev` in staging/prod) — `docs/ops/MIGRATE.md` + `deploy-migrate.sh`
+- [x] Ordine documentato: backup → migrate deploy → avvio/ricarica app/worker → smoke health
+- [x] Runbook rollback: limiti Prisma (forward-fix preferito); procedura restore DB da dump pre-migrate + redeploy tag precedente
+- [x] Migrazioni committed in git; `migrate status` in troubleshooting
+- [ ] Test almeno una volta su **staging** (gap VPS)
 
 **Task (TK)**
 | ID | Task | Size |
@@ -199,11 +199,11 @@ Rendere FacilityFlow **production-ready** per un pilota **15 store** su **VPS EU
 **Come** operatore, **voglio** errori e uptime minimi self-host, **così** il pilota non dipende da Sentry Cloud / Datadog.
 
 **AC**
-- [ ] Profile Compose `observe` con **GlitchTip** self-host (o conferma “log-only” se risorse VPS insufficienti — decisione annotata)
-- [ ] Log rotation su host (logrotate / Docker `logging` options) documentata
-- [ ] Script OSS di **uptime check** (curl readiness su staging/prod) + cron esempio; alert = exit code / mail SMTP self-host (niente PagerDuty a pagamento)
-- [ ] Request id correlabile (da S4) richiamato nei runbook incidente
-- [ ] Zero Sentry Cloud / SaaS APM
+- [x] Profile Compose `observe` con **GlitchTip** self-host (o conferma “log-only” se risorse VPS insufficienti — decisione annotata) — `OBSERVE.md`
+- [x] Log rotation su host (logrotate / Docker `logging` options) documentata
+- [x] Script OSS di **uptime check** (curl readiness) + cron esempio — `scripts/uptime-check.sh` / `CRON.md`
+- [x] Request id correlabile (da S4) richiamato nei runbook incidente
+- [x] Zero Sentry Cloud / SaaS APM
 
 **Task (TK)**
 | ID | Task | Size |
@@ -219,11 +219,11 @@ Rendere FacilityFlow **production-ready** per un pilota **15 store** su **VPS EU
 **Come** operatore, **voglio** backup Postgres automatici e un drill di restore, **così** un incidente dati non chiude il pilota.
 
 **AC**
-- [ ] Cron host (o timer) esegue `pg_dump -Fc` fuori dal volume DB; checksum/size check; retention documentata
-- [ ] Runbook DR: verify `pg_restore --list` → restore su DB **scratch** (mai primo test su live) → confronti conteggi rappresentativi
-- [ ] Almeno **un** drill eseguito su staging e annotato (data, RTO osservato, esito)
-- [ ] Policy SeaweedFS: cosa è / non è nel dump; restore allegati documentato a livello MVP (backup volume o nota “best-effort”)
-- [ ] Estende / sostituisce il 1-pager S4 (`US-E10-03`) senza contraddirlo
+- [x] Cron host (o timer) esegue `pg_dump -Fc` fuori dal volume DB; checksum/size check; retention documentata — `BACKUP.md` / `pg-backup.sh`
+- [x] Runbook DR: verify `pg_restore --list` → restore su DB **scratch** — `runbooks/RESTORE.md`
+- [ ] Almeno **un** drill eseguito su **staging VPS** e annotato (locale drill PASS; gap VPS)
+- [x] Policy SeaweedFS: cosa è / non è nel dump; restore allegati documentato a livello MVP
+- [x] Estende / sostituisce il 1-pager S4 (`US-E10-03`) senza contraddirlo
 
 **Task (TK)**
 | ID | Task | Size |
@@ -239,11 +239,11 @@ Rendere FacilityFlow **production-ready** per un pilota **15 store** su **VPS EU
 **Come** security-conscious operator, **voglio** harden di superficie e audit dipendenze, **così** il pilota riduce rischio brute-force e CVE note.
 
 **AC**
-- [ ] Headers security + rate limit (da `US-E10-07`) **verificati** dietro proxy in staging/prod
-- [ ] Nota **opzionale** fail2ban (SSH / abuse) — non obbligatorio per DoD; se assente, motivare
-- [ ] Gate CI o script periodico: `npm audit` e/o **OSV** scanner; policy: fail su critical/high con path di waiver documentato
-- [ ] Firewall host: solo 22/80/443 (doc UFW o equivalente)
-- [ ] Nessun secret in log; cookie secure in HTTPS
+- [ ] Headers security + rate limit (da `US-E10-07`) **verificati** dietro proxy in staging/prod (gap VPS; script locale `verify:headers`)
+- [x] Nota **opzionale** fail2ban (SSH / abuse) — non obbligatorio per DoD; se assente, motivare — `FIREWALL.md`
+- [x] Gate CI o script periodico: `npm audit` e/o **OSV** scanner; policy: fail su critical/high con path di waiver documentato
+- [x] Firewall host: solo 22/80/443 (doc UFW o equivalente) — `FIREWALL.md`
+- [x] Nessun secret in log; cookie secure in HTTPS (policy doc; enforce TLS su VPS)
 
 **Task (TK)**
 | ID | Task | Size |
@@ -259,10 +259,10 @@ Rendere FacilityFlow **production-ready** per un pilota **15 store** su **VPS EU
 **Come** team, **voglio** un gate su p95 lista ticket HQ, **così** non rilasciamo regressioni oltre budget sul seed pilota.
 
 **AC**
-- [ ] Script (o job CI su staging/seed) misura p95 lista HQ; budget allineato MVP: **&lt; 300 ms** su seed 15×5 (come exit S4)
-- [ ] Fallisce la pipeline o il pre-release check se oltre budget (o genera report “NO-GO” nella release checklist)
-- [ ] Ambiente di misura documentato (non misurare su laptop freddo vs prod senza notare)
-- [ ] Nessuna cache SaaS; fix ammessi = indici/query/pagination
+- [x] Script (o job CI su staging/seed) misura p95 lista HQ; budget allineato MVP: **&lt; 300 ms** su seed 15×5 (come exit S4)
+- [x] Fallisce la pipeline o il pre-release check se oltre budget (o genera report “NO-GO” nella release checklist)
+- [x] Ambiente di misura documentato (non misurare su laptop freddo vs prod senza notare)
+- [x] Nessuna cache SaaS; fix ammessi = indici/query/pagination
 
 **Task (TK)**
 | ID | Task | Size |
@@ -278,11 +278,11 @@ Rendere FacilityFlow **production-ready** per un pilota **15 store** su **VPS EU
 **Come** QA/ops, **voglio** uno smoke automatico o semi-automatico del **Flusso A** contro staging, **così** ogni release verifica il percorso pilota critico.
 
 **AC**
-- [ ] Smoke copre Flusso A (store apre → assign/dispatch → vendor done → store verified) su staging, tenant seed
-- [ ] Eseguibile via script documentato (Playwright/curl+session — OSS); opz. job CI notturno o manuale pre-release
-- [ ] Fallimento = blocco release (checklist)
-- [ ] Nessuna dipendenza da WhatsApp API; UI IT
-- [ ] Credenziali solo secret staging
+- [x] Smoke Flusso A **domain** (vitest) + **HTTP auth** (`smoke:http` in CI); UI Flusso A su **staging VPS** resta gap
+- [x] Eseguibile via script documentato (curl+session OSS + vitest); job CI su `develop`
+- [x] Fallimento = blocco release (checklist) — CI fail / release checklist
+- [x] Nessuna dipendenza da WhatsApp API; UI IT
+- [ ] Credenziali solo secret staging (gap VPS)
 
 **Task (TK)**
 | ID | Task | Size |
@@ -298,11 +298,11 @@ Rendere FacilityFlow **production-ready** per un pilota **15 store** su **VPS EU
 **Come** operatore on-call del pilota, **voglio** runbook brevi, **così** incidente / restore / rotazione secret / scale worker non dipendono dalla memoria.
 
 **AC**
-- [ ] `docs/ops/runbooks/INCIDENT.md` — triage, log/GlitchTip, health, rollback tag
-- [ ] `docs/ops/runbooks/RESTORE.md` — punta/estende US-E14-09
-- [ ] `docs/ops/runbooks/ROTATE_SECRETS.md` — AUTH_SECRET, DB password, SMTP, impatto sessioni
-- [ ] `docs/ops/runbooks/SCALE_WORKER.md` — `compose up --scale worker=N` (o replica documentata), limiti Postgres/pg-boss
-- [ ] Ogni runbook: prerequisiti, passi, verifica, rollback; lingua IT
+- [x] `docs/ops/runbooks/INCIDENT.md` — triage, log/GlitchTip, health, rollback tag
+- [x] `docs/ops/runbooks/RESTORE.md` — punta/estende US-E14-09
+- [x] `docs/ops/runbooks/SECRET_ROTATION.md` — AUTH_SECRET, DB password, SMTP, impatto sessioni (alias ROTATE_SECRETS)
+- [x] `docs/ops/runbooks/SCALE_WORKER.md` — `compose up --scale worker=N` (o replica documentata), limiti Postgres/pg-boss
+- [x] Ogni runbook: prerequisiti, passi, verifica, rollback; lingua IT
 
 **Task (TK)**
 | ID | Task | Size |

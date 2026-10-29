@@ -67,6 +67,36 @@ jobs:
         run: npm audit --audit-level=high
         # US-E14-10: gate stretto (baseline 0 high+; waiver in docs/ops/AUDIT.md)
 
+      - name: HTTP smoke curl+session (US-E14-12)
+        # Auth path su Next start; lifecycle ticket resta su vitest flusso-a
+        run: |
+          set -euo pipefail
+          npm run db:seed:pilot
+          PORT=3000 npm run start > /tmp/ff-next.log 2>&1 &
+          echo $! > /tmp/ff-next.pid
+          for i in $(seq 1 90); do
+            if curl -fsS --max-time 2 http://127.0.0.1:3000/api/health/live >/dev/null 2>&1; then
+              echo "app up after ${i}s"
+              break
+            fi
+            if [[ "$i" -eq 90 ]]; then
+              echo "Next failed to become ready" >&2
+              tail -n 80 /tmp/ff-next.log >&2 || true
+              exit 1
+            fi
+            sleep 1
+          done
+          npm run smoke:http
+        env:
+          SMOKE_BASE_URL: http://127.0.0.1:3000
+
+      - name: Stop Next after HTTP smoke
+        if: always()
+        run: |
+          if [[ -f /tmp/ff-next.pid ]]; then
+            kill "$(cat /tmp/ff-next.pid)" 2>/dev/null || true
+          fi
+
       - name: Perf p95 lista HQ (seed pilota)
         # US-E14-11 — fallisce se p95 ≥ 300 ms (exit 2). Locale: npm run perf:hq-list
         run: npm run db:seed:pilot && npm run perf:hq-list -- pilot-retail 30

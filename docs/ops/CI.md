@@ -13,6 +13,7 @@ Badge (default branch `main`):
 - `build` (`next build`) con cache npm
 - `npm audit --audit-level=high` (**fail hard**; waiver: [`AUDIT.md`](./AUDIT.md))
 - Perf p95 lista HQ su seed pilota (`perf:hq-list`)
+- HTTP smoke curl+session (`npm run smoke:http` dopo `next start` + seed pilota) — US-E14-12 path auth
 
 ## Runner
 
