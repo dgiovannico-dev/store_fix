@@ -10,6 +10,7 @@ describe("buildContentSecurityPolicy", () => {
     });
     expect(csp).toContain("script-src 'self' 'unsafe-inline'");
     expect(csp).not.toContain("unsafe-eval");
+    expect(csp).toContain("script-src-attr 'none'");
     expect(csp).toContain("object-src 'none'");
     expect(csp).toContain("frame-src 'none'");
     expect(csp).toContain("media-src 'none'");
