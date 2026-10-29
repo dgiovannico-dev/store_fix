@@ -6,7 +6,8 @@ Questo folder spezza gli epic in file leggibili dagli agent; non sostituisce gli
 
 > **Stato:** v4 — planning exploded + production-ready (E14 / S5).  
 > **Vincolo hard:** stack **OSS-only** — nessun SaaS a pagamento nel path critico ([`../STACK.md`](../STACK.md)).  
-> **Gate implementazione:** Analysis Card obbligatoria prima di ogni TK (vedi sotto).
+> **Gate implementazione:** Analysis Card obbligatoria prima di ogni TK (vedi sotto).  
+> **Checkbox:** SoR = [`../BACKLOG.md`](../BACKLOG.md). Story/DoD nei file `E*.md` riconciliati 2026-10-29; TK atomici possono restare `[ ]` storici.
 
 ---
 
