@@ -18,7 +18,7 @@ export async function suggestTicketVendor(input: {
   const membership = await getActiveMembership(input.userId, input.tenantId);
   if (!membership) throw new ForbiddenError();
   if (!canAccessStore(membership, input.storeId)) {
-    throw new ForbiddenError("Store fuori scope");
+    throw new ForbiddenError("Store fuori scope", "storeOutOfScope");
   }
 
   const vendors = await listVendors(input.tenantId);

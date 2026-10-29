@@ -43,7 +43,7 @@ export async function createTicket(input: {
   }
 
   if (!canAccessStore(input.membership, parsed.data.storeId)) {
-    throw new ForbiddenError("Store fuori scope");
+    throw new ForbiddenError("Store fuori scope", "storeOutOfScope");
   }
 
   const store = await prisma.store.findFirst({

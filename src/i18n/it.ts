@@ -113,6 +113,12 @@ export const it = {
       "Ticket verificato: campi chiave immutabili",
     ticketImmutableCancelled: "Ticket annullato: non modificabile",
     vendorInvalid: "Fornitore non valido",
+    forbidden: "Operazione non consentita",
+    illegalTransition:
+      "Transizione non consentita: {from} → {to} (ruolo {role})",
+    illegalTransitionSame: "Stato già corrente",
+    storeOutOfScope: "Store fuori scope",
+    vendorOutOfScope: "Ticket fuori scope vendor",
   },
   gdpr: {
     exportTitle: "Export dati tenant (GDPR)",

@@ -4,6 +4,7 @@ import { confirmAttachmentUpload } from "@/application/attachments/confirm-uploa
 import { getActiveMembership } from "@/domain/memberships/membership-service";
 import { ForbiddenError } from "@/domain/rbac/guards";
 import { actionError } from "@/i18n/action-errors";
+import { actionResultError } from "@/i18n/domain-errors";
 
 type Ctx = { params: Promise<{ id: string }> };
 
@@ -45,7 +46,10 @@ export async function POST(req: Request, ctx: Ctx) {
     });
   } catch (e) {
     if (e instanceof ForbiddenError) {
-      return NextResponse.json({ error: e.message }, { status: 403 });
+      return NextResponse.json(
+        { error: await actionResultError({ message: e.message, code: e.code }) },
+        { status: 403 },
+      );
     }
     throw e;
   }

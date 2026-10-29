@@ -32,7 +32,7 @@ function assertStoreScope(
   storeId: string,
 ) {
   if (!canAccessStore(membership, storeId)) {
-    throw new ForbiddenError("Store fuori scope");
+    throw new ForbiddenError("Store fuori scope", "storeOutOfScope");
   }
 }
 

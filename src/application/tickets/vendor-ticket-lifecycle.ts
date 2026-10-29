@@ -36,7 +36,7 @@ export async function transitionVendorStatus(input: {
     assertCan(input.role, RbacAction.vendorStatus);
   } catch (e) {
     if (e instanceof ForbiddenError) {
-      return { ok: false as const, message: e.message };
+      return { ok: false as const, message: e.message, code: e.code };
     }
     throw e;
   }
@@ -58,7 +58,7 @@ export async function transitionVendorStatus(input: {
     assertVendorTicketScope(input.membership, ticket, input.role);
   } catch (e) {
     if (e instanceof ForbiddenError) {
-      return { ok: false as const, message: e.message };
+      return { ok: false as const, message: e.message, code: e.code };
     }
     throw e;
   }
@@ -93,7 +93,7 @@ export async function completeVendorWork(input: {
     assertCan(input.role, RbacAction.vendorStatus);
   } catch (e) {
     if (e instanceof ForbiddenError) {
-      return { ok: false as const, message: e.message };
+      return { ok: false as const, message: e.message, code: e.code };
     }
     throw e;
   }
@@ -124,7 +124,7 @@ export async function completeVendorWork(input: {
     assertVendorTicketScope(input.membership, ticket, input.role);
   } catch (e) {
     if (e instanceof ForbiddenError) {
-      return { ok: false as const, message: e.message };
+      return { ok: false as const, message: e.message, code: e.code };
     }
     throw e;
   }

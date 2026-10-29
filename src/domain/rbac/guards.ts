@@ -3,9 +3,15 @@ import { can, canMutate } from "./can";
 import type { RbacActionId } from "./actions";
 
 export class ForbiddenError extends Error {
-  constructor(message = "Operazione non consentita") {
-    super(message);
+  /** Codice catalogo `domainErrors` — assente se messaggio legacy custom. */
+  readonly code?: string;
+
+  constructor(message?: string, code?: string) {
+    const msg = message ?? "Operazione non consentita";
+    super(msg);
     this.name = "ForbiddenError";
+    // Default senza messaggio → code generico; custom string resta legacy finché migrata
+    this.code = code ?? (message === undefined ? "forbidden" : undefined);
   }
 }
 

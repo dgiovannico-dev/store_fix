@@ -37,12 +37,24 @@ function failTransition(e: unknown): {
   ok: false;
   message: string;
   code?: string;
+  params?: Record<string, string>;
 } {
   if (e instanceof TicketImmutableError) {
     return { ok: false, message: e.message, code: e.code };
   }
-  if (e instanceof IllegalTransitionError || e instanceof ForbiddenError) {
-    return { ok: false, message: e.message };
+  if (e instanceof IllegalTransitionError) {
+    return {
+      ok: false,
+      message: e.message,
+      code: e.code,
+      params:
+        e.code === "illegalTransition"
+          ? { from: e.from, to: e.to, role: e.role }
+          : undefined,
+    };
+  }
+  if (e instanceof ForbiddenError) {
+    return { ok: false, message: e.message, code: e.code };
   }
   throw e;
 }
