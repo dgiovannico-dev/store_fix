@@ -38,7 +38,7 @@ export async function createInvite(input: {
   vendorId?: string | null;
 }): Promise<
   | { ok: true; inviteId: string; acceptUrl: string }
-  | { ok: false; message: string; code: string }
+  | { ok: false; code: string; message?: string }
 > {
   requireTenantId(input.tenantId);
   assertCanMutate(input.actorRole, RbacAction.inviteUsers);
@@ -50,20 +50,16 @@ export async function createInvite(input: {
     vendorId: input.vendorId,
   });
   if (!parsed.success) {
-    return { ok: false, message: "Dati invito non validi", code: "invalidInviteData" };
+    return { ok: false, code: "invalidInviteData" };
   }
 
   if (parsed.data.role === Role.owner) {
-    return { ok: false, message: "Non puoi invitare un altro owner", code: "cannotInviteOwner" };
+    return { ok: false, code: "cannotInviteOwner" };
   }
 
   if (parsed.data.role === Role.vendor) {
     if (!parsed.data.vendorId) {
-      return {
-        ok: false,
-        message: "vendorId obbligatorio per ruolo vendor",
-        code: "vendorIdRequiredForVendor",
-      };
+      return { ok: false, code: "vendorIdRequiredForVendor" };
     }
     const vendor = await prisma.vendor.findFirst({
       where: {
@@ -73,7 +69,7 @@ export async function createInvite(input: {
       },
     });
     if (!vendor) {
-      return { ok: false, message: "Fornitore non trovato nel tenant", code: "vendorNotInTenant" };
+      return { ok: false, code: "vendorNotInTenant" };
     }
   }
 
@@ -113,31 +109,19 @@ export async function acceptInvite(input: {
   | {
       ok: false;
       code: "inviteInvalid" | "inviteExpired" | "inviteAccepted";
-      message: string;
+      message?: string;
     }
 > {
   const tokenHash = hashToken(input.rawToken);
   const invite = await prisma.inviteToken.findUnique({ where: { tokenHash } });
   if (!invite) {
-    return {
-      ok: false,
-      code: "inviteInvalid",
-      message: "Invito non valido",
-    };
+    return { ok: false, code: "inviteInvalid" };
   }
   if (invite.acceptedAt) {
-    return {
-      ok: false,
-      code: "inviteAccepted",
-      message: "Invito già usato",
-    };
+    return { ok: false, code: "inviteAccepted" };
   }
   if (invite.expiresAt < new Date()) {
-    return {
-      ok: false,
-      code: "inviteExpired",
-      message: "Invito scaduto",
-    };
+    return { ok: false, code: "inviteExpired" };
   }
 
   const bcrypt = await import("bcryptjs");

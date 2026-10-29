@@ -87,7 +87,24 @@ describe("membership-service", () => {
       membershipId: membership.id,
       data: { role: Role.vendor, vendorId: null },
     });
-    expect(vendorFail.ok).toBe(false);
+    expect(vendorFail).toEqual({
+      ok: false,
+      code: "vendorIdRequiredForVendor",
+    });
+
+    const ownerMem = await prisma.membership.findFirst({
+      where: { tenantId, role: Role.owner },
+    });
+    expect(ownerMem).toBeTruthy();
+    if (ownerMem) {
+      const blockOwner = await softDisableMembership({
+        tenantId,
+        actorRole: Role.owner,
+        membershipId: ownerMem.id,
+      });
+      expect(blockOwner.ok).toBe(false);
+      if (!blockOwner.ok) expect(blockOwner.code).toBe("cannotDisableOwner");
+    }
 
     await softDisableMembership({
       tenantId,
