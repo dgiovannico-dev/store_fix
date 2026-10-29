@@ -42,7 +42,9 @@ export async function importStoresAction(
 
   const errors = await Promise.all(
     result.errors.map(async (e) => ({
-      ...e,
+      line: e.line,
+      code: e.code,
+      params: e.params,
       message: await actionResultError(e),
     })),
   );
