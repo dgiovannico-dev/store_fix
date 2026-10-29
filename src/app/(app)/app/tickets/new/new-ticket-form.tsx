@@ -15,6 +15,7 @@ import {
   intakeCategoryOptions,
   intakePriorityOptions,
 } from "@/domain/intake/chat-steps";
+import { StatusPanel } from "@/components/ui/status-panel";
 import type { Locale, MessageCatalog } from "@/i18n";
 
 type StoreOpt = { id: string; name: string };
@@ -94,22 +95,27 @@ export function NewTicketForm({
       <p className="mt-1 text-sm text-[var(--muted-foreground)]">{copy.hint}</p>
 
       {loading ? (
-        <p className="mt-8 text-sm text-[var(--muted-foreground)]">
-          {msg.common.loading}
-        </p>
+        <div className="mt-8">
+          <StatusPanel kind="loading" locale={locale} />
+        </div>
       ) : loadError ? (
-        <p className="mt-8 text-sm text-[var(--critical)]" role="alert">
-          {loadError}
-        </p>
+        <div className="mt-8">
+          <StatusPanel kind="error" title={loadError} locale={locale} />
+        </div>
       ) : stores.length === 0 ? (
-        <div className="mt-8 space-y-3 text-sm">
-          <p className="text-[var(--muted-foreground)]">{copy.noStores}</p>
-          <Link
-            href="/app/stores"
-            className="inline-block font-medium text-[var(--primary)] underline-offset-4 hover:underline"
+        <div className="mt-8">
+          <StatusPanel
+            kind="empty"
+            title={copy.noStores}
+            locale={locale}
           >
-            {copy.addStore}
-          </Link>
+            <Link
+              href="/app/stores"
+              className="inline-block font-medium text-[var(--primary)] underline-offset-4 hover:underline"
+            >
+              {copy.addStore}
+            </Link>
+          </StatusPanel>
         </div>
       ) : (
         <form action={action} className="mt-6 space-y-4">
