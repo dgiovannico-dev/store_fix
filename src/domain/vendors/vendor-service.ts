@@ -36,7 +36,7 @@ export async function getVendor(tenantId: string, vendorId: string) {
 async function assertCoverageInTenant(
   tenantId: string,
   storeIds: string[],
-): Promise<{ message: string; code: string } | null> {
+): Promise<{ code: string } | null> {
   if (storeIds.length === 0) return null;
   const count = await prisma.store.count({
     where: {
@@ -46,10 +46,7 @@ async function assertCoverageInTenant(
     },
   });
   if (count !== storeIds.length) {
-    return {
-      message: "Coverage contiene store non validi per il tenant",
-      code: "vendorCoverageInvalid",
-    };
+    return { code: "vendorCoverageInvalid" };
   }
   return null;
 }
@@ -63,18 +60,14 @@ export async function createVendor(input: {
   assertCanMutate(input.role, RbacAction.crudVendor);
   const parsed = vendorInputSchema.safeParse(input.data);
   if (!parsed.success) {
-    return { ok: false as const, message: "Dati fornitore non validi", code: "invalidVendorData" };
+    return { ok: false as const, code: "invalidVendorData" };
   }
   const coverageErr = await assertCoverageInTenant(
     input.tenantId,
     parsed.data.storeCoverageIds,
   );
   if (coverageErr) {
-    return {
-      ok: false as const,
-      message: coverageErr.message,
-      code: coverageErr.code,
-    };
+    return { ok: false as const, code: coverageErr.code };
   }
 
   const email =
@@ -105,22 +98,18 @@ export async function updateVendor(input: {
   assertCanMutate(input.role, RbacAction.crudVendor);
   const parsed = vendorInputSchema.safeParse(input.data);
   if (!parsed.success) {
-    return { ok: false as const, message: "Dati fornitore non validi", code: "invalidVendorData" };
+    return { ok: false as const, code: "invalidVendorData" };
   }
   const existing = await getVendor(input.tenantId, input.vendorId);
   if (!existing) {
-    return { ok: false as const, message: "Fornitore non trovato", code: "vendorNotFound" };
+    return { ok: false as const, code: "vendorNotFound" };
   }
   const coverageErr = await assertCoverageInTenant(
     input.tenantId,
     parsed.data.storeCoverageIds,
   );
   if (coverageErr) {
-    return {
-      ok: false as const,
-      message: coverageErr.message,
-      code: coverageErr.code,
-    };
+    return { ok: false as const, code: coverageErr.code };
   }
 
   const email =
@@ -150,7 +139,7 @@ export async function softDeleteVendor(input: {
   assertCanMutate(input.role, RbacAction.crudVendor);
   const existing = await getVendor(input.tenantId, input.vendorId);
   if (!existing) {
-    return { ok: false as const, message: "Fornitore non trovato", code: "vendorNotFound" };
+    return { ok: false as const, code: "vendorNotFound" };
   }
   await prisma.vendor.update({
     where: { id: existing.id },
