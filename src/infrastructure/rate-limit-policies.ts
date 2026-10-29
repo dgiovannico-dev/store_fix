@@ -15,7 +15,10 @@ export const RATE_LIMIT = {
   /** Per-email login attempts (targeted account spray). Independent of IP. */
   loginUser: { limit: 10, windowMs: MIN15 },
   logout: { limit: 20, windowMs: MIN15 },
+  /** Per-IP signup (workspace spam). */
   signup: { limit: 10, windowMs: MIN15 },
+  /** Per-email signup — independent of IP (distributed create attempts). */
+  signupUser: { limit: 5, windowMs: MIN15 },
   pwdreset: { limit: 5, windowMs: MIN15 },
   storeCsv: { limit: 5, windowMs: MIN15 },
   intake: { limit: 20, windowMs: MIN15 },
