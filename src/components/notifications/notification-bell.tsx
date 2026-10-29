@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
+import type { MessageCatalog } from "@/i18n";
 
 type Item = {
   id: string;
@@ -11,27 +12,38 @@ type Item = {
   createdAt: string;
 };
 
-type Props = { role?: string | null };
+type Props = {
+  role?: string | null;
+  labels: MessageCatalog["notifBell"];
+  dateLocale?: string;
+};
 
 function ticketHref(role: string | null | undefined, ticketId: string) {
   if (role === "vendor") return `/vendor/tickets/${ticketId}`;
   return `/app/tickets/${ticketId}`;
 }
 
-function typeLabel(type: string) {
+function typeLabel(
+  labels: MessageCatalog["notifBell"],
+  type: string,
+): string {
   const map: Record<string, string> = {
-    "ticket.created": "Nuovo ticket",
-    "ticket.assigned": "Ticket assegnato",
-    "ticket.cancelled": "Ticket annullato",
-    "ticket.done": "Intervento completato",
-    "ticket.breached": "SLA superato",
-    "ticket.verified": "Ticket verificato",
-    "ticket.rejected": "Verifica rifiutata",
+    "ticket.created": labels.evtCreated,
+    "ticket.assigned": labels.evtAssigned,
+    "ticket.cancelled": labels.evtCancelled,
+    "ticket.done": labels.evtDone,
+    "ticket.breached": labels.evtBreached,
+    "ticket.verified": labels.evtVerified,
+    "ticket.rejected": labels.evtRejected,
   };
   return map[type] ?? type;
 }
 
-export function NotificationBell({ role }: Props) {
+export function NotificationBell({
+  role,
+  labels,
+  dateLocale = "it-IT",
+}: Props) {
   const [open, setOpen] = useState(false);
   const [count, setCount] = useState(0);
   const [items, setItems] = useState<Item[]>([]);
@@ -87,9 +99,9 @@ export function NotificationBell({ role }: Props) {
         type="button"
         onClick={() => void openPanel()}
         className="relative rounded-[var(--radius)] border border-[var(--border)] px-3 py-1.5 text-sm"
-        aria-label="Notifiche"
+        aria-label={labels.aria}
       >
-        Notifiche
+        {labels.title}
         {count > 0 ? (
           <span className="absolute -right-1 -top-1 min-w-5 rounded-full bg-[var(--critical)] px-1 text-center text-[10px] font-semibold text-white">
             {count > 99 ? "99+" : count}
@@ -99,19 +111,19 @@ export function NotificationBell({ role }: Props) {
       {open ? (
         <div className="absolute right-0 z-50 mt-2 w-80 max-w-[calc(100vw-2rem)] rounded-[var(--radius)] border border-[var(--border)] bg-white p-3 shadow-md">
           <div className="mb-2 flex items-center justify-between gap-2">
-            <p className="text-sm font-semibold">Notifiche</p>
+            <p className="text-sm font-semibold">{labels.title}</p>
             <button
               type="button"
               onClick={() => void markAll()}
               className="text-xs text-[var(--primary)] underline-offset-2 hover:underline"
             >
-              Segna tutte lette
+              {labels.markAll}
             </button>
           </div>
           <ul className="max-h-72 space-y-2 overflow-y-auto">
             {items.length === 0 ? (
               <li className="py-6 text-center text-sm text-[var(--muted-foreground)]">
-                Nessuna notifica
+                {labels.empty}
               </li>
             ) : (
               items.map((n) => (
@@ -121,9 +133,9 @@ export function NotificationBell({ role }: Props) {
                     n.readAt ? "opacity-70" : "bg-[var(--muted)]/40"
                   }`}
                 >
-                  <p className="font-medium">{typeLabel(n.type)}</p>
+                  <p className="font-medium">{typeLabel(labels, n.type)}</p>
                   <p className="text-xs text-[var(--muted-foreground)]">
-                    {new Date(n.createdAt).toLocaleString("it-IT")}
+                    {new Date(n.createdAt).toLocaleString(dateLocale)}
                   </p>
                   <div className="mt-1 flex gap-2">
                     {n.ticketId ? (
@@ -132,7 +144,7 @@ export function NotificationBell({ role }: Props) {
                         onClick={() => void markOne(n.id)}
                         className="text-xs font-medium text-[var(--primary)] underline-offset-2 hover:underline"
                       >
-                        Apri ticket
+                        {labels.openTicket}
                       </Link>
                     ) : null}
                     {!n.readAt ? (
@@ -141,7 +153,7 @@ export function NotificationBell({ role }: Props) {
                         onClick={() => void markOne(n.id)}
                         className="text-xs text-[var(--muted-foreground)] underline-offset-2 hover:underline"
                       >
-                        Letta
+                        {labels.markRead}
                       </button>
                     ) : null}
                   </div>

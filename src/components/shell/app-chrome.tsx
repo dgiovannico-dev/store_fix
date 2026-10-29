@@ -36,7 +36,11 @@ export async function AppChrome({ children }: { children: React.ReactNode }) {
               </Link>
             ))}
           </div>
-          <NotificationBell role={session.role} />
+          <NotificationBell
+            role={session.role}
+            labels={msg.notifBell}
+            dateLocale={prefs.dateLocale}
+          />
         </div>
       </header>
       {children}
