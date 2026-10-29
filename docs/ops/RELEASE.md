@@ -14,18 +14,23 @@ Tag `vMAJOR.MINOR.PATCH` da `release/x.y.z` → `main` (GitFlow), sync `develop`
 - [ ] Security headers dietro HTTPS
 - [ ] Nessun secret in git; seed QA non in prod
 
-## Release (senza PR)
+## Release (PR auto-merge)
 
 ```bash
 git checkout -b release/x.y.z develop
-# bump version / CHANGELOG
+# bump version / CHANGELOG; verify
+git push -u origin HEAD
+gh pr create --base main --title "release/x.y.z" --body "…"
+gh pr merge --auto --merge --delete-branch
 git checkout main && git pull origin main
-git merge --no-ff release/x.y.z
-git push origin main
 git tag -a vx.y.z -m "…"
 git push origin vx.y.z
-git checkout develop && git merge --no-ff main && git push origin develop
+# back-merge main → develop (PR)
+gh pr create --base develop --head main --title "chore: sync develop after vx.y.z" --body "…"
+gh pr merge --auto --merge
 ```
+
+Convenzione completa: [`.cursor/rules/gitflow.mdc`](../../.cursor/rules/gitflow.mdc) · helper lab: `scripts/gitflow-ship-pr.sh`.
 
 Deploy prod: backup → migrate → up → ready → smoke — solo dopo **GO** in `S5-EXIT-GAPS.md`.
 
