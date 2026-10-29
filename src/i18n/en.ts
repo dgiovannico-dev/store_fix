@@ -223,6 +223,17 @@ export const en = {
     noActiveOwner: "No active owner on tenant",
     storeNotFoundOrArchived: "Store not found or archived",
     uploadInvalid: "Invalid upload",
+    signupEmailTaken:
+      "Unable to complete registration with this data.",
+    signupSlugTaken: "Workspace name already in use. Choose another.",
+    signupValidation: "Invalid data",
+    signupAutoLoginFailed:
+      "Workspace created, but automatic sign-in failed. Try signing in.",
+    csvSaveFailed: "Save failed",
+    csvRowInvalid: "Invalid row",
+    csvHeaderMissing: 'Missing header: "{header}". Use the IT template.',
+    csvTooManyRows: "Maximum {max} data rows (found {found}).",
+    csvImportRateLimited: "Too many imports. Retry in {sec}s.",
   },
   gdpr: {
     exportTitle: "Tenant data export (GDPR)",

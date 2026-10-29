@@ -78,6 +78,6 @@ describe("signupHqOwner", () => {
     });
     expect(result.ok).toBe(false);
     if (result.ok) return;
-    expect(result.code).toBe("EMAIL_TAKEN");
+    expect(result.code).toBe("signupEmailTaken");
   });
 });

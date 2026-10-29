@@ -7,6 +7,8 @@ import { signIn } from "@/auth";
 import { sendEmailVerification } from "@/domain/tenancy/email-verification";
 import { signupHqOwner } from "@/domain/tenancy/signup";
 import { checkRateLimit } from "@/infrastructure/rate-limit";
+import { actionError } from "@/i18n/action-errors";
+import { actionResultError, domainError } from "@/i18n/domain-errors";
 
 export type SignupActionState = {
   error?: string;
@@ -21,8 +23,9 @@ export async function signupAction(
   const ip = fwd || h.get("x-real-ip") || "local";
   const limit = checkRateLimit(`signup:${ip}`, 10, 15 * 60 * 1000);
   if (!limit.ok) {
+    const template = await actionError("rateLimitedRetry");
     return {
-      error: `Troppi tentativi. Riprova tra ${limit.retryAfterSec} secondi.`,
+      error: template.replaceAll("{sec}", String(limit.retryAfterSec)),
     };
   }
 
@@ -35,7 +38,7 @@ export async function signupAction(
   });
 
   if (!result.ok) {
-    return { error: result.message };
+    return { error: await actionResultError(result) };
   }
 
   try {
@@ -52,10 +55,7 @@ export async function signupAction(
     });
   } catch (e) {
     if (e instanceof AuthError) {
-      return {
-        error:
-          "Workspace creato, ma accesso automatico non riuscito. Prova ad accedere.",
-      };
+      return { error: await domainError("signupAutoLoginFailed") };
     }
     throw e;
   }
