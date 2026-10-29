@@ -1,6 +1,7 @@
 # Increment status — FacilityFlow Retail
 
-**Aggiornato:** 2026-10-29 — **dev-only** (nessun deploy VPS); F3-01 resta tracking umano
+**Aggiornato:** 2026-10-29 — **dev-only** (nessun deploy VPS); F3-01 resta tracking umano  
+Hardening recente in-repo: `domainErrors` + font locali CI-stable (no `next/font/google` flake).
 
 | Sprint / fase | Stato | Note |
 |---------------|-------|------|

@@ -30,10 +30,11 @@ const optionalTopic = z
 const STORE_FIELD_CODES = new Set([
   "storeWebhookUrlInvalid",
   "storeNtfyTopicInvalid",
+  "storeNameRequired",
 ]);
 
 export const storeInputSchema = z.object({
-  name: z.string().trim().min(2).max(120),
+  name: z.string().trim().min(2, "storeNameRequired").max(120),
   address: z.string().trim().max(240).optional().nullable(),
   city: z.string().trim().max(120).optional().nullable(),
   zip: z.string().trim().max(20).optional().nullable(),

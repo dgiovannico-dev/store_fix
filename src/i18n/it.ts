@@ -247,6 +247,7 @@ export const it = {
       "Coverage contiene store non validi per il tenant",
     storeWebhookUrlInvalid: "webhookUrl deve essere http(s)",
     storeNtfyTopicInvalid: "ntfyTopic non valido",
+    storeNameRequired: "Nome punto vendita obbligatorio",
     tenantIdRequired: "tenantId obbligatorio",
   },
   gdpr: {
