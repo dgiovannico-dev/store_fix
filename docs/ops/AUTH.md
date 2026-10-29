@@ -6,7 +6,7 @@
 - Cookie `authjs.session-token` **httpOnly**, `SameSite=Lax`.
 - Riga `Session` in Postgres creata al login; **logout** la cancella (revoke immediato).
 - Claim sessione: `tenantId`, `role`, `membershipId` (Membership attiva).
-- UI logout: **`POST /logout`** (o Auth.js `POST /api/auth/signout`) — revoke DB + `Clear-Site-Data` + redirect `/login`. Risposte dinamiche: `Cache-Control: no-store` (middleware). `POST /logout` passa dal gate CSRF Origin/Sec-Fetch-Site (come le API mutanti) + rate limit `logout:{ip}` 20/15 min → **429**.
+- UI logout: **`POST /logout`** (o Auth.js `POST /api/auth/signout`) — revoke DB + `Clear-Site-Data` + redirect `/login`. Controlo **Esci** in `AppChrome` (HQ + vendor, tutte le pagine auth) + onboarding. Risposte dinamiche: `Cache-Control: no-store` (middleware). `POST /logout` passa dal gate CSRF Origin/Sec-Fetch-Site + rate limit `logout:{ip}` 20/15 min → **429**.
 
 ## Conferma email (T1.13)
 
