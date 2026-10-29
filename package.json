@@ -26,6 +26,7 @@
     "compose:prod:observe:config": "docker compose -f compose.prod.yaml --profile observe --env-file .env.prod.example config --quiet",
     "deploy:migrate:lab": "FF_MODE=lab FF_LAB_MIGRATE_ONLY=1 bash scripts/deploy-migrate.sh",
     "verify:local": "npm run typecheck && npm test && npm run secrets:scan",
+    "smoke:http": "bash scripts/smoke-flusso-a-http.sh",
     "verify:headers": "bash scripts/verify-security-headers.sh",
     "vps:preflight": "bash scripts/vps-preflight.sh",
     "vps:wizard": "bash scripts/vps-setup-wizard.sh",

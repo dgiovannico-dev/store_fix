@@ -185,6 +185,7 @@ export const it = {
     evtQuoteProposed: "Preventivo proposto",
     evtQuoteAccepted: "Preventivo accettato",
     evtQuoteRejected: "Preventivo rifiutato",
+    evtGdprPurge: "Retention GDPR (soft-delete)",
   },
   ticketPanels: {
     pending: "…",
