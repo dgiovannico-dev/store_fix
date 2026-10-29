@@ -3,8 +3,8 @@ import { auth } from "@/auth";
 import { createAssetAction, deleteAssetAction } from "@/app/actions/assets";
 import { listAssets } from "@/domain/assets/asset-service";
 import {
-  INTAKE_CATEGORIES,
   intakeCategoryLabel,
+  intakeCategoryOptions,
 } from "@/domain/intake/chat-steps";
 import { getActiveMembership } from "@/domain/memberships/membership-service";
 import { RbacAction } from "@/domain/rbac/actions";
@@ -35,7 +35,7 @@ export default async function AssetsPage() {
     listVendors(session.tenantId),
   ]);
   const copy = msg.assets;
-  const locale = prefs.locale;
+  const categories = intakeCategoryOptions(prefs.locale);
 
   return (
     <main className="mx-auto max-w-3xl px-6 py-12">
@@ -68,9 +68,9 @@ export default async function AssetsPage() {
           required
           className="rounded-[var(--radius)] border border-[var(--border)] px-3 py-2"
         >
-          {INTAKE_CATEGORIES.map((c) => (
+          {categories.map((c) => (
             <option key={c.value} value={c.value}>
-              {intakeCategoryLabel(c.value, locale)}
+              {c.label}
             </option>
           ))}
         </select>
@@ -124,7 +124,7 @@ export default async function AssetsPage() {
                 <p className="font-medium">
                   {a.label}{" "}
                   <span className="text-sm font-normal text-[var(--muted-foreground)]">
-                    · {intakeCategoryLabel(a.category, locale)}
+                    · {intakeCategoryLabel(a.category, prefs.locale)}
                   </span>
                 </p>
                 <p className="text-sm text-[var(--muted-foreground)]">

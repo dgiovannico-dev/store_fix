@@ -8,10 +8,10 @@ import {
 } from "@/app/actions/tickets";
 import {
   canAdvanceIntake,
-  INTAKE_CATEGORIES,
   intakeCategoryLabel,
+  intakeCategoryOptions,
   intakePriorityLabel,
-  INTAKE_PRIORITIES,
+  intakePriorityOptions,
   intakeStepCount,
   intakeStepIndex,
   nextIntakeStep,
@@ -29,16 +29,16 @@ type Props = {
   storeId: string;
   storeName: string;
   assets: AssetOpt[];
-  locale: Locale;
-  copy: MessageCatalog["intake"];
+  locale?: Locale;
+  labels: MessageCatalog["intake"];
 };
 
 export function SegnalaChatWizard({
   storeId,
   storeName,
   assets,
-  locale,
-  copy,
+  locale = "it",
+  labels,
 }: Props) {
   const [step, setStep] = useState<IntakeStepId>("category");
   const [draft, setDraft] = useState<IntakeDraft>({
@@ -57,12 +57,14 @@ export function SegnalaChatWizard({
   const headingRef = useRef<HTMLHeadingElement>(null);
   const headingId = useId();
 
+  const categories = intakeCategoryOptions(locale);
+  const priorities = intakePriorityOptions(locale);
   const prompts: Record<IntakeStepId, string> = {
-    category: copy.promptCategory,
-    priority: copy.promptPriority,
-    asset: copy.promptAsset,
-    description: copy.promptDescription,
-    confirm: copy.promptConfirm,
+    category: labels.promptCategory,
+    priority: labels.promptPriority,
+    asset: labels.promptAsset,
+    description: labels.promptDescription,
+    confirm: labels.promptConfirm,
   };
 
   useEffect(() => {
@@ -72,6 +74,12 @@ export function SegnalaChatWizard({
   const stepN = intakeStepIndex(step);
   const total = intakeStepCount();
   const canNext = canAdvanceIntake(step, draft);
+  const stepOf = labels.stepOf
+    .replace("{n}", String(stepN))
+    .replace("{total}", String(total));
+  const stepAria = labels.stepAria
+    .replace("{n}", String(stepN))
+    .replace("{total}", String(total));
 
   function goNext() {
     if (!canNext) return;
@@ -85,7 +93,7 @@ export function SegnalaChatWizard({
   }
 
   const assetLabel =
-    assets.find((a) => a.id === draft.assetId)?.label ?? copy.noneAsset;
+    assets.find((a) => a.id === draft.assetId)?.label ?? labels.noneAsset;
 
   return (
     <main className="mx-auto flex min-h-dvh w-full max-w-[390px] flex-col px-4 py-6">
@@ -94,24 +102,17 @@ export function SegnalaChatWizard({
           href="/app/segnala"
           className="text-sm text-[var(--muted-foreground)] underline-offset-4 hover:underline"
         >
-          {copy.backHub}
+          {labels.backHub}
         </Link>
-        <span className="text-xs text-[var(--muted-foreground)]">
-          {copy.stepOf} {stepN}
-          {copy.stepOfSep}
-          {total}
-        </span>
+        <span className="text-xs text-[var(--muted-foreground)]">{stepOf}</span>
       </div>
 
       <h1 className="mt-4 font-[family-name:var(--font-sora)] text-xl font-semibold text-[var(--primary)]">
-        {copy.title}
+        {labels.title}
       </h1>
       <p className="mt-1 text-sm text-[var(--muted-foreground)]">{storeName}</p>
 
-      <ol
-        className="mt-4 flex gap-1"
-        aria-label={`${copy.stepOf} ${stepN} ${copy.stepOfSep} ${total}`}
-      >
+      <ol className="mt-4 flex gap-1" aria-label={stepAria}>
         {Array.from({ length: total }, (_, i) => (
           <li
             key={i}
@@ -141,12 +142,8 @@ export function SegnalaChatWizard({
         </h2>
 
         {step === "category" ? (
-          <div
-            className="grid grid-cols-2 gap-2"
-            role="group"
-            aria-labelledby={headingId}
-          >
-            {INTAKE_CATEGORIES.map((c) => (
+          <div className="grid grid-cols-2 gap-2" role="group" aria-labelledby={headingId}>
+            {categories.map((c) => (
               <button
                 key={c.value}
                 type="button"
@@ -160,19 +157,15 @@ export function SegnalaChatWizard({
                     : "border-[var(--border)] bg-white"
                 }`}
               >
-                {intakeCategoryLabel(c.value, locale)}
+                {c.label}
               </button>
             ))}
           </div>
         ) : null}
 
         {step === "priority" ? (
-          <div
-            className="grid grid-cols-2 gap-2"
-            role="group"
-            aria-labelledby={headingId}
-          >
-            {INTAKE_PRIORITIES.map((p) => (
+          <div className="grid grid-cols-2 gap-2" role="group" aria-labelledby={headingId}>
+            {priorities.map((p) => (
               <button
                 key={p.value}
                 type="button"
@@ -186,7 +179,7 @@ export function SegnalaChatWizard({
                     : "border-[var(--border)] bg-white"
                 }`}
               >
-                {intakePriorityLabel(p.value, locale)}
+                {p.label}
               </button>
             ))}
           </div>
@@ -202,7 +195,7 @@ export function SegnalaChatWizard({
               }}
               className="w-full rounded-[var(--radius)] border border-[var(--border)] bg-white px-3 py-3 text-left text-sm"
             >
-              {copy.noAsset}
+              {labels.noAsset}
             </button>
             {assets.map((a) => (
               <button
@@ -223,7 +216,7 @@ export function SegnalaChatWizard({
         {step === "description" ? (
           <div className="space-y-3">
             <label className="block text-sm font-medium" htmlFor="desc">
-              {copy.descriptionLabel}
+              {labels.descriptionLabel}
             </label>
             <textarea
               id="desc"
@@ -234,7 +227,7 @@ export function SegnalaChatWizard({
               }}
               minLength={5}
               rows={4}
-              placeholder={copy.descriptionPlaceholder}
+              placeholder={labels.descriptionPlaceholder}
               className="w-full rounded-[var(--radius)] border border-[var(--border)] bg-white px-3 py-3 text-base"
             />
             <button
@@ -264,12 +257,12 @@ export function SegnalaChatWizard({
               }}
               className="w-full rounded-[var(--radius)] border border-[var(--border)] px-4 py-2.5 text-sm font-medium disabled:opacity-60"
             >
-              {aiPending ? copy.suggestAiPending : copy.suggestAi}
+              {aiPending ? labels.suggestAiPending : labels.suggestAi}
             </button>
             {aiHint ? (
               <div className="rounded-[var(--radius)] border border-[var(--border)] p-3 text-sm">
                 <p>
-                  {copy.suggestedPrefix}{" "}
+                  {labels.suggestedPrefix}{" "}
                   <strong>
                     {intakeCategoryLabel(aiHint.category, locale)}
                   </strong>{" "}
@@ -289,7 +282,7 @@ export function SegnalaChatWizard({
                     setAiHint(null);
                   }}
                 >
-                  {copy.useSuggestion}
+                  {labels.useSuggestion}
                 </button>
               </div>
             ) : null}
@@ -299,7 +292,7 @@ export function SegnalaChatWizard({
               onClick={goNext}
               className="w-full rounded-[var(--radius)] bg-[var(--primary)] px-4 py-3.5 text-base font-medium text-[var(--primary-foreground)] disabled:opacity-60"
             >
-              {copy.continue}
+              {labels.continue}
             </button>
           </div>
         ) : null}
@@ -318,25 +311,25 @@ export function SegnalaChatWizard({
             <ul className="space-y-2 rounded-[var(--radius)] border border-[var(--border)] p-3 text-sm">
               <li>
                 <span className="text-[var(--muted-foreground)]">
-                  {copy.confirmCategory}
+                  {labels.labelCategory}
                 </span>{" "}
                 {intakeCategoryLabel(draft.category, locale)}
               </li>
               <li>
                 <span className="text-[var(--muted-foreground)]">
-                  {copy.confirmPriority}
+                  {labels.labelPriority}
                 </span>{" "}
                 {intakePriorityLabel(draft.priority, locale)}
               </li>
               <li>
                 <span className="text-[var(--muted-foreground)]">
-                  {copy.confirmAsset}
+                  {labels.labelAsset}
                 </span>{" "}
                 {assetLabel}
               </li>
               <li>
                 <span className="text-[var(--muted-foreground)]">
-                  {copy.confirmDetail}
+                  {labels.labelDetail}
                 </span>{" "}
                 {draft.description}
               </li>
@@ -351,7 +344,7 @@ export function SegnalaChatWizard({
               disabled={pending || !canAdvanceIntake("confirm", draft)}
               className="w-full rounded-[var(--radius)] bg-[var(--primary)] px-4 py-3.5 text-base font-medium text-[var(--primary-foreground)] disabled:opacity-60"
             >
-              {pending ? copy.submitting : copy.submit}
+              {pending ? labels.opening : labels.openTicket}
             </button>
           </form>
         ) : null}
@@ -363,12 +356,12 @@ export function SegnalaChatWizard({
           onClick={goBack}
           className="mt-6 text-sm text-[var(--muted-foreground)] underline-offset-4 hover:underline"
         >
-          {copy.back}
+          {labels.back}
         </button>
       ) : null}
 
       <p className="mt-4 text-xs text-[var(--muted-foreground)]">
-        {copy.attachAfter}
+        {labels.afterOpenHint}
       </p>
     </main>
   );

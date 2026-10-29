@@ -6,9 +6,9 @@ import { SegnalaChatWizard } from "@/components/intake/segnala-chat-wizard";
 import { listAssets } from "@/domain/assets/asset-service";
 import { getActiveMembership } from "@/domain/memberships/membership-service";
 import { canAccessStore } from "@/domain/rbac/store-scope";
+import { tenantMessages } from "@/i18n/tenant-messages";
 import { checkRateLimit } from "@/infrastructure/rate-limit";
 import { prisma } from "@/infrastructure/db/prisma";
-import { tenantMessages } from "@/i18n/tenant-messages";
 
 type Props = { params: Promise<{ storeId: string }> };
 
@@ -38,15 +38,12 @@ export default async function SegnalaGuastoPage({ params }: Props) {
     return (
       <main className="mx-auto max-w-[390px] px-4 py-12">
         <h1 className="font-[family-name:var(--font-sora)] text-xl font-semibold">
-          {copy.rateLimitTitle}
+          {copy.rateLimitedTitle}
         </h1>
         <p className="mt-2 text-sm text-[var(--muted-foreground)]">
-          {copy.rateLimitBody} {limit.retryAfterSec} {copy.rateLimitSeconds}
+          {copy.rateLimitedBody.replace("{sec}", String(limit.retryAfterSec))}
         </p>
-        <Link
-          href="/app/tickets"
-          className="mt-6 inline-block text-sm underline"
-        >
+        <Link href="/app/tickets" className="mt-6 inline-block text-sm underline">
           {copy.backTickets}
         </Link>
       </main>
@@ -80,7 +77,7 @@ export default async function SegnalaGuastoPage({ params }: Props) {
       storeName={store.name}
       assets={assets.map((a) => ({ id: a.id, label: a.label }))}
       locale={prefs.locale}
-      copy={copy}
+      labels={copy}
     />
   );
 }

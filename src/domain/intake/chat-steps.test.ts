@@ -38,10 +38,10 @@ describe("intake chat-steps", () => {
     expect(canAdvanceIntake("confirm", base)).toBe(true);
   });
 
-  it("etichette IT/EN per slug (fallback legacy)", () => {
+  it("etichette IT per slug (fallback legacy)", () => {
     expect(INTAKE_CATEGORY_VALUES).toContain("frigo");
     expect(intakeCategoryLabel("frigo")).toMatch(/Frigo/i);
-    expect(intakeCategoryLabel("frigo", "en")).toMatch(/Fridge|Cold/i);
+    expect(intakeCategoryLabel("frigo", "en")).toMatch(/Fridge/i);
     expect(intakeCategoryLabel("legacy-xyz")).toBe("legacy-xyz");
     expect(intakePriorityLabel("critical")).toBe("Critica");
     expect(intakePriorityLabel("critical", "en")).toBe("Critical");

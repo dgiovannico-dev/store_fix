@@ -15,6 +15,7 @@ import {
 import { can } from "@/domain/rbac/can";
 import { RbacAction } from "@/domain/rbac/actions";
 import { getTenantI18nPrefs } from "@/application/tenant/i18n-prefs";
+import { dateLocaleFor } from "@/i18n";
 import { tenantMessages } from "@/i18n/tenant-messages";
 import { prisma } from "@/infrastructure/db/prisma";
 import { requireTenantId } from "@/infrastructure/db/tenant-scope";
@@ -73,7 +74,7 @@ export default async function TicketsListPage({ searchParams }: Props) {
     tenantMessages(session.tenantId),
     getTenantI18nPrefs(session.tenantId),
   ]);
-  const locale = prefs.locale;
+  const dLocale = dateLocaleFor(prefs.locale);
   const [stores, vendors] = isHq
     ? await Promise.all([
         prisma.store.findMany({
@@ -127,7 +128,7 @@ export default async function TicketsListPage({ searchParams }: Props) {
             value={filters.priority ?? ""}
             options={Object.values(TicketPriority).map((p) => ({
               value: p,
-              label: intakePriorityLabel(p, locale),
+              label: intakePriorityLabel(p, prefs.locale),
             }))}
           />
           <FilterSelect
@@ -197,14 +198,14 @@ export default async function TicketsListPage({ searchParams }: Props) {
                 href={`/app/tickets/${tk.id}`}
                 className="font-medium underline-offset-4 hover:underline"
               >
-                {intakeCategoryLabel(tk.category, locale)} ·{" "}
-                {intakePriorityLabel(tk.priority, locale)}
+                {intakeCategoryLabel(tk.category, prefs.locale)} ·{" "}
+                {intakePriorityLabel(tk.priority, prefs.locale)}
               </Link>
               <p className="text-sm text-[var(--muted-foreground)]">
                 {tk.store.name} · {tk.status}
                 {tk.vendor ? ` · ${tk.vendor.name}` : ""} ·{" "}
                 {tk.slaDueAt
-                  ? `SLA ${tk.slaDueAt.toLocaleString("it-IT")}`
+                  ? `SLA ${tk.slaDueAt.toLocaleString(dLocale)}`
                   : "SLA —"}
               </p>
               <p className="mt-1 line-clamp-2 text-sm">{tk.description}</p>

@@ -2,7 +2,7 @@
 
 import { t, type Locale } from "@/i18n";
 
-/** Catalogo categorie: slug SoR (etichette via i18n). */
+/** Catalogo categorie: slug SoR (etichette via `intakeCategoryLabel`). */
 export const INTAKE_CATEGORIES = [
   { value: "frigo" },
   { value: "hvac" },
@@ -24,14 +24,14 @@ export function intakeCategoryLabel(
   slug: string,
   locale: Locale = "it",
 ): string {
-  const cat = t(locale).intake;
+  const msg = t(locale).intake;
   const map: Record<string, string> = {
-    frigo: cat.catFrigo,
-    hvac: cat.catHvac,
-    casse: cat.catCasse,
-    illuminazione: cat.catIlluminazione,
-    porte: cat.catPorte,
-    altro: cat.catAltro,
+    frigo: msg.catFrigo,
+    hvac: msg.catHvac,
+    casse: msg.catCasse,
+    illuminazione: msg.catIlluminazione,
+    porte: msg.catPorte,
+    altro: msg.catAltro,
   };
   return map[slug] ?? slug;
 }
@@ -49,14 +49,29 @@ export function intakePriorityLabel(
   slug: string,
   locale: Locale = "it",
 ): string {
-  const cat = t(locale).intake;
+  const msg = t(locale).intake;
   const map: Record<string, string> = {
-    low: cat.priLow,
-    normal: cat.priNormal,
-    high: cat.priHigh,
-    critical: cat.priCritical,
+    low: msg.priLow,
+    normal: msg.priNormal,
+    high: msg.priHigh,
+    critical: msg.priCritical,
   };
   return map[slug] ?? slug;
+}
+
+/** Opzioni select localizzate (slug SoR immutati). */
+export function intakeCategoryOptions(locale: Locale = "it") {
+  return INTAKE_CATEGORY_VALUES.map((value) => ({
+    value,
+    label: intakeCategoryLabel(value, locale),
+  }));
+}
+
+export function intakePriorityOptions(locale: Locale = "it") {
+  return INTAKE_PRIORITIES.map((p) => ({
+    value: p.value,
+    label: intakePriorityLabel(p.value, locale),
+  }));
 }
 
 export type IntakeStepId =

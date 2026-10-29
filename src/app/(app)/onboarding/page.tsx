@@ -10,26 +10,7 @@ import {
   getOnboardingSnapshot,
   type OnboardingStepId,
 } from "@/domain/onboarding/progress";
-import type { MessageCatalog } from "@/i18n";
 import { tenantMessages } from "@/i18n/tenant-messages";
-
-function stepLabel(
-  copy: MessageCatalog["onboarding"],
-  id: OnboardingStepId,
-): string {
-  switch (id) {
-    case "stores":
-      return copy.stepStores;
-    case "vendors":
-      return copy.stepVendors;
-    case "sla":
-      return copy.stepSla;
-    case "invite_sm":
-      return copy.stepInviteSm;
-    case "sample_ticket":
-      return copy.stepSampleTicket;
-  }
-}
 
 export default async function OnboardingPage() {
   const session = await auth();
@@ -43,6 +24,13 @@ export default async function OnboardingPage() {
   ]);
   const pct = Math.round((snap.doneCount / Math.max(snap.totalCount, 1)) * 100);
   const copy = msg.onboarding;
+  const stepLabel: Record<OnboardingStepId, string> = {
+    stores: copy.stepStores,
+    vendors: copy.stepVendors,
+    sla: copy.stepSla,
+    invite_sm: copy.stepInviteSm,
+    sample_ticket: copy.stepSample,
+  };
 
   return (
     <main className="mx-auto flex min-h-dvh max-w-lg flex-col gap-6 px-6 py-12">
@@ -72,7 +60,10 @@ export default async function OnboardingPage() {
         <div className="rounded-[var(--radius)] border border-[var(--signal)] bg-[oklch(0.96_0.04_85)] px-4 py-3 text-sm">
           {copy.skippedBanner}{" "}
           <form action={resumeOnboardingAction} className="inline">
-            <button type="submit" className="font-medium underline-offset-4 hover:underline">
+            <button
+              type="submit"
+              className="font-medium underline-offset-4 hover:underline"
+            >
               {copy.resume}
             </button>
           </form>
@@ -118,7 +109,7 @@ export default async function OnboardingPage() {
             </span>
             <div className="min-w-0 flex-1">
               <p className="font-medium">
-                {idx + 1}. {stepLabel(copy, step.id)}
+                {idx + 1}. {stepLabel[step.id]}
                 {step.blocked ? (
                   <span className="ml-2 text-xs font-normal text-[var(--muted-foreground)]">
                     (S2)

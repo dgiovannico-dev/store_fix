@@ -12,10 +12,8 @@ import {
   type CreateTicketState,
 } from "@/app/actions/tickets";
 import {
-  INTAKE_CATEGORIES,
-  intakeCategoryLabel,
-  intakePriorityLabel,
-  INTAKE_PRIORITIES,
+  intakeCategoryOptions,
+  intakePriorityOptions,
 } from "@/domain/intake/chat-steps";
 import type { Locale, MessageCatalog } from "@/i18n";
 
@@ -26,11 +24,13 @@ const initial: CreateTicketState = {};
 
 export function NewTicketForm({
   msg,
-  locale,
+  locale = "it",
 }: {
   msg: MessageCatalog;
-  locale: Locale;
+  locale?: Locale;
 }) {
+  const categories = intakeCategoryOptions(locale);
+  const priorities = intakePriorityOptions(locale);
   const [stores, setStores] = useState<StoreOpt[]>([]);
   const [assets, setAssets] = useState<AssetOpt[]>([]);
   const [storeId, setStoreId] = useState("");
@@ -136,9 +136,9 @@ export function NewTicketForm({
               className="w-full rounded-[var(--radius)] border border-[var(--border)] bg-white px-3 py-3 text-base"
               defaultValue="frigo"
             >
-              {INTAKE_CATEGORIES.map((c) => (
+              {categories.map((c) => (
                 <option key={c.value} value={c.value}>
-                  {intakeCategoryLabel(c.value, locale)}
+                  {c.label}
                 </option>
               ))}
             </select>
@@ -147,7 +147,7 @@ export function NewTicketForm({
           <fieldset className="space-y-2">
             <legend className="text-sm font-medium">{copy.priorityField}</legend>
             <div className="grid grid-cols-2 gap-2">
-              {INTAKE_PRIORITIES.map((p) => (
+              {priorities.map((p) => (
                 <label
                   key={p.value}
                   className="flex items-center gap-2 rounded-[var(--radius)] border border-[var(--border)] px-3 py-2 text-sm"
@@ -158,7 +158,7 @@ export function NewTicketForm({
                     value={p.value}
                     defaultChecked={p.value === "normal"}
                   />
-                  {intakePriorityLabel(p.value, locale)}
+                  {p.label}
                 </label>
               ))}
             </div>
