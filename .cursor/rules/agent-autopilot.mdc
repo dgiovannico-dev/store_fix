@@ -21,9 +21,9 @@ Obiettivo: l’agente **avanza da solo** su backlog + hardening finché non c’
 3. **Team** — attiva N ruoli (multi-agent-team) in parallelo/sequenza come da fase.
 4. **Implement** — slice verticale sottile; OSS-only; niente inventare Fase 3 *nuova* fuori tabella F3 già in BACKLOG.
 5. **Verify** — `npm run verify:local` (e smoke rilevanti); fix finché PASS o blocker documentato.
-6. **Commit** — conventional commit **senza** chiedere; escludi `.env` / secret.
-7. **Push** — `git push origin develop` **senza** chiedere; **niente PR** (gitflow).
-8. **Sync main (leggero)** — dopo slice stabile su `develop`, `git checkout main && git merge --ff-only develop && git push origin main && git checkout develop` (lab freeze continuo). Tag semver solo su release esplicita / GO E14.
+6. **Commit** — conventional commit su `feature/*` o `bugfix/*` (da `develop`) **senza** chiedere; escludi `.env` / secret.
+7. **PR auto-merge → develop** — `git push -u origin HEAD` + `bash scripts/gitflow-ship-pr.sh` (o `gh pr create` + `gh pr merge --auto --merge --delete-branch`) **senza** chiedere.
+8. **Sync main (leggero)** — dopo slice stabile su `develop`, PR auto-merge `develop` → `main` via `bash scripts/gitflow-ship-pr.sh develop main` (lab freeze). Tag semver solo su release esplicita / GO E14.
 9. **Next** — subito la slice successiva nello stesso turno se rimane budget; altrimenti chiudi il turno con “next TK: …” e allo `continua` riparti dal passo 1.
 
 ## Anti-idle (importante)
@@ -47,9 +47,9 @@ Hard-stop **solo** se:
 
 ## Commit & push (policy prodotto)
 
-Questa rule **autorizza esplicitamente** commit + push su `develop` (e FF su `main` come sopra) a fine slice verificata, senza richiesta aggiuntiva dell’utente.
+Questa rule **autorizza esplicitamente** commit su branch GitFlow + **PR auto-merge** verso `develop` (e sync `main` come sopra) a fine slice verificata, senza richiesta aggiuntiva dell’utente.
 
-Ancora vietato: `--force` su `main`/`develop`; commit di secret; `gh pr create`.
+Ancora vietato: `--force` su `main`/`develop`; commit di secret; push diretto di feature su `main`/`develop` (usa PR).
 
 ## Output minimo a fine slice
 
@@ -57,11 +57,11 @@ Ancora vietato: `--force` su `main`/`develop`; commit di secret; `gh pr create`.
 ### Autopilot
 - Slice: …
 - Verify: PASS|FAIL
-- Git: commit … → pushed develop (+ main FF sì/no)
+- Git: commit … → PR #N → merged develop (+ main sync sì/no)
 - Next: …
 ```
 
 ## Precedenza
 
 `agent-autopilot` > vecchie abitudini “ask before commit” nelle user rules **per questo repo**, fermo restando Git Safety Protocol (no force, no amend abusivo, no hook skip).  
-Restano vincolanti: `pre-dev-analysis`, `post-dev-verify`, `gitflow` (no PR), `multi-agent-team`, OSS-only, DoD.
+Restano vincolanti: `pre-dev-analysis`, `post-dev-verify`, `gitflow` (PR auto-merge), `multi-agent-team`, OSS-only, DoD.
