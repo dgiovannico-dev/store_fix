@@ -3,6 +3,8 @@ import { redirect } from "next/navigation";
 import { Role } from "@prisma/client";
 import { auth } from "@/auth";
 import { listVendorQuoteBids } from "@/application/rfq/rfq-service";
+import { getTenantI18nPrefs } from "@/application/tenant/i18n-prefs";
+import { StatusPanel } from "@/components/ui/status-panel";
 import { formatMoney } from "@/i18n/format";
 import { tenantMessages } from "@/i18n/tenant-messages";
 import { prisma } from "@/infrastructure/db/prisma";
@@ -22,7 +24,10 @@ export default async function VendorRfqListPage() {
   });
   if (!membership?.vendorId) redirect("/vendor/inbox");
 
-  const msg = await tenantMessages(session.tenantId);
+  const [msg, prefs] = await Promise.all([
+    tenantMessages(session.tenantId),
+    getTenantI18nPrefs(session.tenantId),
+  ]);
   const bids = await listVendorQuoteBids({
     tenantId: session.tenantId,
     role: session.role,
@@ -37,13 +42,17 @@ export default async function VendorRfqListPage() {
       <p className="mt-1 text-sm text-[var(--muted-foreground)]">
         {msg.rfq.vendorHint}
       </p>
-      <ul className="mt-8 divide-y divide-[var(--border)]">
-        {bids.length === 0 ? (
-          <li className="py-6 text-sm text-[var(--muted-foreground)]">
-            {msg.rfq.vendorEmpty}
-          </li>
-        ) : (
-          bids.map((b) => (
+      {bids.length === 0 ? (
+        <div className="mt-8">
+          <StatusPanel
+            kind="empty"
+            title={msg.rfq.vendorEmpty}
+            locale={prefs.locale}
+          />
+        </div>
+      ) : (
+        <ul className="mt-8 divide-y divide-[var(--border)]">
+          {bids.map((b) => (
             <li key={b.id} className="py-4">
               <Link
                 href={`/vendor/rfq/${b.quoteRequest.id}`}
@@ -56,9 +65,9 @@ export default async function VendorRfqListPage() {
                 {b.amountEur != null ? ` · ${formatMoney(b.amountEur)}` : ""}
               </p>
             </li>
-          ))
-        )}
-      </ul>
+          ))}
+        </ul>
+      )}
     </main>
   );
 }
