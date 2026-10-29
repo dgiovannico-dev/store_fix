@@ -118,6 +118,8 @@ export function middleware(request: NextRequest) {
   response.headers.set("X-Permitted-Cross-Domain-Policies", "none");
   // Origin-keyed process hint (all responses; not a Spectre guarantee)
   response.headers.set("Origin-Agent-Cluster", "?1");
+  // Chromium DNS prefetch off — reduce link/domain leakage (OWASP SHP)
+  response.headers.set("X-DNS-Prefetch-Control", "off");
   // Dynamic SoR / auth surfaces — never store in shared or private HTTP cache
   applyNoStore(response.headers);
 
