@@ -163,7 +163,9 @@ export default async function VendorDetailPage({ params }: Props) {
             className="w-full rounded-[var(--radius)] border border-[var(--border)] px-3 py-2"
           />
           <fieldset className="space-y-2">
-            <legend className="text-sm font-medium">Coverage</legend>
+            <legend className="text-sm font-medium">
+              {msg.vendor.coverageLegend}
+            </legend>
             {stores.map((s) => (
               <label key={s.id} className="flex items-center gap-2 text-sm">
                 <input
@@ -180,17 +182,21 @@ export default async function VendorDetailPage({ params }: Props) {
             type="submit"
             className="rounded-[var(--radius)] bg-[var(--primary)] px-4 py-2 text-sm font-medium text-[var(--primary-foreground)]"
           >
-            Salva
+            {msg.vendor.save}
           </button>
         </form>
       ) : (
         <dl className="mt-6 space-y-2 text-sm">
           <div>
-            <dt className="text-[var(--muted-foreground)]">Email</dt>
+            <dt className="text-[var(--muted-foreground)]">
+              {msg.vendor.emailLabel}
+            </dt>
             <dd>{vendor.email ?? "—"}</dd>
           </div>
           <div>
-            <dt className="text-[var(--muted-foreground)]">Telefono</dt>
+            <dt className="text-[var(--muted-foreground)]">
+              {msg.vendor.phoneLabel}
+            </dt>
             <dd>{vendor.phone ?? "—"}</dd>
           </div>
         </dl>

@@ -53,6 +53,9 @@ export const en = {
     emailPlaceholder: "Email",
     phonePlaceholder: "Phone",
     tradesPlaceholder: "Trades (e.g. fridge, hvac)",
+    emailLabel: "Email",
+    phoneLabel: "Phone",
+    save: "Save",
   },
   stores: {
     title: "Stores",

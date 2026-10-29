@@ -51,6 +51,9 @@ export const it = {
     emailPlaceholder: "Email",
     phonePlaceholder: "Telefono",
     tradesPlaceholder: "Mestieri (es. frigo, hvac)",
+    emailLabel: "Email",
+    phoneLabel: "Telefono",
+    save: "Salva",
   },
   stores: {
     title: "Punti vendita",
