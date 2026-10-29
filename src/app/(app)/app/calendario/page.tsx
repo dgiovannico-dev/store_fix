@@ -13,6 +13,7 @@ import {
 import { getTenantI18nPrefs } from "@/application/tenant/i18n-prefs";
 import { listStores } from "@/domain/stores/store-service";
 import { listVendors } from "@/domain/vendors/vendor-service";
+import { StatusPanel } from "@/components/ui/status-panel";
 import { dateLocaleFor } from "@/i18n";
 import { tenantMessages } from "@/i18n/tenant-messages";
 
@@ -132,13 +133,17 @@ export default async function CalendarioPmPage() {
         </form>
       ) : null}
 
+      {events.length === 0 ? (
+        <div className="mt-10">
+          <StatusPanel
+            kind="empty"
+            title={copy.empty}
+            locale={prefs.locale}
+          />
+        </div>
+      ) : (
       <ul className="mt-10 divide-y divide-[var(--border)]">
-        {events.length === 0 ? (
-          <li className="py-6 text-sm text-[var(--muted-foreground)]">
-            {copy.empty}
-          </li>
-        ) : (
-          events.map((e) => {
+          {events.map((e) => {
             const overdue = e.scheduledAt.getTime() < now.getTime();
             return (
               <li
@@ -199,9 +204,9 @@ export default async function CalendarioPmPage() {
                 </div>
               </li>
             );
-          })
-        )}
+          })}
       </ul>
+      )}
     </main>
   );
 }

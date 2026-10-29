@@ -2,6 +2,8 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { createStoreAction, deleteStoreAction } from "@/app/actions/stores";
+import { getTenantI18nPrefs } from "@/application/tenant/i18n-prefs";
+import { StatusPanel } from "@/components/ui/status-panel";
 import { canMutate } from "@/domain/rbac/can";
 import { RbacAction } from "@/domain/rbac/actions";
 import { listStores } from "@/domain/stores/store-service";
@@ -13,8 +15,11 @@ export default async function StoresPage() {
     redirect("/login");
   }
 
-  const msg = await tenantMessages(session.tenantId);
-  const stores = await listStores(session.tenantId);
+  const [msg, prefs, stores] = await Promise.all([
+    tenantMessages(session.tenantId),
+    getTenantI18nPrefs(session.tenantId),
+    listStores(session.tenantId),
+  ]);
   const canEdit = canMutate(session.role, RbacAction.crudStore);
 
   return (
@@ -81,13 +86,17 @@ export default async function StoresPage() {
         </form>
       ) : null}
 
+      {stores.length === 0 ? (
+        <div className="mt-10">
+          <StatusPanel
+            kind="empty"
+            title={msg.stores.empty}
+            locale={prefs.locale}
+          />
+        </div>
+      ) : (
       <ul className="mt-10 divide-y divide-[var(--border)]">
-        {stores.length === 0 ? (
-          <li className="py-6 text-sm text-[var(--muted-foreground)]">
-            {msg.stores.empty}
-          </li>
-        ) : (
-          stores.map((s) => (
+          {stores.map((s) => (
             <li
               key={s.id}
               className="flex flex-wrap items-center justify-between gap-3 py-4"
@@ -136,9 +145,9 @@ export default async function StoresPage() {
                 </div>
               ) : null}
             </li>
-          ))
-        )}
+          ))}
       </ul>
+      )}
     </main>
   );
 }

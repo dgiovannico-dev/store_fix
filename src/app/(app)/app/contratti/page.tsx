@@ -14,6 +14,7 @@ import {
 } from "@/domain/vendor-contracts/vendor-contract-service";
 import { listVendors } from "@/domain/vendors/vendor-service";
 import { getTenantI18nPrefs } from "@/application/tenant/i18n-prefs";
+import { StatusPanel } from "@/components/ui/status-panel";
 import { formatMoney } from "@/i18n/format";
 import { tenantMessages } from "@/i18n/tenant-messages";
 
@@ -157,13 +158,17 @@ export default async function ContrattiPage({ searchParams }: Props) {
         </form>
       ) : null}
 
+      {contracts.length === 0 ? (
+        <div className="mt-10">
+          <StatusPanel
+            kind="empty"
+            title={msg.contracts.empty}
+            locale={prefs.locale}
+          />
+        </div>
+      ) : (
       <ul className="mt-10 divide-y divide-[var(--border)]">
-        {contracts.length === 0 ? (
-          <li className="py-6 text-sm text-[var(--muted-foreground)]">
-            {msg.contracts.empty}
-          </li>
-        ) : (
-          contracts.map((c) => (
+          {contracts.map((c) => (
             <li
               key={c.id}
               className="flex flex-wrap items-start justify-between gap-3 py-4"
@@ -205,9 +210,9 @@ export default async function ContrattiPage({ searchParams }: Props) {
                 </form>
               ) : null}
             </li>
-          ))
-        )}
+          ))}
       </ul>
+      )}
     </main>
   );
 }
