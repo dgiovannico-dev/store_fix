@@ -35,4 +35,14 @@ describe("domainErrors catalog", () => {
       "Dashboard not allowed",
     );
   });
+
+  it("store/asset/membership codes risolvono IT/EN", () => {
+    expect(domainErrorFor("storeNotFound", "it")).toBe(
+      "Punto vendita non trovato",
+    );
+    expect(domainErrorFor("membershipNotFound", "en")).toBe(
+      "Membership not found",
+    );
+    expect(domainErrorFor("vendorNotFound", "en")).toBe("Vendor not found");
+  });
 });

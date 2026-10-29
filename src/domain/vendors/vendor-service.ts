@@ -60,7 +60,7 @@ export async function createVendor(input: {
   assertCanMutate(input.role, RbacAction.crudVendor);
   const parsed = vendorInputSchema.safeParse(input.data);
   if (!parsed.success) {
-    return { ok: false as const, message: "Dati fornitore non validi" };
+    return { ok: false as const, message: "Dati fornitore non validi", code: "invalidVendorData" };
   }
   const coverageErr = await assertCoverageInTenant(
     input.tenantId,
@@ -96,11 +96,11 @@ export async function updateVendor(input: {
   assertCanMutate(input.role, RbacAction.crudVendor);
   const parsed = vendorInputSchema.safeParse(input.data);
   if (!parsed.success) {
-    return { ok: false as const, message: "Dati fornitore non validi" };
+    return { ok: false as const, message: "Dati fornitore non validi", code: "invalidVendorData" };
   }
   const existing = await getVendor(input.tenantId, input.vendorId);
   if (!existing) {
-    return { ok: false as const, message: "Fornitore non trovato" };
+    return { ok: false as const, message: "Fornitore non trovato", code: "vendorNotFound" };
   }
   const coverageErr = await assertCoverageInTenant(
     input.tenantId,
@@ -135,7 +135,7 @@ export async function softDeleteVendor(input: {
   assertCanMutate(input.role, RbacAction.crudVendor);
   const existing = await getVendor(input.tenantId, input.vendorId);
   if (!existing) {
-    return { ok: false as const, message: "Fornitore non trovato" };
+    return { ok: false as const, message: "Fornitore non trovato", code: "vendorNotFound" };
   }
   await prisma.vendor.update({
     where: { id: existing.id },
