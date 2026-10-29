@@ -357,6 +357,19 @@ export const en = {
     vendorLinked: "Linked vendor",
     saveScope: "Save scope",
   },
+  home: {
+    eyebrow: "Retail maintenance · Italy",
+    body: "System of record for tickets, SLA and vendors — OSS self-host, WhatsApp is not the SoR.",
+    signIn: "Sign in",
+    health: "Health check",
+  },
+  offline: {
+    title: "You are offline",
+    body: "FacilityFlow needs a connection for tickets, SLA and costs. UI assets may stay cached; data stays on the server.",
+    retry: "try again",
+    restorePrefix: "Restore the network and",
+    restoreSuffix: ".",
+  },
   auth: {
     tagline:
       "Retail maintenance, one system of record for stores, HQ and vendors.",

@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { requestPasswordReset } from "@/domain/auth/password-reset";
-import { t } from "@/i18n";
+import { requestMessages } from "@/i18n/request-locale";
 
-export default function ForgotPasswordPage() {
-  const msg = t("it").auth;
+export default async function ForgotPasswordPage() {
+  const msg = (await requestMessages()).auth;
 
   return (
     <main className="relative flex min-h-dvh flex-col items-center justify-center px-6 py-16">
