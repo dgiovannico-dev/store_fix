@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { StatusPanel } from "@/components/ui/status-panel";
-import type { Locale, MessageCatalog } from "@/i18n";
+import { formatDateTime, type Locale, type MessageCatalog } from "@/i18n";
 
 type Item = {
   id: string;
@@ -142,7 +142,10 @@ export function NotificationBell({
                 >
                   <p className="font-medium">{typeLabel(labels, n.type)}</p>
                   <p className="text-xs text-[var(--muted-foreground)]">
-                    {new Date(n.createdAt).toLocaleString(dateLocale)}
+                    {formatDateTime(n.createdAt, {
+                      dateLocale,
+                      currency: "EUR",
+                    })}
                   </p>
                   <div className="mt-1 flex gap-2">
                     {n.ticketId ? (
