@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import type { MessageCatalog } from "@/i18n";
 
 type Item = {
   id: string;
@@ -8,9 +9,19 @@ type Item = {
   sizeBytes: number;
 };
 
-type Props = { ticketId: string; items: Item[] };
+type Props = {
+  ticketId: string;
+  items: Item[];
+  labels: MessageCatalog["ticketPanels"];
+  photoWord?: string;
+};
 
-export function AttachmentGallery({ ticketId, items }: Props) {
+export function AttachmentGallery({
+  ticketId,
+  items,
+  labels,
+  photoWord = "Foto",
+}: Props) {
   const [urls, setUrls] = useState<Record<string, string>>({});
   const [error, setError] = useState<string | null>(null);
 
@@ -25,7 +36,7 @@ export function AttachmentGallery({ ticketId, items }: Props) {
     );
     const data = (await res.json()) as { url?: string; error?: string };
     if (!res.ok || !data.url) {
-      setError(data.error ?? "Download non disponibile");
+      setError(data.error ?? labels.galleryDownloadFail);
       return;
     }
     setUrls((prev) => ({ ...prev, [id]: data.url! }));
@@ -35,7 +46,7 @@ export function AttachmentGallery({ ticketId, items }: Props) {
   if (items.length === 0) {
     return (
       <p className="text-sm text-[var(--muted-foreground)]">
-        Nessuna foto allegata.
+        {labels.galleryEmpty}
       </p>
     );
   }
@@ -50,7 +61,7 @@ export function AttachmentGallery({ ticketId, items }: Props) {
               onClick={() => open(a.id)}
               className="text-sm font-medium text-[var(--primary)] underline-offset-4 hover:underline"
             >
-              Foto {i + 1} · {a.mime.replace("image/", "")} ·{" "}
+              {photoWord} {i + 1} · {a.mime.replace("image/", "")} ·{" "}
               {Math.round(a.sizeBytes / 1024)} KB
             </button>
           </li>

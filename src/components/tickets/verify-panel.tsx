@@ -6,12 +6,18 @@ import {
   verifyTicketAction,
   type VerifyActionState,
 } from "@/app/actions/verify-tickets";
+import type { MessageCatalog } from "@/i18n";
 
-type Props = { ticketId: string; status: string; canVerify: boolean };
+type Props = {
+  ticketId: string;
+  status: string;
+  canVerify: boolean;
+  labels: MessageCatalog["ticketPanels"];
+};
 
 const initial: VerifyActionState = {};
 
-export function VerifyPanel({ ticketId, status, canVerify }: Props) {
+export function VerifyPanel({ ticketId, status, canVerify, labels }: Props) {
   const [verifyState, verifyAction, verifyPending] = useActionState(
     verifyTicketAction,
     initial,
@@ -26,7 +32,7 @@ export function VerifyPanel({ ticketId, status, canVerify }: Props) {
   return (
     <section className="mt-8 space-y-4 border-t border-[var(--border)] pt-6">
       <h2 className="text-sm font-semibold uppercase tracking-wide text-[var(--muted-foreground)]">
-        Verifica store
+        {labels.verifyTitle}
       </h2>
       <form action={verifyAction}>
         <input type="hidden" name="ticketId" value={ticketId} />
@@ -35,7 +41,7 @@ export function VerifyPanel({ ticketId, status, canVerify }: Props) {
           disabled={verifyPending}
           className="w-full rounded-[var(--radius)] bg-[var(--primary)] px-4 py-3 text-sm font-medium text-[var(--primary-foreground)] disabled:opacity-60"
         >
-          {verifyPending ? "…" : "Conferma verificato"}
+          {verifyPending ? labels.pending : labels.verifyConfirm}
         </button>
       </form>
       {verifyState.error ? (
@@ -47,7 +53,7 @@ export function VerifyPanel({ ticketId, status, canVerify }: Props) {
       <form action={rejectAction} className="space-y-2">
         <input type="hidden" name="ticketId" value={ticketId} />
         <label className="block text-sm font-medium">
-          Rifiuta (motivo) → torna in lavorazione
+          {labels.verifyRejectLabel}
           <textarea
             name="reason"
             required
@@ -66,7 +72,7 @@ export function VerifyPanel({ ticketId, status, canVerify }: Props) {
           disabled={rejectPending}
           className="w-full rounded-[var(--radius)] border border-[var(--critical)] px-4 py-3 text-sm font-medium text-[var(--critical)] disabled:opacity-60"
         >
-          {rejectPending ? "…" : "Rifiuta verifica"}
+          {rejectPending ? labels.pending : labels.verifyReject}
         </button>
       </form>
     </section>

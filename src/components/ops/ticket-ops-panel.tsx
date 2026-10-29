@@ -8,6 +8,7 @@ import {
   type TicketActionState,
 } from "@/app/actions/tickets";
 import { INTAKE_PRIORITIES } from "@/domain/intake/chat-steps";
+import type { MessageCatalog } from "@/i18n";
 
 type VendorOpt = { id: string; name: string };
 type Hint = { vendorId: string; vendorName: string } | null;
@@ -21,6 +22,7 @@ type Props = {
   vendors: VendorOpt[];
   preferredHint: Hint;
   canOps: boolean;
+  labels: MessageCatalog["ticketPanels"];
 };
 
 const initial: TicketActionState = {};
@@ -34,6 +36,7 @@ export function TicketOpsPanel({
   vendors,
   preferredHint,
   canOps,
+  labels,
 }: Props) {
   const [triageState, triageAction, triagePending] = useActionState(
     triageTicketAction,
@@ -56,13 +59,13 @@ export function TicketOpsPanel({
   return (
     <section className="mt-8 space-y-6 border-t border-[var(--border)] pt-6">
       <h2 className="text-sm font-semibold uppercase tracking-wide text-[var(--muted-foreground)]">
-        Operazioni HQ
+        {labels.opsTitle}
       </h2>
 
       {preferredHint ? (
         <p className="rounded-[var(--radius)] border border-[var(--border)] px-3 py-2 text-sm">
-          Suggerimento preferred vendor:{" "}
-          <strong>{preferredHint.vendorName}</strong> (assegnazione manuale)
+          {labels.opsPreferred}{" "}
+          <strong>{preferredHint.vendorName}</strong> {labels.opsPreferredManual}
         </p>
       ) : null}
 
@@ -70,7 +73,7 @@ export function TicketOpsPanel({
         <form action={triageAction} className="space-y-3">
           <input type="hidden" name="ticketId" value={ticketId} />
           <label className="block text-sm font-medium">
-            Nota interna (opz.)
+            {labels.opsInternalNote}
             <textarea
               name="note"
               rows={2}
@@ -87,7 +90,7 @@ export function TicketOpsPanel({
             disabled={triagePending}
             className="rounded-[var(--radius)] bg-[var(--primary)] px-4 py-2 text-sm font-medium text-[var(--primary-foreground)] disabled:opacity-60"
           >
-            {triagePending ? "…" : "Segna triaged"}
+            {triagePending ? labels.pending : labels.opsTriage}
           </button>
         </form>
       ) : null}
@@ -96,7 +99,7 @@ export function TicketOpsPanel({
         <form action={assignAction} className="space-y-3">
           <input type="hidden" name="ticketId" value={ticketId} />
           <label className="block text-sm font-medium">
-            Fornitore *
+            {labels.opsVendor}
             <select
               name="vendorId"
               required
@@ -105,12 +108,14 @@ export function TicketOpsPanel({
               className="mt-1 w-full rounded-[var(--radius)] border border-[var(--border)] bg-white px-3 py-2 text-sm"
             >
               <option value="" disabled>
-                Seleziona…
+                {labels.opsSelect}
               </option>
               {vendors.map((v) => (
                 <option key={v.id} value={v.id}>
                   {v.name}
-                  {preferredHint?.vendorId === v.id ? " ★ preferred" : ""}
+                  {preferredHint?.vendorId === v.id
+                    ? labels.opsPreferredMark
+                    : ""}
                 </option>
               ))}
             </select>
@@ -136,7 +141,7 @@ export function TicketOpsPanel({
                   } | null;
                 };
                 if (!data.suggestion) {
-                  setAiHint("Nessun vendor suggerito");
+                  setAiHint(labels.opsAiNone);
                   return;
                 }
                 setAiHint(
@@ -149,13 +154,13 @@ export function TicketOpsPanel({
             }}
             className="text-sm font-medium text-[var(--primary)] underline-offset-4 hover:underline disabled:opacity-60"
           >
-            {aiPending ? "Suggerimento…" : "Suggerisci vendor (conferma in select)"}
+            {aiPending ? labels.opsAiPending : labels.opsAiSuggest}
           </button>
           {aiHint ? (
             <p className="text-xs text-[var(--muted-foreground)]">{aiHint}</p>
           ) : null}
           <label className="block text-sm font-medium">
-            Priorità
+            {labels.opsPriority}
             <select
               name="priority"
               defaultValue={priority}
@@ -169,7 +174,7 @@ export function TicketOpsPanel({
             </select>
           </label>
           <label className="block text-sm font-medium">
-            Nota interna (opz.)
+            {labels.opsInternalNote}
             <textarea
               name="note"
               rows={2}
@@ -186,7 +191,7 @@ export function TicketOpsPanel({
             disabled={assignPending || vendors.length === 0}
             className="rounded-[var(--radius)] bg-[var(--primary)] px-4 py-2 text-sm font-medium text-[var(--primary-foreground)] disabled:opacity-60"
           >
-            {assignPending ? "…" : "Assegna vendor"}
+            {assignPending ? labels.pending : labels.opsAssign}
           </button>
         </form>
       ) : null}
@@ -195,7 +200,7 @@ export function TicketOpsPanel({
         <form action={cancelAction} className="space-y-3">
           <input type="hidden" name="ticketId" value={ticketId} />
           <label className="block text-sm font-medium">
-            Annulla (motivo obbligatorio)
+            {labels.opsCancelLabel}
             <textarea
               name="reason"
               required
@@ -214,7 +219,7 @@ export function TicketOpsPanel({
             disabled={cancelPending}
             className="rounded-[var(--radius)] border border-[var(--critical)] px-4 py-2 text-sm font-medium text-[var(--critical)] disabled:opacity-60"
           >
-            {cancelPending ? "…" : "Annulla ticket"}
+            {cancelPending ? labels.pending : labels.opsCancel}
           </button>
         </form>
       ) : null}

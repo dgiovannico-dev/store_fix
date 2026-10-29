@@ -7,6 +7,7 @@ import {
   type QuoteActionState,
 } from "@/app/actions/ticket-quote";
 import { QuoteAmountFields } from "@/components/tickets/quote-amount-fields";
+import type { MessageCatalog } from "@/i18n";
 
 const initial: QuoteActionState = {};
 
@@ -15,12 +16,9 @@ type Props = {
   mode: "propose" | "decide" | "readonly";
   quoteStatus: string | null;
   estimatedCost: number | null;
-};
-
-const STATUS_IT: Record<string, string> = {
-  pending: "In attesa",
-  accepted: "Accettato",
-  rejected: "Rifiutato",
+  labels: MessageCatalog["ticketPanels"];
+  dateLocale?: string;
+  currency?: string;
 };
 
 export function QuotePanel({
@@ -28,6 +26,9 @@ export function QuotePanel({
   mode,
   quoteStatus,
   estimatedCost,
+  labels,
+  dateLocale = "it-IT",
+  currency = "EUR",
 }: Props) {
   const [proposeState, proposeAction, proposePending] = useActionState(
     proposeQuoteAction,
@@ -38,21 +39,31 @@ export function QuotePanel({
     initial,
   );
 
+  const statusLabel = quoteStatus
+    ? quoteStatus === "pending"
+      ? labels.quotePending
+      : quoteStatus === "accepted"
+        ? labels.quoteAccepted
+        : quoteStatus === "rejected"
+          ? labels.quoteRejected
+          : quoteStatus
+    : labels.quoteNone;
+
   return (
     <section className="mt-6 space-y-3 rounded-[var(--radius)] border border-[var(--border)] p-4">
-      <h2 className="text-sm font-semibold">Preventivo</h2>
+      <h2 className="text-sm font-semibold">{labels.quoteTitle}</h2>
       <p className="text-sm text-[var(--muted-foreground)]">
-        Stato:{" "}
+        {labels.quoteStatus}{" "}
         <span className="font-medium text-[var(--foreground)]">
-          {quoteStatus ? STATUS_IT[quoteStatus] ?? quoteStatus : "Nessuno"}
+          {statusLabel}
         </span>
         {estimatedCost != null ? (
           <>
             {" "}
             ·{" "}
-            {estimatedCost.toLocaleString("it-IT", {
+            {estimatedCost.toLocaleString(dateLocale, {
               style: "currency",
-              currency: "EUR",
+              currency,
             })}
           </>
         ) : null}
@@ -61,7 +72,11 @@ export function QuotePanel({
       {mode === "propose" ? (
         <form action={proposeAction} className="space-y-3">
           <input type="hidden" name="ticketId" value={ticketId} />
-          <QuoteAmountFields defaultAmount={estimatedCost} />
+          <QuoteAmountFields
+            defaultAmount={estimatedCost}
+            amountLabel={labels.amountLabel}
+            noteLabel={labels.noteLabel}
+          />
           {proposeState.error ? (
             <p className="text-sm text-[var(--critical)]" role="alert">
               {proposeState.error}
@@ -72,7 +87,7 @@ export function QuotePanel({
             disabled={proposePending}
             className="rounded-[var(--radius)] bg-[var(--primary)] px-4 py-2 text-sm font-medium text-[var(--primary-foreground)] disabled:opacity-60"
           >
-            {proposePending ? "…" : "Invia preventivo"}
+            {proposePending ? labels.pending : labels.quoteSubmit}
           </button>
         </form>
       ) : null}
@@ -81,7 +96,7 @@ export function QuotePanel({
         <form action={decideAction} className="space-y-3">
           <input type="hidden" name="ticketId" value={ticketId} />
           <label className="block text-sm font-medium">
-            Motivo (opz. su rifiuto)
+            {labels.quoteReason}
             <input
               name="reason"
               maxLength={500}
@@ -101,7 +116,7 @@ export function QuotePanel({
               disabled={decidePending}
               className="rounded-[var(--radius)] bg-[var(--primary)] px-4 py-2 text-sm font-medium text-[var(--primary-foreground)] disabled:opacity-60"
             >
-              Accetta
+              {labels.quoteAccept}
             </button>
             <button
               type="submit"
@@ -110,7 +125,7 @@ export function QuotePanel({
               disabled={decidePending}
               className="rounded-[var(--radius)] border border-[var(--border)] px-4 py-2 text-sm font-medium disabled:opacity-60"
             >
-              Rifiuta
+              {labels.quoteReject}
             </button>
           </div>
         </form>

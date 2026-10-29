@@ -173,6 +173,9 @@ export default async function TicketDetailPage({
           estimatedCost={
             ticket.estimatedCost != null ? Number(ticket.estimatedCost) : null
           }
+          labels={msg.ticketPanels}
+          dateLocale={prefs.dateLocale}
+          currency={prefs.currency}
         />
       ) : null}
 
@@ -194,6 +197,8 @@ export default async function TicketDetailPage({
         </h2>
         <AttachmentGallery
           ticketId={ticket.id}
+          labels={msg.ticketPanels}
+          photoWord={copy.photos}
           items={ticket.attachments.map((a) => ({
             id: a.id,
             mime: a.mime,
@@ -201,7 +206,10 @@ export default async function TicketDetailPage({
           }))}
         />
         {ticket.status !== "cancelled" && ticket.status !== "verified" ? (
-          <AttachmentUploader ticketId={ticket.id} />
+          <AttachmentUploader
+            ticketId={ticket.id}
+            labels={msg.ticketPanels}
+          />
         ) : null}
       </section>
 
@@ -217,7 +225,11 @@ export default async function TicketDetailPage({
         />
       </section>
 
-      <SummarizeNotesPanel ticketId={ticket.id} canOps={canOps} />
+      <SummarizeNotesPanel
+        ticketId={ticket.id}
+        canOps={canOps}
+        labels={msg.ticketPanels}
+      />
 
       {canOps ? (
         <p className="mt-4 text-sm">
@@ -239,18 +251,21 @@ export default async function TicketDetailPage({
         vendors={vendors}
         preferredHint={hint}
         canOps={canOps}
+        labels={msg.ticketPanels}
       />
 
       <SlaRelaunchPanel
         ticketId={ticket.id}
         breached={!!ticket.slaBreachedAt}
         canOps={canOps}
+        labels={msg.ticketPanels}
       />
 
       <VerifyPanel
         ticketId={ticket.id}
         status={ticket.status}
         canVerify={can(session.role, RbacAction.verifyTicket)}
+        labels={msg.ticketPanels}
       />
     </main>
   );

@@ -5,28 +5,35 @@ import {
   relaunchSlaAction,
   type RelaunchState,
 } from "@/app/actions/sla-ops";
+import type { MessageCatalog } from "@/i18n";
 
 type Props = {
   ticketId: string;
   breached: boolean;
   canOps: boolean;
+  labels: MessageCatalog["ticketPanels"];
 };
 
 const initial: RelaunchState = {};
 
-export function SlaRelaunchPanel({ ticketId, breached, canOps }: Props) {
+export function SlaRelaunchPanel({
+  ticketId,
+  breached,
+  canOps,
+  labels,
+}: Props) {
   const [state, action, pending] = useActionState(relaunchSlaAction, initial);
   if (!canOps || !breached) return null;
 
   return (
     <section className="mt-8 space-y-3 border-t border-[var(--border)] pt-6">
       <h2 className="text-sm font-semibold uppercase tracking-wide text-[var(--muted-foreground)]">
-        Escalation SLA
+        {labels.slaTitle}
       </h2>
       <form action={action} className="space-y-3">
         <input type="hidden" name="ticketId" value={ticketId} />
         <label className="block text-sm font-medium">
-          Nota rilancio *
+          {labels.slaNote}
           <textarea
             name="note"
             required
@@ -42,7 +49,7 @@ export function SlaRelaunchPanel({ ticketId, breached, canOps }: Props) {
         ) : null}
         {state.ok ? (
           <p className="text-sm text-[var(--success)]" role="status">
-            Rilancio inviato
+            {labels.slaOk}
           </p>
         ) : null}
         <button
@@ -50,7 +57,7 @@ export function SlaRelaunchPanel({ ticketId, breached, canOps }: Props) {
           disabled={pending}
           className="rounded-[var(--radius)] border border-[var(--border)] px-4 py-2 text-sm font-medium disabled:opacity-60"
         >
-          {pending ? "…" : "Rilancia notifica ops"}
+          {pending ? labels.pending : labels.slaSubmit}
         </button>
       </form>
     </section>

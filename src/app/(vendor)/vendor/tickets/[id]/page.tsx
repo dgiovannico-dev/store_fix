@@ -130,6 +130,8 @@ export default async function VendorTicketDetailPage({ params }: Props) {
         </h2>
         <AttachmentGallery
           ticketId={ticket.id}
+          labels={msg.ticketPanels}
+          photoWord={copy.photos}
           items={ticket.attachments.map((a) => ({
             id: a.id,
             mime: a.mime,
@@ -137,7 +139,10 @@ export default async function VendorTicketDetailPage({ params }: Props) {
           }))}
         />
         {ticket.status !== "verified" && ticket.status !== "cancelled" ? (
-          <AttachmentUploader ticketId={ticket.id} />
+          <AttachmentUploader
+            ticketId={ticket.id}
+            labels={msg.ticketPanels}
+          />
         ) : null}
       </section>
 
@@ -149,6 +154,9 @@ export default async function VendorTicketDetailPage({ params }: Props) {
           estimatedCost={
             ticket.estimatedCost != null ? Number(ticket.estimatedCost) : null
           }
+          labels={msg.ticketPanels}
+          dateLocale={prefs.dateLocale}
+          currency={prefs.currency}
         />
       ) : ticket.quoteStatus || ticket.estimatedCost ? (
         <QuotePanel
@@ -158,10 +166,17 @@ export default async function VendorTicketDetailPage({ params }: Props) {
           estimatedCost={
             ticket.estimatedCost != null ? Number(ticket.estimatedCost) : null
           }
+          labels={msg.ticketPanels}
+          dateLocale={prefs.dateLocale}
+          currency={prefs.currency}
         />
       ) : null}
 
-      <VendorTicketActions ticketId={ticket.id} status={ticket.status} />
+      <VendorTicketActions
+        ticketId={ticket.id}
+        status={ticket.status}
+        labels={msg.ticketPanels}
+      />
 
       <section className="mt-10">
         <h2 className="text-sm font-semibold uppercase tracking-wide text-[var(--muted-foreground)]">

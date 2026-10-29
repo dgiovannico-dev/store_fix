@@ -2,12 +2,16 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import type { MessageCatalog } from "@/i18n";
 
 const ACCEPT = "image/jpeg,image/png,image/webp";
 
-type Props = { ticketId: string };
+type Props = {
+  ticketId: string;
+  labels: MessageCatalog["ticketPanels"];
+};
 
-export function AttachmentUploader({ ticketId }: Props) {
+export function AttachmentUploader({ ticketId, labels }: Props) {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -41,7 +45,7 @@ export function AttachmentUploader({ ticketId }: Props) {
           mime?: string;
         };
         if (!presignRes.ok || !presign.uploadUrl || !presign.storageKey) {
-          throw new Error(presign.error ?? "Presign fallito");
+          throw new Error(presign.error ?? labels.uploadPresignFail);
         }
 
         const put = await fetch(presign.uploadUrl, {
@@ -50,7 +54,7 @@ export function AttachmentUploader({ ticketId }: Props) {
           body: file,
         });
         if (!put.ok) {
-          throw new Error(`Upload storage fallito (${put.status})`);
+          throw new Error(`${labels.uploadStorageFail} (${put.status})`);
         }
 
         const confirmRes = await fetch(
@@ -70,13 +74,13 @@ export function AttachmentUploader({ ticketId }: Props) {
           error?: string;
         };
         if (!confirmRes.ok || !confirm.ok) {
-          throw new Error(confirm.error ?? "Conferma allegato fallita");
+          throw new Error(confirm.error ?? labels.uploadConfirmFail);
         }
       }
-      setOkMsg("Foto caricate");
+      setOkMsg(labels.uploadOk);
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Errore upload");
+      setError(err instanceof Error ? err.message : labels.uploadError);
     } finally {
       setBusy(false);
       e.target.value = "";
@@ -86,7 +90,7 @@ export function AttachmentUploader({ ticketId }: Props) {
   return (
     <div className="space-y-2">
       <label className="block text-sm font-medium">
-        Aggiungi foto
+        {labels.uploadAdd}
         <input
           type="file"
           accept={ACCEPT}
@@ -96,11 +100,11 @@ export function AttachmentUploader({ ticketId }: Props) {
           className="mt-1 block w-full text-sm file:mr-3 file:rounded-[var(--radius)] file:border-0 file:bg-[var(--primary)] file:px-3 file:py-2 file:text-sm file:font-medium file:text-[var(--primary-foreground)]"
         />
       </label>
-      <p className="text-xs text-[var(--muted-foreground)]">
-        JPEG, PNG o WebP · max 10 MB ciascuna
-      </p>
+      <p className="text-xs text-[var(--muted-foreground)]">{labels.uploadHint}</p>
       {busy ? (
-        <p className="text-sm text-[var(--muted-foreground)]">Caricamento…</p>
+        <p className="text-sm text-[var(--muted-foreground)]">
+          {labels.uploadBusy}
+        </p>
       ) : null}
       {error ? (
         <p className="text-sm text-[var(--critical)]" role="alert">

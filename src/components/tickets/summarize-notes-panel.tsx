@@ -1,10 +1,15 @@
 "use client";
 
 import { useState } from "react";
+import type { MessageCatalog } from "@/i18n";
 
-type Props = { ticketId: string; canOps: boolean };
+type Props = {
+  ticketId: string;
+  canOps: boolean;
+  labels: MessageCatalog["ticketPanels"];
+};
 
-export function SummarizeNotesPanel({ ticketId, canOps }: Props) {
+export function SummarizeNotesPanel({ ticketId, canOps, labels }: Props) {
   const [pending, setPending] = useState(false);
   const [summary, setSummary] = useState<string | null>(null);
   const [source, setSource] = useState<string | null>(null);
@@ -15,10 +20,10 @@ export function SummarizeNotesPanel({ ticketId, canOps }: Props) {
   return (
     <section className="mt-6 space-y-2 border-t border-[var(--border)] pt-6">
       <h2 className="text-sm font-semibold uppercase tracking-wide text-[var(--muted-foreground)]">
-        Assist riassunto
+        {labels.summarizeTitle}
       </h2>
       <p className="text-xs text-[var(--muted-foreground)]">
-        Suggerimento AI/heuristic — non salva sul ticket (conferma = sola lettura).
+        {labels.summarizeHint}
       </p>
       <button
         type="button"
@@ -36,7 +41,7 @@ export function SummarizeNotesPanel({ ticketId, canOps }: Props) {
               const j = (await res.json().catch(() => ({}))) as {
                 error?: string;
               };
-              setError(j.error ?? "Errore riassunto");
+              setError(j.error ?? labels.summarizeError);
               return;
             }
             const data = (await res.json()) as {
@@ -51,7 +56,7 @@ export function SummarizeNotesPanel({ ticketId, canOps }: Props) {
         }}
         className="rounded-[var(--radius)] border border-[var(--border)] px-3 py-2 text-sm font-medium disabled:opacity-60"
       >
-        {pending ? "Generazione…" : "Genera riassunto (assist)"}
+        {pending ? labels.summarizePending : labels.summarizeBtn}
       </button>
       {error ? (
         <p className="text-sm text-[var(--critical)]" role="alert">
@@ -61,7 +66,7 @@ export function SummarizeNotesPanel({ ticketId, canOps }: Props) {
       {summary ? (
         <div className="rounded-[var(--radius)] border border-[var(--border)] bg-white p-3 text-sm whitespace-pre-wrap">
           <p className="mb-2 text-xs text-[var(--muted-foreground)]">
-            Fonte: {source} · needsConfirm
+            {labels.summarizeSource} {source} · needsConfirm
           </p>
           {summary}
         </div>

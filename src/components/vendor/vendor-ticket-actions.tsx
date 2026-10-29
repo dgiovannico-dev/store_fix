@@ -6,12 +6,17 @@ import {
   vendorStatusAction,
   type VendorActionState,
 } from "@/app/actions/vendor-tickets";
+import type { MessageCatalog } from "@/i18n";
 
-type Props = { ticketId: string; status: string };
+type Props = {
+  ticketId: string;
+  status: string;
+  labels: MessageCatalog["ticketPanels"];
+};
 
 const initial: VendorActionState = {};
 
-export function VendorTicketActions({ ticketId, status }: Props) {
+export function VendorTicketActions({ ticketId, status, labels }: Props) {
   const [statusState, statusAction, statusPending] = useActionState(
     vendorStatusAction,
     initial,
@@ -24,7 +29,7 @@ export function VendorTicketActions({ ticketId, status }: Props) {
   return (
     <section className="mt-8 space-y-6 border-t border-[var(--border)] pt-6">
       <h2 className="text-sm font-semibold uppercase tracking-wide text-[var(--muted-foreground)]">
-        Aggiorna intervento
+        {labels.vendorTitle}
       </h2>
 
       {(status === "assigned" || status === "waiting_parts") && (
@@ -36,7 +41,7 @@ export function VendorTicketActions({ ticketId, status }: Props) {
             disabled={statusPending}
             className="w-full rounded-[var(--radius)] bg-[var(--primary)] px-4 py-3.5 text-base font-medium text-[var(--primary-foreground)] disabled:opacity-60"
           >
-            {statusPending ? "…" : "Inizia intervento"}
+            {statusPending ? labels.pending : labels.vendorStart}
           </button>
         </form>
       )}
@@ -50,7 +55,7 @@ export function VendorTicketActions({ ticketId, status }: Props) {
             disabled={statusPending}
             className="w-full rounded-[var(--radius)] border border-[var(--border)] px-4 py-3.5 text-base font-medium disabled:opacity-60"
           >
-            {statusPending ? "…" : "In attesa ricambi"}
+            {statusPending ? labels.pending : labels.vendorWaiting}
           </button>
         </form>
       )}
@@ -67,10 +72,10 @@ export function VendorTicketActions({ ticketId, status }: Props) {
         <form action={completeAction} className="space-y-3">
           <input type="hidden" name="ticketId" value={ticketId} />
           <p className="text-sm text-[var(--muted-foreground)]">
-            Prima di chiudere carica almeno una foto dal dettaglio (allegati).
+            {labels.vendorPhotoHint}
           </p>
           <label className="block text-sm font-medium">
-            Costo effettivo EUR *
+            {labels.vendorActualCost}
             <input
               name="actualCost"
               type="number"
@@ -81,7 +86,7 @@ export function VendorTicketActions({ ticketId, status }: Props) {
             />
           </label>
           <label className="block text-sm font-medium">
-            Stima EUR (opz.)
+            {labels.vendorEstCost}
             <input
               name="estimatedCost"
               type="number"
@@ -91,7 +96,7 @@ export function VendorTicketActions({ ticketId, status }: Props) {
             />
           </label>
           <label className="block text-sm font-medium">
-            Report intervento *
+            {labels.vendorReport}
             <textarea
               name="completionReport"
               required
@@ -110,7 +115,7 @@ export function VendorTicketActions({ ticketId, status }: Props) {
             disabled={completePending}
             className="w-full rounded-[var(--radius)] bg-[var(--primary)] px-4 py-3.5 text-base font-medium text-[var(--primary-foreground)] disabled:opacity-60"
           >
-            {completePending ? "…" : "Chiudi come completato"}
+            {completePending ? labels.pending : labels.vendorComplete}
           </button>
         </form>
       )}
