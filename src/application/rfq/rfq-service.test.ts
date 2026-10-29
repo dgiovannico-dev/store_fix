@@ -103,7 +103,15 @@ describe("rfq-service F3-07", () => {
       bidId: bidA.id,
       data: { amountEur: 99 },
     });
-    expect(cross.ok).toBe(false);
+    expect(cross).toEqual({ ok: false, code: "rfqInviteNotFound" });
+
+    const badCreate = await createQuoteRequest({
+      tenantId,
+      role: Role.owner,
+      actorUserId: signup.userId,
+      data: { title: "X", vendorIds: [] },
+    });
+    expect(badCreate).toEqual({ ok: false, code: "invalidRfqData" });
 
     const awarded = await awardQuoteBid({
       tenantId,
