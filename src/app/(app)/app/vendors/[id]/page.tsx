@@ -11,7 +11,6 @@ import {
   listVendorContracts,
 } from "@/domain/vendor-contracts/vendor-contract-service";
 import { getVendor } from "@/domain/vendors/vendor-service";
-import { formatEur } from "@/domain/ticket/costs";
 import { getTenantI18nPrefs } from "@/application/tenant/i18n-prefs";
 import { formatMoney } from "@/i18n/format";
 import { tenantMessages } from "@/i18n/tenant-messages";
@@ -95,7 +94,7 @@ export default async function VendorDetailPage({ params }: Props) {
               <dd className="tabular-nums font-medium">
                 {score.avgResolutionDays == null
                   ? "—"
-                  : score.avgResolutionDays.toLocaleString("it-IT", {
+                  : score.avgResolutionDays.toLocaleString(prefs.dateLocale, {
                       maximumFractionDigits: 1,
                     })}
               </dd>
@@ -223,10 +222,8 @@ export default async function VendorDetailPage({ params }: Props) {
                 <li key={c.id} className="py-2">
                   <p className="font-medium">{c.title}</p>
                   <p className="text-[var(--muted-foreground)]">
-                    {c.endsOn.toLocaleDateString("it-IT")}
-                    {c.annualFee != null
-                      ? ` · ${formatEur(c.annualFee)}`
-                      : ""}
+                    {c.endsOn.toLocaleDateString(prefs.dateLocale)}
+                    {c.annualFee != null ? ` · ${eur(Number(c.annualFee))}` : ""}
                   </p>
                 </li>
               ))}

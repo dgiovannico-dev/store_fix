@@ -14,7 +14,7 @@ import {
   intakePriorityLabel,
 } from "@/domain/intake/chat-steps";
 import { computeSlaBadge } from "@/domain/sla/badge";
-import { formatEur } from "@/domain/ticket/costs";
+import { formatMoney } from "@/i18n/format";
 import { canProposeQuote } from "@/domain/ticket/quote";
 import { listTicketEvents } from "@/infrastructure/db/ticket-event-repository";
 import { prisma } from "@/infrastructure/db/prisma";
@@ -108,7 +108,7 @@ export default async function VendorTicketDetailPage({ params }: Props) {
       </p>
       {ticket.actualCost != null ? (
         <p className="mt-2 text-sm">
-          {copy.costPrefix} {formatEur(ticket.actualCost)}
+          {copy.costPrefix} {formatMoney(ticket.actualCost, prefs)}
         </p>
       ) : null}
 

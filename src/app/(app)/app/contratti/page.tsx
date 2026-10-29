@@ -13,8 +13,8 @@ import {
   listVendorContracts,
 } from "@/domain/vendor-contracts/vendor-contract-service";
 import { listVendors } from "@/domain/vendors/vendor-service";
-import { formatEur } from "@/domain/ticket/costs";
 import { getTenantI18nPrefs } from "@/application/tenant/i18n-prefs";
+import { formatMoney } from "@/i18n/format";
 import { tenantMessages } from "@/i18n/tenant-messages";
 
 function expiryTone(endsOn: Date, now: Date) {
@@ -37,6 +37,7 @@ export default async function ContrattiPage({ searchParams }: Props) {
     getTenantI18nPrefs(session.tenantId),
   ]);
   const dayLabel = (d: Date) => d.toLocaleDateString(prefs.dateLocale);
+  const money = (n: number) => formatMoney(n, prefs) ?? "—";
   const sp = await searchParams;
   const showAll = sp.all === "1";
   const canEdit = canMutate(session.role, RbacAction.crudVendorContract);
@@ -176,13 +177,15 @@ export default async function ContrattiPage({ searchParams }: Props) {
                   >
                     {c.vendor.name}
                   </Link>
-                  {c.store ? ` · ${c.store.name}` : " · rete"}
+                  {c.store
+                    ? ` · ${c.store.name}`
+                    : ` · ${msg.contracts.networkWide}`}
                   {c.reference ? ` · ${c.reference}` : ""}
                 </p>
                 <p className={`mt-1 text-sm ${expiryTone(c.endsOn, now)}`}>
                   {dayLabel(c.startsOn)} → {dayLabel(c.endsOn)}
                   {c.annualFee != null
-                    ? ` · ${formatEur(c.annualFee)}`
+                    ? ` · ${money(Number(c.annualFee))}`
                     : ""}
                 </p>
               </div>

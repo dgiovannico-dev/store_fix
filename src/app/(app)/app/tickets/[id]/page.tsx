@@ -21,7 +21,8 @@ import {
   intakePriorityLabel,
 } from "@/domain/intake/chat-steps";
 import { computeSlaBadge } from "@/domain/sla/badge";
-import { canReadTicketCosts, formatEur } from "@/domain/ticket/costs";
+import { canReadTicketCosts } from "@/domain/ticket/costs";
+import { formatMoney } from "@/i18n/format";
 import { canDecideQuote } from "@/domain/ticket/quote";
 import { listTicketEvents } from "@/infrastructure/db/ticket-event-repository";
 import { prisma } from "@/infrastructure/db/prisma";
@@ -157,9 +158,9 @@ export default async function TicketDetailPage({
       {showCosts ? (
         <p className="mt-4 text-sm">
           {copy.costsPrefix}{" "}
-          {formatEur(ticket.actualCost) ?? copy.actualDash}
+          {formatMoney(ticket.actualCost, prefs) ?? copy.actualDash}
           {ticket.estimatedCost
-            ? ` · ${copy.estimatePrefix} ${formatEur(ticket.estimatedCost)}`
+            ? ` · ${copy.estimatePrefix} ${formatMoney(ticket.estimatedCost, prefs)}`
             : ""}
         </p>
       ) : null}
