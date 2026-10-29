@@ -10,10 +10,12 @@ Badge (default branch `main`):
 
 - `lint`, `typecheck`, `test` (Postgres service)
 - `secrets:scan`
+- `compose:prod|lab|observe:config` (YAML interpolate, no stack up)
 - `build` (`next build`) con cache npm
 - `npm audit --audit-level=high` (**fail hard**; waiver: [`AUDIT.md`](./AUDIT.md))
 - Perf p95 lista HQ su seed pilota (`perf:hq-list`)
 - HTTP smoke curl+session (`npm run smoke:http` dopo `next start` + seed pilota) — US-E14-12 path auth
+- Security headers prod CSP (`verify:headers … --prod`, no `unsafe-eval`) — US-E14-10 in-repo half
 
 ## Runner
 

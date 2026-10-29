@@ -46,6 +46,14 @@ jobs:
       - name: Secrets scan
         run: npm run secrets:scan
 
+      - name: Compose prod/lab/observe config
+        # S5 / E14 — YAML+env interpolate senza avviare stack (no VPS)
+        run: |
+          set -euo pipefail
+          npm run compose:prod:config
+          npm run compose:lab:config
+          npm run compose:prod:observe:config
+
       - name: Prisma generate + migrate
         run: |
           npx prisma generate
@@ -87,6 +95,7 @@ jobs:
             sleep 1
           done
           npm run smoke:http
+          npm run verify:headers -- http://127.0.0.1:3000/login --prod
         env:
           SMOKE_BASE_URL: http://127.0.0.1:3000
 
