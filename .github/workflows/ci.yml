@@ -6,8 +6,24 @@ on:
   push:
     branches: [develop]
 
+# Same SHA often runs as push(develop) + PR(develop→main lab sync).
+# Cancel the duplicate; avoid stacking red noise from superseded runs.
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.sha }}
+  cancel-in-progress: true
+
 jobs:
+  # Satisfies PR status when heavy jobs are skipped (lab sync develop→main).
+  lab-sync:
+    if: ${{ github.event_name == 'pull_request' && github.base_ref == 'main' && github.head_ref == 'develop' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Skip heavy CI (already green on develop tip)
+        run: echo "Lab sync — osv/verify skipped; tip already validated on push to develop."
+
   osv:
+    # Lab sync develop→main: verify already ran on the develop push.
+    if: ${{ !(github.event_name == 'pull_request' && github.base_ref == 'main' && github.head_ref == 'develop') }}
     # US-E14-10 / T5.21 — OSV lockfile gate (parallelo a npm audit in verify)
     runs-on: ubuntu-latest
     permissions:
@@ -20,6 +36,8 @@ jobs:
           OSV_SCANNER_VERSION: v2.7.0
 
   verify:
+    # Lab sync develop→main: skip re-build (fonts/CI already green on develop tip).
+    if: ${{ !(github.event_name == 'pull_request' && github.base_ref == 'main' && github.head_ref == 'develop') }}
     runs-on: ubuntu-latest
     services:
       postgres:

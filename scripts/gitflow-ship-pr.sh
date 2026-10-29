@@ -83,6 +83,23 @@ if [[ "$HEAD_REF" != "main" && "$HEAD_REF" != "develop" ]]; then
   MERGE_FLAGS+=(--delete-branch)
 fi
 
+# Feature/bugfix → develop: wait for CI before merge so red runs are not "merged then fail".
+# Lab sync develop→main: light job only (see ci.yml); no long wait.
+if [[ "$HEAD_REF" != "develop" && "$BASE" == "develop" ]]; then
+  echo "Waiting for PR #$PR checks to appear…"
+  for _ in $(seq 1 36); do
+    if gh pr checks "$PR" >/dev/null 2>&1; then
+      break
+    fi
+    sleep 5
+  done
+  echo "Waiting for PR #$PR checks to pass…"
+  if ! gh pr checks "$PR" --watch --fail-fast --interval 20; then
+    echo "CI failed on PR #$PR — abort merge" >&2
+    exit 1
+  fi
+fi
+
 # Prefer auto-merge (waits checks if required); fallback immediate merge
 if ! gh pr merge "$PR" --auto "${MERGE_FLAGS[@]}" 2>/dev/null; then
   gh pr merge "$PR" "${MERGE_FLAGS[@]}"
