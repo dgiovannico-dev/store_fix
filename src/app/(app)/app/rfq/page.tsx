@@ -6,6 +6,7 @@ import { getTenantI18nPrefs } from "@/application/tenant/i18n-prefs";
 import { StatusPanel } from "@/components/ui/status-panel";
 import { canMutate } from "@/domain/rbac/can";
 import { RbacAction } from "@/domain/rbac/actions";
+import { rfqRequestStatusLabel } from "@/domain/rfq/status-labels";
 import { formatMoney } from "@/i18n/format";
 import { tenantMessages } from "@/i18n/tenant-messages";
 
@@ -64,7 +65,8 @@ export default async function RfqListPage() {
                   {r.title}
                 </Link>
                 <p className="mt-1 text-xs text-[var(--muted-foreground)]">
-                  {r.status} · {r.bids.length} · {submitted.length}
+                  {rfqRequestStatusLabel(r.status, prefs.locale)} ·{" "}
+                  {r.bids.length} · {submitted.length}
                   {min ? ` · ${min}` : ""}
                   {r.ticketId ? ` · ${r.ticketId.slice(0, 8)}…` : ""}
                 </p>
