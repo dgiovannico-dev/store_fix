@@ -81,4 +81,11 @@ describe("domainErrors catalog", () => {
       domainErrorFor("csvTooManyRows", "en", { max: "200", found: "201" }),
     ).toContain("201");
   });
+
+  it("upload/signup field codes risolvono IT/EN + params", () => {
+    expect(
+      domainErrorFor("uploadMimeNotAllowed", "en", { mime: "application/pdf" }),
+    ).toContain("application/pdf");
+    expect(domainErrorFor("signupPasswordTooShort", "it")).toContain("8");
+  });
 });

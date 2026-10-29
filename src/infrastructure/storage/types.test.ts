@@ -11,15 +11,24 @@ describe("assertAllowedUpload", () => {
   });
 
   it("rifiuta mime non in allowlist", () => {
-    expect(() => assertAllowedUpload("application/pdf", 100)).toThrow(
-      StorageValidationError,
-    );
+    try {
+      assertAllowedUpload("application/pdf", 100);
+      expect.unreachable();
+    } catch (e) {
+      expect(e).toBeInstanceOf(StorageValidationError);
+      expect((e as StorageValidationError).code).toBe("uploadMimeNotAllowed");
+      expect((e as StorageValidationError).params?.mime).toBe("application/pdf");
+    }
   });
 
   it("rifiuta file troppo grandi", () => {
-    expect(() =>
-      assertAllowedUpload("image/png", MAX_ATTACHMENT_BYTES + 1),
-    ).toThrow(StorageValidationError);
+    try {
+      assertAllowedUpload("image/png", MAX_ATTACHMENT_BYTES + 1);
+      expect.unreachable();
+    } catch (e) {
+      expect(e).toBeInstanceOf(StorageValidationError);
+      expect((e as StorageValidationError).code).toBe("uploadSizeInvalid");
+    }
   });
 
   it("rifiuta size zero", () => {

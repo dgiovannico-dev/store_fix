@@ -2,7 +2,10 @@ import type { Membership, Role } from "@prisma/client";
 import { z } from "zod";
 import { canAccessStore } from "@/domain/rbac/store-scope";
 import { ForbiddenError } from "@/domain/rbac/guards";
-import { assertAllowedUpload } from "@/infrastructure/storage/types";
+import {
+  assertAllowedUpload,
+  StorageValidationError,
+} from "@/infrastructure/storage/types";
 import {
   buildAttachmentKey,
   getSignedPutUrl,
@@ -33,6 +36,14 @@ export async function requestAttachmentPresign(input: {
   try {
     assertAllowedUpload(parsed.data.mime, parsed.data.sizeBytes);
   } catch (e) {
+    if (e instanceof StorageValidationError) {
+      return {
+        ok: false as const,
+        message: e.message,
+        code: e.code,
+        params: e.params,
+      };
+    }
     return {
       ok: false as const,
       message: e instanceof Error ? e.message : "Upload non valido",

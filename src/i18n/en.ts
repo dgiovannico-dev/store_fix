@@ -223,6 +223,14 @@ export const en = {
     noActiveOwner: "No active owner on tenant",
     storeNotFoundOrArchived: "Store not found or archived",
     uploadInvalid: "Invalid upload",
+    uploadMimeNotAllowed:
+      "MIME not allowed: {mime}. Allowed: jpeg, png, webp.",
+    uploadSizeInvalid: "Invalid size (max {maxBytes} bytes).",
+    signupNameRequired: "Name is required",
+    signupEmailInvalid: "Invalid email",
+    signupPasswordTooShort: "Password must be at least 8 characters",
+    signupPasswordTooLong: "Password too long",
+    signupWorkspaceRequired: "Workspace name is required",
     signupEmailTaken:
       "Unable to complete registration with this data.",
     signupSlugTaken: "Workspace name already in use. Choose another.",
