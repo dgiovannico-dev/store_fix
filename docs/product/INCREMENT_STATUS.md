@@ -1,7 +1,7 @@
 # Increment status — FacilityFlow Retail
 
 **Aggiornato:** 2026-10-29 — **dev-only** (nessun deploy VPS); F3-01 resta tracking umano  
-Hardening recente in-repo: Auth idle timeout opt-in (`AUTH_SESSION_IDLE_SEC`); `.dockerignore`; CSP `media-src 'none'`; rate-limit async + Postgres store + `rate_limit.gc`; baseline headers / Secure cookies.
+Hardening recente in-repo: CSP `script-src-attr 'none'`; Auth idle timeout opt-in (`AUTH_SESSION_IDLE_SEC`); RL export GDPR/accounting + attachment presign; `.dockerignore`; CSP `media-src 'none'`; rate-limit async + Postgres store + `rate_limit.gc`; baseline headers / Secure cookies.
 
 | Sprint / fase | Stato | Note |
 |---------------|-------|------|

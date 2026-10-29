@@ -19,6 +19,12 @@ export const RATE_LIMIT = {
   /** Suggest category / vendor / summarize — stesso budget assist AI. */
   aiSuggest: { limit: 20, windowMs: 60_000 },
   inboundEmail: { limit: 60, windowMs: 60_000 },
+  /** Full-tenant GDPR JSON — rare, expensive. */
+  gdprExport: { limit: 3, windowMs: MIN15 },
+  /** Accounting CSV download — HQ/finance refresh. */
+  accountingExport: { limit: 10, windowMs: MIN15 },
+  /** Attachment presign mint — blocks storage abuse; allows multi-photo bursts. */
+  attachmentPresign: { limit: 40, windowMs: MIN15 },
 } as const satisfies Record<string, RateLimitPolicy>;
 
 export type RateLimitPolicyName = keyof typeof RATE_LIMIT;
