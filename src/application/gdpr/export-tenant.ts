@@ -84,7 +84,7 @@ export async function exportTenantGdpr(input: {
       },
       retentionPolicy: {
         verifiedTicketsMonths: 24,
-        note: "Job pg-boss gdpr.purge soft-delete verified oltre 24 mesi; SeaweedFS GC ops",
+        note: "Job pg-boss gdpr.purge soft-delete verified oltre 24 mesi; oggetti via attachment.gc",
       },
       stores,
       vendors,

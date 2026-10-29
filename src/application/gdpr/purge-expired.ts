@@ -27,7 +27,7 @@ export type PurgeExpiredResult = {
 
 /**
  * Soft-delete ticket `verified` oltre retention + allegati correlati.
- * Nessun hard-delete DB/SeaweedFS (GC oggetti = follow-up ops).
+ * Nessun hard-delete DB; oggetti SeaweedFS via job `attachment.gc` (grace).
  * Idempotente: `deletedAt IS NULL` sul candidate set.
  */
 export async function purgeExpiredVerifiedTickets(opts?: {

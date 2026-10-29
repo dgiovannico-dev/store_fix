@@ -9,7 +9,7 @@
 | Durata | **24 mesi** |
 | Disposition | **Soft-delete** (`deletedAt`) su ticket + allegati correlati |
 | Evento timeline | `gdpr_retention_purge` |
-| Oggetti SeaweedFS | Non cancellati subito (allineato a `SOFT_DELETE.md` / GC ops futuro) |
+| Oggetti SeaweedFS | Soft-delete metadata subito; hard-delete via `attachment.gc` dopo grace ([`ATTACHMENTS.md`](./ATTACHMENTS.md)) |
 
 ## Job pg-boss `gdpr.purge`
 

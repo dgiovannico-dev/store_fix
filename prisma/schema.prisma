@@ -489,6 +489,8 @@ model Attachment {
   sizeBytes        Int
   uploadedByUserId String?
   deletedAt        DateTime?
+  /** SeaweedFS object removed by `attachment.gc` (after grace). */
+  storagePurgedAt  DateTime?
   createdAt        DateTime  @default(now())
 
   tenant     Tenant @relation(fields: [tenantId], references: [id])
@@ -497,6 +499,7 @@ model Attachment {
 
   @@index([tenantId])
   @@index([ticketId])
+  @@index([deletedAt, storagePurgedAt])
 }
 
 model Notification {
