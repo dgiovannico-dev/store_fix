@@ -33,7 +33,10 @@ export async function POST(req: Request, ctx: Ctx) {
       data: { ...body, ticketId },
     });
     if (!result.ok) {
-      return NextResponse.json({ error: result.message }, { status: 400 });
+      return NextResponse.json(
+        { error: await actionResultError(result) },
+        { status: 400 },
+      );
     }
     return NextResponse.json({
       ok: true,
