@@ -15,7 +15,7 @@ const optionalHttpUrl = z
   .transform((v) => (v === "" || v == null ? null : v))
   .refine(
     (v) => v == null || /^https?:\/\//i.test(v),
-    "webhookUrl deve essere http(s)",
+    "storeWebhookUrlInvalid",
   );
 
 const optionalTopic = z
@@ -24,8 +24,13 @@ const optionalTopic = z
   .transform((v) => (v === "" || v == null ? null : v))
   .refine(
     (v) => v == null || /^[-_A-Za-z0-9]+$/.test(v),
-    "ntfyTopic non valido",
+    "storeNtfyTopicInvalid",
   );
+
+const STORE_FIELD_CODES = new Set([
+  "storeWebhookUrlInvalid",
+  "storeNtfyTopicInvalid",
+]);
 
 export const storeInputSchema = z.object({
   name: z.string().trim().min(2).max(120),
@@ -61,7 +66,13 @@ export async function createStore(input: {
   assertCanMutate(input.role, RbacAction.crudStore);
   const parsed = storeInputSchema.safeParse(input.data);
   if (!parsed.success) {
-    return { ok: false as const, message: "Dati store non validi", code: "invalidStoreData" };
+    const issue = parsed.error.issues[0]?.message ?? "invalidStoreData";
+    const code = STORE_FIELD_CODES.has(issue) ? issue : "invalidStoreData";
+    return {
+      ok: false as const,
+      message: issue,
+      code,
+    };
   }
   const store = await prisma.store.create({
     data: {
@@ -89,7 +100,13 @@ export async function updateStore(input: {
   assertCanMutate(input.role, RbacAction.crudStore);
   const parsed = storeInputSchema.safeParse(input.data);
   if (!parsed.success) {
-    return { ok: false as const, message: "Dati store non validi", code: "invalidStoreData" };
+    const issue = parsed.error.issues[0]?.message ?? "invalidStoreData";
+    const code = STORE_FIELD_CODES.has(issue) ? issue : "invalidStoreData";
+    return {
+      ok: false as const,
+      message: issue,
+      code,
+    };
   }
   const existing = await prisma.store.findFirst({
     where: { id: input.storeId, ...tenantActiveWhere(input.tenantId) },
