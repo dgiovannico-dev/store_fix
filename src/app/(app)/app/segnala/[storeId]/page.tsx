@@ -7,8 +7,8 @@ import { listAssets } from "@/domain/assets/asset-service";
 import { getActiveMembership } from "@/domain/memberships/membership-service";
 import { canAccessStore } from "@/domain/rbac/store-scope";
 import { tenantMessages } from "@/i18n/tenant-messages";
+import { checkRateLimitPolicyAsync } from "@/infrastructure/rate-limit-async";
 import { RATE_LIMIT } from "@/infrastructure/rate-limit-policies";
-import { checkRateLimitPolicy } from "@/infrastructure/rate-limit";
 import { prisma } from "@/infrastructure/db/prisma";
 
 type Props = { params: Promise<{ storeId: string }> };
@@ -30,7 +30,7 @@ export default async function SegnalaGuastoPage({ params }: Props) {
   ]);
   const copy = msg.intake;
 
-  const limit = checkRateLimitPolicy(
+  const limit = await checkRateLimitPolicyAsync(
     `intake:${session.tenantId}:${session.user.id}`,
     RATE_LIMIT.intake,
   );

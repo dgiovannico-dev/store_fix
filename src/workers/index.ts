@@ -1,5 +1,5 @@
 /**
- * Worker Compose / locale: email + sla + imap + pm + gdpr.purge + attachment.gc.
+ * Worker Compose / locale: email + sla + imap + pm + gdpr.purge + attachment.gc + rate_limit.gc.
  * Avvio: npm run worker
  */
 import { PgBoss } from "pg-boss";
@@ -7,6 +7,7 @@ import { gcSoftDeletedAttachments } from "../application/attachments/gc-soft-del
 import { pollImapInbound } from "../application/email-inbound/poll-imap";
 import { purgeExpiredVerifiedTickets } from "../application/gdpr/purge-expired";
 import { maintainPmJobs } from "../application/pm/maintain-pm";
+import { gcExpiredRateLimitBuckets } from "../application/rate-limit/gc-expired-buckets";
 import { checkSlaBreaches } from "../application/sla/check-breaches";
 import { sendEmail } from "../infrastructure/email/mailer";
 import { readImapInboundConfig } from "../infrastructure/email/imap-config";
@@ -17,6 +18,7 @@ import {
   QUEUE_EMAIL_SEND,
   QUEUE_GDPR_PURGE,
   QUEUE_PM_MAINTAIN,
+  QUEUE_RATE_LIMIT_GC,
   QUEUE_SLA_CHECK,
 } from "../infrastructure/jobs/boss";
 
@@ -35,6 +37,7 @@ async function main() {
   await boss.createQueue(QUEUE_PM_MAINTAIN);
   await boss.createQueue(QUEUE_GDPR_PURGE);
   await boss.createQueue(QUEUE_ATTACHMENT_GC);
+  await boss.createQueue(QUEUE_RATE_LIMIT_GC);
 
   await boss.work(
     QUEUE_EMAIL_SEND,
@@ -94,6 +97,13 @@ async function main() {
     );
   });
 
+  await boss.work(QUEUE_RATE_LIMIT_GC, async () => {
+    const result = await gcExpiredRateLimitBuckets();
+    console.log(
+      `[worker] rate_limit.gc → dryRun=${result.dryRun} deleted=${result.deleted} cutoff=${result.cutoff}`,
+    );
+  });
+
   try {
     await boss.schedule(QUEUE_SLA_CHECK, "*/5 * * * *", null, {
       tz: "Europe/Rome",
@@ -128,6 +138,15 @@ async function main() {
     console.warn("[worker] schedule attachment.gc:", (e as Error).message);
   }
 
+  try {
+    // RateLimitBucket scaduti — orario (utile con FF_RATE_LIMIT_STORE=postgres)
+    await boss.schedule(QUEUE_RATE_LIMIT_GC, "15 * * * *", null, {
+      tz: "Europe/Rome",
+    });
+  } catch (e) {
+    console.warn("[worker] schedule rate_limit.gc:", (e as Error).message);
+  }
+
   const imapConfig = readImapInboundConfig();
   if (imapConfig) {
     try {
@@ -152,6 +171,7 @@ async function main() {
     QUEUE_PM_MAINTAIN,
     QUEUE_GDPR_PURGE,
     QUEUE_ATTACHMENT_GC,
+    QUEUE_RATE_LIMIT_GC,
   );
 }
 
