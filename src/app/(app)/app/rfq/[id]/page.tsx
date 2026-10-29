@@ -75,7 +75,9 @@ export default async function RfqDetailPage({
               <p className="font-medium">{b.vendor.name}</p>
               <p className="text-[var(--muted-foreground)]">
                 {rfqBidStatusLabel(b.status, prefs.locale)}
-                {b.amountEur != null ? ` · ${formatMoney(b.amountEur)}` : ""}
+                {b.amountEur != null
+                  ? ` · ${formatMoney(b.amountEur, prefs)}`
+                  : ""}
                 {b.note ? ` — ${b.note}` : ""}
               </p>
             </div>

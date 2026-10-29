@@ -107,7 +107,7 @@ export default async function VendorInboxPage({ searchParams }: Props) {
                 {tk.store.name} ·{" "}
                 {ticketStatusLabel(tk.status, prefs.locale)}
                 {tk.slaDueAt
-                  ? ` · SLA ${tk.slaDueAt.toLocaleString(dLocale)}`
+                  ? ` · ${msg.ticketDetail.slaOkPrefix} ${tk.slaDueAt.toLocaleString(dLocale)}`
                   : ""}
               </p>
               <p className="mt-1 line-clamp-2 text-sm">{tk.description}</p>

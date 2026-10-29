@@ -2,7 +2,8 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { loginAction } from "@/app/actions/login";
-import { requestMessages } from "@/i18n/request-locale";
+import { StatusPanel } from "@/components/ui/status-panel";
+import { requestLocale, requestMessages } from "@/i18n/request-locale";
 
 type Props = {
   searchParams: Promise<{ error?: string; callbackUrl?: string }>;
@@ -14,7 +15,11 @@ export default async function LoginPage({ searchParams }: Props) {
     redirect("/onboarding");
   }
 
-  const msg = (await requestMessages()).auth;
+  const [msgCatalog, locale] = await Promise.all([
+    requestMessages(),
+    requestLocale(),
+  ]);
+  const msg = msgCatalog.auth;
   const params = await searchParams;
   const error =
     params.error === "CredentialsSignin"
@@ -83,9 +88,7 @@ export default async function LoginPage({ searchParams }: Props) {
           </div>
 
           {error ? (
-            <p className="text-sm text-[var(--critical)]" role="alert">
-              {error}
-            </p>
+            <StatusPanel kind="error" title={error} locale={locale} />
           ) : null}
 
           <button

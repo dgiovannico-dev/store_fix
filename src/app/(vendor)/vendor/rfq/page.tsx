@@ -67,7 +67,9 @@ export default async function VendorRfqListPage() {
               <p className="mt-1 text-xs text-[var(--muted-foreground)]">
                 {rfqRequestStatusLabel(b.quoteRequest.status, prefs.locale)} ·{" "}
                 {rfqBidStatusLabel(b.status, prefs.locale)}
-                {b.amountEur != null ? ` · ${formatMoney(b.amountEur)}` : ""}
+                {b.amountEur != null
+                  ? ` · ${formatMoney(b.amountEur, prefs)}`
+                  : ""}
               </p>
             </li>
           ))}
