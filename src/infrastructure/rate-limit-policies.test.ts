@@ -22,5 +22,6 @@ describe("RATE_LIMIT policies", () => {
       windowMs: 15 * 60 * 1000,
     });
     expect(RATE_LIMIT.notifications).toEqual({ limit: 60, windowMs: 60_000 });
+    expect(RATE_LIMIT.formOptions).toEqual({ limit: 30, windowMs: 60_000 });
   });
 });
