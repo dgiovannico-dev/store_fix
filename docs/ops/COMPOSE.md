@@ -56,13 +56,17 @@ Build Docker `app`/`worker`: context snello via [`.dockerignore`](../../.dockeri
 
 ## Porte
 
-| Servizio | Porta | Note |
-|----------|-------|------|
-| `postgres` | 5432 | user/pass/db da `.env` |
-| `seaweedfs` | 8333 S3 · 9333 master | bucket via `npm run storage:init` |
-| `mailpit` | 1025 SMTP · 8025 UI | solo profile `dev` / QA |
-| `app` | 3000 | profile `full` oppure `npm run dev` |
-| `worker` | — | pg-boss · `email.send` / SLA stub |
+Pubblicate su **`127.0.0.1` only** in `docker-compose.yml` (lab): evita bind `0.0.0.0` che bypassa UFW ([Docker publish ports](https://docs.docker.com/get-started/docker-concepts/running-containers/publishing-ports/)). Tra container resta la rete Compose (`postgres:5432`, `seaweedfs:8333`).
+
+| Servizio | Porta host | Note |
+|----------|------------|------|
+| `postgres` | `127.0.0.1:5432` | user/pass/db da `.env` |
+| `seaweedfs` | `127.0.0.1:8333` S3 · `9333` master | bucket via `npm run storage:init` |
+| `mailpit` | `127.0.0.1:1025` SMTP · `8025` UI | solo profile `dev` / QA |
+| `app` | `127.0.0.1:3000` | profile `full` oppure `npm run dev` |
+| `worker` | — | pg-boss · `email.send` / SLA stub; `no-new-privileges` |
+
+`app` / `worker` (profile `full`): `security_opt: no-new-privileges:true`.
 
 ## Credenziali locali (non produzione)
 

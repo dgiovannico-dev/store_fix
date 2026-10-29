@@ -6,8 +6,9 @@ services:
       POSTGRES_USER: ${POSTGRES_USER:-facilityflow}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-facilityflow_dev}
       POSTGRES_DB: ${POSTGRES_DB:-facilityflow}
+    # Loopback only — bare "5432:5432" publishes on all interfaces (bypasses UFW).
     ports:
-      - "5432:5432"
+      - "127.0.0.1:5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -21,8 +22,8 @@ services:
     restart: unless-stopped
     command: 'server -dir=/data -s3 -ip.bind=0.0.0.0 -master.port=9333 -volume.port=8080 -s3.port=8333'
     ports:
-      - "8333:8333"
-      - "9333:9333"
+      - "127.0.0.1:8333:8333"
+      - "127.0.0.1:9333:9333"
     volumes:
       - seaweed_data:/data
 
@@ -31,6 +32,8 @@ services:
       context: .
       dockerfile: Dockerfile
     restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
     depends_on:
       postgres:
         condition: service_healthy
@@ -47,7 +50,7 @@ services:
       SMTP_HOST: mailpit
       SMTP_PORT: "1025"
     ports:
-      - "3000:3000"
+      - "127.0.0.1:3000:3000"
     healthcheck:
       test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:3000/api/health/ready || exit 1"]
       interval: 10s
@@ -61,6 +64,8 @@ services:
       context: .
       dockerfile: Dockerfile.worker
     restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
     depends_on:
       postgres:
         condition: service_healthy
@@ -87,8 +92,8 @@ services:
     profiles: ["dev", "full"]
     restart: unless-stopped
     ports:
-      - "1025:1025"
-      - "8025:8025"
+      - "127.0.0.1:1025:1025"
+      - "127.0.0.1:8025:8025"
 
   # F3-02 GlitchTip self-host — docker compose --profile observe up -d
   # DB dedicato (non riusa SoR facilityflow). Zero Sentry Cloud.
@@ -123,7 +128,7 @@ services:
       glitchtip-valkey:
         condition: service_started
     ports:
-      - "${GLITCHTIP_PORT:-8000}:8000"
+      - "127.0.0.1:${GLITCHTIP_PORT:-8000}:8000"
     environment:
       DATABASE_URL: postgres://glitchtip:${GLITCHTIP_DB_PASSWORD:-glitchtip_dev}@glitchtip-db:5432/glitchtip
       SECRET_KEY: ${GLITCHTIP_SECRET_KEY:-dev-only-change-me-glitchtip}
