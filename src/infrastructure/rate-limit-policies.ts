@@ -25,6 +25,10 @@ export const RATE_LIMIT = {
   accountingExport: { limit: 10, windowMs: MIN15 },
   /** Attachment presign mint — blocks storage abuse; allows multi-photo bursts. */
   attachmentPresign: { limit: 40, windowMs: MIN15 },
+  /** Signed GET URL mint for attachments. */
+  attachmentUrl: { limit: 60, windowMs: MIN15 },
+  /** NotificationBell poll (30s) + list/mark-read — shared per user. */
+  notifications: { limit: 60, windowMs: 60_000 },
 } as const satisfies Record<string, RateLimitPolicy>;
 
 export type RateLimitPolicyName = keyof typeof RATE_LIMIT;
