@@ -12,6 +12,7 @@ import { assertCan, assertCanMutate, ForbiddenError } from "@/domain/rbac/guards
 import { canAwardRfqBid, canSubmitRfqBid } from "@/domain/rfq/rules";
 import { parseQuoteAmount } from "@/domain/ticket/quote";
 import { TicketEventType } from "@/domain/ticket/event-types";
+import { getTenantI18nPrefs } from "@/application/tenant/i18n-prefs";
 import { enqueueEmail } from "@/infrastructure/email/outbox";
 import { appendTicketEvent } from "@/infrastructure/db/ticket-event-repository";
 import { prisma } from "@/infrastructure/db/prisma";
@@ -106,6 +107,7 @@ export async function createQuoteRequest(input: {
   });
 
   const rfqUrl = `${appBaseUrl()}/vendor/rfq/${request.id}`;
+  const { locale } = await getTenantI18nPrefs(input.tenantId);
   await Promise.all(
     request.bids.map(async (bid) => {
       const to = bid.vendor.email?.trim();
@@ -113,6 +115,7 @@ export async function createQuoteRequest(input: {
       await enqueueEmail({
         to,
         template: "rfq_invite",
+        locale,
         vars: {
           vendorName: bid.vendor.name,
           summary: request.title,

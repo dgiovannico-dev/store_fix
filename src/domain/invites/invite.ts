@@ -1,8 +1,9 @@
 import { createHash, randomBytes } from "crypto";
 import { Role } from "@prisma/client";
 import { z } from "zod";
+import { getTenantI18nPrefs } from "@/application/tenant/i18n-prefs";
 import { requireTenantId } from "@/infrastructure/db/tenant-scope";
-import { sendEmail } from "@/infrastructure/email/mailer";
+import { enqueueEmail } from "@/infrastructure/email/outbox";
 import { prisma } from "@/infrastructure/db/prisma";
 import { RbacAction } from "@/domain/rbac/actions";
 import { assertCanMutate } from "@/domain/rbac/guards";
@@ -87,11 +88,13 @@ export async function createInvite(input: {
   });
 
   const acceptUrl = `${appBaseUrl()}/invite/${raw}`;
-  await sendEmail({
+  const { locale } = await getTenantI18nPrefs(input.tenantId);
+  await enqueueEmail({
     to: invite.email,
-    subject: "[FacilityFlow] Invito al workspace",
-    text: `Sei stato invitato su FacilityFlow con ruolo ${invite.role}.\n\nAccetta entro 7 giorni:\n${acceptUrl}\n`,
-    html: `<p>Sei stato invitato su FacilityFlow con ruolo <strong>${invite.role}</strong>.</p><p><a href="${acceptUrl}">Accetta invito</a> (scade tra 7 giorni).</p>`,
+    template: "invite",
+    locale,
+    vars: { acceptUrl, role: invite.role },
+    idempotencyKey: `invite:${invite.id}`,
   });
 
   return { ok: true, inviteId: invite.id, acceptUrl };

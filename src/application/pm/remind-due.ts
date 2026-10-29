@@ -1,4 +1,5 @@
 import { PmEventStatus, Role } from "@prisma/client";
+import { getTenantI18nPrefs } from "@/application/tenant/i18n-prefs";
 import { enqueueEmail } from "@/infrastructure/email/outbox";
 import { prisma } from "@/infrastructure/db/prisma";
 
@@ -47,11 +48,13 @@ export async function remindDuePmEvents(
     ];
 
     const when = event.scheduledAt.toISOString();
+    const { locale } = await getTenantI18nPrefs(event.tenantId);
     await Promise.all(
       emails.map((to) =>
         enqueueEmail({
           to,
           template: "pm_reminder",
+          locale,
           vars: {
             storeName: event.store.name,
             summary: `${event.title} — ${when}`,

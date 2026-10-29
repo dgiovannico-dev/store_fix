@@ -1,4 +1,5 @@
 import type { Prisma, Ticket } from "@prisma/client";
+import { getTenantI18nPrefs } from "@/application/tenant/i18n-prefs";
 import { NotificationType } from "@/domain/notification/types";
 import { enqueueEmail } from "@/infrastructure/email/outbox";
 import type { EmailTemplateId } from "@/infrastructure/email/templates";
@@ -8,6 +9,7 @@ import {
 } from "@/infrastructure/push/store-push";
 import { prisma } from "@/infrastructure/db/prisma";
 import { requireTenantId } from "@/infrastructure/db/tenant-scope";
+import { t, type Locale } from "@/i18n";
 import {
   resolveHqRecipients,
   resolveStoreRecipients,
@@ -52,6 +54,7 @@ async function createNotifications(input: {
 async function sendTemplate(input: {
   emails: string[];
   template: EmailTemplateId;
+  locale: Locale;
   vars: {
     ticketId: string;
     storeName?: string;
@@ -65,6 +68,7 @@ async function sendTemplate(input: {
       enqueueEmail({
         to,
         template: input.template,
+        locale: input.locale,
         vars: {
           ...input.vars,
           summary:
@@ -82,6 +86,7 @@ async function notify(
   recipients: Recipient[],
   payload: Prisma.InputJsonValue,
   template: EmailTemplateId,
+  locale: Locale,
   vars: {
     ticketId: string;
     storeName?: string;
@@ -101,6 +106,7 @@ async function notify(
   await sendTemplate({
     emails: [...uniq.map((r) => r.email), ...extraEmails],
     template,
+    locale,
     vars,
   });
 }
@@ -114,6 +120,7 @@ async function maybePushStore(input: {
   storeName: string;
   ticketId: string;
   summary: string;
+  locale: Locale;
 }) {
   if (!STORE_PUSH_KINDS.has(input.kind)) return;
   const store = await prisma.store.findFirst({
@@ -126,10 +133,11 @@ async function maybePushStore(input: {
   });
   if (!store?.webhookUrl && !store?.ntfyTopic) return;
 
+  const n = t(input.locale).notifBell;
   const titles: Record<string, string> = {
-    created: "Nuovo ticket",
-    assigned: "Ticket assegnato",
-    done: "Intervento completato",
+    created: n.evtCreated,
+    assigned: n.evtAssigned,
+    done: n.evtDone,
   };
   await pushStoreTicketEvent(
     { webhookUrl: store.webhookUrl, ntfyTopic: store.ntfyTopic },
@@ -156,7 +164,11 @@ export async function emitTicketNotification(input: {
   actorUserId: string;
 }) {
   requireTenantId(input.tenantId);
-  const storeName = input.ticket.store?.name ?? "punto vendita";
+  const prefs = await getTenantI18nPrefs(input.tenantId);
+  const locale = prefs.locale;
+  const storeName =
+    input.ticket.store?.name ??
+    (locale === "en" ? "store" : "punto vendita");
   const ticketId = input.ticket.id;
   const summary = input.ticket.description.slice(0, 200);
   const vendor = input.ticket.vendor;
@@ -173,6 +185,7 @@ export async function emitTicketNotification(input: {
       await resolveHqRecipients(input.tenantId),
       base,
       "ticket_nuovo",
+      locale,
       { ticketId, storeName, summary },
     );
     await maybePushStore({
@@ -182,6 +195,7 @@ export async function emitTicketNotification(input: {
       storeName,
       ticketId,
       summary,
+      locale,
     });
     return;
   }
@@ -197,6 +211,7 @@ export async function emitTicketNotification(input: {
       vendorUsers,
       { ...base, vendorId: vendor?.id, vendorName: vendor?.name },
       "ticket_assign",
+      locale,
       {
         ticketId,
         storeName,
@@ -212,6 +227,7 @@ export async function emitTicketNotification(input: {
       storeName,
       ticketId,
       summary,
+      locale,
     });
     return;
   }
@@ -231,6 +247,7 @@ export async function emitTicketNotification(input: {
       uniqueRecipients([...storePeople, ...vendorUsers]),
       { ...base, reason: input.ticket.cancelReason },
       "ticket_cancelled",
+      locale,
       {
         ticketId,
         storeName,
@@ -255,6 +272,7 @@ export async function emitTicketNotification(input: {
       uniqueRecipients([...hq, ...storePeople]),
       base,
       "ticket_done",
+      locale,
       { ticketId, storeName, vendorName: vendor?.name, summary },
     );
     await maybePushStore({
@@ -264,6 +282,7 @@ export async function emitTicketNotification(input: {
       storeName,
       ticketId,
       summary,
+      locale,
     });
     return;
   }
@@ -276,6 +295,7 @@ export async function emitTicketNotification(input: {
       await resolveHqRecipients(input.tenantId),
       base,
       "ticket_breach",
+      locale,
       { ticketId, storeName, summary },
     );
     return;
@@ -293,6 +313,7 @@ export async function emitTicketNotification(input: {
       uniqueRecipients([...hq, ...vendorUsers]),
       base,
       "ticket_verified",
+      locale,
       { ticketId, storeName, vendorName: vendor?.name, summary },
       vendor?.email ? [vendor.email] : [],
     );
@@ -311,6 +332,7 @@ export async function emitTicketNotification(input: {
     uniqueRecipients([...hq, ...vendorUsers]),
     { ...base, reason: input.ticket.rejectReason },
     "ticket_rejected",
+    locale,
     {
       ticketId,
       storeName,

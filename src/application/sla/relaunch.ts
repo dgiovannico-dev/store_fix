@@ -1,5 +1,6 @@
 import { Role, type Membership } from "@prisma/client";
 import { z } from "zod";
+import { getTenantI18nPrefs } from "@/application/tenant/i18n-prefs";
 import { assignTicket } from "@/application/tickets/transition-ticket";
 import { RbacAction } from "@/domain/rbac/actions";
 import { assertCan, ForbiddenError } from "@/domain/rbac/guards";
@@ -83,15 +84,18 @@ export async function relaunchSlaTicket(input: {
       })),
     });
     const stamp = Date.now().toString(36);
+    const { locale } = await getTenantI18nPrefs(input.tenantId);
+    const relaunchPrefix = locale === "en" ? "SLA relaunch:" : "Rilancio SLA:";
     await Promise.all(
       hq.map((r) =>
         enqueueEmail({
           to: r.email,
           template: "ticket_breach",
+          locale,
           vars: {
             ticketId: ticket.id,
             storeName: ticket.store?.name,
-            summary: `Rilancio SLA: ${parsed.data.note}`,
+            summary: `${relaunchPrefix} ${parsed.data.note}`,
           },
           idempotencyKey: `ticket_breach:relaunch:${ticket.id}:${r.email}:${stamp}`,
         }),

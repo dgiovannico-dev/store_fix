@@ -1,7 +1,7 @@
 import { createHash, randomBytes } from "crypto";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/infrastructure/db/prisma";
-import { sendEmail } from "@/infrastructure/email/mailer";
+import { enqueueEmail } from "@/infrastructure/email/outbox";
 import { checkRateLimit } from "@/infrastructure/rate-limit";
 
 const RESET_TTL_MS = 60 * 60 * 1000;
@@ -43,11 +43,13 @@ export async function requestPasswordReset(emailRaw: string): Promise<void> {
   });
 
   const url = `${appBaseUrl()}/reset-password?token=${raw}&email=${encodeURIComponent(email)}`;
-  await sendEmail({
+  // Pre-tenant: default IT (MVP); Accept-Language later.
+  await enqueueEmail({
     to: email,
-    subject: "[FacilityFlow] Reimposta password",
-    text: `Hai richiesto il reset della password.\n\nApri (scade tra 1 ora):\n${url}\n\nSe non sei stato tu, ignora questa email.`,
-    html: `<p>Hai richiesto il reset della password.</p><p><a href="${url}">Reimposta password</a> (scade tra 1 ora).</p>`,
+    template: "password_reset",
+    locale: "it",
+    vars: { resetUrl: url },
+    idempotencyKey: `password_reset:${email}:${raw.slice(0, 8)}`,
   });
 }
 

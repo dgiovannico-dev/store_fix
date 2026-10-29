@@ -1,3 +1,4 @@
+import type { Locale } from "@/i18n";
 import {
   claimEmailIdempotency,
   emailIdempotencyKey,
@@ -13,6 +14,8 @@ export type EnqueueEmailInput = {
   to: string | string[];
   template: EmailTemplateId;
   vars?: TemplateVars;
+  /** Tenant UI locale (F3-06); default `it`. */
+  locale?: Locale;
   /** Override chiave; default template+ticketId+recipient */
   idempotencyKey?: string;
 };
@@ -26,7 +29,11 @@ export async function enqueueEmail(input: EnqueueEmailInput): Promise<{
   sent: boolean;
   skipped: boolean;
 }> {
-  const rendered = renderEmailTemplate(input.template, input.vars);
+  const rendered = renderEmailTemplate(
+    input.template,
+    input.vars,
+    input.locale ?? "it",
+  );
   const recipients = Array.isArray(input.to) ? input.to : [input.to];
   let anySent = false;
   let anySkipped = false;
