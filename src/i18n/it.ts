@@ -144,6 +144,16 @@ export const it = {
     filterVendor: "Fornitore",
     filterSla: "SLA",
   },
+  ticketStatus: {
+    open: "Aperto",
+    triaged: "In triage",
+    assigned: "Assegnato",
+    in_progress: "In corso",
+    waiting_parts: "In attesa pezzi",
+    done: "Completato",
+    verified: "Verificato",
+    cancelled: "Annullato",
+  },
   ticketDetail: {
     back: "← Ticket",
     backInbox: "← Inbox",

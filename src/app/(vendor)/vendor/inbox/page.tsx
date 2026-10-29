@@ -12,6 +12,7 @@ import {
   intakeCategoryLabel,
   intakePriorityLabel,
 } from "@/domain/intake/chat-steps";
+import { ticketStatusLabel } from "@/domain/ticket/status-labels";
 import { getTenantI18nPrefs } from "@/application/tenant/i18n-prefs";
 import { dateLocaleFor } from "@/i18n";
 import { tenantMessages } from "@/i18n/tenant-messages";
@@ -103,7 +104,8 @@ export default async function VendorInboxPage({ searchParams }: Props) {
                 {intakePriorityLabel(tk.priority, prefs.locale)}
               </Link>
               <p className="text-sm text-[var(--muted-foreground)]">
-                {tk.store.name} · {tk.status}
+                {tk.store.name} ·{" "}
+                {ticketStatusLabel(tk.status, prefs.locale)}
                 {tk.slaDueAt
                   ? ` · SLA ${tk.slaDueAt.toLocaleString(dLocale)}`
                   : ""}
