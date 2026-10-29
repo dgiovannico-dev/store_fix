@@ -201,9 +201,7 @@ export function NewTicketForm({
           </p>
 
           {state.error ? (
-            <p className="text-sm text-[var(--critical)]" role="alert">
-              {state.error}
-            </p>
+            <StatusPanel kind="error" title={state.error} locale={locale} />
           ) : null}
 
           <button

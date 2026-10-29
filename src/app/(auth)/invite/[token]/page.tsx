@@ -4,7 +4,8 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 import { acceptInviteAction } from "@/app/actions/invite";
-import { useMessages } from "@/i18n/locale-context";
+import { StatusPanel } from "@/components/ui/status-panel";
+import { useLocale, useMessages } from "@/i18n/locale-context";
 
 export default function AcceptInvitePage() {
   const { token } = useParams<{ token: string }>();
@@ -12,6 +13,7 @@ export default function AcceptInvitePage() {
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
   const msg = useMessages().auth;
+  const locale = useLocale();
 
   return (
     <main className="mx-auto flex min-h-dvh max-w-md flex-col justify-center gap-6 px-6">
@@ -54,9 +56,7 @@ export default function AcceptInvitePage() {
           className="w-full rounded-[var(--radius)] border border-[var(--border)] px-3 py-2.5"
         />
         {error ? (
-          <p className="text-sm text-[var(--critical)]" role="alert">
-            {error}
-          </p>
+          <StatusPanel kind="error" title={error} locale={locale} />
         ) : null}
         <button
           type="submit"

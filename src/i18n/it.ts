@@ -123,6 +123,7 @@ export const it = {
     sectionVendor: "Contratti",
     archive: "Archivia",
     networkWide: "Tutta la rete",
+    vendorPlaceholder: "Fornitore",
     titlePlaceholder: "Titolo (es. Manutenzione HVAC)",
     referencePlaceholder: "Riferimento",
     startsOn: "Inizio",
