@@ -19,7 +19,8 @@ GC bucket scaduti: job pg-boss `rate_limit.gc` (orario `:15`, Europe/Rome) → `
 | `logout:*` (IP) | **20** | **15 min** | `logout` | `src/app/logout/route.ts` (GET/POST) |
 | `signup:*` (IP) | **10** | **15 min** | `signup` | `src/app/actions/signup.ts` (workspace spam) |
 | `signup-user:{email}` | **5** | **15 min** | `signupUser` | stesso signup — bucket indipendente per email |
-| `pwdreset:*` (email) | **5** | **15 min** | `pwdreset` | `src/domain/auth/password-reset.ts` |
+| `pwdreset:{email}` | **5** | **15 min** | `pwdreset` | `requestPasswordReset` (per email; silent) |
+| `pwdreset-ip:*` (IP) | **10** | **15 min** | `pwdresetIp` | stesso reset — spray da un IP |
 | `store-csv:{tenantId}` | **5** | **15 min** | `storeCsv` | `src/domain/stores/csv-import.ts` |
 | `intake:{tenantId}:{userId}` | **20** | **15 min** | `intake` | deep link page + `createTicket` action |
 | `ai-suggest:{tenantId}:{userId}` | **20** | **60 s** | `aiSuggest` | `/api/ai/suggest-category`, `suggest-vendor`, `summarize-ticket` (budget condiviso) |

@@ -44,5 +44,6 @@ Per attivarlo in un fork: aggiungere `Email({ server: { host, port }, from })` i
 ## Rate limit
 
 Login: dual bucket `RATE_LIMIT.login` (IP) + `loginUser` (email) via `redirectIfRateLimited` — 10/15 min ciascuno, stesso redirect opaco.  
-Signup: dual bucket `signup` (IP, 10/15m) + `signupUser` (email, 5/15m) via `rateLimitedRetryMessage`. Vedi [`RATE_LIMITS.md`](./RATE_LIMITS.md).  
+Signup: dual bucket `signup` (IP, 10/15m) + `signupUser` (email, 5/15m) via `rateLimitedRetryMessage`.  
+Password reset: dual bucket `pwdreset` (email, 5/15m) + `pwdresetIp` (IP, 10/15m) — silent no-op (no enumeration). Vedi [`RATE_LIMITS.md`](./RATE_LIMITS.md).  
 Multi-replica: `FF_RATE_LIMIT_STORE=postgres` (tabella `RateLimitBucket` + job `rate_limit.gc`).

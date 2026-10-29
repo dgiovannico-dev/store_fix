@@ -8,6 +8,8 @@ describe("RATE_LIMIT policies", () => {
     expect(RATE_LIMIT.logout).toEqual({ limit: 20, windowMs: 15 * 60 * 1000 });
     expect(RATE_LIMIT.signup).toEqual({ limit: 10, windowMs: 15 * 60 * 1000 });
     expect(RATE_LIMIT.signupUser).toEqual({ limit: 5, windowMs: 15 * 60 * 1000 });
+    expect(RATE_LIMIT.pwdreset).toEqual({ limit: 5, windowMs: 15 * 60 * 1000 });
+    expect(RATE_LIMIT.pwdresetIp).toEqual({ limit: 10, windowMs: 15 * 60 * 1000 });
     expect(RATE_LIMIT.intake).toEqual({ limit: 20, windowMs: 15 * 60 * 1000 });
     expect(RATE_LIMIT.aiSuggest).toEqual({ limit: 20, windowMs: 60_000 });
     expect(RATE_LIMIT.inboundEmail).toEqual({ limit: 60, windowMs: 60_000 });
