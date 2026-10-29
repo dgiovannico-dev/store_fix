@@ -43,4 +43,15 @@ describe("deploy/Caddyfile HSTS policy", () => {
     const header = mainSiteHeaderBlock(raw);
     expect(header).toMatch(/^\s*-Server\b/m);
   });
+
+  it("imposta X-DNS-Prefetch-Control off", () => {
+    const header = mainSiteHeaderBlock(raw);
+    expect(header).toMatch(/X-DNS-Prefetch-Control\s+"off"/i);
+  });
+
+  it("documenta trusted_proxies CDN (commentato)", () => {
+    expect(raw).toMatch(/trusted_proxies\s+static/);
+    expect(raw).toMatch(/trusted_proxies_strict/);
+    expect(raw).toMatch(/FF_TRUSTED_PROXY_COUNT/);
+  });
 });
