@@ -14,15 +14,15 @@
 | `sharp` (via Next) | bump lock → `0.35.5` | `npm audit fix` non-breaking |
 | `nodemailer` | `10.3.0` + `overrides` | CVE ≤10.1.3 chiusi; peer next-auth `^7\|\|^8` — override intenzionale |
 | lint | rimosso `eslint-disable` inutilizzato | `flusso-c-hard-timing` |
+| `vitest` / `tinypool` / `vite` | Vitest **5.0.5** + Vite **^6.4** + `@types/node` ^22 | Chiude critical tinypool / mocker; 127 test PASS |
 
-Baseline post-fix (2026-10-29): **11** advisory (4 moderate / 5 high / 2 critical) — tutti in tabella waiver sotto.
+Baseline post-Vitest 5 (2026-10-29): **5** advisory (1 moderate / 4 high) — solo waiver sotto.
 
-## Waiver aperti (dev / transitive)
+## Waiver aperti (transitive / major freeze)
 
 | Area | Severity | Motivo waiver | Exit |
 |------|----------|---------------|------|
-| `vitest` / `tinypool` / `vite` / `esbuild` | high–critical | Solo **dev/test**; bump = Vitest 5 breaking | Slice dedicata vitest 5 |
-| `prisma` / `deepmerge-ts` | high | Transitive Prisma 6 CLI; Prisma 7 = breaking schema | Attendere Prisma 7 piano |
-| `next` / nested `postcss` | high | Fix via `next@16` force — fuori scope lab freeze Next 15 | Attendere patch Next 15.x |
+| `prisma` / `deepmerge-ts` | high | Transitive Prisma 6 CLI; Prisma 7 = breaking schema | Piano Prisma 7 |
+| `next` / nested `postcss` | high | Fix via `next@16` force — lab freeze Next 15 | Patch Next 15.x o piano Next 16 |
 
 Riesaminare waiver a ogni release / GO staging VPS.

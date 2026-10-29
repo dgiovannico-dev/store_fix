@@ -1,6 +1,6 @@
 # Increment status — FacilityFlow Retail
 
-**Aggiornato:** 2026-10-29 (F3-02…F3-08 Done; stress 50×5k p95 ~6.4 ms; F3-01 VPS umano)
+**Aggiornato:** 2026-10-29 (F3 Done in-repo; Vitest 5; stress p95 ~6.4 ms; F3-01 VPS umano)
 
 | Sprint / fase | Stato | Note |
 |---------------|-------|------|
