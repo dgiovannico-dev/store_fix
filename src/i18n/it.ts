@@ -32,6 +32,7 @@ export const it = {
     closedList: "Ticket chiusi / verificati",
     financeReadonly:
       "Accesso read-only: nessuna mutation, note interne non disponibili.",
+    cancelSkip: "Annulla skip",
   },
   vendor: {
     inboxTitle: "Inbox vendor",
@@ -67,6 +68,16 @@ export const it = {
     addressPlaceholder: "Indirizzo",
     webhookPlaceholder: "Webhook push (https://…)",
     ntfyPlaceholder: "Topic ntfy (es. pv-milano-1)",
+    editTitle: "Modifica {name}",
+    editHint: "Anagrafica + canali push store (F3-08).",
+    nameLabel: "Nome",
+    cityLabel: "Città",
+    addressLabel: "Indirizzo",
+    timezoneLabel: "Timezone",
+    contactsLabel: "Contatti",
+    webhookLabel: "Webhook push (https://…)",
+    ntfyLabel: "Topic ntfy",
+    save: "Salva",
   },
   common: {
     loading: "Caricamento…",

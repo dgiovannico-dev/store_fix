@@ -124,7 +124,7 @@ export default async function DashboardPage() {
               </Link>
               <form action={resumeOnboardingAction}>
                 <button type="submit" className="text-sm underline-offset-4 hover:underline">
-                  Annulla skip
+                  {msg.dashboard.cancelSkip}
                 </button>
               </form>
             </div>

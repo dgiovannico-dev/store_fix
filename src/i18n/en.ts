@@ -34,6 +34,7 @@ export const en = {
     closedList: "Closed / verified tickets",
     financeReadonly:
       "Read-only access: no mutations, internal notes unavailable.",
+    cancelSkip: "Undo skip",
   },
   vendor: {
     inboxTitle: "Vendor inbox",
@@ -69,6 +70,16 @@ export const en = {
     addressPlaceholder: "Address",
     webhookPlaceholder: "Push webhook (https://…)",
     ntfyPlaceholder: "ntfy topic (e.g. store-milan-1)",
+    editTitle: "Edit {name}",
+    editHint: "Profile + store push channels (F3-08).",
+    nameLabel: "Name",
+    cityLabel: "City",
+    addressLabel: "Address",
+    timezoneLabel: "Timezone",
+    contactsLabel: "Contacts",
+    webhookLabel: "Push webhook (https://…)",
+    ntfyLabel: "ntfy topic",
+    save: "Save",
   },
   common: {
     loading: "Loading…",

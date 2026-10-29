@@ -1,8 +1,9 @@
 type Props = {
   defaultAmount?: number | string | null;
   defaultNote?: string | null;
-  amountLabel?: string;
-  noteLabel?: string;
+  /** Obbligatorio: niente default IT hardcoded (passare da catalogo). */
+  amountLabel: string;
+  noteLabel: string;
   noteRequired?: boolean;
   className?: string;
 };
@@ -14,8 +15,8 @@ type Props = {
 export function QuoteAmountFields({
   defaultAmount,
   defaultNote,
-  amountLabel = "Importo EUR *",
-  noteLabel = "Nota (opz.)",
+  amountLabel,
+  noteLabel,
   noteRequired = false,
   className = "mt-1 w-full rounded-[var(--radius)] border border-[var(--border)] px-3 py-2 text-base",
 }: Props) {

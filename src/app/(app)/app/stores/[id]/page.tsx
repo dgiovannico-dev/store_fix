@@ -25,6 +25,7 @@ export default async function StoreEditPage({
   if (!store) notFound();
 
   const msg = await tenantMessages(session.tenantId);
+  const copy = msg.stores;
 
   return (
     <main className="mx-auto max-w-lg px-4 py-10 sm:px-6">
@@ -33,14 +34,14 @@ export default async function StoreEditPage({
           href="/app/stores"
           className="text-[var(--primary)] hover:underline"
         >
-          ← {msg.stores.title}
+          ← {copy.title}
         </Link>
       </p>
       <h1 className="mt-2 font-[family-name:var(--font-sora)] text-2xl font-semibold text-[var(--primary)]">
-        Modifica {store.name}
+        {copy.editTitle.replace("{name}", store.name)}
       </h1>
       <p className="mt-1 text-sm text-[var(--muted-foreground)]">
-        Anagrafica + canali push store (F3-08).
+        {copy.editHint}
       </p>
 
       <form
@@ -52,7 +53,7 @@ export default async function StoreEditPage({
         className="mt-8 space-y-3 rounded-[var(--radius)] border border-[var(--border)] p-4"
       >
         <label className="block text-sm">
-          Nome
+          {copy.nameLabel}
           <input
             name="name"
             required
@@ -62,7 +63,7 @@ export default async function StoreEditPage({
           />
         </label>
         <label className="block text-sm">
-          Città
+          {copy.cityLabel}
           <input
             name="city"
             defaultValue={store.city ?? ""}
@@ -70,7 +71,7 @@ export default async function StoreEditPage({
           />
         </label>
         <label className="block text-sm">
-          Indirizzo
+          {copy.addressLabel}
           <input
             name="address"
             defaultValue={store.address ?? ""}
@@ -78,7 +79,7 @@ export default async function StoreEditPage({
           />
         </label>
         <label className="block text-sm">
-          Timezone
+          {copy.timezoneLabel}
           <input
             name="timezone"
             defaultValue={store.timezone}
@@ -86,7 +87,7 @@ export default async function StoreEditPage({
           />
         </label>
         <label className="block text-sm">
-          Contatti
+          {copy.contactsLabel}
           <input
             name="contacts"
             defaultValue={store.contacts ?? ""}
@@ -94,20 +95,20 @@ export default async function StoreEditPage({
           />
         </label>
         <label className="block text-sm">
-          Webhook push (https://…)
+          {copy.webhookLabel}
           <input
             name="webhookUrl"
             defaultValue={store.webhookUrl ?? ""}
-            placeholder="https://hooks.example/ff"
+            placeholder={copy.webhookPlaceholder}
             className="mt-1 w-full rounded-[var(--radius)] border border-[var(--border)] px-3 py-2"
           />
         </label>
         <label className="block text-sm">
-          Topic ntfy
+          {copy.ntfyLabel}
           <input
             name="ntfyTopic"
             defaultValue={store.ntfyTopic ?? ""}
-            placeholder="pv-milano-1"
+            placeholder={copy.ntfyPlaceholder}
             className="mt-1 w-full rounded-[var(--radius)] border border-[var(--border)] px-3 py-2"
           />
         </label>
@@ -115,7 +116,7 @@ export default async function StoreEditPage({
           type="submit"
           className="rounded-[var(--radius)] bg-[var(--primary)] px-4 py-2 text-sm font-medium text-[var(--primary-foreground)]"
         >
-          Salva
+          {copy.save}
         </button>
       </form>
     </main>
