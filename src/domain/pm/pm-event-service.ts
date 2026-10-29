@@ -39,7 +39,7 @@ export async function listPmEvents(input: {
 }) {
   requireTenantId(input.tenantId);
   if (!canManagePm(input.role)) {
-    throw new ForbiddenError("Calendario PM non consentito", "pmCalendarForbidden");
+    throw new ForbiddenError(undefined, "pmCalendarForbidden");
   }
   const horizon = input.horizonDays ?? 30;
   const until = new Date(Date.now() + horizon * 24 * 60 * 60 * 1000);
@@ -69,13 +69,13 @@ export async function createPmEvent(input: {
   assertCanMutate(input.role, RbacAction.managePmCalendar);
   const parsed = pmEventInputSchema.safeParse(input.data);
   if (!parsed.success) {
-    return { ok: false as const, message: "Dati visita PM non validi", code: "invalidPmEventData" };
+    return { ok: false as const, code: "invalidPmEventData" };
   }
 
   const store = await prisma.store.findFirst({
     where: { id: parsed.data.storeId, ...tenantActiveWhere(input.tenantId) },
   });
-  if (!store) return { ok: false as const, message: "Punto vendita non valido", code: "storeInvalid" };
+  if (!store) return { ok: false as const, code: "storeInvalid" };
 
   if (parsed.data.vendorId) {
     const v = await prisma.vendor.findFirst({
@@ -84,7 +84,7 @@ export async function createPmEvent(input: {
         ...tenantActiveWhere(input.tenantId),
       },
     });
-    if (!v) return { ok: false as const, message: "Fornitore non valido", code: "vendorInvalid" };
+    if (!v) return { ok: false as const, code: "vendorInvalid" };
   }
 
   if (parsed.data.vendorContractId) {
@@ -95,7 +95,7 @@ export async function createPmEvent(input: {
         deletedAt: null,
       },
     });
-    if (!c) return { ok: false as const, message: "Contratto non valido", code: "contractInvalid" };
+    if (!c) return { ok: false as const, code: "contractInvalid" };
   }
 
   if (parsed.data.assetId) {
@@ -107,7 +107,7 @@ export async function createPmEvent(input: {
         storeId: parsed.data.storeId,
       },
     });
-    if (!a) return { ok: false as const, message: "Asset non valido per lo store", code: "assetInvalidForStore" };
+    if (!a) return { ok: false as const, code: "assetInvalidForStore" };
   }
 
   const event = await prisma.plannedMaintenanceEvent.create({
@@ -140,9 +140,9 @@ export async function markPmEventDone(input: {
       deletedAt: null,
     },
   });
-  if (!existing) return { ok: false as const, message: "Visita non trovata", code: "pmVisitNotFound" };
+  if (!existing) return { ok: false as const, code: "pmVisitNotFound" };
   if (existing.status !== PmEventStatus.planned) {
-    return { ok: false as const, message: "Visita già chiusa", code: "pmVisitAlreadyClosed" };
+    return { ok: false as const, code: "pmVisitAlreadyClosed" };
   }
   const event = await prisma.plannedMaintenanceEvent.update({
     where: { id: existing.id },
@@ -165,7 +165,7 @@ export async function softDeletePmEvent(input: {
       deletedAt: null,
     },
   });
-  if (!existing) return { ok: false as const, message: "Visita non trovata", code: "pmVisitNotFound" };
+  if (!existing) return { ok: false as const, code: "pmVisitNotFound" };
   await prisma.plannedMaintenanceEvent.update({
     where: { id: existing.id },
     data: { deletedAt: new Date(), status: PmEventStatus.cancelled },
