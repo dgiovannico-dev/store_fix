@@ -32,7 +32,7 @@ Retention consigliata MVP: **14 giorni** dump locali; produzione EU: allineare a
 
 ## SeaweedFS
 
-- Allegati soft-deleted restano su volume finché non gira GC (job futuro).
+- Allegati soft-deleted restano su volume finché non gira `attachment.gc` (grace default 7g).
 - Backup volume: snapshot directory/volume SeaweedFS host o `weed` backup tool — documentare path Compose volume.
 - Policy: non cancellare oggetti storage alla soft-delete Attachment.
 

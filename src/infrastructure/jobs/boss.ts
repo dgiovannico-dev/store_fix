@@ -5,6 +5,7 @@ export const QUEUE_SLA_CHECK = "sla.check_breaches";
 export const QUEUE_EMAIL_IMAP_POLL = "email.imap_poll";
 export const QUEUE_PM_MAINTAIN = "pm.maintain";
 export const QUEUE_GDPR_PURGE = "gdpr.purge";
+export const QUEUE_ATTACHMENT_GC = "attachment.gc";
 
 let bossSingleton: PgBoss | null = null;
 let starting: Promise<PgBoss | null> | null = null;
@@ -31,6 +32,7 @@ export async function getBoss(): Promise<PgBoss | null> {
     await boss.createQueue(QUEUE_EMAIL_IMAP_POLL);
     await boss.createQueue(QUEUE_PM_MAINTAIN);
     await boss.createQueue(QUEUE_GDPR_PURGE);
+    await boss.createQueue(QUEUE_ATTACHMENT_GC);
     bossSingleton = boss;
     return boss;
   })();

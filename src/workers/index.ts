@@ -1,8 +1,9 @@
 /**
- * Worker Compose / locale: email.send + sla.check_breaches + email.imap_poll + gdpr.purge.
+ * Worker Compose / locale: email + sla + imap + pm + gdpr.purge + attachment.gc.
  * Avvio: npm run worker
  */
 import { PgBoss } from "pg-boss";
+import { gcSoftDeletedAttachments } from "../application/attachments/gc-soft-deleted";
 import { pollImapInbound } from "../application/email-inbound/poll-imap";
 import { purgeExpiredVerifiedTickets } from "../application/gdpr/purge-expired";
 import { maintainPmJobs } from "../application/pm/maintain-pm";
@@ -11,6 +12,7 @@ import { sendEmail } from "../infrastructure/email/mailer";
 import { readImapInboundConfig } from "../infrastructure/email/imap-config";
 import { openImapflowMailbox } from "../infrastructure/email/imapflow-mailbox";
 import {
+  QUEUE_ATTACHMENT_GC,
   QUEUE_EMAIL_IMAP_POLL,
   QUEUE_EMAIL_SEND,
   QUEUE_GDPR_PURGE,
@@ -32,6 +34,7 @@ async function main() {
   await boss.createQueue(QUEUE_EMAIL_IMAP_POLL);
   await boss.createQueue(QUEUE_PM_MAINTAIN);
   await boss.createQueue(QUEUE_GDPR_PURGE);
+  await boss.createQueue(QUEUE_ATTACHMENT_GC);
 
   await boss.work(
     QUEUE_EMAIL_SEND,
@@ -84,6 +87,13 @@ async function main() {
     );
   });
 
+  await boss.work(QUEUE_ATTACHMENT_GC, async () => {
+    const result = await gcSoftDeletedAttachments();
+    console.log(
+      `[worker] attachment.gc → dryRun=${result.dryRun} candidates=${result.candidates} purged=${result.purged} failed=${result.failed} cutoff=${result.cutoff}`,
+    );
+  });
+
   try {
     await boss.schedule(QUEUE_SLA_CHECK, "*/5 * * * *", null, {
       tz: "Europe/Rome",
@@ -109,6 +119,15 @@ async function main() {
     console.warn("[worker] schedule gdpr:", (e as Error).message);
   }
 
+  try {
+    // SeaweedFS DeleteObject dopo grace — 04:00 Europe/Rome (post gdpr.purge)
+    await boss.schedule(QUEUE_ATTACHMENT_GC, "0 4 * * *", null, {
+      tz: "Europe/Rome",
+    });
+  } catch (e) {
+    console.warn("[worker] schedule attachment.gc:", (e as Error).message);
+  }
+
   const imapConfig = readImapInboundConfig();
   if (imapConfig) {
     try {
@@ -132,6 +151,7 @@ async function main() {
     QUEUE_EMAIL_IMAP_POLL,
     QUEUE_PM_MAINTAIN,
     QUEUE_GDPR_PURGE,
+    QUEUE_ATTACHMENT_GC,
   );
 }
 

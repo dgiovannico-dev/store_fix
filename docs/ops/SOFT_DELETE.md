@@ -10,7 +10,7 @@
 | Asset | sì | owner / admin_hq | Nascosto da autocomplete create ticket |
 | SlaPolicy | sì | owner / admin_hq | Non ricalcola ticket aperti |
 | Ticket | sì (raro) | owner / admin_hq | Liste escludono `deletedAt` |
-| Attachment | sì | — | Oggetto SeaweedFS **non** eliminato subito (GC futuro); anche via `gdpr.purge` |
+| Attachment | sì | — | Soft-delete metadata; oggetti SeaweedFS via job `attachment.gc` (grace 7g); anche via `gdpr.purge` |
 | Notification | sì | — | Soft hide |
 
 ## Immutabili (no update/delete API)
