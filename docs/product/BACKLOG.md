@@ -381,7 +381,7 @@ Eventi: nuovo ticket, assign, breach SLA, done, verified/rifiuto.
 **AC**
 - [x] Script seed: ≥15 store, 5 vendor, ticket multi-stato, asset, SLA policies, membership
 - [x] Credenziali QA documentate (solo ambiente locale/staging)
-- [x] Dataset stress opzionale ~50 store × 100 ticket (default `db:seed:stress`) p95 ~4 ms; full 5k via `STRESS_TICKETS=5000` ancora opz.
+- [x] Dataset stress opzionale ~50 store × 100 ticket (default `db:seed:stress`) p95 ~4 ms; full 5k valutato 2026-10-29 (`STRESS_TICKETS=5000` → p95 ~6.4 ms)
 - [x] Usato come exit criterion S4
 
 ### US-E10-05 — Policy soft-delete unificata

@@ -1,8 +1,9 @@
 import { Role, TicketStatus } from "@prisma/client";
 import { describe, expect, it } from "vitest";
-import { canReadTicketCosts, formatEur } from "./costs";
+import { canReadTicketCosts } from "./costs";
 import { assertTicketMutable, TicketImmutableError } from "./mutability";
 import { computeSlaBadge } from "@/domain/sla/badge";
+import { formatMoney } from "@/i18n/format";
 
 describe("costs + mutability + sla badge", () => {
   it("viewer_finance solo done/verified", () => {
@@ -20,8 +21,8 @@ describe("costs + mutability + sla badge", () => {
     ).toBe(false);
   });
 
-  it("formatEur IT", () => {
-    expect(formatEur(12.5)).toContain("12");
+  it("formatMoney IT default", () => {
+    expect(formatMoney(12.5)).toContain("12");
   });
 
   it("verified immutabile", () => {

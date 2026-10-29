@@ -12,7 +12,7 @@
 ## 0 — Prerequisito repo / CI
 
 - [x] CI green su `develop` (US-E14-04) — PASS 2026-10-29 (vedi [`S5-EXIT-GAPS.md`](../product/sprints/S5-EXIT-GAPS.md))
-- [ ] `npm run vps:preflight` OK sulla macchina operatore (prima del clone sul VPS)
+- [x] `npm run vps:preflight` OK sulla macchina operatore (2026-10-29 — artefatti + compose config; §1+ ancora umani)
 
 ## 1 — Host e rete
 

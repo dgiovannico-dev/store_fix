@@ -80,18 +80,22 @@ async function main() {
     TicketStatus.done,
     TicketStatus.verified,
   ];
+  // SLA due nel futuro sugli aperti: evita di saturare `checkSlaBreaches` (take 100)
+  // e far fallire i test dominio che condividono lo stesso Postgres locale.
+  const futureDue = new Date(Date.now() + 7 * 24 * 3600_000);
   for (let i = 0; i < toCreate; i++) {
     const store = stores[i % stores.length]!;
     const openedAt = new Date(Date.now() - (i % 720) * 3600_000);
+    const status = statuses[i % statuses.length]!;
     batch.push({
       tenantId: tenant.id,
       storeId: store.id,
       category: i % 2 === 0 ? "frigo" : "hvac",
       priority: i % 5 === 0 ? TicketPriority.critical : TicketPriority.normal,
-      status: statuses[i % statuses.length]!,
+      status,
       description: `Stress ticket ${existing + i + 1}`,
       openedAt,
-      slaDueAt: new Date(openedAt.getTime() + 4 * 3600_000),
+      slaDueAt: futureDue,
     });
     if (batch.length >= 500) {
       await prisma.ticket.createMany({ data: batch });
@@ -99,6 +103,25 @@ async function main() {
     }
   }
   if (batch.length) await prisma.ticket.createMany({ data: batch });
+
+  // Idempotent: ticket stress già presenti con due scaduta non devono saturare SLA job.
+  const openForSla = [
+    TicketStatus.open,
+    TicketStatus.triaged,
+    TicketStatus.assigned,
+    TicketStatus.in_progress,
+    TicketStatus.waiting_parts,
+  ];
+  await prisma.ticket.updateMany({
+    where: {
+      tenantId: tenant.id,
+      deletedAt: null,
+      slaBreachedAt: null,
+      status: { in: openForSla },
+      slaDueAt: { lt: new Date() },
+    },
+    data: { slaDueAt: futureDue },
+  });
 
   const total = await prisma.ticket.count({ where: { tenantId: tenant.id } });
   console.log(

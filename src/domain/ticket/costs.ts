@@ -1,7 +1,6 @@
 import { Role, TicketStatus } from "@prisma/client";
 import { can } from "@/domain/rbac/can";
 import { RbacAction } from "@/domain/rbac/actions";
-import { formatMoney } from "@/i18n/format";
 
 const COST_VISIBLE: ReadonlySet<TicketStatus> = new Set([
   TicketStatus.done,
@@ -28,11 +27,4 @@ export function canReadTicketCosts(
   }
   // HQ + vendor (scoped): vedi su ticket assegnati / aperti path
   return COST_VISIBLE.has(status);
-}
-
-/** @deprecated prefer formatMoney(prefs) — resta EUR/it-IT per compat. */
-export function formatEur(
-  value: { toString(): string } | number | null | undefined,
-): string | null {
-  return formatMoney(value, { dateLocale: "it-IT", currency: "EUR" });
 }
