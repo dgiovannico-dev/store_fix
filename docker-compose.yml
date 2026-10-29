@@ -90,6 +90,68 @@ services:
       - "1025:1025"
       - "8025:8025"
 
+  # F3-02 GlitchTip self-host — docker compose --profile observe up -d
+  # DB dedicato (non riusa SoR facilityflow). Zero Sentry Cloud.
+  glitchtip-db:
+    image: postgres:16-alpine
+    profiles: ["observe"]
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: glitchtip
+      POSTGRES_PASSWORD: ${GLITCHTIP_DB_PASSWORD:-glitchtip_dev}
+      POSTGRES_DB: glitchtip
+    volumes:
+      - glitchtip_pg:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U glitchtip -d glitchtip"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  glitchtip-valkey:
+    image: valkey/valkey:8-alpine
+    profiles: ["observe"]
+    restart: unless-stopped
+
+  glitchtip-web:
+    image: glitchtip/glitchtip:v5.0.9
+    profiles: ["observe"]
+    restart: unless-stopped
+    depends_on:
+      glitchtip-db:
+        condition: service_healthy
+      glitchtip-valkey:
+        condition: service_started
+    ports:
+      - "${GLITCHTIP_PORT:-8000}:8000"
+    environment:
+      DATABASE_URL: postgres://glitchtip:${GLITCHTIP_DB_PASSWORD:-glitchtip_dev}@glitchtip-db:5432/glitchtip
+      SECRET_KEY: ${GLITCHTIP_SECRET_KEY:-dev-only-change-me-glitchtip}
+      GLITCHTIP_DOMAIN: ${GLITCHTIP_DOMAIN:-http://localhost:8000}
+      PORT: "8000"
+      REDIS_URL: redis://glitchtip-valkey:6379/0
+      DEFAULT_FROM_EMAIL: ${GLITCHTIP_FROM_EMAIL:-noreply@facilityflow.local}
+      EMAIL_URL: ${GLITCHTIP_EMAIL_URL:-consolemail://}
+
+  glitchtip-worker:
+    image: glitchtip/glitchtip:v5.0.9
+    profiles: ["observe"]
+    restart: unless-stopped
+    command: ./bin/run-celery-with-beat.sh
+    depends_on:
+      glitchtip-db:
+        condition: service_healthy
+      glitchtip-valkey:
+        condition: service_started
+    environment:
+      DATABASE_URL: postgres://glitchtip:${GLITCHTIP_DB_PASSWORD:-glitchtip_dev}@glitchtip-db:5432/glitchtip
+      SECRET_KEY: ${GLITCHTIP_SECRET_KEY:-dev-only-change-me-glitchtip}
+      GLITCHTIP_DOMAIN: ${GLITCHTIP_DOMAIN:-http://localhost:8000}
+      REDIS_URL: redis://glitchtip-valkey:6379/0
+      DEFAULT_FROM_EMAIL: ${GLITCHTIP_FROM_EMAIL:-noreply@facilityflow.local}
+      EMAIL_URL: ${GLITCHTIP_EMAIL_URL:-consolemail://}
+
 volumes:
   postgres_data:
   seaweed_data:
+  glitchtip_pg:

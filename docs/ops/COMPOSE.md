@@ -16,7 +16,7 @@ Profili:
 | (default) | `postgres`, `seaweedfs` |
 | `dev` | + `mailpit` |
 | `full` | + `app` + `worker` (+ tipicamente mailpit se incluso nel compose profile) |
-| `observe` | opzionale — GlitchTip / Loki self-host (**non** Sentry Cloud); MVP = log JSON only (`src/infrastructure/log.ts`) |
+| `observe` | opzionale — GlitchTip self-host (F3-02: `glitchtip-*` services); default = log JSON only |
 
 Produzione: [`compose.prod.yaml`](../../compose.prod.yaml) + [`COMPOSE_PROD.md`](./COMPOSE_PROD.md) · Health: [`HEALTH.md`](./HEALTH.md) · Secrets: [`SECRETS.md`](./SECRETS.md)
 

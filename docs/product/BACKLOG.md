@@ -599,7 +599,7 @@ E00 Platform OSS (Compose, SeaweedFS, Mailpit, pg-boss, Prisma schema)
 | ID | Titolo | Priorità | AC (1 riga) | Dip. VPS GO |
 |----|--------|----------|-------------|-------------|
 | **F3-01** | Exit pilota produzione (chiusura gap E14/S5) | **P0** | HTTPS ACME, staging parity, migrate-on-deploy, DR remoto, smoke Flusso A UI, CI green `develop`, tag `v0.1.0` dry-run → **GO pilota** | **Sì** (prerequisito) |
-| **F3-02** | Observability GlitchTip (`observe`) staging/prod | **P1** | Profile Compose `observe` su VPS **oppure** policy log-only firmata post-review | **Sì** |
+| **F3-02** | Observability GlitchTip (`observe`) staging/prod | **P1** | Done 2026-10-29 — Compose profile `observe` (GlitchTip+Valkey+PG dedicato); default resta log-only; enable su VPS opt-in | No (opt-in VPS) |
 | **F3-03** | AI riassunto note ticket (stretch F2-07) | **P1** | Done 2026-10-29 — `/api/ai/summarize-ticket` + pannello HQ sola lettura (heuristic/Ollama); no write SoR | No (Ollama opz.) |
 | **F3-04** | Email-to-ticket IMAP poll (stretch F2-08) | **P1** | Done 2026-10-29 — coda `email.imap_poll` + imapflow/mailparser → `processInboundEmail`; Seen su ok/dup; skip se IMAP_* vuoto | No (env VPS) |
 | **F3-05** | PM ricorrente RRULE (evoluzione F2-04) | **P1** | Done 2026-10-29 — `PmSeries` + rrule.js expand; job `pm.maintain`; reminder email 48h; UI ricorrenza su calendario | No |

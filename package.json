@@ -22,6 +22,7 @@
     "secrets:scan": "bash scripts/secrets-scan.sh",
     "compose:prod:config": "docker compose -f compose.prod.yaml --env-file .env.prod.example config --quiet",
     "compose:lab:config": "docker compose -f compose.prod.yaml -f compose.lab.yaml --env-file .env.prod.example config --quiet",
+    "compose:observe:config": "docker compose --profile observe config --quiet",
     "deploy:migrate:lab": "FF_MODE=lab FF_LAB_MIGRATE_ONLY=1 bash scripts/deploy-migrate.sh",
     "verify:local": "npm run typecheck && npm test && npm run secrets:scan",
     "verify:headers": "bash scripts/verify-security-headers.sh",

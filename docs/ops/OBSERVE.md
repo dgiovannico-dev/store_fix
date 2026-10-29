@@ -1,28 +1,46 @@
 # Observability — FacilityFlow (OPS)
 
-**MVP (default):** log JSON strutturati via `src/infrastructure/log.ts` (+ `X-Request-Id` middleware). Nessun SaaS a pagamento nel path critico — **no Sentry Cloud**.
+**Default (pilota):** log JSON strutturati via `src/infrastructure/log.ts` (+ `X-Request-Id`). Nessun SaaS a pagamento — **no Sentry Cloud**.
 
-| Layer | MVP | Post-MVP (opzionale) |
-|-------|-----|----------------------|
-| Errori / trace | Log + `docker compose logs app worker` | **GlitchTip** self-host (SDK Sentry-compat, OSS) |
-| Health | `GET /api/health`, `docker compose ps` | Ready/live separati in S5 (`US-E14-06`) |
-| Log aggregati | stdout container | Loki + Promtail (futuro) |
+| Layer | Default | Opzionale (`--profile observe`) |
+|-------|---------|----------------------------------|
+| Errori | Log JSON + `docker compose logs` | **GlitchTip** self-host (OSS, Sentry-compatible DSN) |
+| Health | `GET /api/health` | — |
+| Log aggregati | stdout | Loki futuro |
 
-## Profile Compose `observe` (opzionale)
+## Profile Compose `observe` (F3-02)
 
-Non nel default stack. Quando aggiunto a `docker-compose.yml`:
+Stack dedicato (Postgres + Valkey + web + worker GlitchTip), **non** condivide il DB SoR FacilityFlow.
 
 ```bash
+# Solo observe (lab)
 docker compose --profile observe up -d
+
+# Validazione config
+docker compose --profile observe config --quiet
 ```
 
-Env esempio (solo self-host): `SENTRY_DSN=http://…@glitchtip:8000/1`.  
+UI: `http://localhost:${GLITCHTIP_PORT:-8000}` — crea progetto e copia DSN.
+
+| Env | Default lab | Note |
+|-----|-------------|------|
+| `GLITCHTIP_DB_PASSWORD` | `glitchtip_dev` | Cambiare in prod |
+| `GLITCHTIP_SECRET_KEY` | lab placeholder | `openssl rand -hex 32` |
+| `GLITCHTIP_DOMAIN` | `http://localhost:8000` | URL pubblico HTTPS in VPS |
+| `GLITCHTIP_PORT` | `8000` | Host bind |
+
+App FacilityFlow: quando avrai un DSN, imposta `SENTRY_DSN=http://…@glitchtip-host:8000/1` (SDK opzionale follow-up; path critico resta log-only senza DSN).
+
+```bash
+docker compose --profile observe down
+```
+
 Osservabilità **non** è System of Record.
 
-Vedi anche [`COMPOSE.md`](./COMPOSE.md).
+Vedi [`COMPOSE.md`](./COMPOSE.md), [`SECRETS.md`](./SECRETS.md).
 
-## Decisione S5 (2026-10-29) — log-only
+## Decisione S5 — log-only default
 
-Per capacità VPS pilota **non** si avvia GlitchTip in default.  
-Policy firmata sprint: **log JSON + request id + uptime cron** ([`CRON.md`](./CRON.md)) sufficienti per Exit S5.  
-GlitchTip resta opzionale (`--profile observe` futuro) — **zero Sentry Cloud**.
+Capacità VPS pilota: **non** avviare GlitchTip in default.  
+Policy Exit S5: log JSON + request id + uptime cron ([`CRON.md`](./CRON.md)).  
+Profile `observe` è **opt-in** (F3-02) — zero Sentry Cloud.
