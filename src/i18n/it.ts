@@ -223,6 +223,17 @@ export const it = {
     noActiveOwner: "Nessun owner attivo sul tenant",
     storeNotFoundOrArchived: "Punto vendita non trovato o archiviato",
     uploadInvalid: "Upload non valido",
+    signupEmailTaken:
+      "Impossibile completare la registrazione con questi dati.",
+    signupSlugTaken: "Nome workspace già in uso. Scegline un altro.",
+    signupValidation: "Dati non validi",
+    signupAutoLoginFailed:
+      "Workspace creato, ma accesso automatico non riuscito. Prova ad accedere.",
+    csvSaveFailed: "Salvataggio fallito",
+    csvRowInvalid: "Riga non valida",
+    csvHeaderMissing: 'Header mancante: "{header}". Usa il template IT.',
+    csvTooManyRows: "Massimo {max} righe dati (trovate {found}).",
+    csvImportRateLimited: "Troppi import. Riprova tra {sec}s.",
   },
   gdpr: {
     exportTitle: "Export dati tenant (GDPR)",
