@@ -13,6 +13,10 @@ echo "$HDR" | grep -qi "object-src 'none'" || {
   echo "missing CSP object-src 'none'"
   exit 1
 }
+echo "$HDR" | grep -qi "frame-src 'none'" || {
+  echo "missing CSP frame-src 'none'"
+  exit 1
+}
 echo "$HDR" | grep -qi "base-uri 'none'" || {
   echo "missing CSP base-uri 'none'"
   exit 1
