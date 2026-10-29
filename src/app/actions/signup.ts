@@ -6,10 +6,9 @@ import { redirect } from "next/navigation";
 import { signIn } from "@/auth";
 import { sendEmailVerification } from "@/domain/tenancy/email-verification";
 import { signupHqOwner } from "@/domain/tenancy/signup";
-import { checkRateLimitPolicyAsync } from "@/infrastructure/rate-limit-async";
+import { rateLimitedRetryMessage } from "@/infrastructure/rate-limit-action";
 import { RATE_LIMIT } from "@/infrastructure/rate-limit-policies";
 import { rateLimitKey } from "@/infrastructure/security/client-ip";
-import { actionError } from "@/i18n/action-errors";
 import { actionResultError, domainError } from "@/i18n/domain-errors";
 
 export type SignupActionState = {
@@ -20,16 +19,11 @@ export async function signupAction(
   _prev: SignupActionState,
   formData: FormData,
 ): Promise<SignupActionState> {
-  const limit = await checkRateLimitPolicyAsync(
+  const limited = await rateLimitedRetryMessage(
     rateLimitKey("signup", await headers()),
     RATE_LIMIT.signup,
   );
-  if (!limit.ok) {
-    const template = await actionError("rateLimitedRetry");
-    return {
-      error: template.replaceAll("{sec}", String(limit.retryAfterSec)),
-    };
-  }
+  if (limited) return { error: limited };
 
   const password = String(formData.get("password") ?? "");
   const result = await signupHqOwner({
