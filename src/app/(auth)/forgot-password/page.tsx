@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { headers } from "next/headers";
 import { requestPasswordReset } from "@/domain/auth/password-reset";
 import { requestMessages } from "@/i18n/request-locale";
 
@@ -16,7 +17,10 @@ export default async function ForgotPasswordPage() {
           className="space-y-4"
           action={async (fd) => {
             "use server";
-            await requestPasswordReset(String(fd.get("email") ?? ""));
+            await requestPasswordReset(
+              String(fd.get("email") ?? ""),
+              await headers(),
+            );
           }}
         >
           <input
