@@ -12,7 +12,9 @@ import {
   intakeCategoryLabel,
   intakePriorityLabel,
 } from "@/domain/intake/chat-steps";
-import { t } from "@/i18n";
+import { getTenantI18nPrefs } from "@/application/tenant/i18n-prefs";
+import { dateLocaleFor } from "@/i18n";
+import { tenantMessages } from "@/i18n/tenant-messages";
 
 type Props = { searchParams: Promise<{ tab?: string }> };
 
@@ -30,7 +32,10 @@ export default async function VendorInboxPage({ searchParams }: Props) {
   );
   if (!membership?.vendorId) redirect("/login");
 
-  const msg = t("it");
+  const [msg, prefs] = await Promise.all([
+    tenantMessages(session.tenantId),
+    getTenantI18nPrefs(session.tenantId),
+  ]);
   const tabs: { id: VendorInboxTab; label: string }[] = [
     { id: "todo", label: msg.vendor.tabTodo },
     { id: "progress", label: msg.vendor.tabProgress },
@@ -48,6 +53,8 @@ export default async function VendorInboxPage({ searchParams }: Props) {
     tab,
   });
 
+  const dLocale = dateLocaleFor(prefs.locale);
+
   return (
     <main className="mx-auto min-h-dvh w-full max-w-[390px] px-4 py-6">
       <h1 className="font-[family-name:var(--font-sora)] text-xl font-semibold text-[var(--primary)]">
@@ -57,7 +64,10 @@ export default async function VendorInboxPage({ searchParams }: Props) {
         {msg.vendor.inboxHint}
       </p>
 
-      <nav className="mt-6 flex gap-1 border-b border-[var(--border)]" aria-label="Filtri inbox">
+      <nav
+        className="mt-6 flex gap-1 border-b border-[var(--border)]"
+        aria-label={msg.vendor.inboxTitle}
+      >
         {tabs.map((tabItem) => (
           <Link
             key={tabItem.id}
@@ -75,7 +85,11 @@ export default async function VendorInboxPage({ searchParams }: Props) {
 
       {tickets.length === 0 ? (
         <div className="mt-4">
-          <StatusPanel kind="empty" title={msg.vendor.emptyInbox} />
+          <StatusPanel
+            kind="empty"
+            locale={prefs.locale}
+            title={msg.vendor.emptyInbox}
+          />
         </div>
       ) : (
         <ul className="mt-4 divide-y divide-[var(--border)]">
@@ -91,7 +105,7 @@ export default async function VendorInboxPage({ searchParams }: Props) {
               <p className="text-sm text-[var(--muted-foreground)]">
                 {tk.store.name} · {tk.status}
                 {tk.slaDueAt
-                  ? ` · SLA ${tk.slaDueAt.toLocaleString("it-IT")}`
+                  ? ` · SLA ${tk.slaDueAt.toLocaleString(dLocale)}`
                   : ""}
               </p>
               <p className="mt-1 line-clamp-2 text-sm">{tk.description}</p>

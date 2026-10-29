@@ -141,6 +141,56 @@ export const it = {
     dateLocale: "Locale date (BCP 47)",
     save: "Salva",
   },
+  assets: {
+    title: "Asset",
+    hint: "Inventario per punto vendita",
+    storePlaceholder: "Punto vendita",
+    labelPlaceholder: "Etichetta",
+    brandPlaceholder: "Marca / modello",
+    locationPlaceholder: "Ubicazione",
+    vendorPlaceholder: "Vendor preferito (opz.)",
+    add: "Aggiungi asset",
+    empty: "Nessun asset. Aggiungi il primo impianto/apparecchio.",
+    archive: "Archivia",
+  },
+  audit: {
+    title: "Audit config",
+    hint: "Eventi append-only su membership / ruoli (solo owner / admin_hq)",
+    membersLink: "Membri",
+    emptyTitle: "Nessun evento",
+    emptyBody: "Le modifiche a ruoli e membership appariranno qui.",
+  },
+  ticketsNew: {
+    title: "Nuovo ticket",
+    hint: "Segnala un guasto dal punto vendita",
+    back: "← Ticket",
+    badge: "Nuovo",
+    loadStoresError: "Impossibile caricare i punti vendita",
+    loadError: "Errore di caricamento",
+    noStores: "Nessun punto vendita disponibile.",
+    addStore: "Aggiungi store",
+    storeField: "Punto vendita",
+    categoryField: "Categoria *",
+    priorityField: "Priorità *",
+    assetField: "Asset (opzionale)",
+    descriptionField: "Descrizione *",
+    descriptionPlaceholder: "Cosa non funziona?",
+    attachHint:
+      "Dopo l'apertura potrai allegare foto (JPEG/PNG/WebP, max 10 MB) dal dettaglio ticket.",
+    submit: "Apri ticket",
+    submitting: "Apertura…",
+  },
+  onboarding: {
+    title: "FacilityFlow · Setup rete",
+    hint: "Completa la rete in meno di 15 minuti",
+    skip: "Salta ⚠",
+    skipTitle:
+      "Puoi riprendere dalla dashboard. Alcuni KPI resteranno vuoti.",
+    skippedBanner:
+      "Onboarding saltato. Alcuni KPI resteranno vuoti.",
+    resume: "Riprendi",
+    stepsLabel: "step rete",
+  },
 } as const;
 
 /** Shape strutturale (stringhe) così `en` può divergere nei valori. */

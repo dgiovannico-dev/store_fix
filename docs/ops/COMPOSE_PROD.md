@@ -52,3 +52,18 @@ docker compose -f compose.prod.yaml -f compose.lab.yaml --env-file .env.prod up 
 ```
 
 Resource limits: `cpus` / `mem_limit` top-level **e** `deploy.resources` allineati (stessi valori) per Compose plugin e Swarm.
+
+## Observability + push (F3-02 / F3-08)
+
+`app` e `worker` ricevono `SENTRY_DSN`, `NTFY_BASE_URL`, `NTFY_TOKEN` (vuoti = no-op). GlitchTip self-host è **opt-in**:
+
+```bash
+# valida config (CI / preflight)
+npm run compose:prod:observe:config
+
+# avvio con profile observe (GlitchTip + Valkey + PG dedicato)
+docker compose -f compose.prod.yaml --profile observe --env-file .env.prod up -d --build
+# UI errori: http://127.0.0.1:${GLITCHTIP_PORT:-8000} — poi crea progetto e copia DSN in SENTRY_DSN
+```
+
+Variabili in [`.env.prod.example`](../../.env.prod.example). Non esporre GlitchTip in chiaro su Internet senza auth/TLS.

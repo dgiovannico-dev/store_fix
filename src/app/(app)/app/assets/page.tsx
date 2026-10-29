@@ -11,6 +11,7 @@ import { RbacAction } from "@/domain/rbac/actions";
 import { can } from "@/domain/rbac/can";
 import { listStores } from "@/domain/stores/store-service";
 import { listVendors } from "@/domain/vendors/vendor-service";
+import { tenantMessages } from "@/i18n/tenant-messages";
 
 export default async function AssetsPage() {
   const session = await auth();
@@ -25,20 +26,20 @@ export default async function AssetsPage() {
   );
   if (!membership) redirect("/login");
 
-  const [assets, stores, vendors] = await Promise.all([
+  const [msg, assets, stores, vendors] = await Promise.all([
+    tenantMessages(session.tenantId),
     listAssets({ tenantId: session.tenantId, membership }),
     listStores(session.tenantId),
     listVendors(session.tenantId),
   ]);
+  const copy = msg.assets;
 
   return (
     <main className="mx-auto max-w-3xl px-6 py-12">
       <h1 className="font-[family-name:var(--font-sora)] text-2xl font-semibold text-[var(--primary)]">
-        Asset
+        {copy.title}
       </h1>
-      <p className="mt-2 text-sm text-[var(--muted-foreground)]">
-        Inventario per punto vendita
-      </p>
+      <p className="mt-2 text-sm text-[var(--muted-foreground)]">{copy.hint}</p>
 
       <form
         action={async (fd) => {
@@ -52,7 +53,7 @@ export default async function AssetsPage() {
           required
           className="rounded-[var(--radius)] border border-[var(--border)] px-3 py-2"
         >
-          <option value="">Punto vendita</option>
+          <option value="">{copy.storePlaceholder}</option>
           {stores.map((s) => (
             <option key={s.id} value={s.id}>
               {s.name}
@@ -73,24 +74,24 @@ export default async function AssetsPage() {
         <input
           name="label"
           required
-          placeholder="Etichetta"
+          placeholder={copy.labelPlaceholder}
           className="sm:col-span-2 rounded-[var(--radius)] border border-[var(--border)] px-3 py-2"
         />
         <input
           name="brandModel"
-          placeholder="Marca / modello"
+          placeholder={copy.brandPlaceholder}
           className="rounded-[var(--radius)] border border-[var(--border)] px-3 py-2"
         />
         <input
           name="location"
-          placeholder="Ubicazione"
+          placeholder={copy.locationPlaceholder}
           className="rounded-[var(--radius)] border border-[var(--border)] px-3 py-2"
         />
         <select
           name="preferredVendorId"
           className="sm:col-span-2 rounded-[var(--radius)] border border-[var(--border)] px-3 py-2"
         >
-          <option value="">Vendor preferito (opz.)</option>
+          <option value="">{copy.vendorPlaceholder}</option>
           {vendors.map((v) => (
             <option key={v.id} value={v.id}>
               {v.name}
@@ -101,14 +102,14 @@ export default async function AssetsPage() {
           type="submit"
           className="sm:col-span-2 rounded-[var(--radius)] bg-[var(--primary)] px-4 py-2 text-sm font-medium text-[var(--primary-foreground)]"
         >
-          Aggiungi asset
+          {copy.add}
         </button>
       </form>
 
       <ul className="mt-10 divide-y divide-[var(--border)]">
         {assets.length === 0 ? (
           <li className="py-6 text-sm text-[var(--muted-foreground)]">
-            Nessun asset. Aggiungi il primo impianto/apparecchio.
+            {copy.empty}
           </li>
         ) : (
           assets.map((a) => (
@@ -137,7 +138,7 @@ export default async function AssetsPage() {
                   type="submit"
                   className="text-sm text-[var(--critical)] underline-offset-4 hover:underline"
                 >
-                  Archivia
+                  {copy.archive}
                 </button>
               </form>
             </li>

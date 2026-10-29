@@ -7,6 +7,7 @@ import {
   skipOnboardingAction,
 } from "@/app/actions/onboarding";
 import { getOnboardingSnapshot } from "@/domain/onboarding/progress";
+import { tenantMessages } from "@/i18n/tenant-messages";
 
 export default async function OnboardingPage() {
   const session = await auth();
@@ -14,18 +15,22 @@ export default async function OnboardingPage() {
     redirect("/login");
   }
 
-  const snap = await getOnboardingSnapshot(session.tenantId);
+  const [snap, msg] = await Promise.all([
+    getOnboardingSnapshot(session.tenantId),
+    tenantMessages(session.tenantId),
+  ]);
   const pct = Math.round((snap.doneCount / Math.max(snap.totalCount, 1)) * 100);
+  const copy = msg.onboarding;
 
   return (
     <main className="mx-auto flex min-h-dvh max-w-lg flex-col gap-6 px-6 py-12">
       <header className="flex items-start justify-between gap-4">
         <div>
           <p className="font-[family-name:var(--font-sora)] text-2xl font-semibold text-[var(--primary)]">
-            FacilityFlow · Setup rete
+            {copy.title}
           </p>
           <p className="mt-1 text-sm text-[var(--muted-foreground)]">
-            Completa la rete in meno di 15 minuti
+            {copy.hint}
           </p>
         </div>
         {!snap.skippedAt && !snap.networkComplete ? (
@@ -33,9 +38,9 @@ export default async function OnboardingPage() {
             <button
               type="submit"
               className="text-sm text-[var(--signal-foreground)] underline-offset-4 hover:underline"
-              title="Puoi riprendere dalla dashboard. Alcuni KPI resteranno vuoti."
+              title={copy.skipTitle}
             >
-              Salta ⚠
+              {copy.skip}
             </button>
           </form>
         ) : null}
@@ -43,10 +48,10 @@ export default async function OnboardingPage() {
 
       {snap.skippedAt ? (
         <div className="rounded-[var(--radius)] border border-[var(--signal)] bg-[oklch(0.96_0.04_85)] px-4 py-3 text-sm">
-          Onboarding saltato. Alcuni KPI resteranno vuoti.{" "}
+          {copy.skippedBanner}{" "}
           <form action={resumeOnboardingAction} className="inline">
             <button type="submit" className="font-medium underline-offset-4 hover:underline">
-              Riprendi
+              {copy.resume}
             </button>
           </form>
         </div>
@@ -55,7 +60,7 @@ export default async function OnboardingPage() {
       <div>
         <div className="mb-1 flex justify-between text-xs text-[var(--muted-foreground)]">
           <span>
-            {snap.doneCount}/{snap.totalCount} step rete
+            {snap.doneCount}/{snap.totalCount} {copy.stepsLabel}
           </span>
           <span>{pct}%</span>
         </div>
@@ -135,37 +140,37 @@ export default async function OnboardingPage() {
           href="/app/tickets/new"
           className="rounded-[var(--radius)] bg-[var(--primary)] px-4 py-2 text-sm font-medium text-[var(--primary-foreground)]"
         >
-          Nuovo ticket
+          {msg.dashboard.ctaTicket}
         </Link>
         <Link
           href="/app/dashboard"
           className="rounded-[var(--radius)] border border-[var(--border)] px-4 py-2 text-sm font-medium"
         >
-          Dashboard
+          {msg.nav.dashboard}
         </Link>
         <Link
           href="/app/stores"
           className="rounded-[var(--radius)] border border-[var(--border)] px-4 py-2 text-sm font-medium"
         >
-          Store
+          {msg.nav.stores}
         </Link>
         <Link
           href="/app/vendors"
           className="rounded-[var(--radius)] border border-[var(--border)] px-4 py-2 text-sm font-medium"
         >
-          Fornitori
+          {msg.nav.vendors}
         </Link>
         <Link
           href="/app/assets"
           className="rounded-[var(--radius)] border border-[var(--border)] px-4 py-2 text-sm font-medium"
         >
-          Asset
+          {msg.assets.title}
         </Link>
         <Link
           href="/app/settings/members"
           className="rounded-[var(--radius)] border border-[var(--border)] px-4 py-2 text-sm font-medium"
         >
-          Membri
+          {msg.audit.membersLink}
         </Link>
         <form
           action={async () => {

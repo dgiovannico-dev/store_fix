@@ -84,6 +84,9 @@ services:
       SMTP_HOST: ${SMTP_HOST}
       SMTP_PORT: ${SMTP_PORT:-587}
       SMTP_FROM: ${SMTP_FROM:-FacilityFlow <noreply@facilityflow.local>}
+      SENTRY_DSN: ${SENTRY_DSN:-}
+      NTFY_BASE_URL: ${NTFY_BASE_URL:-}
+      NTFY_TOKEN: ${NTFY_TOKEN:-}
     ports:
       - "127.0.0.1:3000:3000"
     healthcheck:
@@ -132,6 +135,9 @@ services:
       IMAP_TENANT_ID: ${IMAP_TENANT_ID:-}
       IMAP_POLL_CRON: ${IMAP_POLL_CRON:-*/2 * * * *}
       IMAP_MARK_SEEN: ${IMAP_MARK_SEEN:-true}
+      SENTRY_DSN: ${SENTRY_DSN:-}
+      NTFY_BASE_URL: ${NTFY_BASE_URL:-}
+      NTFY_TOKEN: ${NTFY_TOKEN:-}
       S3_ENDPOINT: http://seaweedfs:8333
       S3_ACCESS_KEY: ${S3_ACCESS_KEY}
       S3_SECRET_KEY: ${S3_SECRET_KEY}
@@ -142,6 +148,70 @@ services:
         limits:
           cpus: "0.5"
           memory: 512M
+
+  # F3-02 GlitchTip — docker compose -f compose.prod.yaml --profile observe --env-file .env.prod up -d
+  glitchtip-db:
+    image: postgres:16-alpine
+    profiles: ["observe"]
+    restart: unless-stopped
+    logging: *default-logging
+    environment:
+      POSTGRES_USER: glitchtip
+      POSTGRES_PASSWORD: ${GLITCHTIP_DB_PASSWORD:-glitchtip_change_me}
+      POSTGRES_DB: glitchtip
+    volumes:
+      - glitchtip_pg:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U glitchtip -d glitchtip"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  glitchtip-valkey:
+    image: valkey/valkey:8-alpine
+    profiles: ["observe"]
+    restart: unless-stopped
+    logging: *default-logging
+
+  glitchtip-web:
+    image: glitchtip/glitchtip:v5.0.9
+    profiles: ["observe"]
+    restart: unless-stopped
+    logging: *default-logging
+    depends_on:
+      glitchtip-db:
+        condition: service_healthy
+      glitchtip-valkey:
+        condition: service_started
+    ports:
+      - "127.0.0.1:${GLITCHTIP_PORT:-8000}:8000"
+    environment:
+      DATABASE_URL: postgres://glitchtip:${GLITCHTIP_DB_PASSWORD:-glitchtip_change_me}@glitchtip-db:5432/glitchtip
+      SECRET_KEY: ${GLITCHTIP_SECRET_KEY:-change-me-glitchtip-secret}
+      GLITCHTIP_DOMAIN: ${GLITCHTIP_DOMAIN:-https://errors.example.com}
+      PORT: "8000"
+      REDIS_URL: redis://glitchtip-valkey:6379/0
+      DEFAULT_FROM_EMAIL: ${GLITCHTIP_FROM_EMAIL:-noreply@facilityflow.local}
+      EMAIL_URL: ${GLITCHTIP_EMAIL_URL:-consolemail://}
+
+  glitchtip-worker:
+    image: glitchtip/glitchtip:v5.0.9
+    profiles: ["observe"]
+    restart: unless-stopped
+    logging: *default-logging
+    command: ./bin/run-celery-with-beat.sh
+    depends_on:
+      glitchtip-db:
+        condition: service_healthy
+      glitchtip-valkey:
+        condition: service_started
+    environment:
+      DATABASE_URL: postgres://glitchtip:${GLITCHTIP_DB_PASSWORD:-glitchtip_change_me}@glitchtip-db:5432/glitchtip
+      SECRET_KEY: ${GLITCHTIP_SECRET_KEY:-change-me-glitchtip-secret}
+      GLITCHTIP_DOMAIN: ${GLITCHTIP_DOMAIN:-https://errors.example.com}
+      REDIS_URL: redis://glitchtip-valkey:6379/0
+      DEFAULT_FROM_EMAIL: ${GLITCHTIP_FROM_EMAIL:-noreply@facilityflow.local}
+      EMAIL_URL: ${GLITCHTIP_EMAIL_URL:-consolemail://}
 
   caddy:
     image: caddy:2.9-alpine
@@ -173,3 +243,4 @@ volumes:
   seaweed_data:
   caddy_data:
   caddy_config:
+  glitchtip_pg:

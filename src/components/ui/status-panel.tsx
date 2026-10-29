@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { t } from "@/i18n";
+import { t, type Locale } from "@/i18n";
 
 type Kind = "empty" | "loading" | "error";
 
@@ -8,9 +8,10 @@ export function StatusPanel(props: {
   kind: Kind;
   title?: string;
   body?: string;
+  locale?: Locale;
   children?: ReactNode;
 }) {
-  const msg = t("it");
+  const msg = t(props.locale ?? "it");
   const title =
     props.title ??
     (props.kind === "loading"

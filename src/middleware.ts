@@ -19,9 +19,15 @@ export function middleware(request: NextRequest) {
     },
   });
 
+  // unsafe-eval solo in dev (HMR); prod stringe CSP (docs/ops/SECURITY_HEADERS.md)
+  const scriptSrc =
+    process.env.NODE_ENV === "production"
+      ? "script-src 'self' 'unsafe-inline'"
+      : "script-src 'self' 'unsafe-inline' 'unsafe-eval'";
+
   const csp = [
     "default-src 'self'",
-    "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+    scriptSrc,
     "style-src 'self' 'unsafe-inline'",
     "img-src 'self' data: blob: http: https:",
     "font-src 'self' data:",

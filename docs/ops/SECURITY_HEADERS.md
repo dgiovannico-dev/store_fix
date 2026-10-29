@@ -4,7 +4,7 @@ Implementati in `src/middleware.ts`:
 
 | Header | Valore |
 |--------|--------|
-| `Content-Security-Policy` | `default-src 'self'`; script/style con `'unsafe-inline'` (compat Next/Tailwind MVP); `frame-ancestors 'none'` |
+| `Content-Security-Policy` | `default-src 'self'`; script/style `'unsafe-inline'` (Next/Tailwind); **prod senza** `'unsafe-eval'`; `frame-ancestors 'none'` |
 | `X-Frame-Options` | `DENY` (legacy + CSP) |
 | `X-Content-Type-Options` | `nosniff` |
 | `Referrer-Policy` | `strict-origin-when-cross-origin` |
@@ -13,12 +13,14 @@ Implementati in `src/middleware.ts`:
 
 ## Eccezioni
 
-- **Dev:** CSP lascia `unsafe-eval` per HMR Next; stringere in prod (nonce) in E14.
+- **Dev:** CSP include `unsafe-eval` per HMR Next; **prod** lo omette (`middleware.ts`). Nonce/hash script = polish futuro.
 - **Mailpit / Seaweed signed URL:** `connect-src` / `img-src` consentono `http:`/`https:` per PUT/GET firmati sullo storage Compose.
 - Rate limit: `src/infrastructure/rate-limit.ts` su login/signup/intake (vedi verify report).
 
 Smoke:
 
 ```bash
-curl -sI http://localhost:3000/login | grep -iE 'content-security|x-frame|x-content|x-request'
+npm run verify:headers
+# staging/prod HTTPS — fallisce se CSP include unsafe-eval:
+bash scripts/verify-security-headers.sh https://$FF_DOMAIN/login --prod
 ```
