@@ -228,6 +228,7 @@ export default async function TicketDetailPage({
           labels={msg.ticketTimeline}
           dateLocale={prefs.dateLocale}
           locale={prefs.locale}
+          currency={prefs.currency}
         />
       </section>
 
