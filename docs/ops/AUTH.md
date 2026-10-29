@@ -25,9 +25,10 @@ Logica: `shouldUseSecureAuthCookies` / `sessionTokenCookie` in `src/infrastructu
 |-----------|--------|------|
 | **Absolute / maxAge** | **30 giorni** (`SESSION_MAX_AGE_SEC`) | `src/infrastructure/auth/session-max-age.ts` → Auth.js `session.maxAge` + `Session.expires` Postgres al login |
 | **Revoke logout** | immediato (delete `Session` by `sessionToken`) | `events.signOut` + `/logout` |
-| **Idle timeout corto** | **non** implementato in MVP | JWT resta valido fino a `maxAge` se il cookie persiste; debt Fase 4 / hardening futuro (`updateAge` + idle client) |
+| **Idle timeout** | **off** di default; opt-in `AUTH_SESSION_IDLE_SEC` | Claim JWT `lastActiveAt` (unix s); oltre idle → delete `Session` + JWT vuoto. Touch throttled 60s (`session-idle.ts`) |
 
-Nota Auth.js: con strategy JWT il cookie cifrato non è revocabile “in rete” senza blocklist; FacilityFlow mitiga cancellando la riga Postgres e rifiutando JWT il cui `sessionToken` non esiste più (`jwt` callback). Fonte: [Auth.js session](https://authjs.dev/concepts/session-strategies).
+Esempio staging: `AUTH_SESSION_IDLE_SEC=28800` (8 ore senza richiesta autenticata).  
+Nota Auth.js: con strategy JWT il cookie cifrato non è revocabile “in rete” senza blocklist; FacilityFlow mitiga cancellando la riga Postgres e rifiutando JWT il cui `sessionToken` non esiste più (`jwt` callback). Idle è un secondo gate sullo stesso percorso. Fonte: [Auth.js session](https://authjs.dev/concepts/session-strategies).
 
 ## Conferma email (T1.13)
 

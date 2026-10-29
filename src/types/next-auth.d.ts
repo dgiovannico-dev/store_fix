@@ -20,5 +20,7 @@ declare module "next-auth/jwt" {
     tenantId?: string;
     role?: Role;
     membershipId?: string;
+    /** Unix seconds — last authenticated request (idle timeout). */
+    lastActiveAt?: number;
   }
 }
