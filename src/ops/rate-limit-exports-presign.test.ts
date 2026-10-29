@@ -78,4 +78,15 @@ describe("rate-limit exports + presign wiring", () => {
       expect(raw).toMatch(/notifications:/);
     }
   });
+
+  it("form-options usa formOptions", () => {
+    const raw = readFileSync(
+      path.join(root, "src/app/api/tickets/form-options/route.ts"),
+      "utf8",
+    );
+    expect(raw).toMatch(/rejectIfRateLimited/);
+    expect(raw).toMatch(/RATE_LIMIT\.formOptions/);
+    expect(raw).toMatch(/form-options:/);
+  });
 });
+
