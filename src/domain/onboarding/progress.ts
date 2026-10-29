@@ -12,7 +12,6 @@ export type OnboardingStepId =
 
 export type OnboardingStep = {
   id: OnboardingStepId;
-  label: string;
   done: boolean;
   href: string;
   /** S1: ticket prova skippato / non ancora SoR */
@@ -59,31 +58,26 @@ export async function getOnboardingSnapshot(
   const steps: OnboardingStep[] = [
     {
       id: "stores",
-      label: "Crea o importa punti vendita",
       done: storeCount > 0,
       href: "/app/stores",
     },
     {
       id: "vendors",
-      label: "Aggiungi almeno un fornitore",
       done: vendorCount > 0,
       href: "/app/vendors",
     },
     {
       id: "sla",
-      label: "Imposta SLA predefinite",
       done: slaCount >= 3,
       href: "/onboarding",
     },
     {
       id: "invite_sm",
-      label: "Invita store manager",
       done: smCount > 0,
       href: "/app/settings/members",
     },
     {
       id: "sample_ticket",
-      label: "Apri ticket di prova",
       done: progress.sampleTicketSkipped,
       href: "/onboarding",
       blocked: true,

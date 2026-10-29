@@ -7,8 +7,11 @@ import {
   triageTicketAction,
   type TicketActionState,
 } from "@/app/actions/tickets";
-import { INTAKE_PRIORITIES } from "@/domain/intake/chat-steps";
-import type { MessageCatalog } from "@/i18n";
+import {
+  intakePriorityLabel,
+  INTAKE_PRIORITIES,
+} from "@/domain/intake/chat-steps";
+import type { Locale, MessageCatalog } from "@/i18n";
 
 type VendorOpt = { id: string; name: string };
 type Hint = { vendorId: string; vendorName: string } | null;
@@ -23,6 +26,7 @@ type Props = {
   preferredHint: Hint;
   canOps: boolean;
   labels: MessageCatalog["ticketPanels"];
+  locale: Locale;
 };
 
 const initial: TicketActionState = {};
@@ -37,6 +41,7 @@ export function TicketOpsPanel({
   preferredHint,
   canOps,
   labels,
+  locale,
 }: Props) {
   const [triageState, triageAction, triagePending] = useActionState(
     triageTicketAction,
@@ -168,7 +173,7 @@ export function TicketOpsPanel({
             >
               {INTAKE_PRIORITIES.map((p) => (
                 <option key={p.value} value={p.value}>
-                  {p.label}
+                  {intakePriorityLabel(p.value, locale)}
                 </option>
               ))}
             </select>

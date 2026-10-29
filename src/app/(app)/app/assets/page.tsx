@@ -11,6 +11,7 @@ import { RbacAction } from "@/domain/rbac/actions";
 import { can } from "@/domain/rbac/can";
 import { listStores } from "@/domain/stores/store-service";
 import { listVendors } from "@/domain/vendors/vendor-service";
+import { getTenantI18nPrefs } from "@/application/tenant/i18n-prefs";
 import { tenantMessages } from "@/i18n/tenant-messages";
 
 export default async function AssetsPage() {
@@ -26,13 +27,15 @@ export default async function AssetsPage() {
   );
   if (!membership) redirect("/login");
 
-  const [msg, assets, stores, vendors] = await Promise.all([
+  const [msg, prefs, assets, stores, vendors] = await Promise.all([
     tenantMessages(session.tenantId),
+    getTenantI18nPrefs(session.tenantId),
     listAssets({ tenantId: session.tenantId, membership }),
     listStores(session.tenantId),
     listVendors(session.tenantId),
   ]);
   const copy = msg.assets;
+  const locale = prefs.locale;
 
   return (
     <main className="mx-auto max-w-3xl px-6 py-12">
@@ -67,7 +70,7 @@ export default async function AssetsPage() {
         >
           {INTAKE_CATEGORIES.map((c) => (
             <option key={c.value} value={c.value}>
-              {c.label}
+              {intakeCategoryLabel(c.value, locale)}
             </option>
           ))}
         </select>
@@ -121,7 +124,7 @@ export default async function AssetsPage() {
                 <p className="font-medium">
                   {a.label}{" "}
                   <span className="text-sm font-normal text-[var(--muted-foreground)]">
-                    · {intakeCategoryLabel(a.category)}
+                    · {intakeCategoryLabel(a.category, locale)}
                   </span>
                 </p>
                 <p className="text-sm text-[var(--muted-foreground)]">

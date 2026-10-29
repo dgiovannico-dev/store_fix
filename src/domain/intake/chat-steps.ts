@@ -1,13 +1,15 @@
 /** Step wizard intake chat-like (F2-01) — senza gateway esterno. */
 
-/** Catalogo categorie: slug SoR + etichetta IT UI (retro F2 #5). */
+import { t, type Locale } from "@/i18n";
+
+/** Catalogo categorie: slug SoR (etichette via i18n). */
 export const INTAKE_CATEGORIES = [
-  { value: "frigo", label: "Frigo / refrigerazione" },
-  { value: "hvac", label: "Clima / HVAC" },
-  { value: "casse", label: "Casse / POS" },
-  { value: "illuminazione", label: "Illuminazione" },
-  { value: "porte", label: "Porte / serrande" },
-  { value: "altro", label: "Altro" },
+  { value: "frigo" },
+  { value: "hvac" },
+  { value: "casse" },
+  { value: "illuminazione" },
+  { value: "porte" },
+  { value: "altro" },
 ] as const;
 
 export type IntakeCategory = (typeof INTAKE_CATEGORIES)[number]["value"];
@@ -18,21 +20,43 @@ export const INTAKE_CATEGORY_VALUES: [IntakeCategory, ...IntakeCategory[]] = [
   ...INTAKE_CATEGORIES.slice(1).map((c) => c.value),
 ];
 
-export function intakeCategoryLabel(slug: string): string {
-  const hit = INTAKE_CATEGORIES.find((c) => c.value === slug);
-  return hit?.label ?? slug;
+export function intakeCategoryLabel(
+  slug: string,
+  locale: Locale = "it",
+): string {
+  const cat = t(locale).intake;
+  const map: Record<string, string> = {
+    frigo: cat.catFrigo,
+    hvac: cat.catHvac,
+    casse: cat.catCasse,
+    illuminazione: cat.catIlluminazione,
+    porte: cat.catPorte,
+    altro: cat.catAltro,
+  };
+  return map[slug] ?? slug;
 }
 
 export const INTAKE_PRIORITIES = [
-  { value: "low", label: "Bassa" },
-  { value: "normal", label: "Media" },
-  { value: "high", label: "Alta" },
-  { value: "critical", label: "Critica" },
+  { value: "low" },
+  { value: "normal" },
+  { value: "high" },
+  { value: "critical" },
 ] as const;
 
-export function intakePriorityLabel(slug: string): string {
-  const hit = INTAKE_PRIORITIES.find((p) => p.value === slug);
-  return hit?.label ?? slug;
+export type IntakePriority = (typeof INTAKE_PRIORITIES)[number]["value"];
+
+export function intakePriorityLabel(
+  slug: string,
+  locale: Locale = "it",
+): string {
+  const cat = t(locale).intake;
+  const map: Record<string, string> = {
+    low: cat.priLow,
+    normal: cat.priNormal,
+    high: cat.priHigh,
+    critical: cat.priCritical,
+  };
+  return map[slug] ?? slug;
 }
 
 export type IntakeStepId =

@@ -233,7 +233,8 @@ export default async function DashboardPage() {
               {closed.map((tk) => (
                 <li key={tk.id} className="flex flex-wrap justify-between gap-2 py-2">
                   <span>
-                    {tk.store.name} · {intakeCategoryLabel(tk.category)} ·{" "}
+                    {tk.store.name} ·{" "}
+                    {intakeCategoryLabel(tk.category, prefs.locale)} ·{" "}
                     {tk.status}
                   </span>
                   <span className="tabular-nums text-[var(--muted-foreground)]">

@@ -6,8 +6,30 @@ import {
   resumeOnboardingAction,
   skipOnboardingAction,
 } from "@/app/actions/onboarding";
-import { getOnboardingSnapshot } from "@/domain/onboarding/progress";
+import {
+  getOnboardingSnapshot,
+  type OnboardingStepId,
+} from "@/domain/onboarding/progress";
+import type { MessageCatalog } from "@/i18n";
 import { tenantMessages } from "@/i18n/tenant-messages";
+
+function stepLabel(
+  copy: MessageCatalog["onboarding"],
+  id: OnboardingStepId,
+): string {
+  switch (id) {
+    case "stores":
+      return copy.stepStores;
+    case "vendors":
+      return copy.stepVendors;
+    case "sla":
+      return copy.stepSla;
+    case "invite_sm":
+      return copy.stepInviteSm;
+    case "sample_ticket":
+      return copy.stepSampleTicket;
+  }
+}
 
 export default async function OnboardingPage() {
   const session = await auth();
@@ -96,7 +118,7 @@ export default async function OnboardingPage() {
             </span>
             <div className="min-w-0 flex-1">
               <p className="font-medium">
-                {idx + 1}. {step.label}
+                {idx + 1}. {stepLabel(copy, step.id)}
                 {step.blocked ? (
                   <span className="ml-2 text-xs font-normal text-[var(--muted-foreground)]">
                     (S2)
@@ -109,19 +131,19 @@ export default async function OnboardingPage() {
                     type="submit"
                     className="text-sm font-medium text-[var(--primary)] underline-offset-4 hover:underline"
                   >
-                    Applica SLA default IT
+                    {copy.applySla}
                   </button>
                 </form>
               ) : step.id === "sample_ticket" ? (
                 <p className="mt-1 text-sm text-[var(--muted-foreground)]">
-                  Ticket di prova opzionale — apri da Segnala o lista ticket quando la rete è pronta.
+                  {copy.sampleHint}
                 </p>
               ) : !step.done && !step.blocked ? (
                 <Link
                   href={step.href}
                   className="mt-1 inline-block text-sm font-medium text-[var(--primary)] underline-offset-4 hover:underline"
                 >
-                  Continua →
+                  {copy.continue}
                 </Link>
               ) : null}
             </div>
@@ -130,9 +152,7 @@ export default async function OnboardingPage() {
       </ol>
 
       {snap.networkComplete ? (
-        <p className="text-sm text-[var(--success)]">
-          Rete pronta. Puoi aprire la dashboard.
-        </p>
+        <p className="text-sm text-[var(--success)]">{copy.networkReady}</p>
       ) : null}
 
       <div className="flex flex-wrap gap-3 pt-2">
@@ -182,7 +202,7 @@ export default async function OnboardingPage() {
             type="submit"
             className="rounded-[var(--radius)] border border-[var(--border)] px-4 py-2 text-sm"
           >
-            Esci
+            {copy.signOut}
           </button>
         </form>
       </div>

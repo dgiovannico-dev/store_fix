@@ -124,8 +124,8 @@ export default async function TicketDetailPage({
       ) : null}
 
       <h1 className="mt-4 font-[family-name:var(--font-sora)] text-2xl font-semibold">
-        {intakeCategoryLabel(ticket.category)} ·{" "}
-        {intakePriorityLabel(ticket.priority)}
+        {intakeCategoryLabel(ticket.category, prefs.locale)} ·{" "}
+        {intakePriorityLabel(ticket.priority, prefs.locale)}
       </h1>
       <p className="mt-1 text-sm text-[var(--muted-foreground)]">
         {ticket.store.name} · {copy.statusPrefix}{" "}
@@ -252,6 +252,7 @@ export default async function TicketDetailPage({
         preferredHint={hint}
         canOps={canOps}
         labels={msg.ticketPanels}
+        locale={prefs.locale}
       />
 
       <SlaRelaunchPanel

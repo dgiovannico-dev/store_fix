@@ -19,26 +19,27 @@ import {
   type IntakeDraft,
   type IntakeStepId,
 } from "@/domain/intake/chat-steps";
+import type { Locale, MessageCatalog } from "@/i18n";
 
 type AssetOpt = { id: string; label: string };
 
 const initial: CreateTicketState = {};
 
-const PROMPTS: Record<IntakeStepId, string> = {
-  category: "Che tipo di guasto è?",
-  priority: "Quanto è urgente?",
-  asset: "C’è un asset collegato? (opzionale)",
-  description: "Descrivi cosa non funziona (min. 5 caratteri).",
-  confirm: "Controlla e apri il ticket.",
-};
-
 type Props = {
   storeId: string;
   storeName: string;
   assets: AssetOpt[];
+  locale: Locale;
+  copy: MessageCatalog["intake"];
 };
 
-export function SegnalaChatWizard({ storeId, storeName, assets }: Props) {
+export function SegnalaChatWizard({
+  storeId,
+  storeName,
+  assets,
+  locale,
+  copy,
+}: Props) {
   const [step, setStep] = useState<IntakeStepId>("category");
   const [draft, setDraft] = useState<IntakeDraft>({
     category: "frigo",
@@ -55,6 +56,14 @@ export function SegnalaChatWizard({ storeId, storeName, assets }: Props) {
   const [aiPending, setAiPending] = useState(false);
   const headingRef = useRef<HTMLHeadingElement>(null);
   const headingId = useId();
+
+  const prompts: Record<IntakeStepId, string> = {
+    category: copy.promptCategory,
+    priority: copy.promptPriority,
+    asset: copy.promptAsset,
+    description: copy.promptDescription,
+    confirm: copy.promptConfirm,
+  };
 
   useEffect(() => {
     headingRef.current?.focus();
@@ -76,7 +85,7 @@ export function SegnalaChatWizard({ storeId, storeName, assets }: Props) {
   }
 
   const assetLabel =
-    assets.find((a) => a.id === draft.assetId)?.label ?? "Nessuno";
+    assets.find((a) => a.id === draft.assetId)?.label ?? copy.noneAsset;
 
   return (
     <main className="mx-auto flex min-h-dvh w-full max-w-[390px] flex-col px-4 py-6">
@@ -85,21 +94,23 @@ export function SegnalaChatWizard({ storeId, storeName, assets }: Props) {
           href="/app/segnala"
           className="text-sm text-[var(--muted-foreground)] underline-offset-4 hover:underline"
         >
-          ← Segnala
+          {copy.backHub}
         </Link>
         <span className="text-xs text-[var(--muted-foreground)]">
-          Passo {stepN}/{total}
+          {copy.stepOf} {stepN}
+          {copy.stepOfSep}
+          {total}
         </span>
       </div>
 
       <h1 className="mt-4 font-[family-name:var(--font-sora)] text-xl font-semibold text-[var(--primary)]">
-        Segnala guasto
+        {copy.title}
       </h1>
       <p className="mt-1 text-sm text-[var(--muted-foreground)]">{storeName}</p>
 
       <ol
         className="mt-4 flex gap-1"
-        aria-label={`Passo ${stepN} di ${total}`}
+        aria-label={`${copy.stepOf} ${stepN} ${copy.stepOfSep} ${total}`}
       >
         {Array.from({ length: total }, (_, i) => (
           <li
@@ -117,7 +128,7 @@ export function SegnalaChatWizard({ storeId, storeName, assets }: Props) {
           className="max-w-[85%] rounded-2xl rounded-bl-md bg-[var(--secondary)] px-3 py-2 text-sm text-[var(--secondary-foreground)]"
           role="status"
         >
-          {PROMPTS[step]}
+          {prompts[step]}
         </div>
 
         <h2
@@ -126,11 +137,15 @@ export function SegnalaChatWizard({ storeId, storeName, assets }: Props) {
           tabIndex={-1}
           className="sr-only"
         >
-          {PROMPTS[step]}
+          {prompts[step]}
         </h2>
 
         {step === "category" ? (
-          <div className="grid grid-cols-2 gap-2" role="group" aria-labelledby={headingId}>
+          <div
+            className="grid grid-cols-2 gap-2"
+            role="group"
+            aria-labelledby={headingId}
+          >
             {INTAKE_CATEGORIES.map((c) => (
               <button
                 key={c.value}
@@ -145,14 +160,18 @@ export function SegnalaChatWizard({ storeId, storeName, assets }: Props) {
                     : "border-[var(--border)] bg-white"
                 }`}
               >
-                {c.label}
+                {intakeCategoryLabel(c.value, locale)}
               </button>
             ))}
           </div>
         ) : null}
 
         {step === "priority" ? (
-          <div className="grid grid-cols-2 gap-2" role="group" aria-labelledby={headingId}>
+          <div
+            className="grid grid-cols-2 gap-2"
+            role="group"
+            aria-labelledby={headingId}
+          >
             {INTAKE_PRIORITIES.map((p) => (
               <button
                 key={p.value}
@@ -167,7 +186,7 @@ export function SegnalaChatWizard({ storeId, storeName, assets }: Props) {
                     : "border-[var(--border)] bg-white"
                 }`}
               >
-                {p.label}
+                {intakePriorityLabel(p.value, locale)}
               </button>
             ))}
           </div>
@@ -183,7 +202,7 @@ export function SegnalaChatWizard({ storeId, storeName, assets }: Props) {
               }}
               className="w-full rounded-[var(--radius)] border border-[var(--border)] bg-white px-3 py-3 text-left text-sm"
             >
-              Nessun asset
+              {copy.noAsset}
             </button>
             {assets.map((a) => (
               <button
@@ -204,7 +223,7 @@ export function SegnalaChatWizard({ storeId, storeName, assets }: Props) {
         {step === "description" ? (
           <div className="space-y-3">
             <label className="block text-sm font-medium" htmlFor="desc">
-              Descrizione
+              {copy.descriptionLabel}
             </label>
             <textarea
               id="desc"
@@ -215,7 +234,7 @@ export function SegnalaChatWizard({ storeId, storeName, assets }: Props) {
               }}
               minLength={5}
               rows={4}
-              placeholder="Es. banco frigo corridoio 2, temperatura alta"
+              placeholder={copy.descriptionPlaceholder}
               className="w-full rounded-[var(--radius)] border border-[var(--border)] bg-white px-3 py-3 text-base"
             />
             <button
@@ -245,14 +264,16 @@ export function SegnalaChatWizard({ storeId, storeName, assets }: Props) {
               }}
               className="w-full rounded-[var(--radius)] border border-[var(--border)] px-4 py-2.5 text-sm font-medium disabled:opacity-60"
             >
-              {aiPending ? "Suggerimento…" : "Suggerisci categoria (AI)"}
+              {aiPending ? copy.suggestAiPending : copy.suggestAi}
             </button>
             {aiHint ? (
               <div className="rounded-[var(--radius)] border border-[var(--border)] p-3 text-sm">
                 <p>
-                  Suggerito:{" "}
-                  <strong>{intakeCategoryLabel(aiHint.category)}</strong> (
-                  {aiHint.source})
+                  {copy.suggestedPrefix}{" "}
+                  <strong>
+                    {intakeCategoryLabel(aiHint.category, locale)}
+                  </strong>{" "}
+                  ({aiHint.source})
                 </p>
                 <p className="mt-1 text-[var(--muted-foreground)]">
                   {aiHint.rationale}
@@ -268,7 +289,7 @@ export function SegnalaChatWizard({ storeId, storeName, assets }: Props) {
                     setAiHint(null);
                   }}
                 >
-                  Usa suggerimento (conferma)
+                  {copy.useSuggestion}
                 </button>
               </div>
             ) : null}
@@ -278,7 +299,7 @@ export function SegnalaChatWizard({ storeId, storeName, assets }: Props) {
               onClick={goNext}
               className="w-full rounded-[var(--radius)] bg-[var(--primary)] px-4 py-3.5 text-base font-medium text-[var(--primary-foreground)] disabled:opacity-60"
             >
-              Continua
+              {copy.continue}
             </button>
           </div>
         ) : null}
@@ -296,19 +317,27 @@ export function SegnalaChatWizard({ storeId, storeName, assets }: Props) {
             />
             <ul className="space-y-2 rounded-[var(--radius)] border border-[var(--border)] p-3 text-sm">
               <li>
-                <span className="text-[var(--muted-foreground)]">Categoria:</span>{" "}
-                {intakeCategoryLabel(draft.category)}
+                <span className="text-[var(--muted-foreground)]">
+                  {copy.confirmCategory}
+                </span>{" "}
+                {intakeCategoryLabel(draft.category, locale)}
               </li>
               <li>
-                <span className="text-[var(--muted-foreground)]">Priorità:</span>{" "}
-                {intakePriorityLabel(draft.priority)}
+                <span className="text-[var(--muted-foreground)]">
+                  {copy.confirmPriority}
+                </span>{" "}
+                {intakePriorityLabel(draft.priority, locale)}
               </li>
               <li>
-                <span className="text-[var(--muted-foreground)]">Asset:</span>{" "}
+                <span className="text-[var(--muted-foreground)]">
+                  {copy.confirmAsset}
+                </span>{" "}
                 {assetLabel}
               </li>
               <li>
-                <span className="text-[var(--muted-foreground)]">Dettaglio:</span>{" "}
+                <span className="text-[var(--muted-foreground)]">
+                  {copy.confirmDetail}
+                </span>{" "}
                 {draft.description}
               </li>
             </ul>
@@ -322,7 +351,7 @@ export function SegnalaChatWizard({ storeId, storeName, assets }: Props) {
               disabled={pending || !canAdvanceIntake("confirm", draft)}
               className="w-full rounded-[var(--radius)] bg-[var(--primary)] px-4 py-3.5 text-base font-medium text-[var(--primary-foreground)] disabled:opacity-60"
             >
-              {pending ? "Apertura…" : "Apri ticket"}
+              {pending ? copy.submitting : copy.submit}
             </button>
           </form>
         ) : null}
@@ -334,12 +363,12 @@ export function SegnalaChatWizard({ storeId, storeName, assets }: Props) {
           onClick={goBack}
           className="mt-6 text-sm text-[var(--muted-foreground)] underline-offset-4 hover:underline"
         >
-          Indietro
+          {copy.back}
         </button>
       ) : null}
 
       <p className="mt-4 text-xs text-[var(--muted-foreground)]">
-        Dopo l&apos;apertura potrai allegare foto dal dettaglio ticket.
+        {copy.attachAfter}
       </p>
     </main>
   );

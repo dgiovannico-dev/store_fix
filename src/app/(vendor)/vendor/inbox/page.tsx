@@ -99,8 +99,8 @@ export default async function VendorInboxPage({ searchParams }: Props) {
                 href={`/vendor/tickets/${tk.id}`}
                 className="block font-medium underline-offset-4 hover:underline"
               >
-                {intakeCategoryLabel(tk.category)} ·{" "}
-                {intakePriorityLabel(tk.priority)}
+                {intakeCategoryLabel(tk.category, prefs.locale)} ·{" "}
+                {intakePriorityLabel(tk.priority, prefs.locale)}
               </Link>
               <p className="text-sm text-[var(--muted-foreground)]">
                 {tk.store.name} · {tk.status}

@@ -13,16 +13,24 @@ import {
 } from "@/app/actions/tickets";
 import {
   INTAKE_CATEGORIES,
+  intakeCategoryLabel,
+  intakePriorityLabel,
   INTAKE_PRIORITIES,
 } from "@/domain/intake/chat-steps";
-import type { MessageCatalog } from "@/i18n";
+import type { Locale, MessageCatalog } from "@/i18n";
 
 type StoreOpt = { id: string; name: string };
 type AssetOpt = { id: string; label: string; storeId: string };
 
 const initial: CreateTicketState = {};
 
-export function NewTicketForm({ msg }: { msg: MessageCatalog }) {
+export function NewTicketForm({
+  msg,
+  locale,
+}: {
+  msg: MessageCatalog;
+  locale: Locale;
+}) {
   const [stores, setStores] = useState<StoreOpt[]>([]);
   const [assets, setAssets] = useState<AssetOpt[]>([]);
   const [storeId, setStoreId] = useState("");
@@ -130,7 +138,7 @@ export function NewTicketForm({ msg }: { msg: MessageCatalog }) {
             >
               {INTAKE_CATEGORIES.map((c) => (
                 <option key={c.value} value={c.value}>
-                  {c.label}
+                  {intakeCategoryLabel(c.value, locale)}
                 </option>
               ))}
             </select>
@@ -150,7 +158,7 @@ export function NewTicketForm({ msg }: { msg: MessageCatalog }) {
                     value={p.value}
                     defaultChecked={p.value === "normal"}
                   />
-                  {p.label}
+                  {intakePriorityLabel(p.value, locale)}
                 </label>
               ))}
             </div>

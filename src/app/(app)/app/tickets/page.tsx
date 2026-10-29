@@ -14,6 +14,7 @@ import {
 } from "@/domain/intake/chat-steps";
 import { can } from "@/domain/rbac/can";
 import { RbacAction } from "@/domain/rbac/actions";
+import { getTenantI18nPrefs } from "@/application/tenant/i18n-prefs";
 import { tenantMessages } from "@/i18n/tenant-messages";
 import { prisma } from "@/infrastructure/db/prisma";
 import { requireTenantId } from "@/infrastructure/db/tenant-scope";
@@ -68,7 +69,11 @@ export default async function TicketsListPage({ searchParams }: Props) {
 
   const isHq = HQ.has(session.role);
   const canOpen = can(session.role, RbacAction.openTicket);
-  const msg = await tenantMessages(session.tenantId);
+  const [msg, prefs] = await Promise.all([
+    tenantMessages(session.tenantId),
+    getTenantI18nPrefs(session.tenantId),
+  ]);
+  const locale = prefs.locale;
   const [stores, vendors] = isHq
     ? await Promise.all([
         prisma.store.findMany({
@@ -122,7 +127,7 @@ export default async function TicketsListPage({ searchParams }: Props) {
             value={filters.priority ?? ""}
             options={Object.values(TicketPriority).map((p) => ({
               value: p,
-              label: intakePriorityLabel(p),
+              label: intakePriorityLabel(p, locale),
             }))}
           />
           <FilterSelect
@@ -192,8 +197,8 @@ export default async function TicketsListPage({ searchParams }: Props) {
                 href={`/app/tickets/${tk.id}`}
                 className="font-medium underline-offset-4 hover:underline"
               >
-                {intakeCategoryLabel(tk.category)} ·{" "}
-                {intakePriorityLabel(tk.priority)}
+                {intakeCategoryLabel(tk.category, locale)} ·{" "}
+                {intakePriorityLabel(tk.priority, locale)}
               </Link>
               <p className="text-sm text-[var(--muted-foreground)]">
                 {tk.store.name} · {tk.status}
