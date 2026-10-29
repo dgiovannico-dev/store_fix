@@ -73,11 +73,33 @@ describe("invites", () => {
     });
     expect(membership?.role).toBe(Role.store_manager);
 
-    const expired = await acceptInvite({
+    const reused = await acceptInvite({
       rawToken: raw,
       name: "Again",
       password: "MgrPass123!",
     });
-    expect(expired.ok).toBe(false);
+    expect(reused.ok).toBe(false);
+    if (!reused.ok) {
+      expect(reused.code).toBe("inviteAccepted");
+      expect(reused.message).toBeUndefined();
+    }
+
+    const bad = await acceptInvite({
+      rawToken: "deadbeef",
+      name: "X",
+      password: "MgrPass123!",
+    });
+    expect(bad.ok).toBe(false);
+    if (!bad.ok) expect(bad.code).toBe("inviteInvalid");
+
+    const ownerInvite = await createInvite({
+      tenantId,
+      actorRole: Role.owner,
+      actorUserId: signup.userId,
+      email: `owner2-${stamp}@test.facilityflow.local`,
+      role: Role.owner,
+    });
+    expect(ownerInvite.ok).toBe(false);
+    if (!ownerInvite.ok) expect(ownerInvite.code).toBe("cannotInviteOwner");
   });
 });

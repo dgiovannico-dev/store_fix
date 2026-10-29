@@ -36,14 +36,14 @@ export async function updateMembership(input: {
 
   const parsed = updateMembershipSchema.safeParse(input.data);
   if (!parsed.success) {
-    return { ok: false as const, message: "Dati membership non validi", code: "invalidMembershipData" };
+    return { ok: false as const, code: "invalidMembershipData" };
   }
 
   const existing = await prisma.membership.findFirst({
     where: { id: input.membershipId, tenantId: input.tenantId },
   });
   if (!existing) {
-    return { ok: false as const, message: "Membership non trovata", code: "membershipNotFound" };
+    return { ok: false as const, code: "membershipNotFound" };
   }
 
   const nextRole = parsed.data.role ?? existing.role;
@@ -57,11 +57,7 @@ export async function updateMembership(input: {
       : existing.storeIds;
 
   if (nextRole === Role.vendor && !nextVendorId) {
-    return {
-      ok: false as const,
-      message: "vendorId obbligatorio per ruolo vendor",
-      code: "vendorIdRequiredForVendor",
-    };
+    return { ok: false as const, code: "vendorIdRequiredForVendor" };
   }
 
   if (nextVendorId) {
@@ -73,7 +69,7 @@ export async function updateMembership(input: {
       },
     });
     if (!vendor) {
-      return { ok: false as const, message: "Fornitore non valido", code: "vendorInvalid" };
+      return { ok: false as const, code: "vendorInvalid" };
     }
   }
 
@@ -86,7 +82,7 @@ export async function updateMembership(input: {
       },
     });
     if (count !== nextStoreIds.length) {
-      return { ok: false as const, message: "storeIds non validi per il tenant", code: "storeIdsInvalid" };
+      return { ok: false as const, code: "storeIdsInvalid" };
     }
   }
 
@@ -153,10 +149,10 @@ export async function softDisableMembership(input: {
     where: { id: input.membershipId, tenantId: input.tenantId },
   });
   if (!existing) {
-    return { ok: false as const, message: "Membership non trovata", code: "membershipNotFound" };
+    return { ok: false as const, code: "membershipNotFound" };
   }
   if (existing.role === Role.owner) {
-    return { ok: false as const, message: "Non puoi disabilitare l'owner", code: "cannotDisableOwner" };
+    return { ok: false as const, code: "cannotDisableOwner" };
   }
 
   const membership = await prisma.$transaction(async (tx) => {
