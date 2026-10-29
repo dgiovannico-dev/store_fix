@@ -4,18 +4,16 @@ import { AuthError } from "next-auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { signIn } from "@/auth";
-import { checkRateLimitPolicyAsync } from "@/infrastructure/rate-limit-async";
+import { redirectIfRateLimited } from "@/infrastructure/rate-limit-redirect";
 import { RATE_LIMIT } from "@/infrastructure/rate-limit-policies";
 import { rateLimitKey } from "@/infrastructure/security/client-ip";
 
 export async function loginAction(formData: FormData): Promise<void> {
-  const limit = await checkRateLimitPolicyAsync(
+  await redirectIfRateLimited(
     rateLimitKey("login", await headers()),
     RATE_LIMIT.login,
+    "/login?error=RateLimit",
   );
-  if (!limit.ok) {
-    redirect(`/login?error=RateLimit`);
-  }
 
   const callbackUrl = String(formData.get("callbackUrl") || "/onboarding");
   try {

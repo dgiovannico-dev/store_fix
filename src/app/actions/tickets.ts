@@ -11,7 +11,7 @@ import {
   triageTicket,
 } from "@/application/tickets/transition-ticket";
 import { getActiveMembership } from "@/domain/memberships/membership-service";
-import { checkRateLimitPolicyAsync } from "@/infrastructure/rate-limit-async";
+import { rateLimitedRetryMessage } from "@/infrastructure/rate-limit-action";
 import { RATE_LIMIT } from "@/infrastructure/rate-limit-policies";
 import { actionError } from "@/i18n/action-errors";
 import { actionResultError } from "@/i18n/domain-errors";
@@ -46,18 +46,11 @@ export async function createTicketAction(
   const ctx = await sessionContext();
   if (!ctx) return { error: await actionError("accessRequired") };
 
-  const intakeLimit = await checkRateLimitPolicyAsync(
+  const intakeLimited = await rateLimitedRetryMessage(
     `intake:${ctx.session.tenantId}:${ctx.session.user!.id}`,
     RATE_LIMIT.intake,
   );
-  if (!intakeLimit.ok) {
-    return {
-      error: (await actionError("rateLimitedRetry")).replace(
-        "{sec}",
-        String(intakeLimit.retryAfterSec),
-      ),
-    };
-  }
+  if (intakeLimited) return { error: intakeLimited };
 
   const priorityRaw = String(formData.get("priority") ?? "normal");
   const priority = Object.values(TicketPriority).includes(

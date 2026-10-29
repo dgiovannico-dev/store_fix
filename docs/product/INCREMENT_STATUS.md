@@ -1,7 +1,7 @@
 # Increment status — FacilityFlow Retail
 
 **Aggiornato:** 2026-10-29 — **dev-only** (nessun deploy VPS); F3-01 resta tracking umano  
-Hardening recente in-repo: dep patch (aws-sdk/imapflow/mailparser); Permissions-Policy expand; secure-cookies + auth idle gates; RL form-options/exports/notifications; `rejectIfRateLimited`; CSP `script-src-attr 'none'`.
+Hardening recente in-repo: `rate-limit-action` helpers (login/signup/intake); dep patches; Permissions-Policy expand; secure-cookies + auth idle gates; API `rejectIfRateLimited`; CSP `script-src-attr 'none'`.
 
 | Sprint / fase | Stato | Note |
 |---------------|-------|------|

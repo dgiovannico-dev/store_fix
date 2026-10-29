@@ -3,7 +3,7 @@ import { RbacAction } from "@/domain/rbac/actions";
 import { assertCanMutate } from "@/domain/rbac/guards";
 import { prisma } from "@/infrastructure/db/prisma";
 import { requireTenantId } from "@/infrastructure/db/tenant-scope";
-import { checkRateLimitPolicyAsync } from "@/infrastructure/rate-limit-async";
+import { checkActionRateLimit } from "@/infrastructure/rate-limit-action";
 import { RATE_LIMIT } from "@/infrastructure/rate-limit-policies";
 import { storeInputSchema } from "./store-service";
 import { parseCsv, rowsToObjects } from "./csv";
@@ -44,11 +44,11 @@ export async function importStoresFromCsv(input: {
   requireTenantId(input.tenantId);
   assertCanMutate(input.role, RbacAction.crudStore);
 
-  const limit = await checkRateLimitPolicyAsync(
+  const limit = await checkActionRateLimit(
     `store-csv:${input.tenantId}`,
     RATE_LIMIT.storeCsv,
   );
-  if (!limit.ok) {
+  if (limit.limited) {
     return {
       imported: 0,
       errors: [

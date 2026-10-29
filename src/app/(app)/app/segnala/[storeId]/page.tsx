@@ -7,7 +7,7 @@ import { listAssets } from "@/domain/assets/asset-service";
 import { getActiveMembership } from "@/domain/memberships/membership-service";
 import { canAccessStore } from "@/domain/rbac/store-scope";
 import { tenantMessages } from "@/i18n/tenant-messages";
-import { checkRateLimitPolicyAsync } from "@/infrastructure/rate-limit-async";
+import { checkActionRateLimit } from "@/infrastructure/rate-limit-action";
 import { RATE_LIMIT } from "@/infrastructure/rate-limit-policies";
 import { prisma } from "@/infrastructure/db/prisma";
 
@@ -30,11 +30,11 @@ export default async function SegnalaGuastoPage({ params }: Props) {
   ]);
   const copy = msg.intake;
 
-  const limit = await checkRateLimitPolicyAsync(
+  const limit = await checkActionRateLimit(
     `intake:${session.tenantId}:${session.user.id}`,
     RATE_LIMIT.intake,
   );
-  if (!limit.ok) {
+  if (limit.limited) {
     return (
       <main className="mx-auto max-w-[390px] px-4 py-12">
         <h1 className="font-[family-name:var(--font-sora)] text-xl font-semibold">
