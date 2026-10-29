@@ -29,7 +29,7 @@
 | Smoke Flusso A **UI staging** | US-E14-12 | checklist manuale post-deploy |
 | Migrate-on-deploy su **staging VPS** | US-E14-05 | `deploy-migrate.sh` **prod** (container `app`) end-to-end — lab dry-run già PASS in tabella locale |
 | CI green su remote `develop` | US-E14-04 | **PASS** 2026-10-29 — push `4c59c07` (`verify` + seed + p95); PR [#1](https://github.com/dgiovannico-dev/store_fix/pull/1)/[#5](https://github.com/dgiovannico-dev/store_fix/pull/5) |
-| Tag `v0.1.0` dry-run | US-E14-14 | dopo staging green |
+| Tag `v0.1.0` dry-run | US-E14-14 | Tag **`v0.1.0`** su `main` (lab freeze 2026-10-29) — **non** equivale a GO deploy; dry-run staging VPS ancora aperto |
 
 ## Slip espliciti
 
