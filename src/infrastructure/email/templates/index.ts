@@ -6,7 +6,8 @@ export type EmailTemplateId =
   | "ticket_done"
   | "ticket_verified"
   | "ticket_rejected"
-  | "email_verify";
+  | "email_verify"
+  | "pm_reminder";
 
 export type TemplateVars = {
   ticketId?: string;
@@ -71,6 +72,11 @@ export function renderEmailTemplate(
       subject: `[${brand}] Verifica rifiutata — ticket ${ticket}`,
       text: `La verifica dello store per il ticket ${ticket} (${store}) è stata rifiutata.\n${summary}\nIl ticket è tornato in lavorazione.`,
       html: `<p>La verifica dello store per il ticket <strong>${ticket}</strong> (${store}) è stata rifiutata.</p><p>${summary}</p><p>Il ticket è tornato in lavorazione.</p>`,
+    },
+    pm_reminder: {
+      subject: `[${brand}] Promemoria PM — ${store}`,
+      text: `Visita di manutenzione programmata per ${store}.\n${summary}\n\nApri FacilityFlow → Calendario.`,
+      html: `<p>Visita di manutenzione programmata per <strong>${store}</strong>.</p><p>${summary}</p><p>Apri FacilityFlow → Calendario.</p>`,
     },
   };
 

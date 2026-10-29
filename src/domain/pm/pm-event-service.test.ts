@@ -10,6 +10,7 @@ import {
   listPmEvents,
   markPmEventDone,
 } from "./pm-event-service";
+import { createPmSeries } from "./pm-series-service";
 
 describe("pm-event-service", () => {
   let tenantId = "";
@@ -71,5 +72,26 @@ describe("pm-event-service", () => {
     await expect(
       listPmEvents({ tenantId, role: Role.store_staff }),
     ).rejects.toBeInstanceOf(ForbiddenError);
+
+    const series = await createPmSeries({
+      tenantId,
+      role: Role.owner,
+      data: {
+        storeId: store.store.id,
+        title: "PM mensile frigo",
+        dtstart: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000),
+        recurrence: "monthly",
+      },
+    });
+    expect(series.ok).toBe(true);
+    if (!series.ok) return;
+    expect(series.created).toBeGreaterThanOrEqual(1);
+
+    const listAfter = await listPmEvents({
+      tenantId,
+      role: Role.owner,
+      horizonDays: 100,
+    });
+    expect(listAfter.some((e) => e.seriesId === series.series.id)).toBe(true);
   });
 });

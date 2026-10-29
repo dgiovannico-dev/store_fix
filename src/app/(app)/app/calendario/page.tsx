@@ -103,6 +103,19 @@ export default async function CalendarioPmPage() {
               />
             </label>
           </div>
+          <label className="block text-sm">
+            Ricorrenza
+            <select
+              name="recurrence"
+              defaultValue="none"
+              className="mt-1 w-full rounded-[var(--radius)] border border-[var(--border)] px-3 py-2 text-sm"
+            >
+              <option value="none">Una tantum</option>
+              <option value="weekly">Settimanale</option>
+              <option value="monthly">Mensile</option>
+              <option value="quarterly">Trimestrale</option>
+            </select>
+          </label>
           <button
             type="submit"
             className="rounded-[var(--radius)] bg-[var(--primary)] px-4 py-2 text-sm font-medium text-[var(--primary-foreground)]"

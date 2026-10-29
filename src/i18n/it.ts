@@ -101,7 +101,7 @@ export const it = {
   },
   pm: {
     title: "Calendario manutenzione",
-    hint: "Visite pianificate nei prossimi 30 giorni (senza ricorrenze automatiche)",
+    hint: "Visite pianificate nei prossimi 30 giorni (anche serie RRULE)",
     add: "Nuova visita PM",
     empty: "Nessuna visita pianificata in questo periodo.",
   },

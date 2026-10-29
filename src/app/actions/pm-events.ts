@@ -7,6 +7,7 @@ import {
   markPmEventDone,
   softDeletePmEvent,
 } from "@/domain/pm/pm-event-service";
+import { createPmSeries } from "@/domain/pm/pm-series-service";
 
 async function sessionTenant() {
   const session = await auth();
@@ -23,6 +24,25 @@ export async function createPmEventAction(
   const date = String(formData.get("scheduledDate") ?? "");
   const time = String(formData.get("scheduledTime") ?? "09:00");
   const scheduledAt = new Date(`${date}T${time}:00`);
+  const recurrence = String(formData.get("recurrence") ?? "none");
+
+  if (recurrence === "weekly" || recurrence === "monthly" || recurrence === "quarterly") {
+    const result = await createPmSeries({
+      tenantId: session.tenantId!,
+      role: session.role!,
+      data: {
+        storeId: formData.get("storeId"),
+        title: formData.get("title"),
+        dtstart: scheduledAt,
+        recurrence,
+        vendorId: formData.get("vendorId") || null,
+      },
+    });
+    if (!result.ok) return { error: result.message };
+    revalidatePath("/app/calendario");
+    return {};
+  }
+
   const result = await createPmEvent({
     tenantId: session.tenantId!,
     role: session.role!,

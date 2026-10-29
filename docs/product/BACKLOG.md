@@ -602,7 +602,7 @@ E00 Platform OSS (Compose, SeaweedFS, Mailpit, pg-boss, Prisma schema)
 | **F3-02** | Observability GlitchTip (`observe`) staging/prod | **P1** | Profile Compose `observe` su VPS **oppure** policy log-only firmata post-review | **Sì** |
 | **F3-03** | AI riassunto note ticket (stretch F2-07) | **P1** | Done 2026-10-29 — `/api/ai/summarize-ticket` + pannello HQ sola lettura (heuristic/Ollama); no write SoR | No (Ollama opz.) |
 | **F3-04** | Email-to-ticket IMAP poll (stretch F2-08) | **P1** | Done 2026-10-29 — coda `email.imap_poll` + imapflow/mailparser → `processInboundEmail`; Seen su ok/dup; skip se IMAP_* vuoto | No (env VPS) |
-| **F3-05** | PM ricorrente RRULE (evoluzione F2-04) | **P1** | RRULE genera `PlannedMaintenanceEvent` + reminder pg-boss; calendario mostra serie | No |
+| **F3-05** | PM ricorrente RRULE (evoluzione F2-04) | **P1** | Done 2026-10-29 — `PmSeries` + rrule.js expand; job `pm.maintain`; reminder email 48h; UI ricorrenza su calendario | No |
 | **F3-06** | Multi-lingua / multi-regione light | **P2** | `defaultLocale` IT+EN; date/valuta configurabili; niente rewrite i18n big-bang | No |
 | **F3-07** | RFQ vendor interno (no marketplace) | **P2** | Ops richiede preventivi a N vendor del tenant; no escrow/billing/directory pubblica | No |
 | **F3-08** | Push store (ntfy / webhook self-host) | **P2** | Eventi ticket → ntfy o webhook; **vietato** WA Cloud API | **Sì** |

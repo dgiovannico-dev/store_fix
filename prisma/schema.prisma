@@ -68,6 +68,7 @@ model Tenant {
   configAuditEvents   ConfigAuditEvent[]
   inboundEmailMessages InboundEmailMessage[]
   vendorContracts     VendorContract[]
+  pmSeries            PmSeries[]
   pmEvents            PlannedMaintenanceEvent[]
 }
 
@@ -139,6 +140,7 @@ model Store {
   assets Asset[]
   tickets Ticket[]
   contracts VendorContract[]
+  pmSeries PmSeries[]
   pmEvents PlannedMaintenanceEvent[]
 
   @@index([tenantId])
@@ -161,6 +163,7 @@ model Vendor {
   assetsPrefer Asset[]      @relation("PreferredVendor")
   tickets      Ticket[]
   contracts    VendorContract[]
+  pmSeries     PmSeries[]
   pmEvents     PlannedMaintenanceEvent[]
 
   @@index([tenantId])
@@ -185,6 +188,7 @@ model VendorContract {
   tenant Tenant @relation(fields: [tenantId], references: [id])
   vendor Vendor @relation(fields: [vendorId], references: [id])
   store  Store? @relation(fields: [storeId], references: [id])
+  pmSeries PmSeries[]
   pmEvents PlannedMaintenanceEvent[]
 
   @@index([tenantId])
@@ -198,7 +202,36 @@ enum PmEventStatus {
   cancelled
 }
 
-/// Visita PM esplicita (F2-04 v2) — no RRULE/engine ricorrenze in v2.
+/// Serie ricorrente PM (F3-05) — RRULE espansa in PlannedMaintenanceEvent.
+model PmSeries {
+  id               String    @id @default(cuid())
+  tenantId         String
+  storeId          String
+  vendorId         String?
+  vendorContractId String?
+  assetId          String?
+  title            String
+  /// RFC 5545 RRULE body (es. FREQ=MONTHLY;INTERVAL=1) senza prefisso RRULE:
+  rrule            String
+  dtstart          DateTime
+  until            DateTime?
+  generateAheadDays Int      @default(90)
+  deletedAt        DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  tenant         Tenant                    @relation(fields: [tenantId], references: [id])
+  store          Store                     @relation(fields: [storeId], references: [id])
+  vendor         Vendor?                   @relation(fields: [vendorId], references: [id])
+  vendorContract VendorContract?           @relation(fields: [vendorContractId], references: [id])
+  asset          Asset?                    @relation(fields: [assetId], references: [id])
+  events         PlannedMaintenanceEvent[]
+
+  @@index([tenantId])
+  @@index([tenantId, deletedAt])
+}
+
+/// Visita PM esplicita (F2-04) o occorrenza di serie (F3-05).
 model PlannedMaintenanceEvent {
   id               String        @id @default(cuid())
   tenantId         String
@@ -206,11 +239,13 @@ model PlannedMaintenanceEvent {
   vendorId         String?
   vendorContractId String?
   assetId          String?
+  seriesId         String?
   title            String
   scheduledAt      DateTime
   status           PmEventStatus @default(planned)
   notes            String?
   ticketId         String?
+  remindedAt       DateTime?
   deletedAt        DateTime?
   createdAt        DateTime      @default(now())
   updatedAt        DateTime      @updatedAt
@@ -220,10 +255,13 @@ model PlannedMaintenanceEvent {
   vendor         Vendor?         @relation(fields: [vendorId], references: [id])
   vendorContract VendorContract? @relation(fields: [vendorContractId], references: [id])
   asset          Asset?          @relation(fields: [assetId], references: [id])
+  series         PmSeries?       @relation(fields: [seriesId], references: [id])
 
+  @@unique([seriesId, scheduledAt])
   @@index([tenantId])
   @@index([tenantId, scheduledAt])
   @@index([tenantId, status])
+  @@index([remindedAt])
 }
 
 model Asset {
@@ -245,6 +283,7 @@ model Asset {
   store           Store   @relation(fields: [storeId], references: [id])
   preferredVendor Vendor? @relation("PreferredVendor", fields: [preferredVendorId], references: [id])
   tickets         Ticket[]
+  pmSeries        PmSeries[]
   pmEvents        PlannedMaintenanceEvent[]
 
   @@index([tenantId])

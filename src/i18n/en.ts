@@ -103,7 +103,7 @@ export const en = {
   },
   pm: {
     title: "Maintenance calendar",
-    hint: "Planned visits in the next 30 days (no automatic recurrence)",
+    hint: "Planned visits in the next 30 days (including RRULE series)",
     add: "New PM visit",
     empty: "No planned visits in this period.",
   },

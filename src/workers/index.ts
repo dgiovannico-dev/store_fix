@@ -4,6 +4,7 @@
  */
 import { PgBoss } from "pg-boss";
 import { pollImapInbound } from "../application/email-inbound/poll-imap";
+import { maintainPmJobs } from "../application/pm/maintain-pm";
 import { checkSlaBreaches } from "../application/sla/check-breaches";
 import { sendEmail } from "../infrastructure/email/mailer";
 import { readImapInboundConfig } from "../infrastructure/email/imap-config";
@@ -11,6 +12,7 @@ import { openImapflowMailbox } from "../infrastructure/email/imapflow-mailbox";
 import {
   QUEUE_EMAIL_IMAP_POLL,
   QUEUE_EMAIL_SEND,
+  QUEUE_PM_MAINTAIN,
   QUEUE_SLA_CHECK,
 } from "../infrastructure/jobs/boss";
 
@@ -26,6 +28,7 @@ async function main() {
   await boss.createQueue(QUEUE_EMAIL_SEND);
   await boss.createQueue(QUEUE_SLA_CHECK);
   await boss.createQueue(QUEUE_EMAIL_IMAP_POLL);
+  await boss.createQueue(QUEUE_PM_MAINTAIN);
 
   await boss.work(
     QUEUE_EMAIL_SEND,
@@ -64,12 +67,27 @@ async function main() {
     );
   });
 
+  await boss.work(QUEUE_PM_MAINTAIN, async () => {
+    const result = await maintainPmJobs();
+    console.log(
+      `[worker] pm.maintain → series=${result.series} created=${result.created} reminded=${result.reminded}`,
+    );
+  });
+
   try {
     await boss.schedule(QUEUE_SLA_CHECK, "*/5 * * * *", null, {
       tz: "Europe/Rome",
     });
   } catch (e) {
     console.warn("[worker] schedule sla:", (e as Error).message);
+  }
+
+  try {
+    await boss.schedule(QUEUE_PM_MAINTAIN, "0 * * * *", null, {
+      tz: "Europe/Rome",
+    });
+  } catch (e) {
+    console.warn("[worker] schedule pm:", (e as Error).message);
   }
 
   const imapConfig = readImapInboundConfig();
@@ -93,6 +111,7 @@ async function main() {
     QUEUE_EMAIL_SEND,
     QUEUE_SLA_CHECK,
     QUEUE_EMAIL_IMAP_POLL,
+    QUEUE_PM_MAINTAIN,
   );
 }
 
