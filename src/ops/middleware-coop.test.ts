@@ -20,4 +20,8 @@ describe("middleware security header wiring", () => {
   it("mantiene gate CSRF Origin", () => {
     expect(raw).toMatch(/evaluateApiCsrf/);
   });
+
+  it("risolve allowedOrigins Server Actions", () => {
+    expect(raw).toMatch(/resolveServerActionsAllowedOrigins/);
+  });
 });

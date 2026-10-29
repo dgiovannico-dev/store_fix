@@ -6,7 +6,7 @@ import { describe, expect, it } from "vitest";
 describe("rate-limit-action wiring", () => {
   const root = process.cwd();
 
-  it("login usa redirectIfRateLimited da rate-limit-redirect", () => {
+  it("login usa dual bucket IP + email", () => {
     const raw = readFileSync(
       path.join(root, "src/app/actions/login.ts"),
       "utf8",
@@ -14,6 +14,8 @@ describe("rate-limit-action wiring", () => {
     expect(raw).toMatch(/rate-limit-redirect/);
     expect(raw).toMatch(/redirectIfRateLimited/);
     expect(raw).toMatch(/RATE_LIMIT\.login/);
+    expect(raw).toMatch(/RATE_LIMIT\.loginUser/);
+    expect(raw).toMatch(/login-user:/);
   });
 
   it("signup e createTicket usano rateLimitedRetryMessage", () => {
