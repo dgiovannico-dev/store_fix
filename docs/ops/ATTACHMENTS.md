@@ -11,6 +11,8 @@
 
 | Env | Default | Note |
 |-----|---------|------|
+| `S3_ENDPOINT` | `http://localhost:8333` | Solo rete interna app/worker → SeaweedFS |
+| `S3_PUBLIC_ENDPOINT` | = `S3_ENDPOINT` | Host **firmato** per browser PUT/GET (SigV4). Prod: `https://s3.<FF_DOMAIN>` |
 | `ATTACHMENT_GC_GRACE_DAYS` | `7` | Giorni dopo soft-delete prima del DeleteObject |
 | `ATTACHMENT_GC_DRY_RUN` | unset | Se `true`, conta candidati senza S3/DB write |
 
@@ -22,9 +24,21 @@
 
 PUT: `Content-Type` è parte della firma (`signableHeaders`). Il client deve inviare lo stesso MIME.
 
+**Non riscrivere** l’URL dopo `getSignedUrl`: l’host è nella firma. Il client S3 di presign usa `resolveS3Endpoint("presign")` → `S3_PUBLIC_ENDPOINT`.
+
+### Browser / Compose
+
+| Ambiente | `S3_PUBLIC_ENDPOINT` | Reachability |
+|----------|----------------------|--------------|
+| Dev locale | spesso = `S3_ENDPOINT` | SeaweedFS su `localhost:8333` |
+| Lab (`compose.lab`) | default `http://127.0.0.1:8333` | porta pubblicata sul host |
+| Prod / staging | `https://s3.<FF_DOMAIN>` | Caddy site `s3.{$FF_DOMAIN}` + DNS; `WEED_S3_EXTERNAL_URL` allineato |
+
+Smoke manuale (lab): presign → `curl -X PUT -H "Content-Type: …" --data-binary @foto.jpg "$uploadUrl"` → confirm.
+
 ## Flusso
 
-1. `POST /api/tickets/:id/attachments/presign` — MIME/size + scope → signed PUT
-2. Client PUT diretto a SeaweedFS con lo stesso `Content-Type`
+1. `POST /api/tickets/:id/attachments/presign` — MIME/size + scope → signed PUT (host pubblico)
+2. Client PUT diretto a SeaweedFS (via pubblico) con lo stesso `Content-Type`
 3. `POST /api/tickets/:id/attachments/confirm` → row `Attachment`
 4. `GET /api/tickets/:id/attachments/:attachmentId/url` → signed GET (scope)

@@ -15,9 +15,28 @@ function env(name: string, fallback?: string): string {
   return v;
 }
 
-export function createS3Client(): S3Client {
+/**
+ * Endpoint S3 per client AWS SDK.
+ * - `internal`: app/worker → SeaweedFS in rete Compose (`S3_ENDPOINT`)
+ * - `presign`: URL firmate per il browser — `S3_PUBLIC_ENDPOINT` se impostato
+ *   (SigV4 include l'host: firmare sul pubblico, non riscrivere dopo).
+ */
+export function resolveS3Endpoint(
+  kind: "internal" | "presign" = "internal",
+): string {
+  const internal = (
+    process.env.S3_ENDPOINT ?? "http://localhost:8333"
+  ).replace(/\/$/, "");
+  if (kind === "internal") return internal;
+  const pub = process.env.S3_PUBLIC_ENDPOINT?.trim().replace(/\/$/, "");
+  return pub || internal;
+}
+
+export function createS3Client(
+  kind: "internal" | "presign" = "internal",
+): S3Client {
   return new S3Client({
-    endpoint: env("S3_ENDPOINT", "http://localhost:8333"),
+    endpoint: resolveS3Endpoint(kind),
     region: env("S3_REGION", "us-east-1"),
     credentials: {
       accessKeyId: env("S3_ACCESS_KEY", "admin"),
@@ -67,7 +86,7 @@ export async function putAttachmentObject(input: {
 
 export async function getSignedGetUrl(
   key: string,
-  client = createS3Client(),
+  client = createS3Client("presign"),
 ): Promise<{ url: string; expiresIn: number }> {
   const expiresIn = signedUrlTtlSeconds();
   const url = await getSignedUrl(
@@ -90,7 +109,7 @@ export async function getSignedPutUrl(input: {
 }): Promise<{ url: string; expiresIn: number; key: string }> {
   assertAllowedUpload(input.mime, input.sizeBytes);
   const expiresIn = signedUrlTtlSeconds();
-  const client = input.client ?? createS3Client();
+  const client = input.client ?? createS3Client("presign");
   const url = await getSignedUrl(
     client,
     new PutObjectCommand({
