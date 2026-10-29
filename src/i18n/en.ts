@@ -146,6 +146,16 @@ export const en = {
     filterVendor: "Vendor",
     filterSla: "SLA",
   },
+  ticketStatus: {
+    open: "Open",
+    triaged: "Triaged",
+    assigned: "Assigned",
+    in_progress: "In progress",
+    waiting_parts: "Waiting parts",
+    done: "Done",
+    verified: "Verified",
+    cancelled: "Cancelled",
+  },
   ticketDetail: {
     back: "← Tickets",
     backInbox: "← Inbox",

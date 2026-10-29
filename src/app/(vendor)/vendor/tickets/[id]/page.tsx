@@ -16,6 +16,7 @@ import {
 import { computeSlaBadge } from "@/domain/sla/badge";
 import { formatMoney } from "@/i18n/format";
 import { canProposeQuote } from "@/domain/ticket/quote";
+import { ticketStatusLabel } from "@/domain/ticket/status-labels";
 import { listTicketEvents } from "@/infrastructure/db/ticket-event-repository";
 import { prisma } from "@/infrastructure/db/prisma";
 import { tenantMessages } from "@/i18n/tenant-messages";
@@ -90,7 +91,7 @@ export default async function VendorTicketDetailPage({ params }: Props) {
       <p className="mt-1 text-sm text-[var(--muted-foreground)]">
         {ticket.store.name}
         {ticket.store.city ? ` · ${ticket.store.city}` : ""} ·{" "}
-        <strong>{ticket.status}</strong>
+        <strong>{ticketStatusLabel(ticket.status, prefs.locale)}</strong>
       </p>
       {ticket.store.address ? (
         <p className="mt-1 text-sm">{ticket.store.address}</p>
