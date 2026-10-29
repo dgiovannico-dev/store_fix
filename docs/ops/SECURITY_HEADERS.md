@@ -4,7 +4,7 @@ Applicati da `applyBaselineSecurityHeaders` (`src/infrastructure/security/apply-
 
 | Header | Valore |
 |--------|--------|
-| `Content-Security-Policy` | `buildContentSecurityPolicy()` (`src/infrastructure/security/csp-policy.ts`) — `default-src 'self'`; script/style `'unsafe-inline'` (Next/Tailwind); **prod senza** `'unsafe-eval'`; `script-src-attr 'none'` (no HTML `onclick=`; React props OK); `object-src 'none'`; `frame-src 'none'`; `media-src 'none'`; `worker-src 'self'`; `manifest-src 'self'` (PWA); `base-uri 'none'`; `frame-ancestors 'none'`; **`upgrade-insecure-requests`** via `shouldUpgradeInsecureRequests`. Nonce/`strict-dynamic` = debt futuro |
+| `Content-Security-Policy` | `buildContentSecurityPolicy()` (`src/infrastructure/security/csp-policy.ts`) — `default-src 'self'`; script/style `'unsafe-inline'` (Next/Tailwind); **prod senza** `'unsafe-eval'`; `script-src-attr 'none'` (no HTML `onclick=`; React props OK); `object-src 'none'`; `frame-src 'none'`; `media-src 'none'`; `worker-src 'self'`; `manifest-src 'self'` (PWA); `base-uri 'none'`; `frame-ancestors 'none'`; **`upgrade-insecure-requests`** via `shouldUpgradeInsecureRequests`. Nonce/`strict-dynamic` = **deferred** — [`ADR-0008`](../adr/0008-csp-nonce-deferred.md) |
 | `X-Frame-Options` | `DENY` (legacy + CSP) |
 | `X-Content-Type-Options` | `nosniff` |
 | `Referrer-Policy` | default `strict-origin-when-cross-origin`; auth token pages (`/reset-password`, `/verify-email`, `/invite`) → `no-referrer`; `/login` `/register` `/logout` → `strict-origin` |
