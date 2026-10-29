@@ -9,6 +9,11 @@ import {
   sessionTokenCookie,
   shouldUseSecureAuthCookies,
 } from "@/infrastructure/auth/secure-cookies";
+import {
+  isSessionIdleExpired,
+  nextLastActiveAt,
+  resolveSessionIdleSec,
+} from "@/infrastructure/auth/session-idle";
 import { SESSION_MAX_AGE_SEC } from "@/infrastructure/auth/session-max-age";
 import { prisma } from "@/infrastructure/db/prisma";
 import { credentialsSchema } from "@/lib/auth/credentials";
@@ -62,6 +67,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   ],
   callbacks: {
     async jwt({ token, user }): Promise<JWT> {
+      const nowSec = Math.floor(Date.now() / 1000);
+
       if (user?.id) {
         const sessionToken = randomUUID();
         const expires = new Date(Date.now() + SESSION_MAX_AGE_SEC * 1000);
@@ -86,6 +93,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           tenantId: membership?.tenantId,
           role: membership?.role,
           membershipId: membership?.id,
+          lastActiveAt: nowSec,
         };
       }
 
@@ -105,7 +113,31 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         return emptyJwt();
       }
 
-      return token;
+      const idleSec = resolveSessionIdleSec();
+      if (
+        isSessionIdleExpired(
+          typeof token.lastActiveAt === "number"
+            ? token.lastActiveAt
+            : undefined,
+          idleSec,
+          nowSec,
+        )
+      ) {
+        await prisma.session
+          .delete({ where: { id: dbSession.id } })
+          .catch(() => {});
+        return emptyJwt();
+      }
+
+      return {
+        ...token,
+        lastActiveAt: nextLastActiveAt(
+          typeof token.lastActiveAt === "number"
+            ? token.lastActiveAt
+            : undefined,
+          nowSec,
+        ),
+      };
     },
     async session({ session, token }) {
       if (!token.sub || !token.sessionToken) {
