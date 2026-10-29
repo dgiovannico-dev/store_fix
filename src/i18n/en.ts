@@ -187,6 +187,7 @@ export const en = {
     evtQuoteProposed: "Quote proposed",
     evtQuoteAccepted: "Quote accepted",
     evtQuoteRejected: "Quote rejected",
+    evtGdprPurge: "GDPR retention (soft-delete)",
   },
   ticketPanels: {
     pending: "…",
