@@ -63,4 +63,12 @@ describe("domainErrors catalog", () => {
     );
     expect(domainErrorFor("relaunchOnlyOnBreach", "en")).toContain("breach");
   });
+
+  it("RFQ/inbound codes risolvono IT/EN + params", () => {
+    expect(domainErrorFor("rfqNotFound", "it")).toBe("RFQ non trovata");
+    expect(domainErrorFor("bidNotAwardable", "en")).toBe("Bid not awardable");
+    expect(
+      domainErrorFor("inboundStoreNotFound", "en", { name: "Milano Duomo" }),
+    ).toBe("Store not found: Milano Duomo");
+  });
 });

@@ -32,6 +32,7 @@ export async function confirmAttachmentUpload(input: {
     return {
       ok: false as const,
       message: e instanceof Error ? e.message : "Upload non valido",
+      code: "uploadInvalid",
     };
   }
 
