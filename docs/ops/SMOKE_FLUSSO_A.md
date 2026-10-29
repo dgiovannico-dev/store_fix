@@ -22,6 +22,8 @@ npm run smoke:http
 Verifica: `health/live|ready` → login credentials (CSRF) → `/api/auth/session` →
 API auth-gated (`notifications/unread-count`, `tickets/form-options`).
 
+**Esercitato locale:** 2026-10-29 — `PASS` con seed pilota + `npm run dev`.
+
 Il lifecycle ticket end-to-end resta sul test dominio sopra (server actions, non REST).
 
 ## Staging (manuale pre-exit)

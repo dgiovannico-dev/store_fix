@@ -5,7 +5,8 @@
 | `email.send` | on-demand | Nodemailer → Mailpit/SMTP; retry 5 + backoff |
 | `sla.check_breaches` | `*/5 * * * *` Europe/Rome | Idempotente: `UPDATE … WHERE sla_breached_at IS NULL` |
 | `email.imap_poll` | `IMAP_POLL_CRON` default `*/2 * * * *` Europe/Rome | Solo se `IMAP_HOST`+credenziali; UNSEEN → `processInboundEmail` |
-| `pm.maintain` | `0 * * * *` Europe/Rome | Espande serie RRULE + remider email HQ (48h) |
+| `pm.maintain` | `0 * * * *` Europe/Rome | Espande serie RRULE + reminder email HQ (48h) |
+| `gdpr.purge` | `0 3 * * *` Europe/Rome | Soft-delete ticket `verified` oltre 24 mesi + allegati; dry-run `GDPR_PURGE_DRY_RUN=true` — [`GDPR_RETENTION.md`](./GDPR_RETENTION.md) |
 
 ## Chiavi
 
