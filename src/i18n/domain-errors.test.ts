@@ -26,4 +26,13 @@ describe("domainErrors catalog", () => {
       }),
     ).toBe("Transition not allowed: open → done (role store_staff)");
   });
+
+  it("export/dashboard codes risolvono IT/EN", () => {
+    expect(domainErrorFor("exportGdprForbidden", "it")).toBe(
+      "Export GDPR non consentito",
+    );
+    expect(domainErrorFor("dashboardForbidden", "en")).toBe(
+      "Dashboard not allowed",
+    );
+  });
 });

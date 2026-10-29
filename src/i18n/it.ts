@@ -105,6 +105,7 @@ export const it = {
     rateLimitedRetry: "Troppe richieste. Riprova tra {sec}s.",
     unauthorized: "Non autorizzato",
     invalidJson: "JSON non valido",
+    exportFailed: "Export fallito",
   },
   /** Codici dominio → copy UI (boundary actions; dominio espone `code`). */
   domainErrors: {
@@ -119,6 +120,16 @@ export const it = {
     illegalTransitionSame: "Stato già corrente",
     storeOutOfScope: "Store fuori scope",
     vendorOutOfScope: "Ticket fuori scope vendor",
+    exportAccountingForbidden: "Export contabile non consentito",
+    exportGdprForbidden: "Export GDPR non consentito",
+    hqOpsOnly: "Solo HQ ops",
+    ticketNotAccessible: "Ticket non accessibile",
+    membershipVendorRequired: "Membership vendor richiesta",
+    rfqNotAssigned: "RFQ non assegnata",
+    contractsForbidden: "Contratti non consentiti",
+    pmCalendarForbidden: "Calendario PM non consentito",
+    scorecardForbidden: "Scorecard fornitori non consentita",
+    dashboardForbidden: "Dashboard non consentita",
   },
   gdpr: {
     exportTitle: "Export dati tenant (GDPR)",

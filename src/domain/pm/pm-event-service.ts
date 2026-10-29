@@ -39,7 +39,7 @@ export async function listPmEvents(input: {
 }) {
   requireTenantId(input.tenantId);
   if (!canManagePm(input.role)) {
-    throw new ForbiddenError("Calendario PM non consentito");
+    throw new ForbiddenError("Calendario PM non consentito", "pmCalendarForbidden");
   }
   const horizon = input.horizonDays ?? 30;
   const until = new Date(Date.now() + horizon * 24 * 60 * 60 * 1000);
