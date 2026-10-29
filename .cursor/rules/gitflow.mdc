@@ -54,8 +54,8 @@ Le PR sono **auto-approvate / auto-merge** dall’agente (nessun gate umano obbl
 
 ```bash
 # Dopo verify + commit sul branch feature/bugfix:
-bash scripts/gitflow-ship-pr.sh          # PR → develop, auto-merge
-bash scripts/gitflow-ship-pr.sh develop main   # sync lab main
+bash scripts/gitflow-ship-pr.sh                 # HEAD → develop, auto-merge
+bash scripts/gitflow-ship-pr.sh develop main    # head develop → base main (lab sync)
 ```
 
 Equivalente manuale:

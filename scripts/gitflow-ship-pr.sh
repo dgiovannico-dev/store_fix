@@ -1,12 +1,10 @@
 #!/usr/bin/env bash
-# GitFlow ship: push current branch → PR → auto-merge (merge commit).
+# GitFlow ship: push branch → PR → auto-merge (merge commit).
 # Usage:
-#   bash scripts/gitflow-ship-pr.sh              # HEAD → develop
-#   bash scripts/gitflow-ship-pr.sh develop main # develop → main (lab sync)
+#   bash scripts/gitflow-ship-pr.sh                 # current HEAD → develop
+#   bash scripts/gitflow-ship-pr.sh develop          # current HEAD → develop (explicit base)
+#   bash scripts/gitflow-ship-pr.sh develop main     # head=develop → base=main (lab sync)
 set -euo pipefail
-
-BASE="${1:-develop}"
-HEAD_REF="${2:-}"
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
@@ -17,8 +15,19 @@ if ! command -v gh >/dev/null 2>&1; then
 fi
 
 CURRENT="$(git rev-parse --abbrev-ref HEAD)"
-if [[ -z "$HEAD_REF" ]]; then
+
+if [[ $# -eq 0 ]]; then
   HEAD_REF="$CURRENT"
+  BASE="develop"
+elif [[ $# -eq 1 ]]; then
+  HEAD_REF="$CURRENT"
+  BASE="$1"
+elif [[ $# -eq 2 ]]; then
+  HEAD_REF="$1"
+  BASE="$2"
+else
+  echo "Usage: $0 [head] [base]  or  $0 [base]" >&2
+  exit 1
 fi
 
 if [[ "$HEAD_REF" == "$BASE" ]]; then
@@ -26,19 +35,17 @@ if [[ "$HEAD_REF" == "$BASE" ]]; then
   exit 1
 fi
 
-if [[ "$HEAD_REF" == "main" || "$HEAD_REF" == "develop" ]]; then
-  if [[ "$BASE" != "main" && "$BASE" != "develop" ]]; then
-    echo "Refuse unexpected base $BASE for $HEAD_REF" >&2
-    exit 1
-  fi
+git fetch origin "$BASE" "$HEAD_REF" >/dev/null 2>&1 || git fetch origin
+
+AHEAD="$(git rev-list --count "origin/$BASE..origin/$HEAD_REF" 2>/dev/null || git rev-list --count "origin/$BASE..$HEAD_REF" 2>/dev/null || echo 0)"
+if [[ "$AHEAD" == "0" ]]; then
+  echo "Nothing to ship: origin/$HEAD_REF is not ahead of origin/$BASE" >&2
+  exit 0
 fi
 
-# Ensure remote tip
+# Ensure remote tip for feature heads
 if [[ "$HEAD_REF" == "$CURRENT" ]]; then
   git push -u origin HEAD
-else
-  git fetch origin "$HEAD_REF" >/dev/null 2>&1 || true
-  git push origin "$HEAD_REF"
 fi
 
 TITLE="$(git log -1 --pretty=%s "origin/$BASE..$HEAD_REF" 2>/dev/null || git log -1 --pretty=%s)"
