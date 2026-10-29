@@ -5,6 +5,7 @@ import { auth } from "@/auth";
 import { rejectTicket, verifyTicket } from "@/application/tickets/verify-ticket";
 import { getActiveMembership } from "@/domain/memberships/membership-service";
 import { actionError } from "@/i18n/action-errors";
+import { actionResultError } from "@/i18n/domain-errors";
 
 export type VerifyActionState = { error?: string; ok?: boolean };
 
@@ -33,7 +34,7 @@ export async function verifyTicketAction(
     role: c.session.role!,
     membership: c.membership,
   });
-  if (!result.ok) return { error: result.message };
+  if (!result.ok) return { error: await actionResultError(result) };
   revalidatePath(`/app/tickets/${ticketId}`);
   revalidatePath("/app/tickets");
   revalidatePath("/vendor/inbox");
@@ -55,7 +56,7 @@ export async function rejectTicketAction(
     membership: c.membership,
     reason: String(formData.get("reason") ?? ""),
   });
-  if (!result.ok) return { error: result.message };
+  if (!result.ok) return { error: await actionResultError(result) };
   revalidatePath(`/app/tickets/${ticketId}`);
   revalidatePath("/app/tickets");
   revalidatePath("/vendor/inbox");

@@ -5,6 +5,7 @@ import { auth } from "@/auth";
 import { relaunchSlaTicket } from "@/application/sla/relaunch";
 import { getActiveMembership } from "@/domain/memberships/membership-service";
 import { actionError } from "@/i18n/action-errors";
+import { actionResultError } from "@/i18n/domain-errors";
 
 export type RelaunchState = { error?: string; ok?: boolean };
 
@@ -30,7 +31,7 @@ export async function relaunchSlaAction(
     role: session.role,
     note: String(formData.get("note") ?? ""),
   });
-  if (!result.ok) return { error: result.message };
+  if (!result.ok) return { error: await actionResultError(result) };
   revalidatePath(`/app/tickets/${ticketId}`);
   return { ok: true };
 }

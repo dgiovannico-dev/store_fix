@@ -8,6 +8,7 @@ import {
   updateStore,
 } from "@/domain/stores/store-service";
 import { actionError } from "@/i18n/action-errors";
+import { actionResultError } from "@/i18n/domain-errors";
 
 async function sessionTenant() {
   const session = await auth();
@@ -38,7 +39,7 @@ export async function createStoreAction(
       ntfyTopic: formData.get("ntfyTopic") || null,
     },
   });
-  if (!result.ok) return { error: result.message };
+  if (!result.ok) return { error: await actionResultError(result) };
   revalidatePath("/app/stores");
   return {};
 }
@@ -64,7 +65,7 @@ export async function updateStoreAction(
       ntfyTopic: formData.get("ntfyTopic") || null,
     },
   });
-  if (!result.ok) return { error: result.message };
+  if (!result.ok) return { error: await actionResultError(result) };
   revalidatePath("/app/stores");
   revalidatePath(`/app/stores/${storeId}`);
   return {};

@@ -40,6 +40,14 @@ Su `develop` e `main` (Settings → Branches), consigliato:
 
 Integrazione agente: `scripts/gitflow-ship-pr.sh` (PR + `gh pr merge --auto --merge`).
 
+## Verify locale (agente / laptop)
+
+```bash
+npm run verify:local
+# = typecheck + lint + test + secrets:scan + npm audit --audit-level=high
+npm run audit:osv   # opz. (rete; job CI `osv`)
+```
+
 ## Smoke HTTP locale (US-E14-12 parziale)
 
 ```bash

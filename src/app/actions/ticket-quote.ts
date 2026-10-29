@@ -8,6 +8,7 @@ import {
 } from "@/application/tickets/ticket-quote";
 import { getActiveMembership } from "@/domain/memberships/membership-service";
 import { actionError } from "@/i18n/action-errors";
+import { actionResultError } from "@/i18n/domain-errors";
 
 export type QuoteActionState = { error?: string; ok?: boolean };
 
@@ -40,7 +41,7 @@ export async function proposeQuoteAction(
       note: formData.get("note") || null,
     },
   });
-  if (!result.ok) return { error: result.message };
+  if (!result.ok) return { error: await actionResultError(result) };
   revalidatePath(`/vendor/tickets/${ticketId}`);
   revalidatePath(`/app/tickets/${ticketId}`);
   return { ok: true };
@@ -64,7 +65,7 @@ export async function decideQuoteAction(
       reason: formData.get("reason") || null,
     },
   });
-  if (!result.ok) return { error: result.message };
+  if (!result.ok) return { error: await actionResultError(result) };
   revalidatePath(`/app/tickets/${ticketId}`);
   revalidatePath(`/vendor/tickets/${ticketId}`);
   return { ok: true };

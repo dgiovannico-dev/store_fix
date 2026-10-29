@@ -13,6 +13,7 @@ import {
 import { getActiveMembership } from "@/domain/memberships/membership-service";
 import { checkRateLimit } from "@/infrastructure/rate-limit";
 import { actionError } from "@/i18n/action-errors";
+import { actionResultError } from "@/i18n/domain-errors";
 
 export type CreateTicketState = {
   error?: string;
@@ -79,7 +80,7 @@ export async function createTicketAction(
     },
   });
 
-  if (!result.ok) return { error: result.message };
+  if (!result.ok) return { error: await actionResultError(result) };
 
   revalidatePath("/app/tickets");
   redirect(`/app/tickets/${result.ticket.id}?created=1`);
@@ -99,7 +100,7 @@ export async function triageTicketAction(
     role: ctx.session.role!,
     note: String(formData.get("note") ?? "") || null,
   });
-  if (!result.ok) return { error: result.message };
+  if (!result.ok) return { error: await actionResultError(result) };
   revalidatePath(`/app/tickets/${ticketId}`);
   revalidatePath("/app/tickets");
   return { ok: true };
@@ -128,7 +129,7 @@ export async function assignTicketAction(
     priority,
     note: String(formData.get("note") ?? "") || null,
   });
-  if (!result.ok) return { error: result.message };
+  if (!result.ok) return { error: await actionResultError(result) };
   revalidatePath(`/app/tickets/${ticketId}`);
   revalidatePath("/app/tickets");
   return { ok: true };
@@ -148,7 +149,7 @@ export async function cancelTicketAction(
     role: ctx.session.role!,
     reason: String(formData.get("reason") ?? ""),
   });
-  if (!result.ok) return { error: result.message };
+  if (!result.ok) return { error: await actionResultError(result) };
   revalidatePath(`/app/tickets/${ticketId}`);
   revalidatePath("/app/tickets");
   return { ok: true };
