@@ -17,7 +17,7 @@ Una user story è **Done** solo se tutti i punti sotto sono soddisfatti.
 - [ ] Stati **empty / loading / error** gestiti sulle superfici toccate
 - [ ] **Nessun code smell** nuovo introdotto intenzionalmente
 - [ ] **BACKLOG** aggiornato (checkbox / stato story in `docs/product/BACKLOG.md`)
-- [ ] **GitFlow**: lavoro su branch `feature/*` o `bugfix/*` verso **`develop`** (niente commit diretti su `main`)
+- [ ] **GitFlow**: lavoro su `feature/*` / `bugfix/*` → **PR auto-merge** verso **`develop`** (niente push diretto feature su `main`/`develop`)
 
 ---
 

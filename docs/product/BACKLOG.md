@@ -8,7 +8,7 @@
 > **Scope:** MVP (Fase 1) + production-ready (**E14 / S5**). **Fase 2 Done** (F2-01…F2-09, 2026-10-29). **Fase 3 = draft** (sotto; gate VPS).  
 > **Lingua UI MVP:** italiano. Mercato: Italia / EUR.  
 > **Go prod:** NO-GO finché VPS — [`sprints/S5-EXIT-GAPS.md`](./sprints/S5-EXIT-GAPS.md) · [`../ops/NEXT_VPS.md`](../ops/NEXT_VPS.md).  
-> **Integrazione:** GitFlow **senza PR** — push su `develop`; `main` solo via `release/*` / `hotfix/*`.
+> **Integrazione:** GitFlow **con PR auto-merge** — `feature/*`/`bugfix/*` → PR → `develop`; lab sync / `release/*`/`hotfix/*` → `main` (`scripts/gitflow-ship-pr.sh`).
 
 ---
 
