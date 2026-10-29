@@ -1,8 +1,7 @@
 import { NextResponse } from "next/server";
 import { processInboundEmail } from "@/application/email-inbound/process-inbound";
-import { checkRateLimitPolicyAsync } from "@/infrastructure/rate-limit-async";
+import { rejectIfRateLimited } from "@/infrastructure/rate-limit-guard";
 import { RATE_LIMIT } from "@/infrastructure/rate-limit-policies";
-import { tooManyRequestsFromLimit } from "@/infrastructure/rate-limit-response";
 import { logJson } from "@/infrastructure/log";
 import { rateLimitKey } from "@/infrastructure/security/client-ip";
 import { actionError } from "@/i18n/action-errors";
@@ -29,13 +28,8 @@ export async function POST(req: Request) {
   }
 
   const requestId = req.headers.get("x-request-id") ?? crypto.randomUUID();
-  const limit = await checkRateLimitPolicyAsync(
-    rateLimitKey("inbound-email", req.headers),
-    RATE_LIMIT.inboundEmail,
-  );
-  if (!limit.ok) {
-    return tooManyRequestsFromLimit(await actionError("tooManyRequests"), limit);
-  }
+  const limited = await rejectIfRateLimited(rateLimitKey("inbound-email", req.headers), RATE_LIMIT.inboundEmail);
+  if (limited) return limited;
 
   let body: unknown;
   try {
