@@ -28,9 +28,10 @@ Proxy TLS: [`PROXY.md`](./PROXY.md) · Staging: [`STAGING.md`](./STAGING.md) · 
 | Aspetto | Locale (`docker-compose.yml`) | Prod (`compose.prod.yaml`) |
 |---------|-------------------------------|----------------------------|
 | Mailpit | profile `dev`/`full` | **assente** |
-| Postgres/Seaweed porte | pubblicate | **solo rete interna** |
-| App bind | `0.0.0.0:3000` (full) | `127.0.0.1:3000` (proxy TLS in T5.4) |
-| Healthcheck app | `/api/health` | `/api/health/ready` |
+| Postgres/Seaweed porte | `127.0.0.1` only | **solo rete interna** (no publish) |
+| App bind | `127.0.0.1:3000` (full) | `127.0.0.1:3000` (Caddy TLS) |
+| `no-new-privileges` | app + worker | app + worker + caddy |
+| Healthcheck app | `/api/health/ready` | `/api/health/ready` |
 | SMTP | Mailpit | env `SMTP_*` reale |
 
 ## Sizing pilota 15 store
