@@ -242,6 +242,9 @@ export const it = {
     csvHeaderMissing: 'Header mancante: "{header}". Usa il template IT.',
     csvTooManyRows: "Massimo {max} righe dati (trovate {found}).",
     csvImportRateLimited: "Troppi import. Riprova tra {sec}s.",
+    credentialsEmailRequired: "Email obbligatoria",
+    vendorCoverageInvalid:
+      "Coverage contiene store non validi per il tenant",
   },
   gdpr: {
     exportTitle: "Export dati tenant (GDPR)",

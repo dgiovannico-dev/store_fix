@@ -88,4 +88,11 @@ describe("domainErrors catalog", () => {
     ).toContain("application/pdf");
     expect(domainErrorFor("signupPasswordTooShort", "it")).toContain("8");
   });
+
+  it("credentials/vendor coverage codes", () => {
+    expect(domainErrorFor("credentialsEmailRequired", "it")).toBe(
+      "Email obbligatoria",
+    );
+    expect(domainErrorFor("vendorCoverageInvalid", "en")).toContain("Coverage");
+  });
 });

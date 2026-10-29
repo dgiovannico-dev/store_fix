@@ -36,7 +36,7 @@ export async function getVendor(tenantId: string, vendorId: string) {
 async function assertCoverageInTenant(
   tenantId: string,
   storeIds: string[],
-): Promise<string | null> {
+): Promise<{ message: string; code: string } | null> {
   if (storeIds.length === 0) return null;
   const count = await prisma.store.count({
     where: {
@@ -46,7 +46,10 @@ async function assertCoverageInTenant(
     },
   });
   if (count !== storeIds.length) {
-    return "Coverage contiene store non validi per il tenant";
+    return {
+      message: "Coverage contiene store non validi per il tenant",
+      code: "vendorCoverageInvalid",
+    };
   }
   return null;
 }
@@ -66,7 +69,13 @@ export async function createVendor(input: {
     input.tenantId,
     parsed.data.storeCoverageIds,
   );
-  if (coverageErr) return { ok: false as const, message: coverageErr };
+  if (coverageErr) {
+    return {
+      ok: false as const,
+      message: coverageErr.message,
+      code: coverageErr.code,
+    };
+  }
 
   const email =
     parsed.data.email === "" || parsed.data.email == null
@@ -106,7 +115,13 @@ export async function updateVendor(input: {
     input.tenantId,
     parsed.data.storeCoverageIds,
   );
-  if (coverageErr) return { ok: false as const, message: coverageErr };
+  if (coverageErr) {
+    return {
+      ok: false as const,
+      message: coverageErr.message,
+      code: coverageErr.code,
+    };
+  }
 
   const email =
     parsed.data.email === "" || parsed.data.email == null
