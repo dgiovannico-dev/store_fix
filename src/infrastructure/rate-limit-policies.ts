@@ -1,6 +1,6 @@
 /**
  * Named windows — keep in sync with `docs/ops/RATE_LIMITS.md`.
- * In-process store only (single-node MVP).
+ * Store: memory (default) or Postgres via `FF_RATE_LIMIT_STORE` + `checkRateLimitPolicyAsync`.
  */
 export type RateLimitPolicy = {
   readonly limit: number;

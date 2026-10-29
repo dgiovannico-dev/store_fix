@@ -28,8 +28,8 @@ Exit ≠ 0 se OSV trova CVE note; documentare waiver sotto se si accetta rischio
 | `@vitejs/plugin-react` | rimosso | Non usato da `vitest.config.ts` |
 | `@sentry/node` build | `webpackIgnore` + `serverExternalPackages` | Fix `node:` UnhandledSchemeError su `next build` |
 
-**Baseline:** `npm audit` → **0 vulnerabilities** (2026-10-29).  
-**OSV:** `npm run audit:osv` → **No issues found** (2026-10-29, scanner v2.7.0).
+**Baseline:** `npm audit` → **0 vulnerabilities** (2026-10-30).  
+**OSV:** `npm run audit:osv` → **No issues found** (2026-10-29, scanner v2.7.0); re-check after dep bumps with `npm run audit:osv`.
 
 ## Waiver aperti
 
