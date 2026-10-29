@@ -66,6 +66,8 @@ services:
       dockerfile: Dockerfile
     restart: unless-stopped
     logging: *default-logging
+    security_opt:
+      - no-new-privileges:true
     cpus: 1.0
     mem_limit: 1g
     mem_reservation: 256m
@@ -118,6 +120,8 @@ services:
       dockerfile: Dockerfile.worker
     restart: unless-stopped
     logging: *default-logging
+    security_opt:
+      - no-new-privileges:true
     cpus: 0.5
     mem_limit: 512m
     depends_on:
@@ -222,6 +226,8 @@ services:
     image: caddy:2.9-alpine
     restart: unless-stopped
     logging: *default-logging
+    security_opt:
+      - no-new-privileges:true
     cpus: 0.25
     mem_limit: 128m
     depends_on:

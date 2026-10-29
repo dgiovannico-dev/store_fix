@@ -29,3 +29,21 @@ describe("docker-compose.yml loopback ports", () => {
     expect(raw).toMatch(/no-new-privileges:true/);
   });
 });
+
+describe("compose.prod.yaml hardening", () => {
+  const raw = readFileSync(
+    path.join(process.cwd(), "compose.prod.yaml"),
+    "utf8",
+  );
+
+  it("app/worker/caddy hanno no-new-privileges", () => {
+    expect(raw).toMatch(/no-new-privileges:true/);
+    const hits = raw.match(/no-new-privileges:true/g) ?? [];
+    expect(hits.length).toBeGreaterThanOrEqual(3);
+  });
+
+  it("app espone solo loopback 3000", () => {
+    expect(raw).toMatch(/127\.0\.0\.1:3000:3000/);
+  });
+});
+
