@@ -57,6 +57,7 @@ export async function createTicket(input: {
     return {
       ok: false as const,
       message: "Punto vendita non trovato o archiviato",
+      code: "storeNotFoundOrArchived",
     };
   }
 

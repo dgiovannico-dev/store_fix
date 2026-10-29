@@ -23,11 +23,11 @@ export async function processInboundEmail(
 ): Promise<
   | { ok: true; ticketId: string; duplicate?: false }
   | { ok: true; ticketId: string; duplicate: true }
-  | { ok: false; message: string }
+  | { ok: false; message: string; code?: string; params?: Record<string, string> }
 > {
   const messageId = payload.messageId.trim();
   if (!messageId) {
-    return { ok: false, message: "messageId obbligatorio" };
+    return { ok: false, message: "messageId obbligatorio", code: "messageIdRequired" };
   }
 
   const parsed = parseInboundEmail({
@@ -39,6 +39,7 @@ export async function processInboundEmail(
     return {
       ok: false,
       message: "Indica il PV nel subject: [store:Nome] oppure PV: Nome",
+      code: "inboundStoreHintRequired",
     };
   }
 
@@ -47,11 +48,11 @@ export async function processInboundEmail(
     const t = await prisma.tenant.findUnique({
       where: { slug: payload.tenantSlug.trim() },
     });
-    if (!t) return { ok: false, message: "Tenant slug non trovato" };
+    if (!t) return { ok: false, message: "Tenant slug non trovato", code: "tenantSlugNotFound" };
     tenantId = t.id;
   }
   if (!tenantId) {
-    return { ok: false, message: "tenantId o tenantSlug obbligatorio" };
+    return { ok: false, message: "tenantId o tenantSlug obbligatorio", code: "tenantIdOrSlugRequired" };
   }
   requireTenantId(tenantId);
 
@@ -75,6 +76,8 @@ export async function processInboundEmail(
     return {
       ok: false,
       message: `Punto vendita non trovato: ${parsed.storeHint}`,
+      code: "inboundStoreNotFound",
+      params: { name: parsed.storeHint },
     };
   }
 
@@ -83,7 +86,7 @@ export async function processInboundEmail(
     orderBy: { createdAt: "asc" },
   });
   if (!ownerMembership) {
-    return { ok: false, message: "Nessun owner attivo sul tenant" };
+    return { ok: false, message: "Nessun owner attivo sul tenant", code: "noActiveOwner" };
   }
 
   const created = await createTicket({
@@ -103,7 +106,11 @@ export async function processInboundEmail(
     },
   });
   if (!created.ok) {
-    return { ok: false, message: created.message };
+    return {
+      ok: false,
+      message: created.message,
+      code: created.code,
+    };
   }
 
   await prisma.inboundEmailMessage.upsert({
