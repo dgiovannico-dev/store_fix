@@ -36,6 +36,7 @@ export async function requestAttachmentPresign(input: {
     return {
       ok: false as const,
       message: e instanceof Error ? e.message : "Upload non valido",
+      code: "uploadInvalid",
     };
   }
 

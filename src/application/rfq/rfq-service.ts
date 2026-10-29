@@ -57,7 +57,7 @@ export async function createQuoteRequest(input: {
 
   const parsed = createSchema.safeParse(input.data);
   if (!parsed.success) {
-    return { ok: false as const, message: "Dati RFQ non validi" };
+    return { ok: false as const, message: "Dati RFQ non validi", code: "invalidRfqData" };
   }
 
   let storeId: string | null = null;
@@ -69,7 +69,7 @@ export async function createQuoteRequest(input: {
         deletedAt: null,
       },
     });
-    if (!ticket) return { ok: false as const, message: "Ticket non trovato" };
+    if (!ticket) return { ok: false as const, message: "Ticket non trovato", code: "ticketNotFound" };
     storeId = ticket.storeId;
   }
 
@@ -80,7 +80,7 @@ export async function createQuoteRequest(input: {
     },
   });
   if (vendors.length !== parsed.data.vendorIds.length) {
-    return { ok: false as const, message: "Uno o più fornitori non validi" };
+    return { ok: false as const, message: "Uno o più fornitori non validi", code: "vendorsInvalid" };
   }
 
   const uniqueIds = [...new Set(parsed.data.vendorIds)];
@@ -234,15 +234,15 @@ export async function submitQuoteBid(input: {
     throw e;
   }
   const vendorId = input.membership.vendorId;
-  if (!vendorId) return { ok: false as const, message: "Membership vendor richiesta" };
+  if (!vendorId) return { ok: false as const, message: "Membership vendor richiesta", code: "membershipVendorRequired" };
 
   const parsed = bidSchema.safeParse(input.data);
   if (!parsed.success) {
-    return { ok: false as const, message: "Importo non valido" };
+    return { ok: false as const, message: "Importo non valido", code: "amountInvalid" };
   }
   const amount = parseQuoteAmount(parsed.data.amountEur);
   if (amount == null) {
-    return { ok: false as const, message: "Importo non valido" };
+    return { ok: false as const, message: "Importo non valido", code: "amountInvalid" };
   }
 
   const bid = await prisma.quoteBid.findFirst({
@@ -253,7 +253,7 @@ export async function submitQuoteBid(input: {
     },
     include: { quoteRequest: true },
   });
-  if (!bid) return { ok: false as const, message: "Invito non trovato" };
+  if (!bid) return { ok: false as const, message: "Invito non trovato", code: "rfqInviteNotFound" };
 
   if (
     !canSubmitRfqBid({
@@ -261,7 +261,7 @@ export async function submitQuoteBid(input: {
       bidStatus: bid.status,
     })
   ) {
-    return { ok: false as const, message: "RFQ non accettabile" };
+    return { ok: false as const, message: "RFQ non accettabile", code: "rfqNotAcceptable" };
   }
 
   const updated = await prisma.quoteBid.update({
@@ -294,10 +294,10 @@ export async function awardQuoteBid(input: {
     },
     include: { bids: true },
   });
-  if (!request) return { ok: false as const, message: "RFQ non trovata" };
+  if (!request) return { ok: false as const, message: "RFQ non trovata", code: "rfqNotFound" };
 
   const bid = request.bids.find((b) => b.id === input.bidId);
-  if (!bid) return { ok: false as const, message: "Offerta non trovata" };
+  if (!bid) return { ok: false as const, message: "Offerta non trovata", code: "bidNotFound" };
 
   if (
     !canAwardRfqBid({
@@ -306,7 +306,7 @@ export async function awardQuoteBid(input: {
       amountEur: bid.amountEur,
     })
   ) {
-    return { ok: false as const, message: "Offerta non aggiudicabile" };
+    return { ok: false as const, message: "Offerta non aggiudicabile", code: "bidNotAwardable" };
   }
 
   const amount = Number(bid.amountEur);
