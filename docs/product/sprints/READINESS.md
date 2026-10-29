@@ -17,7 +17,7 @@
 ## Cosa fare adesso (umano)
 
 1. VPS EU + DNS + `compose.prod` (unica via al Go)
-2. Integrazione: **push diretto su `develop`** (niente PR); consolidamento su `main` solo via release/hotfix GitFlow
+2. Integrazione: **PR GitFlow auto-merge** (`feature/*` → `develop`; sync/`release` → `main`) — `scripts/gitflow-ship-pr.sh`
 3. Non inventare Fase 3 fuori backlog — F3-02…F3-08 Done in-repo (soft-gate); F3-01 / GO VPS resta umano
 
 ## Verify locale
