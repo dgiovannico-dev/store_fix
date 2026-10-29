@@ -1,9 +1,8 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { signOut } from "@/auth";
-import { checkRateLimitPolicyAsync } from "@/infrastructure/rate-limit-async";
+import { rejectIfRateLimited } from "@/infrastructure/rate-limit-guard";
 import { RATE_LIMIT } from "@/infrastructure/rate-limit-policies";
-import { tooManyRequestsFromLimit } from "@/infrastructure/rate-limit-response";
 import { rateLimitKey } from "@/infrastructure/security/client-ip";
 import { applyLogoutClearSiteData } from "@/infrastructure/security/session-cleanup-headers";
 
@@ -13,13 +12,12 @@ import { applyLogoutClearSiteData } from "@/infrastructure/security/session-clea
  * so Clear-Site-Data can be set on the redirect response.
  */
 async function logoutAndRedirect(request: NextRequest) {
-  const limit = await checkRateLimitPolicyAsync(
+  const limited = await rejectIfRateLimited(
     rateLimitKey("logout", request.headers),
     RATE_LIMIT.logout,
+    "Too many requests",
   );
-  if (!limit.ok) {
-    return tooManyRequestsFromLimit("Too many requests", limit);
-  }
+  if (limited) return limited;
 
   await signOut({ redirect: false });
   const res = NextResponse.redirect(new URL("/login", request.url));

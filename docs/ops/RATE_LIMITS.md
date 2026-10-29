@@ -8,6 +8,7 @@ Policy nominate: `src/infrastructure/rate-limit-policies.ts` (`RATE_LIMIT.*`).
 | **postgres** | `FF_RATE_LIMIT_STORE=postgres` | tabella `RateLimitBucket` + `pg_advisory_xact_lock` — multi-replica sullo stesso Postgres OSS |
 
 Tutte le superfici rate-limited usano `checkRateLimitPolicyAsync` (rispetta `FF_RATE_LIMIT_STORE`).  
+Route JSON API / logout: helper `rejectIfRateLimited` (`rate-limit-guard.ts`) → 429 + `Retry-After`.  
 GC bucket scaduti: job pg-boss `rate_limit.gc` (orario `:15`, Europe/Rome) → `gcExpiredRateLimitBuckets`. Dry-run: `RATE_LIMIT_GC_DRY_RUN=true`.
 
 | Chiave | Limite | Finestra | Policy | Dove |
