@@ -48,7 +48,7 @@ export async function updateTenantI18nPrefs(input: {
   assertCanMutate(input.role, RbacAction.manageTenant);
   const parsed = updateSchema.safeParse(input.data);
   if (!parsed.success) {
-    return { ok: false as const, message: "Preferenze lingua non valide" };
+    return { ok: false as const, message: "Preferenze lingua non valide", code: "invalidLocalePrefs" };
   }
   const dateLocale =
     parsed.data.dateLocale?.trim() ||

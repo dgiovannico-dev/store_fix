@@ -41,7 +41,7 @@ export async function sendEmailVerification(email: string): Promise<void> {
 
 export type VerifyEmailResult =
   | { ok: true }
-  | { ok: false; code: "INVALID" | "EXPIRED" };
+  | { ok: false; code: "emailVerifyInvalid" | "emailVerifyExpired" };
 
 export async function confirmEmailVerification(
   email: string,
@@ -53,11 +53,11 @@ export async function confirmEmailVerification(
   });
 
   if (!row || row.identifier !== normalized) {
-    return { ok: false, code: "INVALID" };
+    return { ok: false, code: "emailVerifyInvalid" };
   }
   if (row.expires < new Date()) {
     await prisma.verificationToken.delete({ where: { token: row.token } }).catch(() => {});
-    return { ok: false, code: "EXPIRED" };
+    return { ok: false, code: "emailVerifyExpired" };
   }
 
   await prisma.$transaction([

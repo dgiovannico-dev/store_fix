@@ -23,7 +23,7 @@ export async function confirmAttachmentUpload(input: {
   requireTenantId(input.tenantId);
   const parsed = confirmAttachmentSchema.safeParse(input.data);
   if (!parsed.success) {
-    return { ok: false as const, message: "Metadati allegato non validi" };
+    return { ok: false as const, message: "Metadati allegato non validi", code: "invalidAttachmentMeta" };
   }
 
   try {
@@ -43,7 +43,7 @@ export async function confirmAttachmentUpload(input: {
     },
   });
   if (!ticket) {
-    return { ok: false as const, message: "Ticket non trovato" };
+    return { ok: false as const, message: "Ticket non trovato", code: "ticketNotFound" };
   }
 
   if (input.role === "vendor") {
@@ -59,7 +59,7 @@ export async function confirmAttachmentUpload(input: {
 
   // storageKey must belong to tenant path
   if (!parsed.data.storageKey.startsWith(`tenants/${input.tenantId}/`)) {
-    return { ok: false as const, message: "storageKey non valido" };
+    return { ok: false as const, message: "storageKey non valido", code: "invalidStorageKey" };
   }
 
   const attachment = await prisma.attachment.create({
@@ -88,7 +88,7 @@ export async function softDeleteAttachment(input: {
     },
   });
   if (!existing) {
-    return { ok: false as const, message: "Allegato non trovato" };
+    return { ok: false as const, message: "Allegato non trovato", code: "attachmentNotFound" };
   }
   await prisma.attachment.update({
     where: { id: existing.id },

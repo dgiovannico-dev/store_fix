@@ -27,7 +27,7 @@ export async function requestAttachmentPresign(input: {
   requireTenantId(input.tenantId);
   const parsed = requestPresignSchema.safeParse(input.data);
   if (!parsed.success) {
-    return { ok: false as const, message: "Metadati upload non validi" };
+    return { ok: false as const, message: "Metadati upload non validi", code: "invalidUploadMeta" };
   }
 
   try {
@@ -47,7 +47,7 @@ export async function requestAttachmentPresign(input: {
     },
   });
   if (!ticket) {
-    return { ok: false as const, message: "Ticket non trovato" };
+    return { ok: false as const, message: "Ticket non trovato", code: "ticketNotFound" };
   }
 
   if (input.role === "vendor") {
