@@ -4,7 +4,7 @@ Implementati in `src/middleware.ts`:
 
 | Header | Valore |
 |--------|--------|
-| `Content-Security-Policy` | `buildContentSecurityPolicy()` (`src/infrastructure/security/csp-policy.ts`) — `default-src 'self'`; script/style `'unsafe-inline'` (Next/Tailwind); **prod senza** `'unsafe-eval'`; `object-src 'none'`; `base-uri 'none'`; `frame-ancestors 'none'`; **`upgrade-insecure-requests`** via `shouldUpgradeInsecureRequests` (`FF_DOMAIN` / `FF_CSP_UPGRADE_INSECURE`) — off su lab HTTP. Nonce/`strict-dynamic` = debt futuro |
+| `Content-Security-Policy` | `buildContentSecurityPolicy()` (`src/infrastructure/security/csp-policy.ts`) — `default-src 'self'`; script/style `'unsafe-inline'` (Next/Tailwind); **prod senza** `'unsafe-eval'`; `object-src 'none'`; `frame-src 'none'` (no iframe SoR); `base-uri 'none'`; `frame-ancestors 'none'`; **`upgrade-insecure-requests`** via `shouldUpgradeInsecureRequests` (`FF_DOMAIN` / `FF_CSP_UPGRADE_INSECURE`) — off su lab HTTP. Nonce/`strict-dynamic` = debt futuro |
 | `X-Frame-Options` | `DENY` (legacy + CSP) |
 | `X-Content-Type-Options` | `nosniff` |
 | `Referrer-Policy` | default `strict-origin-when-cross-origin`; auth token pages (`/reset-password`, `/verify-email`, `/invite`) → `no-referrer`; `/login` `/register` `/logout` → `strict-origin` |
