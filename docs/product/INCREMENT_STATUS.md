@@ -1,7 +1,7 @@
 # Increment status — FacilityFlow Retail
 
 **Aggiornato:** 2026-10-29 — **dev-only** (nessun deploy VPS); F3-01 resta tracking umano  
-Hardening recente in-repo: compose lab+prod `no-new-privileges`; lab ports → `127.0.0.1`; ADR-0008 CSP nonce deferred; auth dual-bucket RL.
+Hardening recente in-repo: SeaweedFS `/cluster/healthz` + app `depends_on` healthy; compose loopback + `no-new-privileges`; ADR-0008 CSP nonce deferred.
 
 | Sprint / fase | Stato | Note |
 |---------------|-------|------|
