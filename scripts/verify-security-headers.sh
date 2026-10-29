@@ -31,6 +31,10 @@ echo "$HDR" | grep -qiE 'origin-agent-cluster:[[:space:]]*\?1' || {
   echo "missing Origin-Agent-Cluster ?1"
   exit 1
 }
+echo "$HDR" | grep -qiE 'cache-control:[[:space:]]*no-store' || {
+  echo "missing Cache-Control no-store"
+  exit 1
+}
 if [[ "$MODE" == "--prod" ]]; then
   CSP=$(echo "$HDR" | grep -i '^content-security-policy:' || true)
   echo "$CSP" | grep -qi "unsafe-eval" && {

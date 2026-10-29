@@ -45,4 +45,8 @@ describe("middleware cross-origin isolation headers", () => {
       /["']Origin-Agent-Cluster["']\s*,\s*["']\?1["']/,
     );
   });
+
+  it("applica Cache-Control no-store via applyNoStore", () => {
+    expect(raw).toMatch(/applyNoStore\s*\(\s*response\.headers\s*\)/);
+  });
 });
