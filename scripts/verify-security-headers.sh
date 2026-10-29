@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # Smoke headers dietro URL (US-E14-10 / T5.19) — usare HTTPS staging
 # Usage: bash scripts/verify-security-headers.sh [URL] [--prod]
+# HSTS: non assertato qui su HTTP localhost (Caddy). Gate in-repo:
+#   src/ops/caddyfile-hsts.test.ts · dietro proxy: curl -sI https://$FF_DOMAIN | grep -i strict-transport
 set -euo pipefail
 URL="${1:-http://127.0.0.1:3000/login}"
 MODE="${2:-}"

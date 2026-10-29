@@ -32,10 +32,10 @@ Fonti: [OWASP CSRF](https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Re
 
 ## Split proxy vs app
 
-| Header | Dove |
-|--------|------|
-| CSP, Permissions-Policy, X-Request-Id | App middleware |
-| **HSTS**, strip `Server` | Caddy (`deploy/Caddyfile`) — attiva solo su HTTPS |
+| Header | Dove | Gate in-repo |
+|--------|------|--------------|
+| CSP, Permissions-Policy, X-Request-Id | App middleware | `verify:headers … --prod` (HTTP CI) |
+| **HSTS**, strip `Server` | Caddy (`deploy/Caddyfile`) — solo HTTPS | Vitest `src/ops/caddyfile-hsts.test.ts` + `caddy:validate` |
 
 Smoke:
 
@@ -44,4 +44,5 @@ npm run verify:headers
 # staging/prod HTTPS — fallisce se CSP include unsafe-eval; HSTS atteso dietro Caddy:
 bash scripts/verify-security-headers.sh https://$FF_DOMAIN/login --prod
 npm run caddy:validate   # sintassi Caddyfile (CI)
+npm test -- src/ops/caddyfile-hsts.test.ts   # policy HSTS senza TLS live
 ```
