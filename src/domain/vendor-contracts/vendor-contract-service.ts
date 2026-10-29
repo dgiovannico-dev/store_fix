@@ -32,7 +32,6 @@ export const vendorContractInputSchema = z
       .transform((v) => (v === "" || v == null ? null : v)),
   })
   .refine((d) => d.endsOn >= d.startsOn, {
-    message: "endsOn before startsOn",
     path: ["endsOn"],
   });
 
@@ -49,7 +48,7 @@ export async function listVendorContracts(input: {
 }) {
   requireTenantId(input.tenantId);
   if (!canReadVendorContracts(input.role)) {
-    throw new ForbiddenError("Contratti non consentiti", "contractsForbidden");
+    throw new ForbiddenError(undefined, "contractsForbidden");
   }
 
   const now = new Date();
@@ -83,26 +82,22 @@ export async function listVendorContracts(input: {
 async function assertVendorInTenant(
   tenantId: string,
   vendorId: string,
-): Promise<{ message: string; code: string } | null> {
+): Promise<{ code: string } | null> {
   const v = await prisma.vendor.findFirst({
     where: { id: vendorId, ...tenantActiveWhere(tenantId) },
   });
-  return v
-    ? null
-    : { message: "Fornitore non valido", code: "vendorInvalid" };
+  return v ? null : { code: "vendorInvalid" };
 }
 
 async function assertStoreInTenant(
   tenantId: string,
   storeId: string | null,
-): Promise<{ message: string; code: string } | null> {
+): Promise<{ code: string } | null> {
   if (!storeId) return null;
   const s = await prisma.store.findFirst({
     where: { id: storeId, ...tenantActiveWhere(tenantId) },
   });
-  return s
-    ? null
-    : { message: "Punto vendita non valido", code: "storeInvalid" };
+  return s ? null : { code: "storeInvalid" };
 }
 
 export async function createVendorContract(input: {
@@ -114,21 +109,21 @@ export async function createVendorContract(input: {
   assertCanMutate(input.role, RbacAction.crudVendorContract);
   const parsed = vendorContractInputSchema.safeParse(input.data);
   if (!parsed.success) {
-    return { ok: false as const, message: "Dati contratto non validi", code: "invalidContractData" };
+    return { ok: false as const, code: "invalidContractData" };
   }
   const vendorErr = await assertVendorInTenant(
     input.tenantId,
     parsed.data.vendorId,
   );
   if (vendorErr) {
-    return { ok: false as const, message: vendorErr.message, code: vendorErr.code };
+    return { ok: false as const, code: vendorErr.code };
   }
   const storeErr = await assertStoreInTenant(
     input.tenantId,
     parsed.data.storeId,
   );
   if (storeErr) {
-    return { ok: false as const, message: storeErr.message, code: storeErr.code };
+    return { ok: false as const, code: storeErr.code };
   }
 
   const contract = await prisma.vendorContract.create({
@@ -162,7 +157,7 @@ export async function softDeleteVendorContract(input: {
     },
   });
   if (!existing) {
-    return { ok: false as const, message: "Contratto non trovato", code: "contractNotFound" };
+    return { ok: false as const, code: "contractNotFound" };
   }
   await prisma.vendorContract.update({
     where: { id: existing.id },
