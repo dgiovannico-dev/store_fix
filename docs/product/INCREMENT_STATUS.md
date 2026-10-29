@@ -1,7 +1,7 @@
 # Increment status — FacilityFlow Retail
 
 **Aggiornato:** 2026-10-29 — **dev-only** (nessun deploy VPS); F3-01 resta tracking umano  
-Hardening recente in-repo: `domainErrors` code-first EN; CSP module (`csp-policy` + `frame-src 'none'`); Permissions-Policy module; Auth Secure cookies solo su HTTPS edge (`secure-cookies`); session maxAge constant; security headers (COOP/CORP/XPCDP/OAC/`Cache-Control`/`Clear-Site-Data`/`X-DNS-Prefetch-Control`/`X-Robots-Tag` + `/robots.txt`); CSRF+RL `/logout`; client-IP rightmost XFF; HSTS Caddy gate; logout in AppChrome.
+Hardening recente in-repo: rate-limit `RATE_LIMIT.*` + `Retry-After` su API 429; CSP (`frame-src 'none'`, `worker-src 'self'`); Permissions-Policy module; Auth Secure cookies HTTPS-edge; session maxAge; headers baseline (COOP/CORP/XPCDP/OAC/`Cache-Control`/`Clear-Site-Data`/robots); CSRF+RL `/logout`; client-IP rightmost XFF; logout AppChrome.
 
 | Sprint / fase | Stato | Note |
 |---------------|-------|------|
