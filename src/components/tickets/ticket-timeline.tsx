@@ -1,5 +1,7 @@
-import type { MessageCatalog } from "@/i18n";
+import { StatusPanel } from "@/components/ui/status-panel";
 import { ticketEventLabel } from "@/domain/ticket/event-labels";
+import { ticketStatusLabel } from "@/domain/ticket/status-labels";
+import type { Locale, MessageCatalog } from "@/i18n";
 
 type EventRow = {
   id: string;
@@ -18,15 +20,17 @@ export function TicketTimeline({
   showInternalNotes = false,
   labels,
   dateLocale = "it-IT",
+  locale = "it",
 }: {
   events: EventRow[];
   showInternalNotes?: boolean;
   labels: TimelineLabels;
   dateLocale?: string;
+  locale?: Locale;
 }) {
   if (events.length === 0) {
     return (
-      <p className="text-sm text-[var(--muted-foreground)]">{labels.empty}</p>
+      <StatusPanel kind="empty" title={labels.empty} locale={locale} />
     );
   }
 
@@ -42,13 +46,19 @@ export function TicketTimeline({
           completionReport?: string;
         } | null;
         const label = ticketEventLabel(labels, e.type);
+        const fromLabel = e.fromStatus
+          ? ticketStatusLabel(e.fromStatus, locale)
+          : null;
+        const toLabel = e.toStatus
+          ? ticketStatusLabel(e.toStatus, locale)
+          : null;
         return (
           <li key={e.id} className="text-sm">
             <span className="font-medium">{label}</span>
-            {e.fromStatus || e.toStatus ? (
+            {fromLabel || toLabel ? (
               <span>
                 {" "}
-                ({e.fromStatus ?? "—"} → {e.toStatus ?? "—"})
+                ({fromLabel ?? "—"} → {toLabel ?? "—"})
               </span>
             ) : null}
             <span className="text-[var(--muted-foreground)]">

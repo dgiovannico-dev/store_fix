@@ -2,16 +2,22 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import type { MessageCatalog } from "@/i18n";
+import { StatusPanel } from "@/components/ui/status-panel";
+import type { Locale, MessageCatalog } from "@/i18n";
 
 const ACCEPT = "image/jpeg,image/png,image/webp";
 
 type Props = {
   ticketId: string;
   labels: MessageCatalog["ticketPanels"];
+  locale?: Locale;
 };
 
-export function AttachmentUploader({ ticketId, labels }: Props) {
+export function AttachmentUploader({
+  ticketId,
+  labels,
+  locale = "it",
+}: Props) {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -101,21 +107,24 @@ export function AttachmentUploader({ ticketId, labels }: Props) {
         />
       </label>
       <p className="text-xs text-[var(--muted-foreground)]">{labels.uploadHint}</p>
-      {busy ? (
-        <p className="text-sm text-[var(--muted-foreground)]">
-          {labels.uploadBusy}
-        </p>
-      ) : null}
-      {error ? (
-        <p className="text-sm text-[var(--critical)]" role="alert">
-          {error}
-        </p>
-      ) : null}
-      {okMsg ? (
-        <p className="text-sm text-[var(--success)]" role="status">
-          {okMsg}
-        </p>
-      ) : null}
+      {/* Persistent live region for WCAG 4.1.3 — announce start / fail / ok */}
+      <div aria-live="polite" aria-atomic="true" className="space-y-2">
+        {busy ? (
+          <StatusPanel
+            kind="loading"
+            title={labels.uploadBusy}
+            locale={locale}
+          />
+        ) : null}
+        {error ? (
+          <StatusPanel kind="error" title={error} locale={locale} />
+        ) : null}
+        {okMsg ? (
+          <p className="text-sm text-[var(--success)]" role="status">
+            {okMsg}
+          </p>
+        ) : null}
+      </div>
     </div>
   );
 }

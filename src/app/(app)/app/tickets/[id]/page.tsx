@@ -213,6 +213,7 @@ export default async function TicketDetailPage({
           <AttachmentUploader
             ticketId={ticket.id}
             labels={msg.ticketPanels}
+            locale={prefs.locale}
           />
         ) : null}
       </section>
@@ -226,6 +227,7 @@ export default async function TicketDetailPage({
           showInternalNotes={showInternalNotes}
           labels={msg.ticketTimeline}
           dateLocale={prefs.dateLocale}
+          locale={prefs.locale}
         />
       </section>
 
