@@ -1,11 +1,15 @@
 /**
- * Worker Compose / locale: consuma email.send + sla.check_breaches.
+ * Worker Compose / locale: email.send + sla.check_breaches + email.imap_poll.
  * Avvio: npm run worker
  */
 import { PgBoss } from "pg-boss";
+import { pollImapInbound } from "../application/email-inbound/poll-imap";
 import { checkSlaBreaches } from "../application/sla/check-breaches";
 import { sendEmail } from "../infrastructure/email/mailer";
+import { readImapInboundConfig } from "../infrastructure/email/imap-config";
+import { openImapflowMailbox } from "../infrastructure/email/imapflow-mailbox";
 import {
+  QUEUE_EMAIL_IMAP_POLL,
   QUEUE_EMAIL_SEND,
   QUEUE_SLA_CHECK,
 } from "../infrastructure/jobs/boss";
@@ -21,6 +25,7 @@ async function main() {
   await boss.start();
   await boss.createQueue(QUEUE_EMAIL_SEND);
   await boss.createQueue(QUEUE_SLA_CHECK);
+  await boss.createQueue(QUEUE_EMAIL_IMAP_POLL);
 
   await boss.work(
     QUEUE_EMAIL_SEND,
@@ -44,6 +49,21 @@ async function main() {
     console.log(`[worker] sla.check_breaches → ${result.breached} nuovi`);
   });
 
+  await boss.work(QUEUE_EMAIL_IMAP_POLL, async () => {
+    const config = readImapInboundConfig();
+    const result = await pollImapInbound({
+      config,
+      openMailbox: openImapflowMailbox,
+    });
+    if (result.skipped) {
+      console.log(`[worker] email.imap_poll skip — ${result.reason}`);
+      return;
+    }
+    console.log(
+      `[worker] email.imap_poll → fetched=${result.fetched} created=${result.created} dup=${result.duplicates} fail=${result.failed}`,
+    );
+  });
+
   try {
     await boss.schedule(QUEUE_SLA_CHECK, "*/5 * * * *", null, {
       tz: "Europe/Rome",
@@ -52,7 +72,28 @@ async function main() {
     console.warn("[worker] schedule sla:", (e as Error).message);
   }
 
-  console.log("[worker] ready — queues:", QUEUE_EMAIL_SEND, QUEUE_SLA_CHECK);
+  const imapConfig = readImapInboundConfig();
+  if (imapConfig) {
+    try {
+      await boss.schedule(
+        QUEUE_EMAIL_IMAP_POLL,
+        imapConfig.pollCron,
+        null,
+        { tz: "Europe/Rome" },
+      );
+    } catch (e) {
+      console.warn("[worker] schedule imap:", (e as Error).message);
+    }
+  } else {
+    console.log("[worker] email.imap_poll schedule off (IMAP_HOST vuoto)");
+  }
+
+  console.log(
+    "[worker] ready — queues:",
+    QUEUE_EMAIL_SEND,
+    QUEUE_SLA_CHECK,
+    QUEUE_EMAIL_IMAP_POLL,
+  );
 }
 
 main().catch((e) => {

@@ -122,6 +122,16 @@ services:
       SMTP_HOST: ${SMTP_HOST}
       SMTP_PORT: ${SMTP_PORT:-587}
       SMTP_FROM: ${SMTP_FROM:-FacilityFlow <noreply@facilityflow.local>}
+      IMAP_HOST: ${IMAP_HOST:-}
+      IMAP_PORT: ${IMAP_PORT:-993}
+      IMAP_SECURE: ${IMAP_SECURE:-true}
+      IMAP_USER: ${IMAP_USER:-}
+      IMAP_PASS: ${IMAP_PASS:-}
+      IMAP_MAILBOX: ${IMAP_MAILBOX:-INBOX}
+      IMAP_TENANT_SLUG: ${IMAP_TENANT_SLUG:-}
+      IMAP_TENANT_ID: ${IMAP_TENANT_ID:-}
+      IMAP_POLL_CRON: ${IMAP_POLL_CRON:-*/2 * * * *}
+      IMAP_MARK_SEEN: ${IMAP_MARK_SEEN:-true}
       S3_ENDPOINT: http://seaweedfs:8333
       S3_ACCESS_KEY: ${S3_ACCESS_KEY}
       S3_SECRET_KEY: ${S3_SECRET_KEY}

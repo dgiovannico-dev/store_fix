@@ -2,6 +2,7 @@ import { PgBoss } from "pg-boss";
 
 export const QUEUE_EMAIL_SEND = "email.send";
 export const QUEUE_SLA_CHECK = "sla.check_breaches";
+export const QUEUE_EMAIL_IMAP_POLL = "email.imap_poll";
 
 let bossSingleton: PgBoss | null = null;
 let starting: Promise<PgBoss | null> | null = null;
@@ -25,6 +26,7 @@ export async function getBoss(): Promise<PgBoss | null> {
     await boss.start();
     await boss.createQueue(QUEUE_EMAIL_SEND);
     await boss.createQueue(QUEUE_SLA_CHECK);
+    await boss.createQueue(QUEUE_EMAIL_IMAP_POLL);
     bossSingleton = boss;
     return boss;
   })();

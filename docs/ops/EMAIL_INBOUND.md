@@ -27,7 +27,26 @@ curl -sS -X POST http://localhost:3000/api/inbound/email \
 
 Dedup: stesso `messageId` + tenant → non crea ticket doppio.
 
-## IMAP (futuro)
+## IMAP poll (F3-04)
 
-Poll UNSEEN → parse → POST interno allo stesso `processInboundEmail`.  
-Non richiesto per slice F2-08: webhook basta per forwarder OSS / Mailpit hook / script cron.
+Worker pg-boss coda `email.imap_poll` (cron default `*/2 * * * *` Europe/Rome):
+
+1. `imapflow` SEARCH `UNSEEN` sulla mailbox
+2. Parse (`mailparser`) → stesso `processInboundEmail` del webhook
+3. Dedup Message-ID (o fallback `imap:MAILBOX:uid`)
+4. `\\Seen` solo su ok/duplicate (`IMAP_MARK_SEEN=true` default)
+
+```env
+IMAP_HOST=imap.example.com
+IMAP_PORT=993
+IMAP_SECURE=true
+IMAP_USER=intake@example.com
+IMAP_PASS=…
+IMAP_MAILBOX=INBOX
+IMAP_TENANT_SLUG=pilot-retail
+# IMAP_POLL_CRON=*/2 * * * *
+# IMAP_MARK_SEEN=true
+```
+
+Senza `IMAP_HOST` (o user/pass) il job skippa — webhook F2-08 resta valido.  
+Nessun SaaS inbound.

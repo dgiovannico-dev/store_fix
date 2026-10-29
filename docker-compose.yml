@@ -69,6 +69,16 @@ services:
       SMTP_HOST: mailpit
       SMTP_PORT: "1025"
       SMTP_FROM: ${SMTP_FROM:-FacilityFlow <noreply@facilityflow.local>}
+      IMAP_HOST: ${IMAP_HOST:-}
+      IMAP_PORT: ${IMAP_PORT:-993}
+      IMAP_SECURE: ${IMAP_SECURE:-true}
+      IMAP_USER: ${IMAP_USER:-}
+      IMAP_PASS: ${IMAP_PASS:-}
+      IMAP_MAILBOX: ${IMAP_MAILBOX:-INBOX}
+      IMAP_TENANT_SLUG: ${IMAP_TENANT_SLUG:-}
+      IMAP_TENANT_ID: ${IMAP_TENANT_ID:-}
+      IMAP_POLL_CRON: ${IMAP_POLL_CRON:-*/2 * * * *}
+      IMAP_MARK_SEEN: ${IMAP_MARK_SEEN:-true}
     profiles: ["full"]
 
   # Dev-only SMTP catcher — docker compose --profile dev up -d
