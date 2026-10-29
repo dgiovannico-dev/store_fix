@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { auth } from "@/auth";
 import { createAsset, softDeleteAsset } from "@/domain/assets/asset-service";
 import { getActiveMembership } from "@/domain/memberships/membership-service";
+import { actionError } from "@/i18n/action-errors";
 
 async function ctx() {
   const session = await auth();
@@ -21,7 +22,7 @@ export async function createAssetAction(
   formData: FormData,
 ): Promise<{ error?: string }> {
   const c = await ctx();
-  if (!c) return { error: "Accesso richiesto" };
+  if (!c) return { error: await actionError("accessRequired") };
 
   const result = await createAsset({
     tenantId: c.session.tenantId!,

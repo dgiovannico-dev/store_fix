@@ -7,6 +7,7 @@ import {
   proposeTicketQuote,
 } from "@/application/tickets/ticket-quote";
 import { getActiveMembership } from "@/domain/memberships/membership-service";
+import { actionError } from "@/i18n/action-errors";
 
 export type QuoteActionState = { error?: string; ok?: boolean };
 
@@ -26,7 +27,7 @@ export async function proposeQuoteAction(
   formData: FormData,
 ): Promise<QuoteActionState> {
   const c = await ctx();
-  if (!c) return { error: "Accesso richiesto" };
+  if (!c) return { error: await actionError("accessRequired") };
   const ticketId = String(formData.get("ticketId") ?? "");
   const result = await proposeTicketQuote({
     tenantId: c.session.tenantId!,
@@ -50,7 +51,7 @@ export async function decideQuoteAction(
   formData: FormData,
 ): Promise<QuoteActionState> {
   const c = await ctx();
-  if (!c) return { error: "Accesso richiesto" };
+  if (!c) return { error: await actionError("accessRequired") };
   const ticketId = String(formData.get("ticketId") ?? "");
   const result = await decideTicketQuote({
     tenantId: c.session.tenantId!,

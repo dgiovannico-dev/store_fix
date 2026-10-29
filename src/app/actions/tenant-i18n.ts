@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { auth } from "@/auth";
 import { updateTenantI18nPrefs } from "@/application/tenant/i18n-prefs";
+import { actionError } from "@/i18n/action-errors";
 
 export async function updateTenantI18nAction(
   _prev: { error?: string; ok?: boolean },
@@ -10,7 +11,7 @@ export async function updateTenantI18nAction(
 ): Promise<{ error?: string; ok?: boolean }> {
   const session = await auth();
   if (!session?.tenantId || !session.role) {
-    return { error: "Accesso richiesto" };
+    return { error: await actionError("accessRequired") };
   }
   const result = await updateTenantI18nPrefs({
     tenantId: session.tenantId,
