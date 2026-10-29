@@ -59,4 +59,8 @@ describe("middleware cross-origin isolation headers", () => {
     expect(raw).toMatch(/shouldUpgradeInsecureRequests/);
     expect(raw).toMatch(/upgrade-insecure-requests/);
   });
+
+  it("usa referrerPolicyForPath", () => {
+    expect(raw).toMatch(/referrerPolicyForPath/);
+  });
 });
