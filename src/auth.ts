@@ -5,11 +5,11 @@ import bcrypt from "bcryptjs";
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import type { JWT } from "next-auth/jwt";
+import { SESSION_MAX_AGE_SEC } from "@/infrastructure/auth/session-max-age";
 import { prisma } from "@/infrastructure/db/prisma";
 import { credentialsSchema } from "@/lib/auth/credentials";
 
-/** 30 giorni — allineato a Session.expires in Postgres */
-export const SESSION_MAX_AGE_SEC = 30 * 24 * 60 * 60;
+export { SESSION_MAX_AGE_SEC } from "@/infrastructure/auth/session-max-age";
 
 function emptyJwt(): JWT {
   return {};

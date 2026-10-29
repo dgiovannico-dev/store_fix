@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { shouldUpgradeInsecureRequests } from "@/infrastructure/security/csp-upgrade";
 import { evaluateApiCsrf } from "@/infrastructure/security/csrf-origin";
+import { buildPermissionsPolicyHeader } from "@/infrastructure/security/permissions-policy";
 import { referrerPolicyForPath } from "@/infrastructure/security/referrer-policy";
 import { resolveServerActionsAllowedOrigins } from "@/infrastructure/security/server-actions-origins";
 import { applyNoStore } from "@/infrastructure/security/session-cleanup-headers";
@@ -90,26 +91,7 @@ export function middleware(request: NextRequest) {
   // Powerful APIs off (OWASP SHP subset); clipboard left unrestricted for paste/copy UX
   response.headers.set(
     "Permissions-Policy",
-    [
-      "accelerometer=()",
-      "autoplay=()",
-      "camera=()",
-      "display-capture=()",
-      "encrypted-media=()",
-      "geolocation=()",
-      "browsing-topics=()",
-      "gyroscope=()",
-      "interest-cohort=()",
-      "magnetometer=()",
-      "microphone=()",
-      "midi=()",
-      "payment=()",
-      "picture-in-picture=()",
-      "publickey-credentials-get=()",
-      "screen-wake-lock=()",
-      "usb=()",
-      "xr-spatial-tracking=()",
-    ].join(", "),
+    buildPermissionsPolicyHeader(),
   );
   // XS-Leak isolation; no OAuth popup SoR → same-origin (not allow-popups)
   response.headers.set("Cross-Origin-Opener-Policy", "same-origin");
