@@ -7,11 +7,20 @@ export type CompleteWorkErrorCode =
   | "actualCostMustBePositive"
   | "workReportRequired";
 
+/** EN diagnostics for logs/tests; UI uses `code` → domainErrors. */
+const COMPLETE_WORK_DIAGNOSTIC: Record<CompleteWorkErrorCode, string> = {
+  completeWorkPhotoRequired: "At least one photo required (JPEG/PNG/WebP)",
+  actualCostRequired: "Actual cost required",
+  actualCostInvalid: "Actual cost invalid",
+  actualCostMustBePositive: "Actual cost must be greater than zero",
+  workReportRequired: "Work report required (min 5 characters)",
+};
+
 export class CompleteWorkError extends Error {
   readonly code: CompleteWorkErrorCode;
 
-  constructor(message: string, code: CompleteWorkErrorCode) {
-    super(message);
+  constructor(code: CompleteWorkErrorCode) {
+    super(COMPLETE_WORK_DIAGNOSTIC[code]);
     this.name = "CompleteWorkError";
     this.code = code;
   }
@@ -50,38 +59,23 @@ export function assertCompleteWorkReady(input: CompleteWorkInput): {
       ),
   );
   if (photos.length < 1) {
-    throw new CompleteWorkError(
-      "Per chiudere serve almeno una foto (JPEG/PNG/WebP)",
-      "completeWorkPhotoRequired",
-    );
+    throw new CompleteWorkError("completeWorkPhotoRequired");
   }
 
   const cost = parseCost(input.actualCost);
   if (cost === null) {
-    throw new CompleteWorkError(
-      "Costo effettivo obbligatorio",
-      "actualCostRequired",
-    );
+    throw new CompleteWorkError("actualCostRequired");
   }
   if (cost < 0) {
-    throw new CompleteWorkError(
-      "Costo effettivo non valido",
-      "actualCostInvalid",
-    );
+    throw new CompleteWorkError("actualCostInvalid");
   }
   if (!input.allowZeroCost && cost <= 0) {
-    throw new CompleteWorkError(
-      "Costo effettivo deve essere maggiore di zero",
-      "actualCostMustBePositive",
-    );
+    throw new CompleteWorkError("actualCostMustBePositive");
   }
 
   const report = (input.completionReport ?? "").trim();
   if (report.length < 5) {
-    throw new CompleteWorkError(
-      "Report intervento obbligatorio (minimo 5 caratteri)",
-      "workReportRequired",
-    );
+    throw new CompleteWorkError("workReportRequired");
   }
 
   return { actualCost: cost, completionReport: report };
