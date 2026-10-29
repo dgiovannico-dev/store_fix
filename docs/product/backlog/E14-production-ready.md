@@ -122,8 +122,8 @@ Rendere FacilityFlow **production-ready** per un pilota **15 store** su **VPS EU
 - [x] Workflow GitHub Actions: `lint`, `typecheck`, unit/integration, `build` (Next)
 - [x] Runner: GitHub-hosted free **oppure** self-hosted sul VPS EU — documentato; **non** è product SaaS
 - [x] Nessun secret di prod nella CI di PR; DB di test effimero (service container Postgres) se serve integration
-- [ ] Badge/status opzionale; branch protection consigliata su `develop` (doc)
-- [ ] Job audit dipendenze (npm audit / OSV) — vedi anche US-E14-10; può condividere step
+- [x] Badge/status opzionale; branch protection consigliata su `develop` (doc) — `docs/ops/CI.md` + badge README
+- [x] Job audit dipendenze (npm audit / OSV) — vedi anche US-E14-10; può condividere step
 
 **Task (TK)**
 | ID | Task | Size |

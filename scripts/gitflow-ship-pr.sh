@@ -90,3 +90,14 @@ fi
 
 echo "Merged PR #$PR → $BASE"
 gh pr view "$PR" --json url,state,mergedAt --jq '"\(.url) state=\(.state) mergedAt=\(.mergedAt)"'
+
+# Lab tip align: after develop→main, FF develop to main tip (no force).
+if [[ "$HEAD_REF" == "develop" && "$BASE" == "main" ]]; then
+  git fetch origin main develop >/dev/null 2>&1 || true
+  if git merge-base --is-ancestor "origin/develop" "origin/main"; then
+    git push origin "origin/main:refs/heads/develop"
+    echo "Aligned origin/develop → origin/main tip"
+  else
+    echo "WARN: develop not ancestor of main; skip tip align" >&2
+  fi
+fi
