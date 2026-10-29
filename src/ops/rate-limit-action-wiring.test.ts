@@ -18,7 +18,7 @@ describe("rate-limit-action wiring", () => {
     expect(raw).toMatch(/login-user:/);
   });
 
-  it("signup e createTicket usano rateLimitedRetryMessage", () => {
+  it("signup dual bucket IP + email; createTicket usa rateLimitedRetryMessage", () => {
     const signup = readFileSync(
       path.join(root, "src/app/actions/signup.ts"),
       "utf8",
@@ -28,6 +28,10 @@ describe("rate-limit-action wiring", () => {
       "utf8",
     );
     expect(signup).toMatch(/rateLimitedRetryMessage/);
+    expect(signup).toMatch(/RATE_LIMIT\.signup/);
+    expect(signup).toMatch(/RATE_LIMIT\.signupUser/);
+    expect(signup).toMatch(/signup-user:/);
     expect(tickets).toMatch(/rateLimitedRetryMessage/);
   });
 });
+

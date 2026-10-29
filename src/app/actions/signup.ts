@@ -19,16 +19,28 @@ export async function signupAction(
   _prev: SignupActionState,
   formData: FormData,
 ): Promise<SignupActionState> {
-  const limited = await rateLimitedRetryMessage(
+  // Dual bucket: per-IP + per-email (same opaque retry copy).
+  const ipLimited = await rateLimitedRetryMessage(
     rateLimitKey("signup", await headers()),
     RATE_LIMIT.signup,
   );
-  if (limited) return { error: limited };
+  if (ipLimited) return { error: ipLimited };
+
+  const email = String(formData.get("email") ?? "")
+    .trim()
+    .toLowerCase();
+  if (email) {
+    const emailLimited = await rateLimitedRetryMessage(
+      `signup-user:${email}`,
+      RATE_LIMIT.signupUser,
+    );
+    if (emailLimited) return { error: emailLimited };
+  }
 
   const password = String(formData.get("password") ?? "");
   const result = await signupHqOwner({
     name: String(formData.get("name") ?? ""),
-    email: String(formData.get("email") ?? ""),
+    email,
     password,
     workspaceName: String(formData.get("workspaceName") ?? ""),
   });
