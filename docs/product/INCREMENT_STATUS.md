@@ -1,7 +1,7 @@
 # Increment status — FacilityFlow Retail
 
 **Aggiornato:** 2026-10-29 — **dev-only** (nessun deploy VPS); F3-01 resta tracking umano  
-Hardening recente in-repo: `domainErrors` + font locali CI-stable (no `next/font/google` flake).
+Hardening recente in-repo: `domainErrors` code-first EN; security headers (COOP/CORP/XPCDP/Permissions-Policy/OAC); HSTS Caddy gate; font locali CI-stable.
 
 | Sprint / fase | Stato | Note |
 |---------------|-------|------|
@@ -15,7 +15,7 @@ Hardening recente in-repo: `domainErrors` + font locali CI-stable (no `next/font
 ## Modalità corrente
 
 **Solo sviluppi in-repo** — niente `vps:wizard` / compose.prod su host remoto finché non richiesto.  
-Autopilot continua su debt / hardening / gap codice senza inventare nuove Fase 3 fuori tabella F3. `gdpr.purge` + `attachment.gc` in-repo.
+Autopilot continua su debt / hardening / gap codice senza inventare nuove Fase 3 fuori tabella F3. `gdpr.purge` + `attachment.gc` in-repo. Baseline header: [`SECURITY_HEADERS.md`](../ops/SECURITY_HEADERS.md).
 
 ### Prove locali
 
