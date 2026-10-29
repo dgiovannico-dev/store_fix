@@ -30,7 +30,7 @@ export async function requestAttachmentPresign(input: {
   requireTenantId(input.tenantId);
   const parsed = requestPresignSchema.safeParse(input.data);
   if (!parsed.success) {
-    return { ok: false as const, message: "Metadati upload non validi", code: "invalidUploadMeta" };
+    return { ok: false as const, code: "invalidUploadMeta" };
   }
 
   try {
@@ -39,16 +39,11 @@ export async function requestAttachmentPresign(input: {
     if (e instanceof StorageValidationError) {
       return {
         ok: false as const,
-        message: e.message,
         code: e.code,
         params: e.params,
       };
     }
-    return {
-      ok: false as const,
-      message: e instanceof Error ? e.message : "Upload non valido",
-      code: "uploadInvalid",
-    };
+    return { ok: false as const, code: "uploadInvalid" };
   }
 
   const ticket = await prisma.ticket.findFirst({
@@ -59,7 +54,7 @@ export async function requestAttachmentPresign(input: {
     },
   });
   if (!ticket) {
-    return { ok: false as const, message: "Ticket non trovato", code: "ticketNotFound" };
+    return { ok: false as const, code: "ticketNotFound" };
   }
 
   if (input.role === "vendor") {
@@ -67,10 +62,10 @@ export async function requestAttachmentPresign(input: {
       !input.membership.vendorId ||
       ticket.vendorId !== input.membership.vendorId
     ) {
-      throw new ForbiddenError("Ticket fuori scope vendor", "vendorOutOfScope");
+      throw new ForbiddenError(undefined, "vendorOutOfScope");
     }
   } else if (!canAccessStore(input.membership, ticket.storeId)) {
-    throw new ForbiddenError("Ticket fuori scope store", "storeOutOfScope");
+    throw new ForbiddenError(undefined, "storeOutOfScope");
   }
 
   const key = buildAttachmentKey({

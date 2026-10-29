@@ -23,11 +23,16 @@ export async function processInboundEmail(
 ): Promise<
   | { ok: true; ticketId: string; duplicate?: false }
   | { ok: true; ticketId: string; duplicate: true }
-  | { ok: false; message: string; code?: string; params?: Record<string, string> }
+  | {
+      ok: false;
+      code: string;
+      params?: Record<string, string>;
+      message?: string;
+    }
 > {
   const messageId = payload.messageId.trim();
   if (!messageId) {
-    return { ok: false, message: "messageId obbligatorio", code: "messageIdRequired" };
+    return { ok: false, code: "messageIdRequired" };
   }
 
   const parsed = parseInboundEmail({
@@ -36,11 +41,7 @@ export async function processInboundEmail(
     from: payload.from,
   });
   if (!parsed.storeHint) {
-    return {
-      ok: false,
-      message: "Indica il PV nel subject: [store:Nome] oppure PV: Nome",
-      code: "inboundStoreHintRequired",
-    };
+    return { ok: false, code: "inboundStoreHintRequired" };
   }
 
   let tenantId = payload.tenantId?.trim() || "";
@@ -48,11 +49,11 @@ export async function processInboundEmail(
     const t = await prisma.tenant.findUnique({
       where: { slug: payload.tenantSlug.trim() },
     });
-    if (!t) return { ok: false, message: "Tenant slug non trovato", code: "tenantSlugNotFound" };
+    if (!t) return { ok: false, code: "tenantSlugNotFound" };
     tenantId = t.id;
   }
   if (!tenantId) {
-    return { ok: false, message: "tenantId o tenantSlug obbligatorio", code: "tenantIdOrSlugRequired" };
+    return { ok: false, code: "tenantIdOrSlugRequired" };
   }
   requireTenantId(tenantId);
 
@@ -75,7 +76,6 @@ export async function processInboundEmail(
   if (!store) {
     return {
       ok: false,
-      message: `Punto vendita non trovato: ${parsed.storeHint}`,
       code: "inboundStoreNotFound",
       params: { name: parsed.storeHint },
     };
@@ -86,7 +86,7 @@ export async function processInboundEmail(
     orderBy: { createdAt: "asc" },
   });
   if (!ownerMembership) {
-    return { ok: false, message: "Nessun owner attivo sul tenant", code: "noActiveOwner" };
+    return { ok: false, code: "noActiveOwner" };
   }
 
   const created = await createTicket({
@@ -106,11 +106,7 @@ export async function processInboundEmail(
     },
   });
   if (!created.ok) {
-    return {
-      ok: false,
-      message: created.message,
-      code: created.code,
-    };
+    return { ok: false, code: created.code };
   }
 
   await prisma.inboundEmailMessage.upsert({

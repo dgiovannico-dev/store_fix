@@ -39,11 +39,11 @@ export async function createTicket(input: {
 
   const parsed = createTicketSchema.safeParse(input.data);
   if (!parsed.success) {
-    return { ok: false as const, message: "Dati ticket non validi", code: "invalidTicketData" };
+    return { ok: false as const, code: "invalidTicketData" };
   }
 
   if (!canAccessStore(input.membership, parsed.data.storeId)) {
-    throw new ForbiddenError("Store fuori scope", "storeOutOfScope");
+    throw new ForbiddenError(undefined, "storeOutOfScope");
   }
 
   const store = await prisma.store.findFirst({
@@ -56,7 +56,6 @@ export async function createTicket(input: {
   if (!store) {
     return {
       ok: false as const,
-      message: "Punto vendita non trovato o archiviato",
       code: "storeNotFoundOrArchived",
     };
   }
@@ -71,7 +70,7 @@ export async function createTicket(input: {
       },
     });
     if (!asset) {
-      return { ok: false as const, message: "Asset non valido per lo store", code: "assetInvalidForStore" };
+      return { ok: false as const, code: "assetInvalidForStore" };
     }
   }
 
