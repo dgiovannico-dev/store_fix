@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { processInboundEmail } from "@/application/email-inbound/process-inbound";
 import { checkRateLimit } from "@/infrastructure/rate-limit";
 import { logJson } from "@/infrastructure/log";
+import { rateLimitKey } from "@/infrastructure/security/client-ip";
 import { actionError } from "@/i18n/action-errors";
 import { actionResultError } from "@/i18n/domain-errors";
 
@@ -26,9 +27,11 @@ export async function POST(req: Request) {
   }
 
   const requestId = req.headers.get("x-request-id") ?? crypto.randomUUID();
-  const fwd = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim();
-  const ip = fwd || req.headers.get("x-real-ip") || "local";
-  const limit = checkRateLimit(`inbound-email:${ip}`, 60, 60_000);
+  const limit = checkRateLimit(
+    rateLimitKey("inbound-email", req.headers),
+    60,
+    60_000,
+  );
   if (!limit.ok) {
     return NextResponse.json({ error: await actionError("tooManyRequests") }, { status: 429 });
   }

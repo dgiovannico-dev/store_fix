@@ -2,15 +2,11 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { signOut } from "@/auth";
 import { checkRateLimit } from "@/infrastructure/rate-limit";
+import { rateLimitKey } from "@/infrastructure/security/client-ip";
 import { applyLogoutClearSiteData } from "@/infrastructure/security/session-cleanup-headers";
 
 const LOGOUT_LIMIT = 20;
 const LOGOUT_WINDOW_MS = 15 * 60 * 1000;
-
-function clientIp(request: NextRequest): string {
-  const fwd = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim();
-  return fwd || request.headers.get("x-real-ip") || "local";
-}
 
 /**
  * Explicit logout endpoint: revoke DB session via Auth.js, then instruct the
@@ -19,7 +15,7 @@ function clientIp(request: NextRequest): string {
  */
 async function logoutAndRedirect(request: NextRequest) {
   const limit = checkRateLimit(
-    `logout:${clientIp(request)}`,
+    rateLimitKey("logout", request.headers),
     LOGOUT_LIMIT,
     LOGOUT_WINDOW_MS,
   );
