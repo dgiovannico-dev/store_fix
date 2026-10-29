@@ -2,6 +2,15 @@
 
 Stack: [`compose.prod.yaml`](../../compose.prod.yaml) + [`deploy/Caddyfile`](../../deploy/Caddyfile)
 
+Validazione sintassi (CI + preflight, no stack up):
+
+```bash
+npm run caddy:validate
+# image allineata a compose.prod: caddy:2.9-alpine
+```
+
+HSTS e header proxy sono nel Caddyfile; CSP/Permissions-Policy restano sull’app (`SECURITY_HEADERS.md`). Smoke HTTPS+HSTS su VPS: `verify:headers https://$FF_DOMAIN/... --prod`.
+
 ## DNS / porte
 
 | Porta host | Servizio | Note |
