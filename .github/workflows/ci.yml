@@ -28,6 +28,9 @@ jobs:
       DATABASE_URL: postgresql://facilityflow:facilityflow_ci@localhost:5432/facilityflow?schema=public
       AUTH_SECRET: ci-only-not-for-production-use-32chars
       NEXT_PUBLIC_APP_URL: http://localhost:3000
+      # Unit/integration: no Mailpit in CI (mailer usa jsonTransport sotto VITEST)
+      SMTP_TRANSPORT: json
+      PGBOSS_DISABLED: "true"
 
     steps:
       - uses: actions/checkout@v4
