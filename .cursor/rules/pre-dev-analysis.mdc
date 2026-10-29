@@ -16,7 +16,8 @@ Prima di implementare **qualsiasi** epic, user story o task, completa questo che
 
 ## 2. Ricerca best practice (obbligatoria)
 
-- [ ] Usa **WebSearch** / **WebFetch** su pratiche attuali rilevanti **a questo task** (es. ticketing, SLA, RBAC, multi-tenant SaaS, Next.js App Router, Prisma, Auth.js)
+- [ ] Usa **WebSearch** / **WebFetch** su pratiche attuali rilevanti **a questo task** (es. ticketing, SLA, RBAC, multi-tenant, Next.js App Router, Prisma, Auth.js, SeaweedFS, pg-boss)
+- [ ] Verifica che nessuna dipendenza introdotta violi **OSS-only** (`docs/product/STACK.md`): niente SaaS a pagamento nel path critico
 - [ ] Annota 2–4 finding utili (pattern, anti-pattern, librerie mature) con **fonte URL**
 - [ ] Adatta i finding al contesto FacilityFlow: non copiare stack generici se non calzano
 

@@ -1,0 +1,223 @@
+"use client";
+
+import { useActionState, useState } from "react";
+import {
+  assignTicketAction,
+  cancelTicketAction,
+  triageTicketAction,
+  type TicketActionState,
+} from "@/app/actions/tickets";
+import { INTAKE_PRIORITIES } from "@/domain/intake/chat-steps";
+
+type VendorOpt = { id: string; name: string };
+type Hint = { vendorId: string; vendorName: string } | null;
+
+type Props = {
+  ticketId: string;
+  status: string;
+  priority: string;
+  storeId: string;
+  category: string;
+  vendors: VendorOpt[];
+  preferredHint: Hint;
+  canOps: boolean;
+};
+
+const initial: TicketActionState = {};
+
+export function TicketOpsPanel({
+  ticketId,
+  status,
+  priority,
+  storeId,
+  category,
+  vendors,
+  preferredHint,
+  canOps,
+}: Props) {
+  const [triageState, triageAction, triagePending] = useActionState(
+    triageTicketAction,
+    initial,
+  );
+  const [assignState, assignAction, assignPending] = useActionState(
+    assignTicketAction,
+    initial,
+  );
+  const [cancelState, cancelAction, cancelPending] = useActionState(
+    cancelTicketAction,
+    initial,
+  );
+  const [vendorId, setVendorId] = useState(preferredHint?.vendorId ?? "");
+  const [aiHint, setAiHint] = useState<string | null>(null);
+  const [aiPending, setAiPending] = useState(false);
+
+  if (!canOps) return null;
+
+  return (
+    <section className="mt-8 space-y-6 border-t border-[var(--border)] pt-6">
+      <h2 className="text-sm font-semibold uppercase tracking-wide text-[var(--muted-foreground)]">
+        Operazioni HQ
+      </h2>
+
+      {preferredHint ? (
+        <p className="rounded-[var(--radius)] border border-[var(--border)] px-3 py-2 text-sm">
+          Suggerimento preferred vendor:{" "}
+          <strong>{preferredHint.vendorName}</strong> (assegnazione manuale)
+        </p>
+      ) : null}
+
+      {status === "open" ? (
+        <form action={triageAction} className="space-y-3">
+          <input type="hidden" name="ticketId" value={ticketId} />
+          <label className="block text-sm font-medium">
+            Nota interna (opz.)
+            <textarea
+              name="note"
+              rows={2}
+              className="mt-1 w-full rounded-[var(--radius)] border border-[var(--border)] bg-white px-3 py-2 text-sm"
+            />
+          </label>
+          {triageState.error ? (
+            <p className="text-sm text-[var(--critical)]" role="alert">
+              {triageState.error}
+            </p>
+          ) : null}
+          <button
+            type="submit"
+            disabled={triagePending}
+            className="rounded-[var(--radius)] bg-[var(--primary)] px-4 py-2 text-sm font-medium text-[var(--primary-foreground)] disabled:opacity-60"
+          >
+            {triagePending ? "…" : "Segna triaged"}
+          </button>
+        </form>
+      ) : null}
+
+      {status === "triaged" ? (
+        <form action={assignAction} className="space-y-3">
+          <input type="hidden" name="ticketId" value={ticketId} />
+          <label className="block text-sm font-medium">
+            Fornitore *
+            <select
+              name="vendorId"
+              required
+              value={vendorId}
+              onChange={(e) => setVendorId(e.target.value)}
+              className="mt-1 w-full rounded-[var(--radius)] border border-[var(--border)] bg-white px-3 py-2 text-sm"
+            >
+              <option value="" disabled>
+                Seleziona…
+              </option>
+              {vendors.map((v) => (
+                <option key={v.id} value={v.id}>
+                  {v.name}
+                  {preferredHint?.vendorId === v.id ? " ★ preferred" : ""}
+                </option>
+              ))}
+            </select>
+          </label>
+          <button
+            type="button"
+            disabled={aiPending || !storeId || !category}
+            onClick={async () => {
+              setAiPending(true);
+              setAiHint(null);
+              try {
+                const res = await fetch("/api/ai/suggest-vendor", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ storeId, category }),
+                });
+                if (!res.ok) return;
+                const data = (await res.json()) as {
+                  suggestion: {
+                    vendorId: string;
+                    vendorName: string;
+                    rationale: string;
+                  } | null;
+                };
+                if (!data.suggestion) {
+                  setAiHint("Nessun vendor suggerito");
+                  return;
+                }
+                setAiHint(
+                  `${data.suggestion.vendorName} — ${data.suggestion.rationale}`,
+                );
+                setVendorId(data.suggestion.vendorId);
+              } finally {
+                setAiPending(false);
+              }
+            }}
+            className="text-sm font-medium text-[var(--primary)] underline-offset-4 hover:underline disabled:opacity-60"
+          >
+            {aiPending ? "Suggerimento…" : "Suggerisci vendor (conferma in select)"}
+          </button>
+          {aiHint ? (
+            <p className="text-xs text-[var(--muted-foreground)]">{aiHint}</p>
+          ) : null}
+          <label className="block text-sm font-medium">
+            Priorità
+            <select
+              name="priority"
+              defaultValue={priority}
+              className="mt-1 w-full rounded-[var(--radius)] border border-[var(--border)] bg-white px-3 py-2 text-sm"
+            >
+              {INTAKE_PRIORITIES.map((p) => (
+                <option key={p.value} value={p.value}>
+                  {p.label}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="block text-sm font-medium">
+            Nota interna (opz.)
+            <textarea
+              name="note"
+              rows={2}
+              className="mt-1 w-full rounded-[var(--radius)] border border-[var(--border)] bg-white px-3 py-2 text-sm"
+            />
+          </label>
+          {assignState.error ? (
+            <p className="text-sm text-[var(--critical)]" role="alert">
+              {assignState.error}
+            </p>
+          ) : null}
+          <button
+            type="submit"
+            disabled={assignPending || vendors.length === 0}
+            className="rounded-[var(--radius)] bg-[var(--primary)] px-4 py-2 text-sm font-medium text-[var(--primary-foreground)] disabled:opacity-60"
+          >
+            {assignPending ? "…" : "Assegna vendor"}
+          </button>
+        </form>
+      ) : null}
+
+      {status !== "cancelled" && status !== "verified" ? (
+        <form action={cancelAction} className="space-y-3">
+          <input type="hidden" name="ticketId" value={ticketId} />
+          <label className="block text-sm font-medium">
+            Annulla (motivo obbligatorio)
+            <textarea
+              name="reason"
+              required
+              minLength={3}
+              rows={2}
+              className="mt-1 w-full rounded-[var(--radius)] border border-[var(--border)] bg-white px-3 py-2 text-sm"
+            />
+          </label>
+          {cancelState.error ? (
+            <p className="text-sm text-[var(--critical)]" role="alert">
+              {cancelState.error}
+            </p>
+          ) : null}
+          <button
+            type="submit"
+            disabled={cancelPending}
+            className="rounded-[var(--radius)] border border-[var(--critical)] px-4 py-2 text-sm font-medium text-[var(--critical)] disabled:opacity-60"
+          >
+            {cancelPending ? "…" : "Annulla ticket"}
+          </button>
+        </form>
+      ) : null}
+    </section>
+  );
+}

@@ -1,0 +1,15 @@
+# Override lab laptop — porte alte, niente bind 80/443 privilegiato
+# Uso:
+#   docker compose -f compose.prod.yaml -f compose.lab.yaml --env-file .env.prod.example up -d
+# Poi: https://localhost:8443 (cert interno Caddy; curl -k)
+
+services:
+  caddy:
+    ports: !override
+      - "8080:80"
+      - "8443:443"
+      - "8443:443/udp"
+  app:
+    # espone ancora loopback per debug
+    ports:
+      - "127.0.0.1:3000:3000"
