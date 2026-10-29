@@ -17,8 +17,8 @@
 ## Cosa fare adesso (umano)
 
 1. VPS EU + DNS + `compose.prod` (unica via al Go)
-2. Su richiesta: commit / PR → `develop` (CI con gate p95)
-3. Non inventare Fase 3 fuori backlog — agent **idle** finché non arriva uno di: `crea PR…` / VPS / nuova story in BACKLOG
+2. Integrazione: **push diretto su `develop`** (niente PR); consolidamento su `main` solo via release/hotfix GitFlow
+3. Non inventare Fase 3 fuori backlog — sviluppo F3-02+ solo dopo F3-01 / GO VPS
 
 ## Verify locale
 
