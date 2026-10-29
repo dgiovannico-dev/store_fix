@@ -53,4 +53,14 @@ describe("domainErrors catalog", () => {
       "Password too short",
     );
   });
+
+  it("ticket/attachment/verify codes risolvono IT/EN", () => {
+    expect(domainErrorFor("attachmentNotFound", "it")).toBe(
+      "Allegato non trovato",
+    );
+    expect(domainErrorFor("emailVerifyExpired", "en")).toBe(
+      "Email verification expired",
+    );
+    expect(domainErrorFor("relaunchOnlyOnBreach", "en")).toContain("breach");
+  });
 });

@@ -33,14 +33,15 @@ export async function verifyTicket(input: {
       deletedAt: null,
     },
   });
-  if (!ticket) return { ok: false as const, message: "Ticket non trovato" };
+  if (!ticket) return { ok: false as const, message: "Ticket non trovato", code: "ticketNotFound" };
   if (!canAccessStore(input.membership, ticket.storeId)) {
-    return { ok: false as const, message: "Ticket fuori scope store" };
+    return { ok: false as const, message: "Ticket fuori scope store", code: "storeOutOfScope" };
   }
   if (ticket.status !== TicketStatus.done) {
     return {
       ok: false as const,
       message: "Verifica solo da stato done",
+      code: "verifyOnlyFromDone",
     };
   }
 
@@ -91,7 +92,7 @@ export async function rejectTicket(input: {
 
   const parsed = rejectSchema.safeParse({ reason: input.reason });
   if (!parsed.success) {
-    return { ok: false as const, message: "Motivo rifiuto obbligatorio" };
+    return { ok: false as const, message: "Motivo rifiuto obbligatorio", code: "rejectReasonRequired" };
   }
 
   const ticket = await prisma.ticket.findFirst({
@@ -101,14 +102,15 @@ export async function rejectTicket(input: {
       deletedAt: null,
     },
   });
-  if (!ticket) return { ok: false as const, message: "Ticket non trovato" };
+  if (!ticket) return { ok: false as const, message: "Ticket non trovato", code: "ticketNotFound" };
   if (!canAccessStore(input.membership, ticket.storeId)) {
-    return { ok: false as const, message: "Ticket fuori scope store" };
+    return { ok: false as const, message: "Ticket fuori scope store", code: "storeOutOfScope" };
   }
   if (ticket.status !== TicketStatus.done) {
     return {
       ok: false as const,
       message: "Rifiuto solo da stato done",
+      code: "rejectOnlyFromDone",
     };
   }
 

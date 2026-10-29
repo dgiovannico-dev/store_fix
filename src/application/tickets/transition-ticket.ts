@@ -272,7 +272,7 @@ export async function cancelTicket(input: {
 
   const parsed = cancelSchema.safeParse({ reason: input.reason });
   if (!parsed.success) {
-    return { ok: false as const, message: "Motivo obbligatorio" };
+    return { ok: false as const, message: "Motivo obbligatorio", code: "cancelReasonRequired" };
   }
 
   const result = await transitionTicket({

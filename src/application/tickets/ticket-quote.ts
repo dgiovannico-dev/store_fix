@@ -46,11 +46,11 @@ export async function proposeTicketQuote(input: {
 
   const parsed = proposeSchema.safeParse(input.data);
   if (!parsed.success) {
-    return { ok: false as const, message: "Importo preventivo non valido" };
+    return { ok: false as const, message: "Importo preventivo non valido", code: "quoteAmountInvalid" };
   }
   const amount = parseQuoteAmount(parsed.data.amountEur);
   if (amount == null) {
-    return { ok: false as const, message: "Importo preventivo non valido" };
+    return { ok: false as const, message: "Importo preventivo non valido", code: "quoteAmountInvalid" };
   }
 
   const ticket = await prisma.ticket.findFirst({
@@ -60,7 +60,7 @@ export async function proposeTicketQuote(input: {
       deletedAt: null,
     },
   });
-  if (!ticket) return { ok: false as const, message: "Ticket non trovato" };
+  if (!ticket) return { ok: false as const, message: "Ticket non trovato", code: "ticketNotFound" };
 
   try {
     assertVendorTicketScope(input.membership, ticket, input.role);
@@ -75,6 +75,7 @@ export async function proposeTicketQuote(input: {
     return {
       ok: false as const,
       message: "Preventivo consentito solo su ticket assegnato / in corso",
+      code: "quoteOnlyAssigned",
     };
   }
 
@@ -136,7 +137,7 @@ export async function decideTicketQuote(input: {
 
   const parsed = decideSchema.safeParse(input.data);
   if (!parsed.success) {
-    return { ok: false as const, message: "Decisione non valida" };
+    return { ok: false as const, message: "Decisione non valida", code: "quoteDecisionInvalid" };
   }
 
   const ticket = await prisma.ticket.findFirst({
@@ -146,16 +147,17 @@ export async function decideTicketQuote(input: {
       deletedAt: null,
     },
   });
-  if (!ticket) return { ok: false as const, message: "Ticket non trovato" };
+  if (!ticket) return { ok: false as const, message: "Ticket non trovato", code: "ticketNotFound" };
 
   if (!canAccessStore(input.membership, ticket.storeId)) {
-    return { ok: false as const, message: "Store fuori scope" };
+    return { ok: false as const, message: "Store fuori scope", code: "storeOutOfScope" };
   }
 
   if (!canDecideQuote(ticket.status, ticket.quoteStatus)) {
     return {
       ok: false as const,
       message: "Nessun preventivo in attesa su questo ticket",
+      code: "noPendingQuote",
     };
   }
 
