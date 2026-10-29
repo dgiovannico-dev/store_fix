@@ -40,8 +40,8 @@ export default async function LocaleSettingsPage() {
             defaultValue={prefs.locale}
             className="mt-1 w-full rounded-[var(--radius)] border border-[var(--border)] px-3 py-2"
           >
-            <option value="it">Italiano</option>
-            <option value="en">English</option>
+            <option value="it">{msg.localeSettings.langIt}</option>
+            <option value="en">{msg.localeSettings.langEn}</option>
           </select>
         </label>
         <label className="block text-sm">

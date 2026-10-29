@@ -3,6 +3,7 @@ import { auth } from "@/auth";
 import { suggestTicketCategory } from "@/application/ai/suggest-ticket-category";
 import { checkRateLimit } from "@/infrastructure/rate-limit";
 import { logJson } from "@/infrastructure/log";
+import { actionError } from "@/i18n/action-errors";
 
 /**
  * Assist AI categoria (F2-07). Auth richiesta; non scrive ticket.
@@ -10,7 +11,7 @@ import { logJson } from "@/infrastructure/log";
 export async function POST(req: Request) {
   const session = await auth();
   if (!session?.user?.id || !session.tenantId) {
-    return NextResponse.json({ error: "Non autorizzato" }, { status: 401 });
+    return NextResponse.json({ error: await actionError("unauthorized") }, { status: 401 });
   }
 
   const limit = checkRateLimit(
@@ -19,14 +20,14 @@ export async function POST(req: Request) {
     60_000,
   );
   if (!limit.ok) {
-    return NextResponse.json({ error: "Troppe richieste" }, { status: 429 });
+    return NextResponse.json({ error: await actionError("tooManyRequests") }, { status: 429 });
   }
 
   let body: unknown;
   try {
     body = await req.json();
   } catch {
-    return NextResponse.json({ error: "JSON non valido" }, { status: 400 });
+    return NextResponse.json({ error: await actionError("invalidJson") }, { status: 400 });
   }
   const description = String(
     (body as { description?: string }).description ?? "",

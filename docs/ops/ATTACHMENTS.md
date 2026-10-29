@@ -34,7 +34,15 @@ PUT: `Content-Type` è parte della firma (`signableHeaders`). Il client deve inv
 | Lab (`compose.lab`) | default `http://127.0.0.1:8333` | porta pubblicata sul host |
 | Prod / staging | `https://s3.<FF_DOMAIN>` | Caddy site `s3.{$FF_DOMAIN}` + DNS; `WEED_S3_EXTERNAL_URL` allineato |
 
-Smoke manuale (lab): presign → `curl -X PUT -H "Content-Type: …" --data-binary @foto.jpg "$uploadUrl"` → confirm.
+Smoke lab (presign → PUT su host pubblico → confirm):
+
+```bash
+# compose.prod + compose.lab up, npm run storage:init, npm run db:seed:pilot, app su :3000
+npm run smoke:attachment-put
+# opz: SMOKE_TICKET_ID=… S3_PUBLIC_ENDPOINT=http://127.0.0.1:8333
+```
+
+Exit `SKIP` (0) se app/S3 assenti; `FAIL` (1) se PUT/host SigV4 non allineati. **Non** in CI (niente SeaweedFS sul runner).
 
 ## Flusso
 

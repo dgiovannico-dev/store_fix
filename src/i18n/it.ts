@@ -14,6 +14,12 @@ export const it = {
     notifications: "Notifiche",
     locale: "Lingua",
   },
+  meta: {
+    description:
+      "System of record di manutenzione per reti retail e franchise mid-market.",
+    pwaDescription:
+      "Manutenzione retail: ticket, SLA e fornitori — System of Record.",
+  },
   dashboard: {
     title: "Dashboard HQ",
     emptyTitle: "Nessun dato operativo",
@@ -34,6 +40,7 @@ export const it = {
     financeReadonly:
       "Accesso read-only: nessuna mutation, note interne non disponibili.",
     cancelSkip: "Annulla skip",
+    kpiAria: "Indicatori KPI",
   },
   vendor: {
     inboxTitle: "Inbox vendor",
@@ -94,6 +101,10 @@ export const it = {
     membershipInactive: "Membership non attiva",
     selectCsv: "Seleziona un file CSV",
     fileTooLarge: "File troppo grande (max 512 KB)",
+    tooManyRequests: "Troppe richieste",
+    rateLimitedRetry: "Troppe richieste. Riprova tra {sec}s.",
+    unauthorized: "Non autorizzato",
+    invalidJson: "JSON non valido",
   },
   gdpr: {
     exportTitle: "Export dati tenant (GDPR)",
@@ -485,6 +496,8 @@ export const it = {
     title: "Lingua e regione",
     hint: "Preferenze tenant per catalogo UI, valuta e formato date.",
     language: "Lingua UI",
+    langIt: "Italiano",
+    langEn: "English",
     currency: "Valuta (ISO 4217)",
     dateLocale: "Locale date (BCP 47)",
     save: "Salva",

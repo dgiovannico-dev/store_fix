@@ -16,6 +16,12 @@ export const en = {
     notifications: "Notifications",
     locale: "Language",
   },
+  meta: {
+    description:
+      "Maintenance system of record for mid-market retail and franchise networks.",
+    pwaDescription:
+      "Retail maintenance: tickets, SLA and vendors — System of Record.",
+  },
   dashboard: {
     title: "HQ Dashboard",
     emptyTitle: "No operational data",
@@ -36,6 +42,7 @@ export const en = {
     financeReadonly:
       "Read-only access: no mutations, internal notes unavailable.",
     cancelSkip: "Undo skip",
+    kpiAria: "KPI metrics",
   },
   vendor: {
     inboxTitle: "Vendor inbox",
@@ -96,6 +103,10 @@ export const en = {
     membershipInactive: "Membership inactive",
     selectCsv: "Select a CSV file",
     fileTooLarge: "File too large (max 512 KB)",
+    tooManyRequests: "Too many requests",
+    rateLimitedRetry: "Too many requests. Try again in {sec}s.",
+    unauthorized: "Unauthorized",
+    invalidJson: "Invalid JSON",
   },
   gdpr: {
     exportTitle: "Tenant data export (GDPR)",
@@ -485,6 +496,8 @@ export const en = {
     title: "Language & region",
     hint: "Tenant prefs for UI catalog, currency and date format.",
     language: "UI language",
+    langIt: "Italiano",
+    langEn: "English",
     currency: "Currency (ISO 4217)",
     dateLocale: "Date locale (BCP 47)",
     save: "Save",
