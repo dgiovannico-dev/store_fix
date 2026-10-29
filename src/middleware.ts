@@ -76,6 +76,8 @@ export function middleware(request: NextRequest) {
   );
   // XS-Leak isolation; no OAuth popup SoR → same-origin (not allow-popups)
   response.headers.set("Cross-Origin-Opener-Policy", "same-origin");
+  // Spectre/resource isolation for document responses (not Seaweed signed URLs)
+  response.headers.set("Cross-Origin-Resource-Policy", "same-origin");
 
   return response;
 }

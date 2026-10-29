@@ -10,6 +10,7 @@ Implementati in `src/middleware.ts`:
 | `Referrer-Policy` | `strict-origin-when-cross-origin` |
 | `Permissions-Policy` | camera/mic/geo off |
 | `Cross-Origin-Opener-Policy` | `same-origin` (XS-Leak; no popup OAuth SoR) |
+| `Cross-Origin-Resource-Policy` | `same-origin` (document isolation; storage firmato resta fuori middleware) |
 | `X-Request-Id` | UUID correlabile nei log JSON |
 
 ## CSRF (API + Server Actions)
