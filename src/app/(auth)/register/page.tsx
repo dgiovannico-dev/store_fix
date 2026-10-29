@@ -3,13 +3,15 @@
 import Link from "next/link";
 import { useActionState } from "react";
 import { signupAction, type SignupActionState } from "@/app/actions/signup";
-import { useMessages } from "@/i18n/locale-context";
+import { StatusPanel } from "@/components/ui/status-panel";
+import { useLocale, useMessages } from "@/i18n/locale-context";
 
 const initial: SignupActionState = {};
 
 export default function RegisterPage() {
   const [state, formAction, pending] = useActionState(signupAction, initial);
   const msg = useMessages().auth;
+  const locale = useLocale();
 
   return (
     <main className="relative flex min-h-dvh flex-col items-center justify-center overflow-hidden px-6 py-16">
@@ -52,9 +54,7 @@ export default function RegisterPage() {
           />
 
           {state.error ? (
-            <p className="text-sm text-[var(--critical)]" role="alert">
-              {state.error}
-            </p>
+            <StatusPanel kind="error" title={state.error} locale={locale} />
           ) : null}
 
           <button

@@ -180,6 +180,7 @@ export default async function TicketsListPage({ searchParams }: Props) {
           <StatusPanel
             kind="empty"
             title={msg.common.empty}
+            locale={prefs.locale}
             body={
               canOpen
                 ? msg.ticketsList.emptyOpenBody
@@ -212,8 +213,8 @@ export default async function TicketsListPage({ searchParams }: Props) {
                 {ticketStatusLabel(tk.status, prefs.locale)}
                 {tk.vendor ? ` · ${tk.vendor.name}` : ""} ·{" "}
                 {tk.slaDueAt
-                  ? `SLA ${tk.slaDueAt.toLocaleString(dLocale)}`
-                  : "SLA —"}
+                  ? `${msg.ticketDetail.slaOkPrefix} ${tk.slaDueAt.toLocaleString(dLocale)}`
+                  : msg.ticketDetail.slaNone}
               </p>
               <p className="mt-1 line-clamp-2 text-sm">{tk.description}</p>
             </li>

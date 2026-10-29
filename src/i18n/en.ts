@@ -125,6 +125,7 @@ export const en = {
     sectionVendor: "Contracts",
     archive: "Archive",
     networkWide: "Whole network",
+    vendorPlaceholder: "Vendor",
     titlePlaceholder: "Title (e.g. HVAC maintenance)",
     referencePlaceholder: "Reference",
     startsOn: "Start",

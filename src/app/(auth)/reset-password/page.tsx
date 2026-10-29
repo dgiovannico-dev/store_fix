@@ -1,19 +1,28 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { resetPassword } from "@/domain/auth/password-reset";
-import { requestMessages } from "@/i18n/request-locale";
+import { StatusPanel } from "@/components/ui/status-panel";
+import { requestLocale, requestMessages } from "@/i18n/request-locale";
 
 type Props = {
   searchParams: Promise<{ token?: string; email?: string; error?: string }>;
 };
 
 export default async function ResetPasswordPage({ searchParams }: Props) {
-  const msg = (await requestMessages()).auth;
+  const [msgCatalog, locale] = await Promise.all([
+    requestMessages(),
+    requestLocale(),
+  ]);
+  const msg = msgCatalog.auth;
   const params = await searchParams;
   if (!params.token || !params.email) {
     return (
       <main className="mx-auto flex min-h-dvh max-w-md flex-col justify-center gap-4 px-6">
-        <p className="text-[var(--critical)]">{msg.resetIncomplete}</p>
+        <StatusPanel
+          kind="error"
+          title={msg.resetIncomplete}
+          locale={locale}
+        />
         <Link href="/forgot-password">{msg.requestNewLink}</Link>
       </main>
     );
@@ -25,9 +34,7 @@ export default async function ResetPasswordPage({ searchParams }: Props) {
         {msg.newPasswordTitle}
       </h1>
       {params.error ? (
-        <p className="text-sm text-[var(--critical)]" role="alert">
-          {params.error}
-        </p>
+        <StatusPanel kind="error" title={params.error} locale={locale} />
       ) : null}
       <form
         className="space-y-4"

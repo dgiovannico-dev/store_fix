@@ -55,7 +55,9 @@ export default async function RfqListPage() {
               .map((b) => Number(b.amountEur))
               .filter((n) => Number.isFinite(n));
             const min =
-              amounts.length > 0 ? formatMoney(Math.min(...amounts)) : null;
+              amounts.length > 0
+                ? formatMoney(Math.min(...amounts), prefs)
+                : null;
             return (
               <li key={r.id} className="py-4">
                 <Link

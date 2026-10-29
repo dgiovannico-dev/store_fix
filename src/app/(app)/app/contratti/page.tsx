@@ -89,7 +89,7 @@ export default async function ContrattiPage({ searchParams }: Props) {
             defaultValue=""
           >
             <option value="" disabled>
-              Fornitore
+              {msg.contracts.vendorPlaceholder}
             </option>
             {vendors.map((v) => (
               <option key={v.id} value={v.id}>

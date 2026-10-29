@@ -6,11 +6,18 @@ import {
   importStoresAction,
   type ImportState,
 } from "@/app/actions/stores-import";
-import type { MessageCatalog } from "@/i18n";
+import { StatusPanel } from "@/components/ui/status-panel";
+import type { Locale, MessageCatalog } from "@/i18n";
 
 const initial: ImportState = {};
 
-export function StoreImportForm({ msg }: { msg: MessageCatalog }) {
+export function StoreImportForm({
+  msg,
+  locale = "it",
+}: {
+  msg: MessageCatalog;
+  locale?: Locale;
+}) {
   const [state, action, pending] = useActionState(importStoresAction, initial);
   const copy = msg.storeImport;
 
@@ -53,9 +60,9 @@ export function StoreImportForm({ msg }: { msg: MessageCatalog }) {
       </form>
 
       {state.error ? (
-        <p className="mt-4 text-sm text-[var(--critical)]" role="alert">
-          {state.error}
-        </p>
+        <div className="mt-4">
+          <StatusPanel kind="error" title={state.error} locale={locale} />
+        </div>
       ) : null}
 
       {typeof state.imported === "number" ? (
@@ -64,14 +71,16 @@ export function StoreImportForm({ msg }: { msg: MessageCatalog }) {
             {copy.imported} <strong>{state.imported}</strong>
           </p>
           {state.errors && state.errors.length > 0 ? (
-            <ul className="list-disc space-y-1 pl-5 text-[var(--critical)]">
-              {state.errors.map((e) => (
-                <li key={`${e.line}-${e.message}`}>
-                  {e.line > 0 ? `${copy.linePrefix} ${e.line}: ` : null}
-                  {e.message}
-                </li>
-              ))}
-            </ul>
+            <StatusPanel kind="error" locale={locale}>
+              <ul className="list-disc space-y-1 pl-5 text-left text-sm text-[var(--critical)]">
+                {state.errors.map((e) => (
+                  <li key={`${e.line}-${e.message}`}>
+                    {e.line > 0 ? `${copy.linePrefix} ${e.line}: ` : null}
+                    {e.message}
+                  </li>
+                ))}
+              </ul>
+            </StatusPanel>
           ) : (
             <p className="text-[var(--success)]">{copy.noValidationErrors}</p>
           )}
