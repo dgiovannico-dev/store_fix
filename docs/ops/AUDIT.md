@@ -3,9 +3,19 @@
 ## Policy
 
 - CI: `npm audit --audit-level=high` (gate hard — baseline 0 high+; vedi anche `CI.md` / US-E14-04)
-- Locale: `npm audit --audit-level=high` dopo bump dipendenze
+- CI: job **`osv`** — `bash scripts/osv-scan.sh` su `package-lock.json` (OSV.dev / T5.21)
+- Locale: `npm audit --audit-level=high` e `npm run audit:osv` dopo bump dipendenze
 - **Fail hard** su high/critical nel path runtime **senza** waiver documentato qui
 - Nessun SaaS scanner a pagamento (no Snyk Cloud obbligatorio)
+
+### OSV
+
+```bash
+npm run audit:osv
+# pin: OSV_SCANNER_VERSION=v2.7.0 (default nello script)
+```
+
+Exit ≠ 0 se OSV trova CVE note; documentare waiver sotto se si accetta rischio temporaneo.
 
 ## Azioni in-repo (2026-10-29)
 
@@ -18,7 +28,8 @@
 | `@vitejs/plugin-react` | rimosso | Non usato da `vitest.config.ts` |
 | `@sentry/node` build | `webpackIgnore` + `serverExternalPackages` | Fix `node:` UnhandledSchemeError su `next build` |
 
-**Baseline:** `npm audit` → **0 vulnerabilities** (2026-10-29).
+**Baseline:** `npm audit` → **0 vulnerabilities** (2026-10-29).  
+**OSV:** `npm run audit:osv` → **No issues found** (2026-10-29, scanner v2.7.0).
 
 ## Waiver aperti
 

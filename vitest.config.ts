@@ -22,6 +22,7 @@ export default defineConfig({
       {
         resolve: { alias },
         css: cssQuiet,
+        esbuild: { jsx: "automatic" },
         test: {
           name: "unit",
           environment: "node",
