@@ -1,0 +1,85 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-facilityflow}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-facilityflow_dev}
+      POSTGRES_DB: ${POSTGRES_DB:-facilityflow}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-facilityflow} -d ${POSTGRES_DB:-facilityflow}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  seaweedfs:
+    image: chrislusf/seaweedfs:3.80
+    restart: unless-stopped
+    command: 'server -dir=/data -s3 -ip.bind=0.0.0.0 -master.port=9333 -volume.port=8080 -s3.port=8333'
+    ports:
+      - "8333:8333"
+      - "9333:9333"
+    volumes:
+      - seaweed_data:/data
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-facilityflow}:${POSTGRES_PASSWORD:-facilityflow_dev}@postgres:5432/${POSTGRES_DB:-facilityflow}?schema=public
+      NODE_ENV: production
+      AUTH_SECRET: ${AUTH_SECRET:-dev-only-change-me}
+      NEXT_PUBLIC_APP_URL: http://localhost:3000
+      S3_ENDPOINT: http://seaweedfs:8333
+      S3_ACCESS_KEY: ${S3_ACCESS_KEY:-admin}
+      S3_SECRET_KEY: ${S3_SECRET_KEY:-admin}
+      S3_BUCKET: ${S3_BUCKET:-facilityflow-attachments}
+      S3_FORCE_PATH_STYLE: "true"
+      SMTP_HOST: mailpit
+      SMTP_PORT: "1025"
+    ports:
+      - "3000:3000"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:3000/api/health/ready || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 40s
+    profiles: ["full"]
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.worker
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-facilityflow}:${POSTGRES_PASSWORD:-facilityflow_dev}@postgres:5432/${POSTGRES_DB:-facilityflow}?schema=public
+      SMTP_HOST: mailpit
+      SMTP_PORT: "1025"
+      SMTP_FROM: ${SMTP_FROM:-FacilityFlow <noreply@facilityflow.local>}
+    profiles: ["full"]
+
+  # Dev-only SMTP catcher — docker compose --profile dev up -d
+  mailpit:
+    image: axllent/mailpit:latest
+    profiles: ["dev", "full"]
+    restart: unless-stopped
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+
+volumes:
+  postgres_data:
+  seaweed_data:

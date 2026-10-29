@@ -1,0 +1,53 @@
+@import "tailwindcss";
+
+:root {
+  --background: oklch(0.985 0.004 95);
+  --foreground: oklch(0.22 0.02 250);
+  --card: oklch(1 0 0);
+  --card-foreground: var(--foreground);
+  --primary: oklch(0.32 0.04 250);
+  --primary-foreground: oklch(0.98 0.005 95);
+  --secondary: oklch(0.94 0.01 250);
+  --secondary-foreground: oklch(0.28 0.03 250);
+  --muted: oklch(0.955 0.008 250);
+  --muted-foreground: oklch(0.48 0.02 250);
+  --accent: oklch(0.93 0.02 250);
+  --accent-foreground: oklch(0.28 0.03 250);
+  --border: oklch(0.88 0.01 250);
+  --input: oklch(0.88 0.01 250);
+  --ring: oklch(0.55 0.12 75);
+  --signal: oklch(0.78 0.14 75);
+  --signal-foreground: oklch(0.28 0.06 70);
+  --critical: oklch(0.55 0.2 25);
+  --critical-foreground: oklch(0.98 0.01 25);
+  --success: oklch(0.55 0.12 150);
+  --success-foreground: oklch(0.98 0.02 150);
+  --radius: 0.5rem;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-border: var(--border);
+  --color-ring: var(--ring);
+  --color-signal: var(--signal);
+  --color-critical: var(--critical);
+  --color-success: var(--success);
+  --font-sans: var(--font-plex);
+  --font-display: var(--font-sora);
+  --radius-sm: calc(var(--radius) - 2px);
+  --radius-md: var(--radius);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-plex), ui-sans-serif, sans-serif;
+}

@@ -1,8 +1,9 @@
 # Issue tracker
 
-**Mode:** local markdown (no git remote yet).
+**Mode:** local markdown under `.scratch/` (tracker di lavoro agent).  
+Remote git può esistere (GitHub / Origin); le issue di prodotto restano in `docs/product/BACKLOG.md` finché non si decide Issues remote.
 
-Issues and working notes for a feature live under:
+Working notes per feature:
 
 ```
 .scratch/<feature-slug>/
@@ -10,8 +11,9 @@ Issues and working notes for a feature live under:
 
 Conventions:
 
-- One feature/epic folder per unit of work
-- Prefer markdown files for tickets, notes, and handoffs
-- When a GitHub remote exists, re-run `setup-matt-pocock-skills` (or edit this file) to switch to GitHub Issues via `gh`
+- Una cartella per unità di lavoro (feature / epic / lab freeze)
+- Preferire markdown per ticket, note, handoff
+- PR draft: es. `.scratch/lab-freeze/PR_DRAFT.md`
+- Se si passa a GitHub Issues: aggiornare questo file e usare `gh`
 
-**PRs as a request surface:** off
+**PRs as a request surface:** off (PR create solo su richiesta umana esplicita)

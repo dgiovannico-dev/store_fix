@@ -1,0 +1,70 @@
+name: ci
+
+on:
+  pull_request:
+    branches: [develop, main]
+  push:
+    branches: [develop]
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: facilityflow
+          POSTGRES_PASSWORD: facilityflow_ci
+          POSTGRES_DB: facilityflow
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U facilityflow -d facilityflow"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      DATABASE_URL: postgresql://facilityflow:facilityflow_ci@localhost:5432/facilityflow?schema=public
+      AUTH_SECRET: ci-only-not-for-production-use-32chars
+      NEXT_PUBLIC_APP_URL: http://localhost:3000
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Secrets scan
+        run: npm run secrets:scan
+
+      - name: Prisma generate + migrate
+        run: |
+          npx prisma generate
+          npx prisma migrate deploy
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Test
+        run: npm test
+
+      - name: Build
+        run: npm run build
+
+      - name: npm audit (high+)
+        run: npm audit --audit-level=high
+        continue-on-error: true
+        # Policy: fallimenti high/critical da triage; waiver in PR finché US-E14-10 gate stretto
+
+      - name: Perf p95 lista HQ (seed pilota)
+        # US-E14-11 — fallisce se p95 ≥ 300 ms (exit 2). Locale: npm run perf:hq-list
+        run: npm run db:seed:pilot && npm run perf:hq-list -- pilot-retail 30

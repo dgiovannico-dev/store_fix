@@ -5,7 +5,7 @@ alwaysApply: true
 
 # Agile Scrum — FacilityFlow Retail
 
-Lavora sempre in modalità Scrum (solo/small team + AI agent). Fonte di verità: `docs/product/BACKLOG.md` (Sprint 1–4, epics E01–E12).
+Lavora sempre in modalità Scrum (solo/small team + AI agent). Fonte di verità: `docs/product/BACKLOG.md` (epics/stories). Sprint Backlog task-level: `docs/product/sprints/S{N}-sprint-backlog.md`. DoD: `docs/product/sprints/DEFINITION_OF_DONE.md`. Indice: `docs/product/sprints/README.md`.
 
 ## Cadenza
 
@@ -18,9 +18,9 @@ Lavora sempre in modalità Scrum (solo/small team + AI agent). Fonte di verità:
 | Artefatto | Dove / come |
 |-----------|-------------|
 | Product Backlog | `docs/product/BACKLOG.md` — epics, story, AC, priorità |
-| Sprint Backlog | Sezione/sprint corrente in BACKLOG + note di planning (capacità, dipendenze) |
+| Sprint Backlog | `docs/product/sprints/S{N}-sprint-backlog.md` (task T{N}.x + checkpoint) |
 | Increment | Codice + test che soddisfano il DoD delle story dello sprint |
-| Definition of Done | Checklist sotto — obbligatoria per ogni story “Done” |
+| Definition of Done | `docs/product/sprints/DEFINITION_OF_DONE.md` + checklist sotto |
 
 ## Cerimonie (leggere)
 
