@@ -9,9 +9,9 @@
 |-------|-------|------|
 | `compose.prod.yaml config` | PASS | env dummy + `cpus`/`mem_limit` |
 | `compose.lab.yaml` merge | PASS | porte 8080/8443 |
-| Caddyfile `caddy validate` | PASS | image `caddy:2.9-alpine` |
+| Caddyfile `caddy validate` | PASS | image `caddy:2.9-alpine` (`npm run caddy:validate` / CI) |
 | `/api/health/live` + `ready` | PASS | ready `db:up` |
-| Security headers | PASS | CSP, XFO, nosniff (`verify-security-headers.sh`) |
+| Security headers | PASS | CSP/XFO/nosniff (`verify-security-headers.sh`); **HSTS** policy statica su Caddyfile (`caddyfile-hsts.test.ts`); HTTPS+HSTS live = gap VPS |
 | p95 lista HQ seed | PASS | ≪ 300 ms (`npm run perf:hq-list`); **anche in CI** PR/`develop`; stress 50×100 → p95 ~4 ms; **50×5000** locale 2026-10-29 → p95 **~6.4 ms** (`stress-retail`) |
 | Flusso A domain test | PASS | `flusso-a-verified.test.ts` |
 | Flusso A HTTP curl+session | PASS (locale + **CI** 2026-10-29) | `npm run smoke:http` dopo `next start` in `.github/workflows/ci.yml`; lifecycle resta domain test |

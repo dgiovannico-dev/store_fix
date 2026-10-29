@@ -17,7 +17,7 @@ Badge (default branch `main`):
 - Job parallelo **`osv`**: `scripts/osv-scan.sh` su `package-lock.json` (T5.21 / US-E14-10)
 - Perf p95 lista HQ su seed pilota (`perf:hq-list`)
 - HTTP smoke curl+session (`npm run smoke:http` dopo `next start` + seed pilota) — US-E14-12 path auth
-- Security headers prod CSP (`verify:headers … --prod`, no `unsafe-eval`) — US-E14-10 in-repo half
+- Security headers: CSP prod (`verify:headers … --prod`, no `unsafe-eval`) + **HSTS static** su Caddyfile (`src/ops/caddyfile-hsts.test.ts` in `npm test`) — US-E14-10 in-repo half; HTTPS+HSTS live = VPS
 - Allegati S3 pubblico: `npm run smoke:attachment-put` **locale/lab only** (SKIP se SeaweedFS assente; non in CI)
 
 ## Runner
