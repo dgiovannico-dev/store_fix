@@ -35,6 +35,10 @@ echo "$HDR" | grep -qi 'permissions-policy:.*payment=()' || {
   echo "missing Permissions-Policy payment=()"
   exit 1
 }
+echo "$HDR" | grep -qi 'permissions-policy:.*browsing-topics=()' || {
+  echo "missing Permissions-Policy browsing-topics=()"
+  exit 1
+}
 echo "$HDR" | grep -qiE 'origin-agent-cluster:[[:space:]]*\?1' || {
   echo "missing Origin-Agent-Cluster ?1"
   exit 1

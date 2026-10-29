@@ -8,7 +8,7 @@ Implementati in `src/middleware.ts`:
 | `X-Frame-Options` | `DENY` (legacy + CSP) |
 | `X-Content-Type-Options` | `nosniff` |
 | `Referrer-Policy` | default `strict-origin-when-cross-origin`; auth token pages (`/reset-password`, `/verify-email`, `/invite`) → `no-referrer`; `/login` `/register` `/logout` → `strict-origin` |
-| `Permissions-Policy` | subset OWASP: camera/mic/geo/payment/usb/… off; clipboard non bloccato (UX paste) |
+| `Permissions-Policy` | subset OWASP: camera/mic/geo/payment/usb/`browsing-topics`/`interest-cohort`/… off; clipboard non bloccato (UX paste) |
 | `Cross-Origin-Opener-Policy` | `same-origin` (XS-Leak; no popup OAuth SoR) |
 | `Cross-Origin-Resource-Policy` | `same-origin` (document isolation; storage firmato resta fuori middleware) |
 | `X-Permitted-Cross-Domain-Policies` | `none` (no `crossdomain.xml` / Flash–Acrobat meta-policy) |

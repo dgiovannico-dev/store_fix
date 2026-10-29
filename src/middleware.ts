@@ -97,6 +97,7 @@ export function middleware(request: NextRequest) {
       "display-capture=()",
       "encrypted-media=()",
       "geolocation=()",
+      "browsing-topics=()",
       "gyroscope=()",
       "interest-cohort=()",
       "magnetometer=()",
