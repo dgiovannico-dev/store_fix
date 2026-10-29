@@ -439,6 +439,7 @@ export const en = {
     offers: "Bids",
     award: "Award",
     awarded: "Awarded",
+    ticketLink: "ticket",
     vendorTitle: "Quote requests",
     vendorHint: "Only RFQs you were invited to.",
     vendorEmpty: "No RFQ invitations.",
@@ -447,6 +448,16 @@ export const en = {
     sendBid: "Submit bid",
     updateBid: "Update bid",
     yourOffer: "Submitted bid",
+  },
+  rfqRequestStatus: {
+    open: "Open",
+    awarded: "Awarded",
+    cancelled: "Cancelled",
+  },
+  rfqBidStatus: {
+    invited: "Invited",
+    submitted: "Submitted",
+    withdrawn: "Withdrawn",
   },
   localeSettings: {
     title: "Language & region",

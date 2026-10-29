@@ -4,7 +4,9 @@ import { Role } from "@prisma/client";
 import { auth } from "@/auth";
 import { submitQuoteBidAction } from "@/app/actions/rfq";
 import { getQuoteRequest } from "@/application/rfq/rfq-service";
+import { getTenantI18nPrefs } from "@/application/tenant/i18n-prefs";
 import { QuoteAmountFields } from "@/components/tickets/quote-amount-fields";
+import { rfqRequestStatusLabel } from "@/domain/rfq/status-labels";
 import { formatMoney } from "@/i18n/format";
 import { tenantMessages } from "@/i18n/tenant-messages";
 import { prisma } from "@/infrastructure/db/prisma";
@@ -29,7 +31,10 @@ export default async function VendorRfqDetailPage({
   if (!membership?.vendorId) redirect("/vendor/inbox");
 
   const { id } = await params;
-  const msg = await tenantMessages(session.tenantId);
+  const [msg, prefs] = await Promise.all([
+    tenantMessages(session.tenantId),
+    getTenantI18nPrefs(session.tenantId),
+  ]);
   let request;
   try {
     request = await getQuoteRequest({
@@ -60,7 +65,8 @@ export default async function VendorRfqDetailPage({
         {request.title}
       </h1>
       <p className="mt-1 text-sm text-[var(--muted-foreground)]">
-        {msg.rfq.status}: {request.status}
+        {msg.rfq.status}:{" "}
+        {rfqRequestStatusLabel(request.status, prefs.locale)}
       </p>
       {request.notes ? (
         <p className="mt-4 whitespace-pre-wrap text-sm">{request.notes}</p>
