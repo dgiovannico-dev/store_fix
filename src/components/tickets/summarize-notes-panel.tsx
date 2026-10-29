@@ -1,15 +1,22 @@
 "use client";
 
 import { useState } from "react";
-import type { MessageCatalog } from "@/i18n";
+import { StatusPanel } from "@/components/ui/status-panel";
+import type { Locale, MessageCatalog } from "@/i18n";
 
 type Props = {
   ticketId: string;
   canOps: boolean;
   labels: MessageCatalog["ticketPanels"];
+  locale?: Locale;
 };
 
-export function SummarizeNotesPanel({ ticketId, canOps, labels }: Props) {
+export function SummarizeNotesPanel({
+  ticketId,
+  canOps,
+  labels,
+  locale = "it",
+}: Props) {
   const [pending, setPending] = useState(false);
   const [summary, setSummary] = useState<string | null>(null);
   const [source, setSource] = useState<string | null>(null);
@@ -59,14 +66,12 @@ export function SummarizeNotesPanel({ ticketId, canOps, labels }: Props) {
         {pending ? labels.summarizePending : labels.summarizeBtn}
       </button>
       {error ? (
-        <p className="text-sm text-[var(--critical)]" role="alert">
-          {error}
-        </p>
+        <StatusPanel kind="error" title={error} locale={locale} />
       ) : null}
       {summary ? (
         <div className="rounded-[var(--radius)] border border-[var(--border)] bg-white p-3 text-sm whitespace-pre-wrap">
           <p className="mb-2 text-xs text-[var(--muted-foreground)]">
-            {labels.summarizeSource} {source} · needsConfirm
+            {labels.summarizeSource} {source} · {labels.summarizeNeedsConfirm}
           </p>
           {summary}
         </div>

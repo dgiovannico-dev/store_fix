@@ -6,17 +6,24 @@ import {
   vendorStatusAction,
   type VendorActionState,
 } from "@/app/actions/vendor-tickets";
-import type { MessageCatalog } from "@/i18n";
+import { StatusPanel } from "@/components/ui/status-panel";
+import type { Locale, MessageCatalog } from "@/i18n";
 
 type Props = {
   ticketId: string;
   status: string;
   labels: MessageCatalog["ticketPanels"];
+  locale?: Locale;
 };
 
 const initial: VendorActionState = {};
 
-export function VendorTicketActions({ ticketId, status, labels }: Props) {
+export function VendorTicketActions({
+  ticketId,
+  status,
+  labels,
+  locale = "it",
+}: Props) {
   const [statusState, statusAction, statusPending] = useActionState(
     vendorStatusAction,
     initial,
@@ -61,9 +68,11 @@ export function VendorTicketActions({ ticketId, status, labels }: Props) {
       )}
 
       {statusState.error ? (
-        <p className="text-sm text-[var(--critical)]" role="alert">
-          {statusState.error}
-        </p>
+        <StatusPanel
+          kind="error"
+          title={statusState.error}
+          locale={locale}
+        />
       ) : null}
 
       {(status === "assigned" ||
@@ -106,9 +115,11 @@ export function VendorTicketActions({ ticketId, status, labels }: Props) {
             />
           </label>
           {completeState.error ? (
-            <p className="text-sm text-[var(--critical)]" role="alert">
-              {completeState.error}
-            </p>
+            <StatusPanel
+              kind="error"
+              title={completeState.error}
+              locale={locale}
+            />
           ) : null}
           <button
             type="submit"
