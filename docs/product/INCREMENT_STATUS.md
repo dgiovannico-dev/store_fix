@@ -1,6 +1,6 @@
 # Increment status — FacilityFlow Retail
 
-**Aggiornato:** 2026-10-29 (F3 Done in-repo; audit 0 CVE; Vitest 5; F3-01 VPS umano)
+**Aggiornato:** 2026-10-29 — **hard-stop autopilot**: in-repo chiuso; solo F3-01 umano
 
 | Sprint / fase | Stato | Note |
 |---------------|-------|------|
@@ -13,14 +13,20 @@
 
 ## Freeze + ripresa
 
-Increment lab + Fase 3 implementabile chiusi sotto autopilot.  
-**Hard-stop:** solo F3-01 (secret/IP/DNS umani). Retro: [`retros/F3-2026-10-29.md`](./retros/F3-2026-10-29.md).
+Increment lab + Fase 3 + hardening OSS (i18n, stress 5k, Vitest 5, `npm audit` 0, `next build` Sentry) chiusi sotto autopilot.  
+**Hard-stop:** F3-01 richiede IP/DNS/secret/VPS umani — nessun altro item F3/P1/P2/debt in-repo aperto.  
+Retro: [`retros/F3-2026-10-29.md`](./retros/F3-2026-10-29.md).
 
-## Cosa fare adesso
+### Prove locali (ripassate 2026-10-29)
 
-1. **VPS EU / staging** — `npm run vps:preflight` → `vps:wizard` → host → `vps:remote-check`
-2. Opt-in observe: `docker compose --profile observe up -d` (RAM ≥512 MiB)
-3. Tag / GO E14 dopo smoke Flusso A su VPS
+- `npm run verify:local` · `npm audit` → 0 · `npm run build` OK
+- `compose:prod|lab|observe:config` OK · `vps:preflight` OK
+
+## Cosa fare adesso (umano)
+
+1. **VPS EU / staging** — `npm run vps:wizard` → host/DNS/UFW → `compose.prod` → `vps:remote-check`
+2. Opt-in observe su VPS se RAM ≥512 MiB
+3. Chiudere gap in `S5-EXIT-GAPS.md` → GO staging / pilota
 
 ## Verify locale
 
@@ -28,4 +34,5 @@ Increment lab + Fase 3 implementabile chiusi sotto autopilot.
 npm run verify:local
 npm run compose:observe:config
 npm run compose:lab:config
+npm run vps:preflight
 ```
