@@ -7,6 +7,18 @@ on:
     branches: [develop]
 
 jobs:
+  osv:
+    # US-E14-10 / T5.21 — OSV lockfile gate (parallelo a npm audit in verify)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v5
+      - name: OSV-Scanner package-lock.json
+        run: bash scripts/osv-scan.sh
+        env:
+          OSV_SCANNER_VERSION: v2.7.0
+
   verify:
     runs-on: ubuntu-latest
     services:
