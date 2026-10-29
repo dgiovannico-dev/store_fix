@@ -12,14 +12,14 @@ import {
 } from "@/domain/pm/pm-event-service";
 import { listStores } from "@/domain/stores/store-service";
 import { listVendors } from "@/domain/vendors/vendor-service";
-import { t } from "@/i18n";
+import { tenantMessages } from "@/i18n/tenant-messages";
 
 export default async function CalendarioPmPage() {
   const session = await auth();
   if (!session?.tenantId || !session.role) redirect("/login");
   if (!canManagePm(session.role)) redirect("/app/tickets");
 
-  const msg = t("it");
+  const msg = await tenantMessages(session.tenantId);
   const [events, stores, vendors] = await Promise.all([
     listPmEvents({
       tenantId: session.tenantId,

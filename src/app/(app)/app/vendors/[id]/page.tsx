@@ -12,14 +12,9 @@ import {
 } from "@/domain/vendor-contracts/vendor-contract-service";
 import { getVendor } from "@/domain/vendors/vendor-service";
 import { formatEur } from "@/domain/ticket/costs";
-import { t } from "@/i18n";
-
-function eur(n: number) {
-  return new Intl.NumberFormat("it-IT", {
-    style: "currency",
-    currency: "EUR",
-  }).format(n);
-}
+import { getTenantI18nPrefs } from "@/application/tenant/i18n-prefs";
+import { formatMoney } from "@/i18n/format";
+import { tenantMessages } from "@/i18n/tenant-messages";
 
 type Props = { params: Promise<{ id: string }> };
 
@@ -27,7 +22,11 @@ export default async function VendorDetailPage({ params }: Props) {
   const session = await auth();
   if (!session?.tenantId || !session.role) redirect("/login");
 
-  const msg = t("it");
+  const [msg, prefs] = await Promise.all([
+    tenantMessages(session.tenantId),
+    getTenantI18nPrefs(session.tenantId),
+  ]);
+  const eur = (n: number) => formatMoney(n, prefs) ?? "—";
   const { id } = await params;
   const [vendor, stores] = await Promise.all([
     getVendor(session.tenantId, id),

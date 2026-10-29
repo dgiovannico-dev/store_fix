@@ -6,7 +6,7 @@ import { RbacAction } from "@/domain/rbac/actions";
 import { can, canMutate } from "@/domain/rbac/can";
 import { listStores } from "@/domain/stores/store-service";
 import { listVendors } from "@/domain/vendors/vendor-service";
-import { t } from "@/i18n";
+import { tenantMessages } from "@/i18n/tenant-messages";
 
 export default async function VendorsPage() {
   const session = await auth();
@@ -14,7 +14,7 @@ export default async function VendorsPage() {
     redirect("/login");
   }
 
-  const msg = t("it");
+  const msg = await tenantMessages(session.tenantId);
   const [vendors, stores] = await Promise.all([
     listVendors(session.tenantId),
     listStores(session.tenantId),

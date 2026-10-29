@@ -14,11 +14,8 @@ import {
 } from "@/domain/vendor-contracts/vendor-contract-service";
 import { listVendors } from "@/domain/vendors/vendor-service";
 import { formatEur } from "@/domain/ticket/costs";
-import { t } from "@/i18n";
-
-function dayLabel(d: Date) {
-  return d.toLocaleDateString("it-IT");
-}
+import { getTenantI18nPrefs } from "@/application/tenant/i18n-prefs";
+import { tenantMessages } from "@/i18n/tenant-messages";
 
 function expiryTone(endsOn: Date, now: Date) {
   if (endsOn.getTime() < now.getTime()) return "text-[var(--critical)]";
@@ -35,7 +32,11 @@ export default async function ContrattiPage({ searchParams }: Props) {
   if (!session?.tenantId || !session.role) redirect("/login");
   if (!canReadVendorContracts(session.role)) redirect("/app/tickets");
 
-  const msg = t("it");
+  const [msg, prefs] = await Promise.all([
+    tenantMessages(session.tenantId),
+    getTenantI18nPrefs(session.tenantId),
+  ]);
+  const dayLabel = (d: Date) => d.toLocaleDateString(prefs.dateLocale);
   const sp = await searchParams;
   const showAll = sp.all === "1";
   const canEdit = canMutate(session.role, RbacAction.crudVendorContract);

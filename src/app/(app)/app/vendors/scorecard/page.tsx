@@ -5,26 +5,13 @@ import { listVendorScorecards } from "@/application/dashboard/vendor-scorecard";
 import { can } from "@/domain/rbac/can";
 import { RbacAction } from "@/domain/rbac/actions";
 import { ForbiddenError } from "@/domain/rbac/guards";
-import { t } from "@/i18n";
-
-function eur(n: number) {
-  return new Intl.NumberFormat("it-IT", {
-    style: "currency",
-    currency: "EUR",
-  }).format(n);
-}
+import { getTenantI18nPrefs } from "@/application/tenant/i18n-prefs";
+import { formatMoney } from "@/i18n/format";
+import { tenantMessages } from "@/i18n/tenant-messages";
 
 function pct(rate: number | null) {
   if (rate == null) return "—";
   return `${Math.round(rate * 100)}%`;
-}
-
-function days(n: number | null) {
-  if (n == null) return "—";
-  return n.toLocaleString("it-IT", {
-    maximumFractionDigits: 1,
-    minimumFractionDigits: 0,
-  });
 }
 
 type Props = { searchParams: Promise<{ days?: string }> };
@@ -33,7 +20,18 @@ export default async function VendorScorecardPage({ searchParams }: Props) {
   const session = await auth();
   if (!session?.tenantId || !session.role) redirect("/login");
 
-  const msg = t("it");
+  const [msg, prefs] = await Promise.all([
+    tenantMessages(session.tenantId),
+    getTenantI18nPrefs(session.tenantId),
+  ]);
+  const eur = (n: number) => formatMoney(n, prefs) ?? "—";
+  const days = (n: number | null) => {
+    if (n == null) return "—";
+    return n.toLocaleString(prefs.dateLocale, {
+      maximumFractionDigits: 1,
+      minimumFractionDigits: 0,
+    });
+  };
   if (!can(session.role, RbacAction.dashboardHq)) {
     redirect("/app/tickets");
   }

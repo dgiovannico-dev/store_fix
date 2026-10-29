@@ -5,7 +5,7 @@ import { createStoreAction, deleteStoreAction } from "@/app/actions/stores";
 import { canMutate } from "@/domain/rbac/can";
 import { RbacAction } from "@/domain/rbac/actions";
 import { listStores } from "@/domain/stores/store-service";
-import { t } from "@/i18n";
+import { tenantMessages } from "@/i18n/tenant-messages";
 
 export default async function StoresPage() {
   const session = await auth();
@@ -13,7 +13,7 @@ export default async function StoresPage() {
     redirect("/login");
   }
 
-  const msg = t("it");
+  const msg = await tenantMessages(session.tenantId);
   const stores = await listStores(session.tenantId);
   const canEdit = canMutate(session.role, RbacAction.crudStore);
 

@@ -13,20 +13,19 @@ import { RbacAction } from "@/domain/rbac/actions";
 import { getOnboardingSnapshot } from "@/domain/onboarding/progress";
 import { DashboardKpiGrid } from "@/components/dashboard/kpi-metric-card";
 import { StatusPanel } from "@/components/ui/status-panel";
-import { t } from "@/i18n";
-
-function eur(n: number) {
-  return new Intl.NumberFormat("it-IT", {
-    style: "currency",
-    currency: "EUR",
-  }).format(n);
-}
+import { tenantMessages } from "@/i18n/tenant-messages";
+import { formatMoney } from "@/i18n/format";
+import { getTenantI18nPrefs } from "@/application/tenant/i18n-prefs";
 
 export default async function DashboardPage() {
   const session = await auth();
   if (!session?.tenantId || !session.role) redirect("/login");
 
-  const msg = t("it");
+  const [msg, prefs] = await Promise.all([
+    tenantMessages(session.tenantId),
+    getTenantI18nPrefs(session.tenantId),
+  ]);
+  const eur = (n: number) => formatMoney(n, prefs) ?? "—";
   const snap = await getOnboardingSnapshot(session.tenantId);
 
   if (!snap.networkComplete && !snap.skippedAt) {

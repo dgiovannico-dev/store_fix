@@ -5,7 +5,7 @@ import { updateStoreAction } from "@/app/actions/stores";
 import { canMutate } from "@/domain/rbac/can";
 import { RbacAction } from "@/domain/rbac/actions";
 import { prisma } from "@/infrastructure/db/prisma";
-import { t } from "@/i18n";
+import { tenantMessages } from "@/i18n/tenant-messages";
 
 export default async function StoreEditPage({
   params,
@@ -24,7 +24,7 @@ export default async function StoreEditPage({
   });
   if (!store) notFound();
 
-  const msg = t("it");
+  const msg = await tenantMessages(session.tenantId);
 
   return (
     <main className="mx-auto max-w-lg px-4 py-10 sm:px-6">

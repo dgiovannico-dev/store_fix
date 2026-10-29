@@ -14,7 +14,7 @@ import {
 } from "@/domain/intake/chat-steps";
 import { can } from "@/domain/rbac/can";
 import { RbacAction } from "@/domain/rbac/actions";
-import { t } from "@/i18n";
+import { tenantMessages } from "@/i18n/tenant-messages";
 import { prisma } from "@/infrastructure/db/prisma";
 import { requireTenantId } from "@/infrastructure/db/tenant-scope";
 
@@ -68,7 +68,7 @@ export default async function TicketsListPage({ searchParams }: Props) {
 
   const isHq = HQ.has(session.role);
   const canOpen = can(session.role, RbacAction.openTicket);
-  const msg = t("it");
+  const msg = await tenantMessages(session.tenantId);
   const [stores, vendors] = isHq
     ? await Promise.all([
         prisma.store.findMany({
