@@ -51,6 +51,19 @@ echo "$HDR" | grep -qiE 'x-robots-tag:.*noindex' || {
   echo "missing X-Robots-Tag noindex"
   exit 1
 }
+# robots.txt (same origin as URL) — Disallow all for private SoR
+ROBOTS_URL="$(python3 - <<'PY' "$URL"
+import sys
+from urllib.parse import urlparse, urlunparse
+u = urlparse(sys.argv[1])
+print(urlunparse((u.scheme, u.netloc, "/robots.txt", "", "", "")))
+PY
+)"
+ROBOTS_BODY=$(curl -sf "$ROBOTS_URL" || true)
+echo "$ROBOTS_BODY" | grep -qi 'Disallow: /' || {
+  echo "missing robots.txt Disallow: / ($ROBOTS_URL)"
+  exit 1
+}
 if [[ "$MODE" == "--prod" ]]; then
   CSP=$(echo "$HDR" | grep -i '^content-security-policy:' || true)
   echo "$CSP" | grep -qi "unsafe-eval" && {
