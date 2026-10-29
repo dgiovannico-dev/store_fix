@@ -19,7 +19,10 @@ export const RATE_LIMIT = {
   signup: { limit: 10, windowMs: MIN15 },
   /** Per-email signup — independent of IP (distributed create attempts). */
   signupUser: { limit: 5, windowMs: MIN15 },
+  /** Per-email password reset (enumeration/spam). */
   pwdreset: { limit: 5, windowMs: MIN15 },
+  /** Per-IP password reset spray. */
+  pwdresetIp: { limit: 10, windowMs: MIN15 },
   storeCsv: { limit: 5, windowMs: MIN15 },
   intake: { limit: 20, windowMs: MIN15 },
   /** Suggest category / vendor / summarize — stesso budget assist AI. */

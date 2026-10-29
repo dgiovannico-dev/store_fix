@@ -4,6 +4,7 @@ import { prisma } from "@/infrastructure/db/prisma";
 import { enqueueEmail } from "@/infrastructure/email/outbox";
 import { checkActionRateLimit } from "@/infrastructure/rate-limit-action";
 import { RATE_LIMIT } from "@/infrastructure/rate-limit-policies";
+import { rateLimitKey } from "@/infrastructure/security/client-ip";
 
 const RESET_TTL_MS = 60 * 60 * 1000;
 const RESET_PREFIX = "pwdreset:";
@@ -22,8 +23,20 @@ function appBaseUrl(): string {
 /**
  * Richiede reset: sempre messaggio generico (no user enumeration).
  * Token in VerificationToken con identifier = `pwdreset:email`.
+ * Dual bucket: per-IP (`headers`) + per-email — silent no-op when limited.
  */
-export async function requestPasswordReset(emailRaw: string): Promise<void> {
+export async function requestPasswordReset(
+  emailRaw: string,
+  headers?: Headers,
+): Promise<void> {
+  if (headers) {
+    const ipLimit = await checkActionRateLimit(
+      rateLimitKey("pwdreset-ip", headers),
+      RATE_LIMIT.pwdresetIp,
+    );
+    if (ipLimit.limited) return;
+  }
+
   const email = emailRaw.trim().toLowerCase();
   const limit = await checkActionRateLimit(
     `pwdreset:${email}`,
