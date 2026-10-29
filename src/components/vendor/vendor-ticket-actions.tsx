@@ -7,13 +7,14 @@ import {
   type VendorActionState,
 } from "@/app/actions/vendor-tickets";
 import { StatusPanel } from "@/components/ui/status-panel";
-import type { Locale, MessageCatalog } from "@/i18n";
+import { withCurrency, type Locale, type MessageCatalog } from "@/i18n";
 
 type Props = {
   ticketId: string;
   status: string;
   labels: MessageCatalog["ticketPanels"];
   locale?: Locale;
+  currency?: string;
 };
 
 const initial: VendorActionState = {};
@@ -23,6 +24,7 @@ export function VendorTicketActions({
   status,
   labels,
   locale = "it",
+  currency = "EUR",
 }: Props) {
   const [statusState, statusAction, statusPending] = useActionState(
     vendorStatusAction,
@@ -84,7 +86,7 @@ export function VendorTicketActions({
             {labels.vendorPhotoHint}
           </p>
           <label className="block text-sm font-medium">
-            {labels.vendorActualCost}
+            {withCurrency(labels.vendorActualCost, currency)}
             <input
               name="actualCost"
               type="number"
@@ -95,7 +97,7 @@ export function VendorTicketActions({
             />
           </label>
           <label className="block text-sm font-medium">
-            {labels.vendorEstCost}
+            {withCurrency(labels.vendorEstCost, currency)}
             <input
               name="estimatedCost"
               type="number"

@@ -7,7 +7,7 @@ import { getQuoteRequest } from "@/application/rfq/rfq-service";
 import { getTenantI18nPrefs } from "@/application/tenant/i18n-prefs";
 import { QuoteAmountFields } from "@/components/tickets/quote-amount-fields";
 import { rfqRequestStatusLabel } from "@/domain/rfq/status-labels";
-import { formatMoney } from "@/i18n/format";
+import { formatMoney, withCurrency } from "@/i18n/format";
 import { tenantMessages } from "@/i18n/tenant-messages";
 import { prisma } from "@/infrastructure/db/prisma";
 
@@ -74,7 +74,8 @@ export default async function VendorRfqDetailPage({
 
       {bid.amountEur != null ? (
         <p className="mt-6 text-sm">
-          {msg.rfq.yourOffer}: <strong>{formatMoney(bid.amountEur)}</strong>
+          {msg.rfq.yourOffer}:{" "}
+          <strong>{formatMoney(bid.amountEur, prefs)}</strong>
           {bid.note ? ` — ${bid.note}` : ""}
         </p>
       ) : null}
@@ -92,7 +93,7 @@ export default async function VendorRfqDetailPage({
               bid.amountEur != null ? Number(bid.amountEur) : null
             }
             defaultNote={bid.note}
-            amountLabel={msg.rfq.amountLabel}
+            amountLabel={withCurrency(msg.rfq.amountLabel, prefs.currency)}
             noteLabel={msg.rfq.noteLabel}
             className="mt-1 w-full rounded-[var(--radius)] border border-[var(--border)] px-3 py-2"
           />
