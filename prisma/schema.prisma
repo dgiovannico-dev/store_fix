@@ -576,3 +576,13 @@ model VerificationToken {
 
   @@unique([identifier, token])
 }
+
+/// Fixed-window rate limit bucket (opt-in store via FF_RATE_LIMIT_STORE=postgres).
+/// Not tenant-scoped — keys already encode tenant/IP/user.
+model RateLimitBucket {
+  key     String   @id
+  count   Int      @default(0)
+  resetAt DateTime
+
+  @@index([resetAt])
+}
