@@ -6,6 +6,7 @@
 - Cookie `authjs.session-token` **httpOnly**, `SameSite=Lax`.
 - Riga `Session` in Postgres creata al login; **logout** la cancella (revoke immediato).
 - Claim sessione: `tenantId`, `role`, `membershipId` (Membership attiva).
+- UI logout: **`POST /logout`** (o Auth.js `POST /api/auth/signout`) — revoke DB + `Clear-Site-Data` + redirect `/login`. Risposte dinamiche: `Cache-Control: no-store` (middleware).
 
 ## Conferma email (T1.13)
 

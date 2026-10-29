@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { evaluateApiCsrf } from "@/infrastructure/security/csrf-origin";
 import { resolveServerActionsAllowedOrigins } from "@/infrastructure/security/server-actions-origins";
+import { applyNoStore } from "@/infrastructure/security/session-cleanup-headers";
 
 /**
  * Security baseline headers (US-E10-07 / T4.6) + CSRF gate on mutating `/api/*`.
@@ -101,6 +102,8 @@ export function middleware(request: NextRequest) {
   response.headers.set("X-Permitted-Cross-Domain-Policies", "none");
   // Origin-keyed process hint (all responses; not a Spectre guarantee)
   response.headers.set("Origin-Agent-Cluster", "?1");
+  // Dynamic SoR / auth surfaces — never store in shared or private HTTP cache
+  applyNoStore(response.headers);
 
   return response;
 }
