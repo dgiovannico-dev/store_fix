@@ -229,7 +229,7 @@ export async function submitQuoteBid(input: {
     assertCan(input.role, RbacAction.respondRfq);
   } catch (e) {
     if (e instanceof ForbiddenError) {
-      return { ok: false as const, message: e.message };
+      return { ok: false as const, message: e.message, code: e.code };
     }
     throw e;
   }

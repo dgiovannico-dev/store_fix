@@ -16,4 +16,14 @@ describe("domainErrors catalog", () => {
     expect(isDomainErrorKey("ticketImmutableVerified")).toBe(true);
     expect(isDomainErrorKey("nope")).toBe(false);
   });
+
+  it("illegalTransition applica params", () => {
+    expect(
+      domainErrorFor("illegalTransition", "en", {
+        from: "open",
+        to: "done",
+        role: "store_staff",
+      }),
+    ).toBe("Transition not allowed: open → done (role store_staff)");
+  });
 });

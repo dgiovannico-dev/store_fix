@@ -114,6 +114,12 @@ export const en = {
       "Verified ticket: key fields are immutable",
     ticketImmutableCancelled: "Cancelled ticket: not editable",
     vendorInvalid: "Invalid vendor",
+    forbidden: "Operation not allowed",
+    illegalTransition:
+      "Transition not allowed: {from} → {to} (role {role})",
+    illegalTransitionSame: "Already in this status",
+    storeOutOfScope: "Store out of scope",
+    vendorOutOfScope: "Ticket out of vendor scope",
   },
   gdpr: {
     exportTitle: "Tenant data export (GDPR)",

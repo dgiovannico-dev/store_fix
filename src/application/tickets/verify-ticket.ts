@@ -21,7 +21,7 @@ export async function verifyTicket(input: {
     assertCan(input.role, RbacAction.verifyTicket);
   } catch (e) {
     if (e instanceof ForbiddenError) {
-      return { ok: false as const, message: e.message };
+      return { ok: false as const, message: e.message, code: e.code };
     }
     throw e;
   }
@@ -84,7 +84,7 @@ export async function rejectTicket(input: {
     assertCan(input.role, RbacAction.verifyTicket);
   } catch (e) {
     if (e instanceof ForbiddenError) {
-      return { ok: false as const, message: e.message };
+      return { ok: false as const, message: e.message, code: e.code };
     }
     throw e;
   }
