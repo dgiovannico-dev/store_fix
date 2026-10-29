@@ -1,22 +1,23 @@
 ---
-description: GitFlow senza PR per FacilityFlow Retail (store_fix)
+description: GitFlow con PR auto-merge per FacilityFlow Retail (store_fix)
 alwaysApply: true
 ---
 
-# GitFlow — FacilityFlow Retail (no Pull Request)
+# GitFlow — FacilityFlow Retail (PR + auto-merge)
 
-Modello di branching **senza PR / senza `gh pr create`**. Integrazione = merge locale + `git push` sul branch di destinazione.
+Modello di branching **GitFlow** con integrazione via **Pull Request**.  
+Le PR sono **auto-approvate / auto-merge** dall’agente (nessun gate umano obbligatorio su review): dopo verify, create → merge senza attendere conferma.
 
 ## Branch
 
 | Branch | Ruolo |
 |--------|--------|
-| `main` | Produzione — solo merge da `release/*` o `hotfix/*` |
-| `develop` | Integrazione quotidiana — destinazione di feature/bugfix |
-| `feature/*` | Nuove funzionalità (opzionale; slice sottili possono andare dirette su `develop`) |
+| `main` | Produzione — solo da PR `release/*` o `hotfix/*` (o sync lab `develop` → `main` esplicito) |
+| `develop` | Integrazione quotidiana — base di `feature/*` / `bugfix/*` |
+| `feature/*` | Nuove funzionalità |
 | `bugfix/*` | Fix non urgenti (verso `develop`) |
-| `release/*` | Preparazione rilascio (es. `release/1.2.0`) |
-| `hotfix/*` | Fix urgenti su produzione |
+| `release/*` | Preparazione rilascio (es. `release/1.2.0`) → PR verso `main` |
+| `hotfix/*` | Fix urgenti su produzione → PR verso `main`, poi back-merge `develop` |
 
 ### Naming
 
@@ -32,53 +33,47 @@ Modello di branching **senza PR / senza `gh pr create`**. Integrazione = merge l
 ❌ main-fix / develop-temp
 ```
 
-## Flusso (senza PR)
+## Flusso (con PR)
 
-1. **Feature / bugfix** → merge in `develop` + `git push origin develop`
-2. **Lavoro quotidiano sottile** → commit diretti su `develop` + `git push origin develop` (ok se esplicitamente richiesto o in sessione “continua” post-policy)
-3. **Release** → da `develop` crea `release/x.y.z` → merge in `main` + push `main` → merge `main` in `develop` + push `develop` → tag
-4. **Hotfix** → da `main` crea `hotfix/*` → merge in `main` + push → merge in `develop` + push
+1. **Feature / bugfix** — branch da `develop` → commit → `git push -u origin HEAD` → **PR → `develop`** → **auto-merge** (merge commit)
+2. **Sync lab `main`** (quando richiesto / fine slice stabile) — PR `develop` → `main` auto-merge **oppure** script `scripts/gitflow-ship-pr.sh develop main`
+3. **Release** — `release/x.y.z` da `develop` → PR → `main` → tag → back-merge PR `main` → `develop`
+4. **Hotfix** — da `main` → PR → `main` → back-merge → `develop`
 
 ```
-✅ feature/* ──merge──► develop ──push──► origin/develop
-✅ release/* ──merge──► main ──push──► origin/main  (+ sync develop)
-✅ hotfix/*  ──merge──► main ──push──► origin/main  (+ sync develop)
-❌ gh pr create / PR GitHub come gate di integrazione
+✅ feature/* ──PR auto-merge──► develop
+✅ develop   ──PR auto-merge──► main   (lab sync / quando previsto)
+✅ release/* ──PR auto-merge──► main  (+ sync develop)
+✅ hotfix/*  ──PR auto-merge──► main  (+ sync develop)
+❌ push diretto di feature su main
 ❌ feature/* → main (salta develop)
-❌ commit sparsi su main fuori da release/hotfix
+❌ git push --force su main/develop
 ```
 
-### Comandi tipici
+### Helper agente
 
 ```bash
-# Feature → develop
-git checkout develop && git pull origin develop
-git merge --no-ff feature/FF-…
-git push origin develop
-
-# Release → main (quando consolidato)
-git checkout -b release/x.y.z develop
-# … harden / bump …
-git checkout main && git pull origin main
-git merge --no-ff release/x.y.z
-git push origin main
-git tag -a vx.y.z -m "…"
-git push origin vx.y.z
-git checkout develop && git merge --no-ff main && git push origin develop
+# Dopo verify + commit sul branch feature/bugfix:
+bash scripts/gitflow-ship-pr.sh                 # HEAD → develop, auto-merge
+bash scripts/gitflow-ship-pr.sh develop main    # head develop → base main (lab sync)
 ```
+
+Equivalente manuale:
+
+```bash
+git push -u origin HEAD
+gh pr create --base develop --title "…" --body "…"
+gh pr merge --auto --merge --delete-branch
+```
+
+> Stesso autore: GitHub spesso **non** consente `gh pr review --approve` su PR proprie.  
+> **Auto-approvata** qui = merge senza review umana (repo senza required reviewers). Con CI: `--auto` attende i check verdi.
 
 ## Protezioni branch
 
 - **Mai** `git push --force` su `main` o `develop`
-- Su `main`: solo merge release/hotfix (niente feature sparse)
-- Preferire `--no-ff` sui merge di integrazione per storia leggibile
-
-```
-❌ git push --force origin main
-❌ git push --force origin develop
-✅ git push origin develop
-✅ git push origin main   # solo dopo merge release/hotfix
-```
+- Preferire **merge commit** (`gh pr merge --merge`) per storia GitFlow leggibile
+- Dopo merge: branch feature eliminato (`--delete-branch`)
 
 ## Commit
 
@@ -86,23 +81,17 @@ Preferire [Conventional Commits](https://www.conventionalcommits.org/):
 
 - `feat:` / `fix:` / `chore:` / `docs:` / `refactor:` / `test:`
 
-```
-✅ feat: aggiungi filtro tenant sulla lista store
-❌ updated stuff / wip / asd
-```
-
 ## Regole agente
 
-- **Autopilot** (`.cursor/rules/agent-autopilot.mdc`): a fine slice verificata → **commit + `git push origin develop` senza chiedere**; FF `main` quando lo prevede autopilot
-- **Mai** `gh pr create` / merge via PR per questo repo (policy prodotto)
+- **Autopilot**: a fine slice verificata → commit su `feature/*` o `bugfix/*` → push → **PR auto-merge su `develop`** (e sync `main` se previsto) **senza chiedere**
+- **Obbligo PR** per integrare in `develop` / `main` (niente push diretto di lavoro feature su quei branch)
 - **Mai** saltare hook; **mai** amend salvo regole user; **mai** aggiornare `git config`
-- **Mai** push force su `main`/`develop`
 - Tag `vX.Y.Z` / release formale: quando E14 GO o richiesta “release …”
 
 ## Checklist rapida
 
-1. Base corretta (`develop` quotidiano; `main` solo release/hotfix)
-2. Naming conforme se usi feature/bugfix/release
-3. Commit conventional
-4. Merge locale + push (niente PR)
-5. Dopo release/hotfix: allineare `develop` a `main`
+1. Branch da base corretta (`develop` per feature/bugfix; `main` per hotfix)
+2. Naming conforme
+3. Commit conventional + verify
+4. Push branch → `gh pr create` → `gh pr merge --auto --merge --delete-branch`
+5. Dopo release/hotfix: allineare `develop` a `main` via PR
