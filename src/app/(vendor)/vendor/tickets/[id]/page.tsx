@@ -133,6 +133,7 @@ export default async function VendorTicketDetailPage({ params }: Props) {
           ticketId={ticket.id}
           labels={msg.ticketPanels}
           photoWord={copy.photos}
+          locale={prefs.locale}
           items={ticket.attachments.map((a) => ({
             id: a.id,
             mime: a.mime,

@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import type { MessageCatalog } from "@/i18n";
+import { StatusPanel } from "@/components/ui/status-panel";
+import type { Locale, MessageCatalog } from "@/i18n";
 
 type Item = {
   id: string;
@@ -14,6 +15,7 @@ type Props = {
   items: Item[];
   labels: MessageCatalog["ticketPanels"];
   photoWord?: string;
+  locale?: Locale;
 };
 
 export function AttachmentGallery({
@@ -21,6 +23,7 @@ export function AttachmentGallery({
   items,
   labels,
   photoWord = "Foto",
+  locale = "it",
 }: Props) {
   const [urls, setUrls] = useState<Record<string, string>>({});
   const [error, setError] = useState<string | null>(null);
@@ -45,9 +48,11 @@ export function AttachmentGallery({
 
   if (items.length === 0) {
     return (
-      <p className="text-sm text-[var(--muted-foreground)]">
-        {labels.galleryEmpty}
-      </p>
+      <StatusPanel
+        kind="empty"
+        title={labels.galleryEmpty}
+        locale={locale}
+      />
     );
   }
 
@@ -68,9 +73,11 @@ export function AttachmentGallery({
         ))}
       </ul>
       {error ? (
-        <p className="text-sm text-[var(--critical)]" role="alert">
-          {error}
-        </p>
+        <StatusPanel
+          kind="error"
+          title={error}
+          locale={locale}
+        />
       ) : null}
     </div>
   );

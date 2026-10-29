@@ -118,6 +118,7 @@ export default async function DashboardPage() {
             kind="empty"
             title={msg.dashboard.emptyTitle}
             body={msg.dashboard.emptyBody}
+            locale={prefs.locale}
           >
             <div className="flex flex-wrap justify-center gap-3">
               <Link
@@ -142,6 +143,7 @@ export default async function DashboardPage() {
             kind="empty"
             title={msg.dashboard.emptyTitle}
             body={msg.dashboard.emptyBody}
+            locale={prefs.locale}
           >
             {!isFinance ? (
               <Link
@@ -186,7 +188,7 @@ export default async function DashboardPage() {
             </h2>
             {overview.byStore.length === 0 ? (
               <div className="mt-3">
-                <StatusPanel kind="empty" />
+                <StatusPanel kind="empty" locale={prefs.locale} />
               </div>
             ) : (
               <div className="mt-3 overflow-x-auto">
@@ -232,7 +234,7 @@ export default async function DashboardPage() {
           </h2>
           {closed.length === 0 ? (
             <div className="mt-3">
-              <StatusPanel kind="empty" />
+              <StatusPanel kind="empty" locale={prefs.locale} />
             </div>
           ) : (
             <ul className="mt-3 divide-y divide-[var(--border)] text-sm">
