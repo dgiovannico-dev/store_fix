@@ -16,7 +16,8 @@ This repo is a multi-tenant retail facility / maintenance SoR (MVP Italia). Agen
    - `.cursor/rules/multi-agent-team.mdc` — **N agents** mirroring full team (PO/PM/Architect/TL/Dev/QA/Ops/Sec/UX); cooperate until production-ready (E14/S5)
    - `.cursor/rules/pre-dev-analysis.mdc` — Analysis Card before any epic/story/task implementation
    - `.cursor/rules/post-dev-verify.mdc` — verify report after every significant slice
-   - `.cursor/rules/gitflow.mdc` / `agile-scrum.mdc` — branching & delivery cadence
+   - `.cursor/rules/gitflow.mdc` / `agile-scrum.mdc` — branching & delivery cadence (no PR; push `develop`)
+   - `.cursor/rules/agent-autopilot.mdc` — **ciclo continuo**: Analysis → build → verify → commit → push senza chiedere a ogni slice
 4. **Hard gates (every change):**
    - `verification-before-completion` before claiming done/fixed/passing
    - `solid` for non-trivial design/implement/refactor

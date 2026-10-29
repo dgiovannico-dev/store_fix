@@ -93,11 +93,11 @@ Preferire [Conventional Commits](https://www.conventionalcommits.org/):
 
 ## Regole agente
 
-- **Commit / push** quando la sessione lo richiede (es. “continua”, “pusha”, consolidamento) o a fine slice verificata — **senza aprire PR**
+- **Autopilot** (`.cursor/rules/agent-autopilot.mdc`): a fine slice verificata → **commit + `git push origin develop` senza chiedere**; FF `main` quando lo prevede autopilot
 - **Mai** `gh pr create` / merge via PR per questo repo (policy prodotto)
 - **Mai** saltare hook; **mai** amend salvo regole user; **mai** aggiornare `git config`
 - **Mai** push force su `main`/`develop`
-- Consolidamento **main**: solo su richiesta esplicita (“rilascia”, “merge su main”, “release …”) o checklist release E14 GO
+- Tag `vX.Y.Z` / release formale: quando E14 GO o richiesta “release …”
 
 ## Checklist rapida
 

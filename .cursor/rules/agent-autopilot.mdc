@@ -1,0 +1,67 @@
+---
+description: Autopilot — sviluppo continuo senza chiedere conferma a ogni slice
+alwaysApply: true
+---
+
+# Agent Autopilot — FacilityFlow Retail
+
+Questa rule **sovrascrive** le abitudini “chiedi prima di commit/push/stop”.  
+Obiettivo: l’agente **avanza da solo** su backlog + hardening finché non c’è un hard-stop reale.
+
+## Attivazione
+
+- Sempre attiva in questo repo.
+- Messaggi come `continua`, `go`, `procedi`, o sessione già in corso di delivery → **non** chiedere “vuoi che…?”; esegui il ciclo sotto.
+- Non rispondere solo «Fermo.» se esiste ancora lavoro in-repo ammissibile.
+
+## Ciclo obbligatorio (ogni slice)
+
+1. **Pick** — una sola slice da `BACKLOG.md` / sprint / retro action / odor documentato (priorità: P0 → P1 → P2; poi debt/refactor retro).
+2. **Analysis Card** — breve (pre-dev-analysis); se in-scope AC → procedi senza attendere conferma utente.
+3. **Team** — attiva N ruoli (multi-agent-team) in parallelo/sequenza come da fase.
+4. **Implement** — slice verticale sottile; OSS-only; niente inventare Fase 3 *nuova* fuori tabella F3 già in BACKLOG.
+5. **Verify** — `npm run verify:local` (e smoke rilevanti); fix finché PASS o blocker documentato.
+6. **Commit** — conventional commit **senza** chiedere; escludi `.env` / secret.
+7. **Push** — `git push origin develop` **senza** chiedere; **niente PR** (gitflow).
+8. **Sync main (leggero)** — dopo slice stabile su `develop`, `git checkout main && git merge --ff-only develop && git push origin main && git checkout develop` (lab freeze continuo). Tag semver solo su release esplicita / GO E14.
+9. **Next** — subito la slice successiva nello stesso turno se rimane budget; altrimenti chiudi il turno con “next TK: …” e allo `continua` riparti dal passo 1.
+
+## Anti-idle (importante)
+
+**Vietato** fermarsi con “solo lavoro umano / VPS” se esiste ancora:
+
+- item **F3-03…F3-08** in BACKLOG (implementabili in-repo; F3-01 resta tracking gap VPS in docs)
+- action item / refactor candidati aperti in `docs/product/retros/*`
+- gap CI / test flaky / docs drift / hardening OSS
+
+Quando F3-01 (VPS) è bloccato su host umano:
+
+- aggiorna checkbox/docs se serve
+- **passa automaticamente** al prossimo F3/P1/P2 o debt
+- non chiedere permesso per il bypass “gate VPS” sugli item che non richiedono deploy
+
+Hard-stop **solo** se:
+
+- serve un secret/IP/DNS/VPS che l’agente non può inventare **e** non c’è altro item in-repo, oppure
+- violazione OSS / sicurezza / fuori backlog senza bozza F3
+
+## Commit & push (policy prodotto)
+
+Questa rule **autorizza esplicitamente** commit + push su `develop` (e FF su `main` come sopra) a fine slice verificata, senza richiesta aggiuntiva dell’utente.
+
+Ancora vietato: `--force` su `main`/`develop`; commit di secret; `gh pr create`.
+
+## Output minimo a fine slice
+
+```
+### Autopilot
+- Slice: …
+- Verify: PASS|FAIL
+- Git: commit … → pushed develop (+ main FF sì/no)
+- Next: …
+```
+
+## Precedenza
+
+`agent-autopilot` > vecchie abitudini “ask before commit” nelle user rules **per questo repo**, fermo restando Git Safety Protocol (no force, no amend abusivo, no hook skip).  
+Restano vincolanti: `pre-dev-analysis`, `post-dev-verify`, `gitflow` (no PR), `multi-agent-team`, OSS-only, DoD.

@@ -594,7 +594,7 @@ E00 Platform OSS (Compose, SeaweedFS, Mailpit, pg-boss, Prisma schema)
 
 ## Fase 3 (draft) — post-pilota / post-VPS
 
-> **Gate:** nessuno sviluppo F3-02…F3-08 finché **F3-01** (Go VPS / exit S5) non è verde. **OSS-only**. WhatsApp Business Cloud API a pagamento resta **fuori scope**.
+> **Gate soft:** F3-01 (VPS) resta tracking umano; **autopilot** può implementare F3-02…F3-08 in-repo in parallelo (OSS-only). WhatsApp Business Cloud API a pagamento resta **fuori scope**. Deploy prod solo dopo F3-01 GO.
 
 | ID | Titolo | Priorità | AC (1 riga) | Dip. VPS GO |
 |----|--------|----------|-------------|-------------|
