@@ -76,9 +76,24 @@ describe("Flusso B breach", () => {
       },
     });
 
+    // Assert tenant-scoped: parallel e2e possono creare altri breach sullo stesso DB.
     expect((await checkSlaBreaches()).breached).toBeGreaterThanOrEqual(1);
-    expect((await checkSlaBreaches()).breached).toBe(0);
-    expect((await checkSlaBreaches()).breached).toBe(0);
+    const afterBreach = await prisma.ticket.findFirstOrThrow({
+      where: { id: created.ticket.id, tenantId },
+    });
+    expect(afterBreach.slaBreachedAt).not.toBeNull();
+
+    await checkSlaBreaches();
+    await checkSlaBreaches();
+    const eventsAfterIdempotent = await listTicketEvents(
+      tenantId,
+      created.ticket.id,
+    );
+    expect(
+      eventsAfterIdempotent.filter(
+        (e) => e.type === TicketEventType.slaBreached,
+      ),
+    ).toHaveLength(1);
 
     const breachNotifs = await prisma.notification.count({
       where: {
