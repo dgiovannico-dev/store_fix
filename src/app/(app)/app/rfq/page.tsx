@@ -66,7 +66,11 @@ export default async function RfqListPage() {
                 </Link>
                 <p className="mt-1 text-xs text-[var(--muted-foreground)]">
                   {rfqRequestStatusLabel(r.status, prefs.locale)} ·{" "}
-                  {r.bids.length} · {submitted.length}
+                  {msg.rfq.invitesMeta.replace("{n}", String(r.bids.length))} ·{" "}
+                  {msg.rfq.submittedMeta.replace(
+                    "{n}",
+                    String(submitted.length),
+                  )}
                   {min ? ` · ${min}` : ""}
                   {r.ticketId ? ` · ${r.ticketId.slice(0, 8)}…` : ""}
                 </p>

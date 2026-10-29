@@ -437,6 +437,8 @@ export const it = {
     back: "← RFQ",
     status: "Stato",
     offers: "Offerte",
+    invitesMeta: "{n} invitati",
+    submittedMeta: "{n} offerte",
     award: "Aggiudica",
     awarded: "Aggiudicata",
     ticketLink: "ticket",
