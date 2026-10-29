@@ -26,7 +26,7 @@ export async function relaunchSlaTicket(input: {
     assertCan(input.role, RbacAction.triageTicket);
   } catch (e) {
     if (e instanceof ForbiddenError) {
-      return { ok: false as const, message: e.message };
+      return { ok: false as const, message: e.message, code: e.code };
     }
     throw e;
   }
@@ -156,7 +156,7 @@ export async function reassignBreachedTicket(input: {
     assertCan(input.role, RbacAction.triageTicket);
   } catch (e) {
     if (e instanceof ForbiddenError) {
-      return { ok: false as const, message: e.message };
+      return { ok: false as const, message: e.message, code: e.code };
     }
     throw e;
   }

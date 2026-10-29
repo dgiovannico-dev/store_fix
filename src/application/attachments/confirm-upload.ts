@@ -51,10 +51,10 @@ export async function confirmAttachmentUpload(input: {
       !input.membership.vendorId ||
       ticket.vendorId !== input.membership.vendorId
     ) {
-      throw new ForbiddenError("Ticket fuori scope vendor");
+      throw new ForbiddenError("Ticket fuori scope vendor", "vendorOutOfScope");
     }
   } else if (!canAccessStore(input.membership, ticket.storeId)) {
-    throw new ForbiddenError("Ticket fuori scope store");
+    throw new ForbiddenError("Ticket fuori scope store", "storeOutOfScope");
   }
 
   // storageKey must belong to tenant path

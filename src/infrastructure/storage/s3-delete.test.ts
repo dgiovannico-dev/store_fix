@@ -11,7 +11,7 @@ describe("deleteAttachmentObject", () => {
     await deleteAttachmentObject("tenants/t1/tickets/tk/a.jpg", client);
 
     expect(send).toHaveBeenCalledTimes(1);
-    const cmd = send.mock.calls[0]?.[0] as DeleteObjectCommand | undefined;
+    const cmd = (send.mock.calls[0] as unknown as [DeleteObjectCommand] | undefined)?.[0];
     expect(cmd).toBeInstanceOf(DeleteObjectCommand);
     expect(cmd?.input).toEqual({
       Bucket: "facilityflow-attachments",

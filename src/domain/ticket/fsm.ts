@@ -21,17 +21,21 @@ import { Role, TicketStatus } from "@prisma/client";
  */
 
 export class IllegalTransitionError extends Error {
+  readonly code: "illegalTransition" | "illegalTransitionSame";
+
   constructor(
     public readonly from: TicketStatus,
     public readonly to: TicketStatus,
     public readonly role: Role,
     message?: string,
   ) {
+    const code = from === to ? "illegalTransitionSame" : "illegalTransition";
     super(
       message ??
         `Transizione non consentita: ${from} → ${to} (ruolo ${role})`,
     );
     this.name = "IllegalTransitionError";
+    this.code = code;
   }
 }
 
