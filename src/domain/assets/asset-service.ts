@@ -73,7 +73,7 @@ export async function createAsset(input: {
   assertCan(input.role, RbacAction.crudAsset);
   const parsed = assetInputSchema.safeParse(input.data);
   if (!parsed.success) {
-    return { ok: false as const, message: "Dati asset non validi" };
+    return { ok: false as const, message: "Dati asset non validi", code: "invalidAssetData" };
   }
   assertStoreScope(input.membership, parsed.data.storeId);
 
@@ -84,7 +84,7 @@ export async function createAsset(input: {
     },
   });
   if (!store) {
-    return { ok: false as const, message: "Punto vendita non trovato" };
+    return { ok: false as const, message: "Punto vendita non trovato", code: "storeNotFound" };
   }
 
   if (parsed.data.preferredVendorId) {
@@ -96,7 +96,7 @@ export async function createAsset(input: {
       },
     });
     if (!vendor) {
-      return { ok: false as const, message: "Vendor preferito non valido" };
+      return { ok: false as const, message: "Vendor preferito non valido", code: "preferredVendorInvalid" };
     }
   }
 
@@ -129,7 +129,7 @@ export async function softDeleteAsset(input: {
     where: { id: input.assetId, ...tenantActiveWhere(input.tenantId) },
   });
   if (!existing) {
-    return { ok: false as const, message: "Asset non trovato" };
+    return { ok: false as const, message: "Asset non trovato", code: "assetNotFound" };
   }
   assertStoreScope(input.membership, existing.storeId);
 
