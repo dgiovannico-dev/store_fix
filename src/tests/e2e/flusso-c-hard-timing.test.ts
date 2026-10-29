@@ -119,7 +119,6 @@ describe("Flusso C hard timing (domain path)", () => {
 
     const elapsedMs = Date.now() - t0;
     const elapsedMin = elapsedMs / 60_000;
-    // eslint-disable-next-line no-console
     console.log(
       `[Flusso C domain] wall-clock ${elapsedMs} ms (${elapsedMin.toFixed(3)} min) ticket=${ticket.ticket.id}`,
     );

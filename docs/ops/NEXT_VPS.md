@@ -7,7 +7,8 @@
 > Tooling operatore (locale):  
 > - `npm run vps:preflight` — artefatti repo  
 > - `npm run vps:wizard` — guida provisioning + scrive `.env.prod`  
-> - `npm run vps:remote-check` — SSH + HTTPS live/ready (dopo §1–3)
+> - `npm run vps:remote-check` — SSH + HTTPS live/ready (dopo §1–3)  
+> - Audit dipendenze / waiver: [`AUDIT.md`](./AUDIT.md)
 
 ## 0 — Prerequisito repo / CI
 
