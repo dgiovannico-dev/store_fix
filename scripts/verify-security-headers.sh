@@ -17,6 +17,10 @@ echo "$HDR" | grep -qi "frame-src 'none'" || {
   echo "missing CSP frame-src 'none'"
   exit 1
 }
+echo "$HDR" | grep -qi "media-src 'none'" || {
+  echo "missing CSP media-src 'none'"
+  exit 1
+}
 echo "$HDR" | grep -qi "worker-src 'self'" || {
   echo "missing CSP worker-src 'self'"
   exit 1
