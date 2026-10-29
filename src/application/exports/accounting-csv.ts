@@ -1,4 +1,5 @@
 import { Role, TicketStatus } from "@prisma/client";
+import { getTenantI18nPrefs } from "@/application/tenant/i18n-prefs";
 import { can } from "@/domain/rbac/can";
 import { RbacAction } from "@/domain/rbac/actions";
 import { ForbiddenError } from "@/domain/rbac/guards";
@@ -32,7 +33,7 @@ function formatCost(n: unknown): string {
 
 /**
  * Export contabile CSV (F2-05): ticket done/verified con costo.
- * UTF-8, RFC 4180 (comma), importi con punto decimale, currency EUR separata.
+ * UTF-8, RFC 4180 (comma), importi con punto decimale, currency da prefs tenant.
  * BOM opzionale per Excel Windows (`withBom`).
  */
 export async function buildAccountingCsv(input: {
@@ -49,6 +50,8 @@ export async function buildAccountingCsv(input: {
 
   const from = input.from ?? new Date(Date.now() - 365 * 24 * 60 * 60 * 1000);
   const to = input.to ?? new Date();
+  const prefs = await getTenantI18nPrefs(input.tenantId);
+  const currency = (prefs.currency || "EUR").toUpperCase();
 
   const tickets = await prisma.ticket.findMany({
     where: {
@@ -85,7 +88,7 @@ export async function buildAccountingCsv(input: {
         csvEscape(t.openedAt.toISOString()),
         csvEscape(t.verifiedAt?.toISOString() ?? ""),
         csvEscape(formatCost(t.actualCost)),
-        "EUR",
+        currency,
       ].join(","),
     ),
   ];
