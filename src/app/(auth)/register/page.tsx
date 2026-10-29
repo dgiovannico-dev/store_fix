@@ -3,13 +3,13 @@
 import Link from "next/link";
 import { useActionState } from "react";
 import { signupAction, type SignupActionState } from "@/app/actions/signup";
-import { t } from "@/i18n";
+import { useMessages } from "@/i18n/locale-context";
 
 const initial: SignupActionState = {};
 
 export default function RegisterPage() {
   const [state, formAction, pending] = useActionState(signupAction, initial);
-  const msg = t("it").auth;
+  const msg = useMessages().auth;
 
   return (
     <main className="relative flex min-h-dvh flex-col items-center justify-center overflow-hidden px-6 py-16">

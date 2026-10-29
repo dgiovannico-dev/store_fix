@@ -1,14 +1,14 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { resetPassword } from "@/domain/auth/password-reset";
-import { t } from "@/i18n";
+import { requestMessages } from "@/i18n/request-locale";
 
 type Props = {
   searchParams: Promise<{ token?: string; email?: string; error?: string }>;
 };
 
 export default async function ResetPasswordPage({ searchParams }: Props) {
-  const msg = t("it").auth;
+  const msg = (await requestMessages()).auth;
   const params = await searchParams;
   if (!params.token || !params.email) {
     return (

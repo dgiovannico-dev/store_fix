@@ -4,14 +4,14 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 import { acceptInviteAction } from "@/app/actions/invite";
-import { t } from "@/i18n";
+import { useMessages } from "@/i18n/locale-context";
 
 export default function AcceptInvitePage() {
   const { token } = useParams<{ token: string }>();
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
-  const msg = t("it").auth;
+  const msg = useMessages().auth;
 
   return (
     <main className="mx-auto flex min-h-dvh max-w-md flex-col justify-center gap-6 px-6">
