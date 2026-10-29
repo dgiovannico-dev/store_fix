@@ -28,7 +28,10 @@ export async function POST(req: Request) {
   }
 
   const requestId = req.headers.get("x-request-id") ?? crypto.randomUUID();
-  const limited = await rejectIfRateLimited(rateLimitKey("inbound-email", req.headers), RATE_LIMIT.inboundEmail);
+  const limited = await rejectIfRateLimited(
+    rateLimitKey("inbound-email", req.headers),
+    RATE_LIMIT.inboundEmail,
+  );
   if (limited) return limited;
 
   let body: unknown;
