@@ -14,7 +14,7 @@
 | Security headers | PASS | CSP, XFO, nosniff (`verify-security-headers.sh`) |
 | p95 lista HQ seed | PASS | ≪ 300 ms (`npm run perf:hq-list`); **anche in CI** PR/`develop`; stress 50×100 → p95 ~4 ms; **50×5000** locale 2026-10-29 → p95 **~6.4 ms** (`stress-retail`) |
 | Flusso A domain test | PASS | `flusso-a-verified.test.ts` |
-| Flusso A HTTP curl+session | PASS (locale) | `npm run smoke:http` — auth/API; lifecycle resta domain test |
+| Flusso A HTTP curl+session | PASS (locale 2026-10-29) | `npm run smoke:http` — auth/API; lifecycle resta domain test |
 | Restore drill DB | PASS | 2026-10-29 locale (`BACKUP.md`) |
 | Migrate-on-deploy lab dry-run | PASS | 2026-10-29 — `npm run deploy:migrate:lab` → backup + host `prisma migrate deploy` ([`MIGRATE.md`](../../ops/MIGRATE.md)) |
 | Secrets scan | PASS | `npm run secrets:scan` |
