@@ -120,7 +120,7 @@ Tutte le query dominio: filtro obbligatorio `tenantId`.
 
 ### US-E00-04 — Worker pg-boss
 **AC**
-- [x] Processo `worker` consuma job: `sla.check_breaches`, `email.send`, (opz.) `gdpr.purge`
+- [x] Processo `worker` consuma job: `sla.check_breaches`, `email.send`, `gdpr.purge`, `attachment.gc`, …
 - [x] Retry con backoff; job falliti ispezionabili (log + tabella pg-boss)
 - [x] Idempotenza su notifiche breach (un evento breach per ticket finché non resolved)
 
@@ -266,7 +266,7 @@ Tutte le query dominio: filtro obbligatorio `tenantId`.
 **AC**
 - [x] Record `Attachment` per ogni upload (ticketId, storageKey, mime, sizeBytes, uploadedBy)
 - [x] Signed GET a scadenza; MIME allowlist (jpeg/png/webp); max 10MB
-- [x] Soft-delete allegato non elimina subito oggetto (policy documentata; GC opz. job)
+- [x] Soft-delete allegato non elimina subito oggetto; GC job `attachment.gc` (grace 7g, `storagePurgedAt`)
 - [x] Vendor/store caricano solo su ticket nel proprio scope
 
 ---
