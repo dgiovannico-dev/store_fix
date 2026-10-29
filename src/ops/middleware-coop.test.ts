@@ -3,68 +3,21 @@ import path from "node:path";
 import { describe, expect, it } from "vitest";
 
 /**
- * Static gate: COOP + CORP + XPCDP on Next middleware.
+ * Static gate: middleware delegates baseline headers to applyBaselineSecurityHeaders.
  * Runtime smoke: `scripts/verify-security-headers.sh`.
  * @see docs/ops/SECURITY_HEADERS.md
- * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cross-Origin-Opener-Policy
- * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cross-Origin-Resource-Policy
- * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Permitted-Cross-Domain-Policies
  */
-describe("middleware cross-origin isolation headers", () => {
+describe("middleware security header wiring", () => {
   const raw = readFileSync(
     path.join(process.cwd(), "src/middleware.ts"),
     "utf8",
   );
 
-  it("imposta COOP same-origin", () => {
-    expect(raw).toMatch(
-      /["']Cross-Origin-Opener-Policy["']\s*,\s*["']same-origin["']/,
-    );
+  it("usa applyBaselineSecurityHeaders", () => {
+    expect(raw).toMatch(/applyBaselineSecurityHeaders\s*\(/);
   });
 
-  it("imposta CORP same-origin", () => {
-    expect(raw).toMatch(
-      /["']Cross-Origin-Resource-Policy["']\s*,\s*["']same-origin["']/,
-    );
-  });
-
-  it("imposta X-Permitted-Cross-Domain-Policies none", () => {
-    expect(raw).toMatch(
-      /["']X-Permitted-Cross-Domain-Policies["']\s*,\s*["']none["']/,
-    );
-  });
-
-  it("usa buildPermissionsPolicyHeader", () => {
-    expect(raw).toMatch(/buildPermissionsPolicyHeader\s*\(/);
-  });
-
-  it("imposta Origin-Agent-Cluster ?1", () => {
-    expect(raw).toMatch(
-      /["']Origin-Agent-Cluster["']\s*,\s*["']\?1["']/,
-    );
-  });
-
-  it("applica Cache-Control no-store via applyNoStore", () => {
-    expect(raw).toMatch(/applyNoStore\s*\(\s*response\.headers\s*\)/);
-  });
-
-  it("usa buildContentSecurityPolicy", () => {
-    expect(raw).toMatch(/buildContentSecurityPolicy\s*\(/);
-  });
-
-  it("usa referrerPolicyForPath", () => {
-    expect(raw).toMatch(/referrerPolicyForPath/);
-  });
-
-  it("imposta X-DNS-Prefetch-Control off", () => {
-    expect(raw).toMatch(
-      /["']X-DNS-Prefetch-Control["']\s*,\s*["']off["']/,
-    );
-  });
-
-  it("imposta X-Robots-Tag noindex, nofollow", () => {
-    expect(raw).toMatch(
-      /["']X-Robots-Tag["']\s*,\s*["']noindex, nofollow["']/,
-    );
+  it("mantiene gate CSRF Origin", () => {
+    expect(raw).toMatch(/evaluateApiCsrf/);
   });
 });

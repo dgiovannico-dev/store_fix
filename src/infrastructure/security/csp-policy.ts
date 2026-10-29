@@ -28,6 +28,7 @@ export function buildContentSecurityPolicy(env: CspPolicyEnv = {}): string {
     "object-src 'none'",
     "frame-src 'none'",
     "worker-src 'self'",
+    "manifest-src 'self'",
     "frame-ancestors 'none'",
     "base-uri 'none'",
     "form-action 'self'",
