@@ -49,4 +49,9 @@ describe("middleware cross-origin isolation headers", () => {
   it("applica Cache-Control no-store via applyNoStore", () => {
     expect(raw).toMatch(/applyNoStore\s*\(\s*response\.headers\s*\)/);
   });
+
+  it("CSP object-src e base-uri none", () => {
+    expect(raw).toMatch(/object-src 'none'/);
+    expect(raw).toMatch(/base-uri 'none'/);
+  });
 });

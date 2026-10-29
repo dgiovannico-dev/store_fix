@@ -61,8 +61,9 @@ export function middleware(request: NextRequest) {
     "img-src 'self' data: blob: http: https:",
     "font-src 'self' data:",
     "connect-src 'self' http: https:",
+    "object-src 'none'",
     "frame-ancestors 'none'",
-    "base-uri 'self'",
+    "base-uri 'none'",
     "form-action 'self'",
   ].join("; ");
 
