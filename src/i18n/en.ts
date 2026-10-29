@@ -370,6 +370,15 @@ export const en = {
     vendorLinked: "Linked vendor",
     saveScope: "Save scope",
   },
+  roles: {
+    owner: "Owner",
+    admin_hq: "HQ admin",
+    ops_coordinator: "Ops coordinator",
+    store_manager: "Store manager",
+    store_staff: "Store staff",
+    vendor: "Vendor",
+    viewer_finance: "Finance viewer",
+  },
   home: {
     eyebrow: "Retail maintenance · Italy",
     body: "System of record for tickets, SLA and vendors — OSS self-host, WhatsApp is not the SoR.",
