@@ -24,6 +24,7 @@
     "compose:lab:config": "docker compose -f compose.prod.yaml -f compose.lab.yaml --env-file .env.prod.example config --quiet",
     "compose:observe:config": "docker compose --profile observe config --quiet",
     "compose:prod:observe:config": "docker compose -f compose.prod.yaml --profile observe --env-file .env.prod.example config --quiet",
+    "caddy:validate": "bash scripts/validate-caddyfile.sh",
     "deploy:migrate:lab": "FF_MODE=lab FF_LAB_MIGRATE_ONLY=1 bash scripts/deploy-migrate.sh",
     "verify:local": "npm run typecheck && npm run lint && npm test && npm run secrets:scan && npm audit --audit-level=high",
     "audit:osv": "bash scripts/osv-scan.sh",
