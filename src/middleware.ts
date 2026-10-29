@@ -74,6 +74,8 @@ export function middleware(request: NextRequest) {
     "Permissions-Policy",
     "camera=(), microphone=(), geolocation=()",
   );
+  // XS-Leak isolation; no OAuth popup SoR → same-origin (not allow-popups)
+  response.headers.set("Cross-Origin-Opener-Policy", "same-origin");
 
   return response;
 }
