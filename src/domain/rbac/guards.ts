@@ -2,16 +2,19 @@ import type { Role } from "@prisma/client";
 import { can, canMutate } from "./can";
 import type { RbacActionId } from "./actions";
 
+/**
+ * RBAC denial. Prefer `code` (domainErrors); `message` is EN diagnostic for logs.
+ * UI localizes via `actionResultError` / `domainError(code)`.
+ */
 export class ForbiddenError extends Error {
-  /** Codice catalogo `domainErrors` — assente se messaggio legacy custom. */
-  readonly code?: string;
+  readonly code: string;
 
   constructor(message?: string, code?: string) {
-    const msg = message ?? "Operazione non consentita";
-    super(msg);
+    const resolvedCode = code ?? "forbidden";
+    // Diagnostic EN (or explicit message); never default IT user copy
+    super(message ?? `Forbidden (${resolvedCode})`);
     this.name = "ForbiddenError";
-    // Default senza messaggio → code generico; custom string resta legacy finché migrata
-    this.code = code ?? (message === undefined ? "forbidden" : undefined);
+    this.code = resolvedCode;
   }
 }
 

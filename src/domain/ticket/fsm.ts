@@ -30,9 +30,9 @@ export class IllegalTransitionError extends Error {
     message?: string,
   ) {
     const code = from === to ? "illegalTransitionSame" : "illegalTransition";
+    // Diagnostic EN; UI uses `code` + params {from,to,role}
     super(
-      message ??
-        `Transizione non consentita: ${from} → ${to} (ruolo ${role})`,
+      message ?? `Illegal transition: ${from} → ${to} (role ${role})`,
     );
     this.name = "IllegalTransitionError";
     this.code = code;
@@ -112,7 +112,7 @@ export function assertTransition(
   role: Role,
 ): void {
   if (from === to) {
-    throw new IllegalTransitionError(from, to, role, "Stato già corrente");
+    throw new IllegalTransitionError(from, to, role);
   }
   if (!canTransition(from, to, role)) {
     throw new IllegalTransitionError(from, to, role);
