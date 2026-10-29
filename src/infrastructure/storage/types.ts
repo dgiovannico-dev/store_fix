@@ -30,15 +30,16 @@ export class StorageValidationError extends Error {
 
 export function assertAllowedUpload(mime: string, sizeBytes: number): void {
   if (!ALLOWED_ATTACHMENT_MIME.includes(mime as AllowedAttachmentMime)) {
+    // Diagnostic EN for logs/tests; UI uses `code` + domainErrors
     throw new StorageValidationError(
-      `MIME non consentito: ${mime}. Consentiti: jpeg, png, webp.`,
+      `MIME not allowed: ${mime}`,
       "uploadMimeNotAllowed",
       { mime },
     );
   }
   if (sizeBytes <= 0 || sizeBytes > MAX_ATTACHMENT_BYTES) {
     throw new StorageValidationError(
-      `Dimensione non valida (max ${MAX_ATTACHMENT_BYTES} bytes).`,
+      `Invalid size (max ${MAX_ATTACHMENT_BYTES} bytes)`,
       "uploadSizeInvalid",
       { maxBytes: String(MAX_ATTACHMENT_BYTES) },
     );
