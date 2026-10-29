@@ -42,7 +42,11 @@ export async function transitionVendorStatus(input: {
   }
 
   if (!VENDOR_STATUS.has(input.to) && input.to !== TicketStatus.in_progress) {
-    return { ok: false as const, message: "Stato vendor non valido" };
+    return {
+      ok: false as const,
+      message: "Stato vendor non valido",
+      code: "vendorStatusInvalid",
+    };
   }
 
   const ticket = await prisma.ticket.findFirst({
@@ -52,7 +56,13 @@ export async function transitionVendorStatus(input: {
       deletedAt: null,
     },
   });
-  if (!ticket) return { ok: false as const, message: "Ticket non trovato" };
+  if (!ticket) {
+    return {
+      ok: false as const,
+      message: "Ticket non trovato",
+      code: "ticketNotFound",
+    };
+  }
 
   try {
     assertVendorTicketScope(input.membership, ticket, input.role);
@@ -103,6 +113,7 @@ export async function completeVendorWork(input: {
     return {
       ok: false as const,
       message: "Dati chiusura non validi (costo e report obbligatori)",
+      code: "completeWorkInvalidData",
     };
   }
 
@@ -118,7 +129,13 @@ export async function completeVendorWork(input: {
       vendor: true,
     },
   });
-  if (!ticket) return { ok: false as const, message: "Ticket non trovato" };
+  if (!ticket) {
+    return {
+      ok: false as const,
+      message: "Ticket non trovato",
+      code: "ticketNotFound",
+    };
+  }
 
   try {
     assertVendorTicketScope(input.membership, ticket, input.role);
@@ -137,6 +154,7 @@ export async function completeVendorWork(input: {
     return {
       ok: false as const,
       message: "Chiusura consentita solo da assigned / in_progress / waiting_parts",
+      code: "completeWorkBadStatus",
     };
   }
 
@@ -145,6 +163,7 @@ export async function completeVendorWork(input: {
       ok: false as const,
       message:
         "Preventivo in attesa di accettazione: attendi lo store o aggiorna il preventivo",
+      code: "quotePendingAcceptance",
     };
   }
 
@@ -156,7 +175,7 @@ export async function completeVendorWork(input: {
     });
   } catch (e) {
     if (e instanceof CompleteWorkError) {
-      return { ok: false as const, message: e.message };
+      return { ok: false as const, message: e.message, code: e.code };
     }
     throw e;
   }

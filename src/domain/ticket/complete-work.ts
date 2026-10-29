@@ -1,9 +1,19 @@
 import { ALLOWED_ATTACHMENT_MIME } from "@/infrastructure/storage/types";
 
+export type CompleteWorkErrorCode =
+  | "completeWorkPhotoRequired"
+  | "actualCostRequired"
+  | "actualCostInvalid"
+  | "actualCostMustBePositive"
+  | "workReportRequired";
+
 export class CompleteWorkError extends Error {
-  constructor(message: string) {
+  readonly code: CompleteWorkErrorCode;
+
+  constructor(message: string, code: CompleteWorkErrorCode) {
     super(message);
     this.name = "CompleteWorkError";
+    this.code = code;
   }
 }
 
@@ -42,24 +52,35 @@ export function assertCompleteWorkReady(input: CompleteWorkInput): {
   if (photos.length < 1) {
     throw new CompleteWorkError(
       "Per chiudere serve almeno una foto (JPEG/PNG/WebP)",
+      "completeWorkPhotoRequired",
     );
   }
 
   const cost = parseCost(input.actualCost);
   if (cost === null) {
-    throw new CompleteWorkError("Costo effettivo obbligatorio");
+    throw new CompleteWorkError(
+      "Costo effettivo obbligatorio",
+      "actualCostRequired",
+    );
   }
   if (cost < 0) {
-    throw new CompleteWorkError("Costo effettivo non valido");
+    throw new CompleteWorkError(
+      "Costo effettivo non valido",
+      "actualCostInvalid",
+    );
   }
   if (!input.allowZeroCost && cost <= 0) {
-    throw new CompleteWorkError("Costo effettivo deve essere maggiore di zero");
+    throw new CompleteWorkError(
+      "Costo effettivo deve essere maggiore di zero",
+      "actualCostMustBePositive",
+    );
   }
 
   const report = (input.completionReport ?? "").trim();
   if (report.length < 5) {
     throw new CompleteWorkError(
       "Report intervento obbligatorio (minimo 5 caratteri)",
+      "workReportRequired",
     );
   }
 
