@@ -192,6 +192,7 @@ export default async function VendorTicketDetailPage({ params }: Props) {
           labels={msg.ticketTimeline}
           dateLocale={prefs.dateLocale}
           locale={prefs.locale}
+          currency={prefs.currency}
         />
       </section>
     </main>

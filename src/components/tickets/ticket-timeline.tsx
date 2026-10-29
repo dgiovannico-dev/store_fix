@@ -1,7 +1,12 @@
 import { StatusPanel } from "@/components/ui/status-panel";
 import { ticketEventLabel } from "@/domain/ticket/event-labels";
 import { ticketStatusLabel } from "@/domain/ticket/status-labels";
-import type { Locale, MessageCatalog } from "@/i18n";
+import {
+  formatMoney,
+  type FormatPrefs,
+  type Locale,
+  type MessageCatalog,
+} from "@/i18n";
 
 type EventRow = {
   id: string;
@@ -21,13 +26,17 @@ export function TicketTimeline({
   labels,
   dateLocale = "it-IT",
   locale = "it",
+  currency = "EUR",
 }: {
   events: EventRow[];
   showInternalNotes?: boolean;
   labels: TimelineLabels;
   dateLocale?: string;
   locale?: Locale;
+  currency?: string;
 }) {
+  const moneyPrefs: FormatPrefs = { dateLocale, currency };
+
   if (events.length === 0) {
     return (
       <StatusPanel kind="empty" title={labels.empty} locale={locale} />
@@ -52,6 +61,14 @@ export function TicketTimeline({
         const toLabel = e.toStatus
           ? ticketStatusLabel(e.toStatus, locale)
           : null;
+        const costFmt =
+          meta?.actualCost != null
+            ? formatMoney(meta.actualCost, moneyPrefs)
+            : null;
+        const quoteFmt =
+          meta?.amountEur != null
+            ? formatMoney(meta.amountEur, moneyPrefs)
+            : null;
         return (
           <li key={e.id} className="text-sm">
             <span className="font-medium">{label}</span>
@@ -75,14 +92,14 @@ export function TicketTimeline({
                 {meta.reason ?? meta.note}
               </p>
             ) : null}
-            {meta?.actualCost != null ? (
+            {costFmt ? (
               <p className="mt-0.5 text-[var(--muted-foreground)]">
-                {labels.cost} {meta.actualCost} EUR
+                {labels.cost} {costFmt}
               </p>
             ) : null}
-            {meta?.amountEur != null ? (
+            {quoteFmt ? (
               <p className="mt-0.5 text-[var(--muted-foreground)]">
-                {labels.quote} {meta.amountEur} EUR
+                {labels.quote} {quoteFmt}
               </p>
             ) : null}
             {meta?.completionReport ? (
