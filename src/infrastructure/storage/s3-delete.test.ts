@@ -5,19 +5,17 @@ import { deleteAttachmentObject } from "./s3";
 describe("deleteAttachmentObject", () => {
   it("invia DeleteObjectCommand con bucket/key", async () => {
     process.env.S3_BUCKET = "facilityflow-attachments";
-    const send = vi.fn(async () => ({}));
+    const send = vi.fn(async (_cmd: unknown) => ({}));
     const client = { send } as unknown as S3Client;
 
     await deleteAttachmentObject("tenants/t1/tickets/tk/a.jpg", client);
 
     expect(send).toHaveBeenCalledTimes(1);
-    const cmd = send.mock.calls[0]?.[0];
+    const cmd = send.mock.calls[0]?.[0] as DeleteObjectCommand | undefined;
     expect(cmd).toBeInstanceOf(DeleteObjectCommand);
-    expect(cmd).toMatchObject({
-      input: {
-        Bucket: "facilityflow-attachments",
-        Key: "tenants/t1/tickets/tk/a.jpg",
-      },
+    expect(cmd?.input).toEqual({
+      Bucket: "facilityflow-attachments",
+      Key: "tenants/t1/tickets/tk/a.jpg",
     });
   });
 });
