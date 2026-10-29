@@ -98,6 +98,7 @@ describe("domainErrors catalog", () => {
 
   it("store webhook/ntfy + tenantId codes", () => {
     expect(domainErrorFor("storeWebhookUrlInvalid", "en")).toContain("http");
+    expect(domainErrorFor("storeNameRequired", "it")).toContain("punto vendita");
     expect(domainErrorFor("tenantIdRequired", "it")).toBe("tenantId obbligatorio");
   });
 });
