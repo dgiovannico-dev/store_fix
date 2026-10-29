@@ -30,10 +30,18 @@ Fonti: [OWASP CSRF](https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Re
 - **Mailpit / Seaweed signed URL:** `connect-src` / `img-src` consentono `http:`/`https:` per PUT/GET firmati sullo storage Compose.
 - Rate limit: [`RATE_LIMITS.md`](./RATE_LIMITS.md).
 
+## Split proxy vs app
+
+| Header | Dove |
+|--------|------|
+| CSP, Permissions-Policy, X-Request-Id | App middleware |
+| **HSTS**, strip `Server` | Caddy (`deploy/Caddyfile`) — attiva solo su HTTPS |
+
 Smoke:
 
 ```bash
 npm run verify:headers
-# staging/prod HTTPS — fallisce se CSP include unsafe-eval:
+# staging/prod HTTPS — fallisce se CSP include unsafe-eval; HSTS atteso dietro Caddy:
 bash scripts/verify-security-headers.sh https://$FF_DOMAIN/login --prod
+npm run caddy:validate   # sintassi Caddyfile (CI)
 ```

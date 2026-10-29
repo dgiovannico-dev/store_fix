@@ -84,6 +84,10 @@ jobs:
           npm run compose:lab:config
           npm run compose:prod:observe:config
 
+      - name: Caddyfile validate
+        # US-E14-01 / T5.4 — sintassi proxy (HSTS site) senza stack up
+        run: npm run caddy:validate
+
       - name: Prisma generate + migrate
         run: |
           npx prisma generate

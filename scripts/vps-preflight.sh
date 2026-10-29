@@ -52,6 +52,11 @@ if command -v docker >/dev/null 2>&1; then
   else
     ko "compose.lab.yaml merge config"
   fi
+  if bash scripts/validate-caddyfile.sh >/dev/null 2>&1; then
+    ok "deploy/Caddyfile caddy validate"
+  else
+    ko "deploy/Caddyfile caddy validate"
+  fi
 else
   echo "  SKIP docker non in PATH"
 fi
