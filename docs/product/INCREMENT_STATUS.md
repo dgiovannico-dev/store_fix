@@ -1,7 +1,7 @@
 # Increment status — FacilityFlow Retail
 
 **Aggiornato:** 2026-10-29 — **dev-only** (nessun deploy VPS); F3-01 resta tracking umano  
-Hardening recente in-repo: auth idle wiring gate; RL `form-options`; `rejectIfRateLimited`; RL notifications/attachments/exports; CSP `script-src-attr 'none'`; Auth idle opt-in; rate-limit Postgres + `rate_limit.gc`.
+Hardening recente in-repo: Permissions-Policy expand (hid/serial/bluetooth/attribution…); secure-cookies wiring gate; auth idle gate; RL `form-options`; `rejectIfRateLimited`; CSP `script-src-attr 'none'`.
 
 | Sprint / fase | Stato | Note |
 |---------------|-------|------|

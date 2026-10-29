@@ -5,12 +5,16 @@ import {
 } from "./permissions-policy";
 
 describe("buildPermissionsPolicyHeader", () => {
-  it("nega payment, usb, browsing-topics, interest-cohort", () => {
+  it("nega payment, usb, browsing-topics, attribution-reporting, hid", () => {
     const h = buildPermissionsPolicyHeader();
     expect(h).toContain("payment=()");
     expect(h).toContain("usb=()");
     expect(h).toContain("browsing-topics=()");
     expect(h).toContain("interest-cohort=()");
+    expect(h).toContain("attribution-reporting=()");
+    expect(h).toContain("bluetooth=()");
+    expect(h).toContain("hid=()");
+    expect(h).toContain("serial=()");
     expect(h).not.toMatch(/clipboard/);
   });
 
