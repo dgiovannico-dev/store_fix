@@ -1,7 +1,7 @@
 # Increment status — FacilityFlow Retail
 
 **Aggiornato:** 2026-10-29 — **dev-only** (nessun deploy VPS); F3-01 resta tracking umano  
-Hardening recente in-repo: pwdreset/signup/login dual-bucket RL; `rate-limit-action` helpers; Permissions-Policy expand; secure-cookies + auth idle gates.
+Hardening recente in-repo: compose lab ports → `127.0.0.1` + `no-new-privileges`; ADR-0008 CSP nonce deferred; auth dual-bucket RL; Permissions-Policy expand.
 
 | Sprint / fase | Stato | Note |
 |---------------|-------|------|
