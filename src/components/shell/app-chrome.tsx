@@ -40,6 +40,7 @@ export async function AppChrome({ children }: { children: React.ReactNode }) {
             role={session.role}
             labels={msg.notifBell}
             dateLocale={prefs.dateLocale}
+            currency={prefs.currency}
             locale={prefs.locale}
           />
         </div>

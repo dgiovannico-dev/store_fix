@@ -17,6 +17,7 @@ type Props = {
   role?: string | null;
   labels: MessageCatalog["notifBell"];
   dateLocale?: string;
+  currency?: string;
   locale?: Locale;
 };
 
@@ -45,6 +46,7 @@ export function NotificationBell({
   role,
   labels,
   dateLocale = "it-IT",
+  currency = "EUR",
   locale = "it",
 }: Props) {
   const [open, setOpen] = useState(false);
@@ -144,7 +146,7 @@ export function NotificationBell({
                   <p className="text-xs text-[var(--muted-foreground)]">
                     {formatDateTime(n.createdAt, {
                       dateLocale,
-                      currency: "EUR",
+                      currency,
                     })}
                   </p>
                   <div className="mt-1 flex gap-2">
