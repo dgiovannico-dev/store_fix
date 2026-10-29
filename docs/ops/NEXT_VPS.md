@@ -4,8 +4,10 @@
 **Chiusura:** tutte le checkbox sotto + [`RELEASE_CHECKLIST.md`](./RELEASE_CHECKLIST.md) → aggiornare exit gaps a **GO** · tag `v0.1.0` ([`RELEASE.md`](./RELEASE.md)).
 
 > Provisioning **manuale** sull’host; nessuno script di bootstrap automatico remoto.  
-> Preflight locale: `npm run vps:preflight` · Wizard guidato: `npm run vps:wizard`  
-> ([`../../scripts/vps-preflight.sh`](../../scripts/vps-preflight.sh), [`../../scripts/vps-setup-wizard.sh`](../../scripts/vps-setup-wizard.sh)).
+> Tooling operatore (locale):  
+> - `npm run vps:preflight` — artefatti repo  
+> - `npm run vps:wizard` — guida provisioning + scrive `.env.prod`  
+> - `npm run vps:remote-check` — SSH + HTTPS live/ready (dopo §1–3)
 
 ## 0 — Prerequisito repo / CI
 
@@ -28,6 +30,7 @@
 - [ ] Clone repo in `/opt/facilityflow` (o path team)
 - [ ] `docker compose -f compose.prod.yaml --env-file .env.prod up -d --build` — [`COMPOSE_PROD.md`](./COMPOSE_PROD.md)
 - [ ] `ps` healthy; `live`/`ready` 200 (localhost + HTTPS via Caddy) — [`HEALTH.md`](./HEALTH.md) · [`PROXY.md`](./PROXY.md)
+- [ ] Da laptop: `npm run vps:remote-check` PASS
 
 ## 4 — Deploy dati e DR
 

@@ -26,7 +26,8 @@
     "verify:local": "npm run typecheck && npm test && npm run secrets:scan",
     "verify:headers": "bash scripts/verify-security-headers.sh",
     "vps:preflight": "bash scripts/vps-preflight.sh",
-    "vps:wizard": "bash scripts/vps-setup-wizard.sh"
+    "vps:wizard": "bash scripts/vps-setup-wizard.sh",
+    "vps:remote-check": "bash scripts/vps-remote-check.sh"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.3",

@@ -19,7 +19,7 @@ Go prod resta bloccato su VPS ([`../ops/NEXT_VPS.md`](../ops/NEXT_VPS.md)).
 ## Cosa fare adesso
 
 1. ~~CI su `develop`~~ — **PASS** (US-E14-04). Da qui: **GitFlow senza PR** — push diretto su `develop`; consolidamento su `main` via `release/*` / `hotfix/*`
-2. **VPS EU / staging** — checklist [`../ops/NEXT_VPS.md`](../ops/NEXT_VPS.md) (umano su host)
+2. **VPS EU / staging** — [`../ops/NEXT_VPS.md`](../ops/NEXT_VPS.md): `vps:preflight` → `vps:wizard` → host → `vps:remote-check`
 3. **Fase 3 draft** — [`BACKLOG.md`](./BACKLOG.md) § Fase 3; sviluppo solo dopo F3-01 / GO VPS
 4. Opz. remoto: `STRESS_TICKETS=5000` su runner dedicata
 
