@@ -144,6 +144,7 @@ export default async function VendorTicketDetailPage({ params }: Props) {
           <AttachmentUploader
             ticketId={ticket.id}
             labels={msg.ticketPanels}
+            locale={prefs.locale}
           />
         ) : null}
       </section>
@@ -190,6 +191,7 @@ export default async function VendorTicketDetailPage({ params }: Props) {
           events={events}
           labels={msg.ticketTimeline}
           dateLocale={prefs.dateLocale}
+          locale={prefs.locale}
         />
       </section>
     </main>
