@@ -9,11 +9,13 @@ import { parseCsv, rowsToObjects } from "./csv";
 
 export const STORE_CSV_MAX_ROWS = 200;
 
+/** Domain errors: stable `code` (+ params). Copy IT/EN at action boundary. */
 export type CsvRowError = {
   line: number;
-  message: string;
-  code?: string;
+  code: string;
   params?: Record<string, string>;
+  /** Optional legacy; prefer localize via `code` in `actionResultError`. */
+  message?: string;
 };
 
 export type StoreCsvImportResult = {
@@ -22,6 +24,12 @@ export type StoreCsvImportResult = {
 };
 
 const REQUIRED_HEADERS = ["nome"] as const;
+
+const STORE_FIELD_CODES = new Set([
+  "storeWebhookUrlInvalid",
+  "storeNtfyTopicInvalid",
+  "storeNameRequired",
+]);
 
 /**
  * Import CSV IT (template public/templates/stores.it.csv).
@@ -46,7 +54,6 @@ export async function importStoresFromCsv(input: {
       errors: [
         {
           line: 0,
-          message: `Troppi import. Riprova tra ${limit.retryAfterSec}s.`,
           code: "csvImportRateLimited",
           params: { sec: String(limit.retryAfterSec) },
         },
@@ -64,7 +71,6 @@ export async function importStoresFromCsv(input: {
         errors: [
           {
             line: 1,
-            message: `Header mancante: "${h}". Usa il template IT.`,
             code: "csvHeaderMissing",
             params: { header: h },
           },
@@ -79,7 +85,6 @@ export async function importStoresFromCsv(input: {
       errors: [
         {
           line: 0,
-          message: `Massimo ${STORE_CSV_MAX_ROWS} righe dati (trovate ${records.length}).`,
           code: "csvTooManyRows",
           params: {
             max: String(STORE_CSV_MAX_ROWS),
@@ -106,10 +111,10 @@ export async function importStoresFromCsv(input: {
       contacts: r.contatti || null,
     });
     if (!parsed.success) {
+      const issue = parsed.error.issues[0]?.message ?? "csvRowInvalid";
       errors.push({
         line,
-        message: parsed.error.issues[0]?.message ?? "Riga non valida",
-        code: "csvRowInvalid",
+        code: STORE_FIELD_CODES.has(issue) ? issue : "csvRowInvalid",
       });
       continue;
     }
@@ -129,7 +134,6 @@ export async function importStoresFromCsv(input: {
     } catch {
       errors.push({
         line,
-        message: "Salvataggio fallito",
         code: "csvSaveFailed",
       });
     }

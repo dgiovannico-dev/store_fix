@@ -39,12 +39,12 @@ export async function domainError(
 
 /** Boundary: preferisci `code` catalogato; fallback al message legacy. */
 export async function actionResultError(result: {
-  message: string;
+  message?: string;
   code?: string;
   params?: Record<string, string>;
 }): Promise<string> {
   if (result.code && isDomainErrorKey(result.code)) {
     return domainError(result.code, result.params);
   }
-  return result.message;
+  return result.message ?? result.code ?? "Error";
 }
