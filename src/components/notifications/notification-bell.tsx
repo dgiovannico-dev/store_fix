@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
-import type { MessageCatalog } from "@/i18n";
+import { StatusPanel } from "@/components/ui/status-panel";
+import type { Locale, MessageCatalog } from "@/i18n";
 
 type Item = {
   id: string;
@@ -16,6 +17,7 @@ type Props = {
   role?: string | null;
   labels: MessageCatalog["notifBell"];
   dateLocale?: string;
+  locale?: Locale;
 };
 
 function ticketHref(role: string | null | undefined, ticketId: string) {
@@ -43,6 +45,7 @@ export function NotificationBell({
   role,
   labels,
   dateLocale = "it-IT",
+  locale = "it",
 }: Props) {
   const [open, setOpen] = useState(false);
   const [count, setCount] = useState(0);
@@ -122,8 +125,12 @@ export function NotificationBell({
           </div>
           <ul className="max-h-72 space-y-2 overflow-y-auto">
             {items.length === 0 ? (
-              <li className="py-6 text-center text-sm text-[var(--muted-foreground)]">
-                {labels.empty}
+              <li className="list-none py-1">
+                <StatusPanel
+                  kind="empty"
+                  title={labels.empty}
+                  locale={locale}
+                />
               </li>
             ) : (
               items.map((n) => (
