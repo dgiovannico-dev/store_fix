@@ -3,9 +3,10 @@ import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { getActiveMembership } from "@/domain/memberships/membership-service";
 import { listStores } from "@/domain/stores/store-service";
+import { tenantMessages } from "@/i18n/tenant-messages";
 
 /**
- * Hub deep link: istruzioni IT + link per store in scope.
+ * Hub deep link: istruzioni + link per store in scope.
  */
 export default async function SegnalaHubPage() {
   const session = await auth();
@@ -18,7 +19,10 @@ export default async function SegnalaHubPage() {
   );
   if (!membership) redirect("/login");
 
-  const stores = await listStores(session.tenantId, membership);
+  const [msg, stores] = await Promise.all([
+    tenantMessages(session.tenantId),
+    listStores(session.tenantId, membership),
+  ]);
   const base =
     process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, "") ||
     "http://localhost:3000";
@@ -26,19 +30,15 @@ export default async function SegnalaHubPage() {
   return (
     <main className="mx-auto max-w-[390px] px-4 py-10">
       <h1 className="font-[family-name:var(--font-sora)] text-xl font-semibold text-[var(--primary)]">
-        Segnala guasto
+        {msg.intake.title}
       </h1>
       <p className="mt-3 text-sm text-[var(--muted-foreground)]">
-        Invia questo link sul gruppo WhatsApp del punto vendita. Su Chrome /
-        Android: menu → «Installa app» (o «Aggiungi a Home»); su iOS Safari →
-        Condividi → «Aggiungi a Home». Serve l&apos;accesso FacilityFlow
-        (nessuna API WhatsApp Business). Offline: vedi solo la pagina di
-        avviso — i ticket richiedono rete.
+        {msg.intake.hubHint}
       </p>
 
       {stores.length === 0 ? (
         <p className="mt-8 text-sm text-[var(--muted-foreground)]">
-          Nessun punto vendita nello scope.
+          {msg.intake.noStores}
         </p>
       ) : (
         <ul className="mt-8 space-y-4">
@@ -51,7 +51,7 @@ export default async function SegnalaHubPage() {
                   href={path}
                   className="block text-sm text-[var(--primary)] underline-offset-4 hover:underline"
                 >
-                  Apri segnalazione
+                  {msg.intake.openReport}
                 </Link>
                 <code className="block break-all text-xs text-[var(--muted-foreground)]">
                   {base}
@@ -67,7 +67,7 @@ export default async function SegnalaHubPage() {
         href="/app/tickets"
         className="mt-10 inline-block text-sm text-[var(--muted-foreground)] underline-offset-4 hover:underline"
       >
-        ← Ticket
+        {msg.intake.backTickets}
       </Link>
     </main>
   );

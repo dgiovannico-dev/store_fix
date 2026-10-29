@@ -197,7 +197,7 @@ export default async function ContrattiPage({ searchParams }: Props) {
                     type="submit"
                     className="text-sm text-[var(--critical)] underline-offset-4 hover:underline"
                   >
-                    Archivia
+                    {msg.contracts.archive}
                   </button>
                 </form>
               ) : null}

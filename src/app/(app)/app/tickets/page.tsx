@@ -92,7 +92,7 @@ export default async function TicketsListPage({ searchParams }: Props) {
             {msg.nav.tickets}
           </h1>
           <p className="mt-2 text-sm text-[var(--muted-foreground)]">
-            Scope membership · max 50 · query {listMs} ms
+            {msg.ticketsList.scopeHint} · query {listMs} ms
           </p>
         </div>
         {canOpen ? (
@@ -157,7 +157,7 @@ export default async function TicketsListPage({ searchParams }: Props) {
               href="/app/tickets"
               className="px-2 py-2 text-sm text-[var(--muted-foreground)] underline-offset-4 hover:underline"
             >
-              Reset
+              {msg.ticketsList.reset}
             </Link>
           </div>
         </form>
@@ -170,8 +170,8 @@ export default async function TicketsListPage({ searchParams }: Props) {
             title={msg.common.empty}
             body={
               canOpen
-                ? "Nessun ticket. Apri il primo guasto dallo store."
-                : "Nessun ticket chiuso/verificato nel tuo scope."
+                ? msg.ticketsList.emptyOpenBody
+                : msg.ticketsList.emptyClosedBody
             }
           >
             {canOpen ? (
