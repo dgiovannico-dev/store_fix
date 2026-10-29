@@ -16,7 +16,7 @@ import { getOnboardingSnapshot } from "@/domain/onboarding/progress";
 import { DashboardKpiGrid } from "@/components/dashboard/kpi-metric-card";
 import { StatusPanel } from "@/components/ui/status-panel";
 import { tenantMessages } from "@/i18n/tenant-messages";
-import { formatMoney } from "@/i18n/format";
+import { formatMoney, withCurrency } from "@/i18n/format";
 import { getTenantI18nPrefs } from "@/application/tenant/i18n-prefs";
 
 export default async function DashboardPage() {
@@ -96,7 +96,10 @@ export default async function DashboardPage() {
             <a
               href="/api/exports/accounting"
               className="rounded-[var(--radius)] border border-[var(--border)] px-3 py-2"
-              title={msg.accounting.exportHint}
+              title={withCurrency(
+                msg.accounting.exportHint,
+                prefs.currency,
+              )}
             >
               {msg.accounting.exportTitle}
             </a>

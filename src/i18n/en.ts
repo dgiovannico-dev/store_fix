@@ -98,7 +98,7 @@ export const en = {
   },
   accounting: {
     exportTitle: "Accounting CSV export",
-    exportHint: "Done/verified tickets with actual_cost (EUR, UTF-8).",
+    exportHint: "Done/verified tickets with actual_cost ({currency}, UTF-8).",
   },
   scorecard: {
     title: "Vendor scorecard",

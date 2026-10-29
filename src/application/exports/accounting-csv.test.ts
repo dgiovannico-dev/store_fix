@@ -70,6 +70,17 @@ describe("buildAccountingCsv", () => {
     expect(csv.body).toContain("EUR");
     expect(csv.body).toContain('"PV ""Acc"", Roma"');
 
+    await prisma.tenant.update({
+      where: { id: tenantId },
+      data: { currency: "USD" },
+    });
+    const usd = await buildAccountingCsv({
+      tenantId,
+      role: Role.viewer_finance,
+    });
+    expect(usd.body).toContain("USD");
+    expect(usd.body).not.toMatch(/,EUR\r?\n/);
+
     await expect(
       buildAccountingCsv({ tenantId, role: Role.store_staff }),
     ).rejects.toBeInstanceOf(ForbiddenError);
