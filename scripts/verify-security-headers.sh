@@ -9,6 +9,14 @@ MODE="${2:-}"
 HDR=$(curl -sI "$URL")
 echo "$HDR"
 echo "$HDR" | grep -qi 'content-security-policy' || { echo "missing CSP"; exit 1; }
+echo "$HDR" | grep -qi "object-src 'none'" || {
+  echo "missing CSP object-src 'none'"
+  exit 1
+}
+echo "$HDR" | grep -qi "base-uri 'none'" || {
+  echo "missing CSP base-uri 'none'"
+  exit 1
+}
 echo "$HDR" | grep -qi 'x-frame-options' || { echo "missing XFO"; exit 1; }
 echo "$HDR" | grep -qi 'x-content-type-options' || { echo "missing nosniff"; exit 1; }
 echo "$HDR" | grep -qi 'cross-origin-opener-policy:.*same-origin' || {
