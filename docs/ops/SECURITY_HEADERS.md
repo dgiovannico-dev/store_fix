@@ -4,7 +4,7 @@ Implementati in `src/middleware.ts`:
 
 | Header | Valore |
 |--------|--------|
-| `Content-Security-Policy` | `default-src 'self'`; script/style `'unsafe-inline'` (Next/Tailwind); **prod senza** `'unsafe-eval'`; `object-src 'none'`; `base-uri 'none'`; `frame-ancestors 'none'` |
+| `Content-Security-Policy` | `default-src 'self'`; script/style `'unsafe-inline'` (Next/Tailwind); **prod senza** `'unsafe-eval'`; `object-src 'none'`; `base-uri 'none'`; `frame-ancestors 'none'`; **`upgrade-insecure-requests`** solo con `FF_DOMAIN` reale (o `FF_CSP_UPGRADE_INSECURE=1`) — off su lab HTTP |
 | `X-Frame-Options` | `DENY` (legacy + CSP) |
 | `X-Content-Type-Options` | `nosniff` |
 | `Referrer-Policy` | `strict-origin-when-cross-origin` |
@@ -22,8 +22,8 @@ Implementati in `src/middleware.ts`:
 | Superficie | Protezione |
 |------------|------------|
 | **Server Actions** | Built-in Next.js: `Origin` vs `Host` / `X-Forwarded-Host`. Extra host: `experimental.serverActions.allowedOrigins` da `SERVER_ACTIONS_ALLOWED_ORIGINS` o host di `NEXT_PUBLIC_APP_URL` / `FF_DOMAIN` (skip localhost) — `next.config.ts` |
-| **Mutating `/api/*`** | Middleware: rifiuta `Sec-Fetch-Site: cross-site`; se `Origin` presente deve matchare Host/X-Forwarded-Host o allowlist. **403** `{ code: "csrf_origin" }` |
-| **Esenti** | `/api/health/*`, `/api/auth/*` (Auth.js), `/api/inbound/*` (Bearer webhook) |
+| **Mutating `/api/*` + `POST /logout`** | Middleware: rifiuta `Sec-Fetch-Site: cross-site`; se `Origin` presente deve matchare Host/X-Forwarded-Host o allowlist. **403** `{ code: "csrf_origin" }` |
+| **Esenti** | `/api/health/*`, `/api/auth/*` (Auth.js), `/api/inbound/*` (Bearer webhook); altre pagine non-API |
 | **Senza Origin** | Consentito (curl / job / client non-browser) se non `cross-site` |
 
 Env opz.: `SERVER_ACTIONS_ALLOWED_ORIGINS` (alias `CSRF_ALLOWED_ORIGINS`) — host o URL separati da virgola, es. `app.example.com,https://lab.example.com`.
@@ -33,7 +33,8 @@ Fonti: [OWASP CSRF](https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Re
 ## Eccezioni
 
 - **Dev:** CSP include `unsafe-eval` per HMR Next; **prod** lo omette (`middleware.ts`). Nonce/hash script = polish futuro.
-- **Mailpit / Seaweed signed URL:** `connect-src` / `img-src` consentono `http:`/`https:` per PUT/GET firmati sullo storage Compose.
+- **`upgrade-insecure-requests`:** attivo in prod dietro `FF_DOMAIN` (VPS/Caddy HTTPS). Disabilitare con `FF_CSP_UPGRADE_INSECURE=0` se serve; forzare in lab con `=1`.
+- **Mailpit / Seaweed signed URL:** `connect-src` / `img-src` consentono `http:`/`https:` per PUT/GET firmati sullo storage Compose (senza upgrade-insecure sul lab HTTP).
 - Rate limit: [`RATE_LIMITS.md`](./RATE_LIMITS.md).
 
 ## Split proxy vs app

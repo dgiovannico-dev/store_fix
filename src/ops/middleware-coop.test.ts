@@ -54,4 +54,9 @@ describe("middleware cross-origin isolation headers", () => {
     expect(raw).toMatch(/object-src 'none'/);
     expect(raw).toMatch(/base-uri 'none'/);
   });
+
+  it("condiziona upgrade-insecure-requests via shouldUpgradeInsecureRequests", () => {
+    expect(raw).toMatch(/shouldUpgradeInsecureRequests/);
+    expect(raw).toMatch(/upgrade-insecure-requests/);
+  });
 });
