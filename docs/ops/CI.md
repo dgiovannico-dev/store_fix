@@ -2,11 +2,13 @@
 
 Workflow: [`.github/workflows/ci.yml`](../../.github/workflows/ci.yml)
 
-## Gate PR → `develop`
+## Gate PR → `develop` / push `develop`
 
 - `lint`, `typecheck`, `test` (Postgres service)
 - `secrets:scan`
 - `build` (`next build`) con cache npm
+- `npm audit --audit-level=high` (continue-on-error; policy/waiver: [`AUDIT.md`](./AUDIT.md))
+- Perf p95 lista HQ su seed pilota (`perf:hq-list`)
 
 ## Runner
 

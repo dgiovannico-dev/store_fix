@@ -1,13 +1,17 @@
 /**
  * Next.js instrumentation — GlitchTip/Sentry opt-in (F3-02 retro).
  * Attivo solo se `SENTRY_DSN` è impostato (self-host GlitchTip).
+ *
+ * `webpackIgnore` evita che Next bundli `@sentry/node` (node: protocol).
  */
 export async function register() {
   if (process.env.NEXT_RUNTIME !== "nodejs") return;
   const dsn = process.env.SENTRY_DSN?.trim();
   if (!dsn) return;
 
-  const Sentry = await import("@sentry/node");
+  const Sentry = await import(
+    /* webpackIgnore: true */ "@sentry/node"
+  );
   Sentry.init({
     dsn,
     environment: process.env.NODE_ENV ?? "development",

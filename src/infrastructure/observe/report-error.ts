@@ -2,6 +2,7 @@ import { logJson } from "@/infrastructure/log";
 
 /**
  * Report soft verso GlitchTip/Sentry se SENTRY_DSN presente; altrimenti solo log.
+ * Dynamic import con webpackIgnore: @sentry/node non deve entrare nel client bundle.
  */
 export async function reportError(
   err: unknown,
@@ -15,7 +16,9 @@ export async function reportError(
 
   if (!process.env.SENTRY_DSN?.trim()) return;
   try {
-    const Sentry = await import("@sentry/node");
+    const Sentry = await import(
+      /* webpackIgnore: true */ "@sentry/node"
+    );
     if (err instanceof Error) {
       Sentry.captureException(err, { extra: context });
     } else {

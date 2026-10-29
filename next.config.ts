@@ -1,7 +1,15 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  // @sentry/node uses node: protocol imports — must stay external to webpack.
+  serverExternalPackages: [
+    "@sentry/node",
+    "@sentry/core",
+    "@sentry/opentelemetry",
+    "@sentry/server-runtime-injection",
+    "@sentry/server-utils",
+    "@opentelemetry/api",
+  ],
 };
 
 export default nextConfig;

@@ -2,7 +2,7 @@
 
 ## Policy
 
-- CI: `npm audit --audit-level=high` (warning / continue-on-error finché waiver sotto restano aperti)
+- CI: `npm audit --audit-level=high` (warning / continue-on-error finché non è **0** vulnerabilità high+ senza waiver)
 - Locale: `npm audit --audit-level=high` dopo bump dipendenze
 - **Fail hard** su high/critical nel path runtime **senza** waiver documentato qui
 - Nessun SaaS scanner a pagamento (no Snyk Cloud obbligatorio)
@@ -12,17 +12,15 @@
 | Pacchetto | Azione | Note |
 |-----------|--------|------|
 | `sharp` (via Next) | bump lock → `0.35.5` | `npm audit fix` non-breaking |
-| `nodemailer` | `10.3.0` + `overrides` | CVE ≤10.1.3 chiusi; peer next-auth `^7\|\|^8` — override intenzionale |
-| lint | rimosso `eslint-disable` inutilizzato | `flusso-c-hard-timing` |
-| `vitest` / `tinypool` / `vite` | Vitest **5.0.5** + Vite **^6.4** + `@types/node` ^22 | Chiude critical tinypool / mocker; 127 test PASS |
+| `nodemailer` | `10.3.0` + `overrides` | CVE ≤10.1.3; peer next-auth override |
+| `vitest` / `vite` | Vitest **5.0.5** + Vite **^6.4** | Chiude tinypool critical |
+| `deepmerge-ts` / `postcss` | overrides `8.0.2` / `8.5.32` | Senza bump Prisma 7 / Next 16 |
+| `@vitejs/plugin-react` | rimosso | Non usato da `vitest.config.ts` |
+| `@sentry/node` build | `webpackIgnore` + `serverExternalPackages` | Fix `node:` UnhandledSchemeError su `next build` |
 
-Baseline post-Vitest 5 (2026-10-29): **5** advisory (1 moderate / 4 high) — solo waiver sotto.
+**Baseline:** `npm audit` → **0 vulnerabilities** (2026-10-29).
 
-## Waiver aperti (transitive / major freeze)
+## Waiver aperti
 
-| Area | Severity | Motivo waiver | Exit |
-|------|----------|---------------|------|
-| `prisma` / `deepmerge-ts` | high | Transitive Prisma 6 CLI; Prisma 7 = breaking schema | Piano Prisma 7 |
-| `next` / nested `postcss` | high | Fix via `next@16` force — lab freeze Next 15 | Patch Next 15.x o piano Next 16 |
-
-Riesaminare waiver a ogni release / GO staging VPS.
+Nessuno high/critical aperto.  
+Eventuali regression: riesaminare a GO staging VPS / bump Next–Prisma major.
