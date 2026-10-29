@@ -10,6 +10,15 @@ describe("tenant-scope", () => {
     expect(() => requireTenantId(undefined)).toThrow(TenantRequiredError);
     expect(() => requireTenantId("")).toThrow(TenantRequiredError);
     expect(() => tenantActiveWhere(null)).toThrow(TenantRequiredError);
+    try {
+      requireTenantId(null);
+      expect.unreachable();
+    } catch (e) {
+      expect(e).toBeInstanceOf(TenantRequiredError);
+      expect((e as TenantRequiredError).code).toBe("tenantIdRequired");
+      expect((e as TenantRequiredError).message).toBe("tenantId is required");
+      expect((e as TenantRequiredError).message).not.toMatch(/obbligatorio/i);
+    }
   });
 
   it("accetta tenantId e esclude soft-delete", () => {
