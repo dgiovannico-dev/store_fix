@@ -62,6 +62,16 @@ export default async function StoresPage() {
             placeholder={msg.stores.addressPlaceholder}
             className="sm:col-span-2 rounded-[var(--radius)] border border-[var(--border)] px-3 py-2"
           />
+          <input
+            name="webhookUrl"
+            placeholder="Webhook push (https://…)"
+            className="rounded-[var(--radius)] border border-[var(--border)] px-3 py-2 text-sm"
+          />
+          <input
+            name="ntfyTopic"
+            placeholder="Topic ntfy (es. pv-milano-1)"
+            className="rounded-[var(--radius)] border border-[var(--border)] px-3 py-2 text-sm"
+          />
           <button
             type="submit"
             className="sm:col-span-2 rounded-[var(--radius)] bg-[var(--primary)] px-4 py-2 text-sm font-medium text-[var(--primary-foreground)]"
@@ -86,6 +96,9 @@ export default async function StoresPage() {
                 <p className="font-medium">{s.name}</p>
                 <p className="text-sm text-[var(--muted-foreground)]">
                   {[s.city, s.address].filter(Boolean).join(" · ") || "—"}
+                  {s.webhookUrl || s.ntfyTopic
+                    ? ` · push ${[s.ntfyTopic && "ntfy", s.webhookUrl && "webhook"].filter(Boolean).join("+")}`
+                    : ""}
                 </p>
               </div>
               {canEdit ? (

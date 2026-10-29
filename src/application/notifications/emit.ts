@@ -2,6 +2,10 @@ import type { Prisma, Ticket } from "@prisma/client";
 import { NotificationType } from "@/domain/notification/types";
 import { enqueueEmail } from "@/infrastructure/email/outbox";
 import type { EmailTemplateId } from "@/infrastructure/email/templates";
+import {
+  pushStoreTicketEvent,
+  ticketDeepLink,
+} from "@/infrastructure/push/store-push";
 import { prisma } from "@/infrastructure/db/prisma";
 import { requireTenantId } from "@/infrastructure/db/tenant-scope";
 import {
@@ -11,17 +15,6 @@ import {
   uniqueRecipients,
   type Recipient,
 } from "./recipients";
-
-function appBaseUrl(): string {
-  return (
-    process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, "") ||
-    "http://localhost:3000"
-  );
-}
-
-function ticketDeepLink(ticketId: string): string {
-  return `${appBaseUrl()}/app/tickets/${ticketId}`;
-}
 
 type TicketWithRelations = Ticket & {
   store?: { name: string } | null;
@@ -112,6 +105,46 @@ async function notify(
   });
 }
 
+const STORE_PUSH_KINDS = new Set(["created", "assigned", "done"]);
+
+async function maybePushStore(input: {
+  kind: EmitKind;
+  tenantId: string;
+  storeId: string;
+  storeName: string;
+  ticketId: string;
+  summary: string;
+}) {
+  if (!STORE_PUSH_KINDS.has(input.kind)) return;
+  const store = await prisma.store.findFirst({
+    where: {
+      id: input.storeId,
+      tenantId: input.tenantId,
+      deletedAt: null,
+    },
+    select: { webhookUrl: true, ntfyTopic: true, name: true },
+  });
+  if (!store?.webhookUrl && !store?.ntfyTopic) return;
+
+  const titles: Record<string, string> = {
+    created: "Nuovo ticket",
+    assigned: "Ticket assegnato",
+    done: "Intervento completato",
+  };
+  await pushStoreTicketEvent(
+    { webhookUrl: store.webhookUrl, ntfyTopic: store.ntfyTopic },
+    {
+      event: `ticket.${input.kind}`,
+      ticketId: input.ticketId,
+      storeId: input.storeId,
+      storeName: store.name || input.storeName,
+      title: titles[input.kind] ?? "FacilityFlow",
+      body: input.summary,
+      url: ticketDeepLink(input.ticketId),
+    },
+  ).catch((e) => console.error("[store-push]", e));
+}
+
 /**
  * Notification in-app + email outbox (T3.1).
  * Regole: docs/product/NOTIFICATION_RULES.md
@@ -142,6 +175,14 @@ export async function emitTicketNotification(input: {
       "ticket_nuovo",
       { ticketId, storeName, summary },
     );
+    await maybePushStore({
+      kind: "created",
+      tenantId: input.tenantId,
+      storeId: input.ticket.storeId,
+      storeName,
+      ticketId,
+      summary,
+    });
     return;
   }
 
@@ -164,6 +205,14 @@ export async function emitTicketNotification(input: {
       },
       vendor?.email ? [vendor.email] : [],
     );
+    await maybePushStore({
+      kind: "assigned",
+      tenantId: input.tenantId,
+      storeId: input.ticket.storeId,
+      storeName,
+      ticketId,
+      summary,
+    });
     return;
   }
 
@@ -208,6 +257,14 @@ export async function emitTicketNotification(input: {
       "ticket_done",
       { ticketId, storeName, vendorName: vendor?.name, summary },
     );
+    await maybePushStore({
+      kind: "done",
+      tenantId: input.tenantId,
+      storeId: input.ticket.storeId,
+      storeName,
+      ticketId,
+      summary,
+    });
     return;
   }
 

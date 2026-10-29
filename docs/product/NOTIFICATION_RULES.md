@@ -12,6 +12,15 @@ Completo S3 (US-E08-03 / T3.1). L’email outbox (`email.send` / Nodemailer→Ma
 | Verificato | `ticket.verified` | `ticket_verified` | HQ + vendor |
 | Rifiuto verifica | `ticket.rejected` | `ticket_rejected` | HQ + vendor |
 
+## Push store (F3-08)
+
+Su `created` / `assigned` / `done`, oltre a email/in-app:
+
+- Se `Store.webhookUrl` → `POST` JSON `{ event, ticketId, storeId, storeName, title, body, url }`
+- Se `Store.ntfyTopic` + env `NTFY_BASE_URL` → `POST {base}/{topic}` (header Title/Click; opz. `NTFY_TOKEN`)
+
+Soft-fail (log). **Vietato** WhatsApp Cloud API.
+
 ## Vincoli
 
 - Query Notification sempre `tenantId` + `userId` (nessun leak cross-user).

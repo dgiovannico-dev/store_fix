@@ -132,17 +132,21 @@ model Membership {
 }
 
 model Store {
-  id        String    @id @default(cuid())
-  tenantId  String
-  name      String
-  address   String?
-  city      String?
-  zip       String?
-  timezone  String    @default("Europe/Rome")
-  contacts  String?
-  deletedAt DateTime?
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  id          String    @id @default(cuid())
+  tenantId    String
+  name        String
+  address     String?
+  city        String?
+  zip         String?
+  timezone    String    @default("Europe/Rome")
+  contacts    String?
+  /// F3-08: webhook self-host (POST JSON); https consigliato
+  webhookUrl  String?
+  /// F3-08: topic ntfy (richiede NTFY_BASE_URL)
+  ntfyTopic   String?
+  deletedAt   DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 
   tenant Tenant  @relation(fields: [tenantId], references: [id])
   assets Asset[]

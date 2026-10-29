@@ -33,6 +33,8 @@ export async function createStoreAction(
       zip: formData.get("zip") || null,
       timezone: formData.get("timezone") || "Europe/Rome",
       contacts: formData.get("contacts") || null,
+      webhookUrl: formData.get("webhookUrl") || null,
+      ntfyTopic: formData.get("ntfyTopic") || null,
     },
   });
   if (!result.ok) return { error: result.message };
@@ -57,6 +59,8 @@ export async function updateStoreAction(
       zip: formData.get("zip") || null,
       timezone: formData.get("timezone") || "Europe/Rome",
       contacts: formData.get("contacts") || null,
+      webhookUrl: formData.get("webhookUrl") || null,
+      ntfyTopic: formData.get("ntfyTopic") || null,
     },
   });
   revalidatePath("/app/stores");

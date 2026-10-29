@@ -9,6 +9,24 @@ import {
   tenantActiveWhere,
 } from "@/infrastructure/db/tenant-scope";
 
+const optionalHttpUrl = z
+  .union([z.string().trim().max(500), z.literal(""), z.null()])
+  .optional()
+  .transform((v) => (v === "" || v == null ? null : v))
+  .refine(
+    (v) => v == null || /^https?:\/\//i.test(v),
+    "webhookUrl deve essere http(s)",
+  );
+
+const optionalTopic = z
+  .union([z.string().trim().max(64), z.literal(""), z.null()])
+  .optional()
+  .transform((v) => (v === "" || v == null ? null : v))
+  .refine(
+    (v) => v == null || /^[-_A-Za-z0-9]+$/.test(v),
+    "ntfyTopic non valido",
+  );
+
 export const storeInputSchema = z.object({
   name: z.string().trim().min(2).max(120),
   address: z.string().trim().max(240).optional().nullable(),
@@ -16,6 +34,8 @@ export const storeInputSchema = z.object({
   zip: z.string().trim().max(20).optional().nullable(),
   timezone: z.string().trim().min(1).max(64).default("Europe/Rome"),
   contacts: z.string().trim().max(500).optional().nullable(),
+  webhookUrl: optionalHttpUrl,
+  ntfyTopic: optionalTopic,
 });
 
 export async function listStores(
@@ -52,6 +72,8 @@ export async function createStore(input: {
       zip: parsed.data.zip ?? null,
       timezone: parsed.data.timezone,
       contacts: parsed.data.contacts ?? null,
+      webhookUrl: parsed.data.webhookUrl ?? null,
+      ntfyTopic: parsed.data.ntfyTopic ?? null,
     },
   });
   return { ok: true as const, store };
@@ -84,6 +106,8 @@ export async function updateStore(input: {
       zip: parsed.data.zip ?? null,
       timezone: parsed.data.timezone,
       contacts: parsed.data.contacts ?? null,
+      webhookUrl: parsed.data.webhookUrl ?? null,
+      ntfyTopic: parsed.data.ntfyTopic ?? null,
     },
   });
   return { ok: true as const, store };

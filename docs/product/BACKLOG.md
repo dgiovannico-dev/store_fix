@@ -605,7 +605,7 @@ E00 Platform OSS (Compose, SeaweedFS, Mailpit, pg-boss, Prisma schema)
 | **F3-05** | PM ricorrente RRULE (evoluzione F2-04) | **P1** | Done 2026-10-29 — `PmSeries` + rrule.js expand; job `pm.maintain`; reminder email 48h; UI ricorrenza su calendario | No |
 | **F3-06** | Multi-lingua / multi-regione light | **P2** | Done 2026-10-29 — `Tenant.defaultLocale/currency/dateLocale` + format helpers + `/app/settings/locale`; chrome usa prefs | No |
 | **F3-07** | RFQ vendor interno (no marketplace) | **P2** | Done 2026-10-29 — `QuoteRequest`/`QuoteBid`; HQ `/app/rfq` + vendor `/vendor/rfq`; award → ticket F2-02 | No |
-| **F3-08** | Push store (ntfy / webhook self-host) | **P2** | Eventi ticket → ntfy o webhook; **vietato** WA Cloud API | **Sì** |
+| **F3-08** | Push store (ntfy / webhook self-host) | **P2** | Done 2026-10-29 — `Store.webhookUrl`/`ntfyTopic` + emit created/assigned/done; env `NTFY_*`; no WA | No (env VPS) |
 
 ---
 

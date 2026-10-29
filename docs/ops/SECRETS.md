@@ -36,6 +36,7 @@ docker compose -f compose.prod.yaml --env-file /etc/facilityflow/.env.prod up -d
 | SMTP credentials (se presenti) | media | self-host / cliente |
 | `INBOUND_EMAIL_WEBHOOK_SECRET` | alta | Bearer per `/api/inbound/email` (F2-08); vuoto = endpoint 503 |
 | `IMAP_PASS` (e host/user) | alta | Poll IMAP F3-04; vuoto = job skip |
+| `NTFY_TOKEN` | media | Bearer publish ntfy (F3-08); opzionale |
 
 ## Docker secrets
 
