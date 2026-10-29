@@ -29,7 +29,8 @@ export async function pollImapInbound(opts: {
   if (!config) {
     return {
       skipped: true,
-      reason: "IMAP_HOST non configurato",
+      // Ops reason code (logs/metrics) — not UI copy
+      reason: "imap_host_unconfigured",
       fetched: 0,
       created: 0,
       duplicates: 0,
@@ -40,7 +41,7 @@ export async function pollImapInbound(opts: {
   if (!config.tenantId && !config.tenantSlug) {
     return {
       skipped: true,
-      reason: "IMAP_TENANT_ID o IMAP_TENANT_SLUG obbligatorio",
+      reason: "imap_tenant_unconfigured",
       fetched: 0,
       created: 0,
       duplicates: 0,
