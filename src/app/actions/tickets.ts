@@ -12,6 +12,7 @@ import {
 } from "@/application/tickets/transition-ticket";
 import { getActiveMembership } from "@/domain/memberships/membership-service";
 import { checkRateLimit } from "@/infrastructure/rate-limit";
+import { actionError } from "@/i18n/action-errors";
 
 export type CreateTicketState = {
   error?: string;
@@ -41,7 +42,7 @@ export async function createTicketAction(
   formData: FormData,
 ): Promise<CreateTicketState> {
   const ctx = await sessionContext();
-  if (!ctx) return { error: "Accesso richiesto" };
+  if (!ctx) return { error: await actionError("accessRequired") };
 
   const intakeLimit = checkRateLimit(
     `intake:${ctx.session.tenantId}:${ctx.session.user!.id}`,
@@ -86,7 +87,7 @@ export async function triageTicketAction(
   formData: FormData,
 ): Promise<TicketActionState> {
   const ctx = await sessionContext();
-  if (!ctx) return { error: "Accesso richiesto" };
+  if (!ctx) return { error: await actionError("accessRequired") };
   const ticketId = String(formData.get("ticketId") ?? "");
   const result = await triageTicket({
     tenantId: ctx.session.tenantId!,
@@ -106,7 +107,7 @@ export async function assignTicketAction(
   formData: FormData,
 ): Promise<TicketActionState> {
   const ctx = await sessionContext();
-  if (!ctx) return { error: "Accesso richiesto" };
+  if (!ctx) return { error: await actionError("accessRequired") };
   const ticketId = String(formData.get("ticketId") ?? "");
   const priorityRaw = String(formData.get("priority") ?? "");
   const priority = Object.values(TicketPriority).includes(
@@ -135,7 +136,7 @@ export async function cancelTicketAction(
   formData: FormData,
 ): Promise<TicketActionState> {
   const ctx = await sessionContext();
-  if (!ctx) return { error: "Accesso richiesto" };
+  if (!ctx) return { error: await actionError("accessRequired") };
   const ticketId = String(formData.get("ticketId") ?? "");
   const result = await cancelTicket({
     tenantId: ctx.session.tenantId!,

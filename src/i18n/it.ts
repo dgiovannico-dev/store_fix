@@ -88,6 +88,13 @@ export const it = {
     back: "Indietro",
     filterAll: "Tutti",
   },
+  actionErrors: {
+    accessRequired: "Accesso richiesto",
+    membershipMissing: "Membership assente",
+    membershipInactive: "Membership non attiva",
+    selectCsv: "Seleziona un file CSV",
+    fileTooLarge: "File troppo grande (max 512 KB)",
+  },
   gdpr: {
     exportTitle: "Export dati tenant (GDPR)",
     exportHint: "Scarica JSON delle entità core del tuo tenant.",

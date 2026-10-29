@@ -18,10 +18,11 @@ import {
 describe("transition-ticket", () => {
   let tenantId = "";
   let userId = "";
+  const tenantIds: string[] = [];
   const emails: string[] = [];
 
   afterAll(async () => {
-    if (tenantId) await cleanupTenant(tenantId);
+    for (const id of tenantIds) await cleanupTenant(id);
     for (const email of emails) {
       await prisma.session.deleteMany({ where: { user: { email } } });
       await prisma.user.deleteMany({ where: { email } });
@@ -50,6 +51,7 @@ describe("transition-ticket", () => {
     expect(signup.ok).toBe(true);
     if (!signup.ok) return;
     tenantId = signup.tenantId;
+    tenantIds.push(tenantId);
     userId = signup.userId;
     await ensureDefaultSlaPolicies(prisma, tenantId);
 
@@ -153,5 +155,90 @@ describe("transition-ticket", () => {
     if (!cancelled.ok) return;
     expect(cancelled.ticket.status).toBe(TicketStatus.cancelled);
     expect(cancelled.ticket.cancelReason).toContain("Falso");
+  });
+
+  it("verified: transitionTicket rifiuta mutazioni (immutabilità applicativa)", async () => {
+    const stamp = Date.now().toString(36);
+    const email = `imm-${stamp}@test.facilityflow.local`;
+    emails.push(email);
+    const signup = await signupHqOwner({
+      name: "Owner Imm",
+      email,
+      password: "TestPass123!",
+      workspaceName: `Imm ${stamp}`,
+    });
+    expect(signup.ok).toBe(true);
+    if (!signup.ok) return;
+    tenantId = signup.tenantId;
+    tenantIds.push(tenantId);
+    userId = signup.userId;
+    await ensureDefaultSlaPolicies(prisma, tenantId);
+
+    const store = await createStore({
+      tenantId,
+      role: Role.owner,
+      data: { name: "PV Imm", timezone: "Europe/Rome" },
+    });
+    expect(store.ok).toBe(true);
+    if (!store.ok) return;
+
+    const vendor = await createVendor({
+      tenantId,
+      role: Role.owner,
+      data: {
+        name: "Vendor Imm",
+        email: `v-imm-${stamp}@test.facilityflow.local`,
+        trades: ["frigo"],
+      },
+    });
+    expect(vendor.ok).toBe(true);
+    if (!vendor.ok) return;
+
+    const openedAt = new Date(Date.now() - 72 * 3600_000);
+    const ticket = await prisma.ticket.create({
+      data: {
+        tenantId,
+        storeId: store.store.id,
+        vendorId: vendor.vendor.id,
+        category: "frigo",
+        priority: TicketPriority.normal,
+        status: TicketStatus.verified,
+        description: "Già verificato",
+        openedAt,
+        triagedAt: openedAt,
+        assignedAt: openedAt,
+        doneAt: new Date(openedAt.getTime() + 24 * 3600_000),
+        verifiedAt: new Date(openedAt.getTime() + 48 * 3600_000),
+        actualCost: 50,
+        slaDueAt: new Date(openedAt.getTime() + 72 * 3600_000),
+      },
+    });
+
+    const blocked = await assignTicket({
+      tenantId,
+      ticketId: ticket.id,
+      actorUserId: userId,
+      role: Role.ops_coordinator,
+      vendorId: vendor.vendor.id,
+    });
+    expect(blocked.ok).toBe(false);
+    if (!blocked.ok) {
+      expect(blocked.message).toMatch(/verificat|immutabil/i);
+    }
+
+    const cancelled = await cancelTicket({
+      tenantId,
+      ticketId: ticket.id,
+      actorUserId: userId,
+      role: Role.owner,
+      reason: "tentativo post-verified",
+    });
+    expect(cancelled.ok).toBe(false);
+
+    const still = await prisma.ticket.findFirst({
+      where: { id: ticket.id, tenantId },
+    });
+    expect(still?.status).toBe(TicketStatus.verified);
+    expect(Number(still?.actualCost)).toBe(50);
   });
 });

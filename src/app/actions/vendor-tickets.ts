@@ -8,6 +8,7 @@ import {
   transitionVendorStatus,
 } from "@/application/tickets/vendor-ticket-lifecycle";
 import { getActiveMembership } from "@/domain/memberships/membership-service";
+import { actionError } from "@/i18n/action-errors";
 
 export type VendorActionState = { error?: string; ok?: boolean };
 
@@ -27,7 +28,7 @@ export async function vendorStatusAction(
   formData: FormData,
 ): Promise<VendorActionState> {
   const c = await ctx();
-  if (!c) return { error: "Accesso richiesto" };
+  if (!c) return { error: await actionError("accessRequired") };
   const ticketId = String(formData.get("ticketId") ?? "");
   const to = String(formData.get("to") ?? "") as TicketStatus;
   const result = await transitionVendorStatus({
@@ -49,7 +50,7 @@ export async function vendorCompleteAction(
   formData: FormData,
 ): Promise<VendorActionState> {
   const c = await ctx();
-  if (!c) return { error: "Accesso richiesto" };
+  if (!c) return { error: await actionError("accessRequired") };
   const ticketId = String(formData.get("ticketId") ?? "");
   const result = await completeVendorWork({
     tenantId: c.session.tenantId!,

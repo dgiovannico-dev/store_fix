@@ -7,6 +7,7 @@ import {
   softDeleteVendor,
   updateVendor,
 } from "@/domain/vendors/vendor-service";
+import { actionError } from "@/i18n/action-errors";
 
 async function sessionTenant() {
   const session = await auth();
@@ -34,7 +35,7 @@ export async function createVendorAction(
   formData: FormData,
 ): Promise<{ error?: string }> {
   const session = await sessionTenant();
-  if (!session) return { error: "Accesso richiesto" };
+  if (!session) return { error: await actionError("accessRequired") };
 
   const result = await createVendor({
     tenantId: session.tenantId!,

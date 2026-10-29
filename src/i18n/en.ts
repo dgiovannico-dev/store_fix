@@ -90,6 +90,13 @@ export const en = {
     back: "Back",
     filterAll: "All",
   },
+  actionErrors: {
+    accessRequired: "Sign-in required",
+    membershipMissing: "Membership missing",
+    membershipInactive: "Membership inactive",
+    selectCsv: "Select a CSV file",
+    fileTooLarge: "File too large (max 512 KB)",
+  },
   gdpr: {
     exportTitle: "Tenant data export (GDPR)",
     exportHint: "Download JSON of core entities for your tenant.",

@@ -7,6 +7,7 @@ import {
   softDeleteStore,
   updateStore,
 } from "@/domain/stores/store-service";
+import { actionError } from "@/i18n/action-errors";
 
 async function sessionTenant() {
   const session = await auth();
@@ -21,7 +22,7 @@ export async function createStoreAction(
   formData: FormData,
 ): Promise<{ error?: string }> {
   const session = await sessionTenant();
-  if (!session) return { error: "Accesso richiesto" };
+  if (!session) return { error: await actionError("accessRequired") };
 
   const result = await createStore({
     tenantId: session.tenantId!,
@@ -47,7 +48,7 @@ export async function updateStoreAction(
   formData: FormData,
 ): Promise<{ error?: string }> {
   const session = await sessionTenant();
-  if (!session) return { error: "Accesso richiesto" };
+  if (!session) return { error: await actionError("accessRequired") };
   const result = await updateStore({
     tenantId: session.tenantId!,
     role: session.role!,

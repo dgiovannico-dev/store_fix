@@ -8,6 +8,7 @@ import {
   submitQuoteBid,
 } from "@/application/rfq/rfq-service";
 import { prisma } from "@/infrastructure/db/prisma";
+import { actionError } from "@/i18n/action-errors";
 
 async function sessionCtx() {
   const session = await auth();
@@ -20,7 +21,7 @@ export async function createQuoteRequestAction(
   formData: FormData,
 ): Promise<{ error?: string; id?: string }> {
   const session = await sessionCtx();
-  if (!session) return { error: "Accesso richiesto" };
+  if (!session) return { error: await actionError("accessRequired") };
 
   const vendorIds = formData
     .getAll("vendorIds")
@@ -52,7 +53,7 @@ export async function submitQuoteBidAction(
   formData: FormData,
 ): Promise<{ error?: string }> {
   const session = await sessionCtx();
-  if (!session) return { error: "Accesso richiesto" };
+  if (!session) return { error: await actionError("accessRequired") };
 
   const membership = await prisma.membership.findFirst({
     where: {
@@ -61,7 +62,7 @@ export async function submitQuoteBidAction(
       deletedAt: null,
     },
   });
-  if (!membership) return { error: "Membership assente" };
+  if (!membership) return { error: await actionError("membershipMissing") };
 
   const result = await submitQuoteBid({
     tenantId: session.tenantId!,
@@ -84,7 +85,7 @@ export async function awardQuoteBidAction(
   bidId: string,
 ): Promise<{ error?: string }> {
   const session = await sessionCtx();
-  if (!session) return { error: "Accesso richiesto" };
+  if (!session) return { error: await actionError("accessRequired") };
 
   const result = await awardQuoteBid({
     tenantId: session.tenantId!,
