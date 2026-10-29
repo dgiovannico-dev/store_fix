@@ -9,7 +9,16 @@ services:
       - "8080:80"
       - "8443:443"
       - "8443:443/udp"
+  seaweedfs:
+    # Browser PUT/GET firmate da host (S3_PUBLIC_ENDPOINT=http://127.0.0.1:8333)
+    ports:
+      - "127.0.0.1:8333:8333"
   app:
     # espone ancora loopback per debug
     ports:
       - "127.0.0.1:3000:3000"
+    environment:
+      S3_PUBLIC_ENDPOINT: ${S3_PUBLIC_ENDPOINT:-http://127.0.0.1:8333}
+  worker:
+    environment:
+      S3_PUBLIC_ENDPOINT: ${S3_PUBLIC_ENDPOINT:-http://127.0.0.1:8333}
