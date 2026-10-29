@@ -7,8 +7,8 @@ import { checkRateLimitPostgres } from "@/infrastructure/rate-limit-postgres";
 import { resolveRateLimitStore } from "@/infrastructure/rate-limit-store";
 
 /**
- * Async entry for route handlers that can use Postgres when configured.
- * Server Actions that stay sync should keep `checkRateLimitPolicy` (memory).
+ * Async entry for all rate-limited surfaces (routes + Server Actions + domain).
+ * Honours `FF_RATE_LIMIT_STORE=postgres` for multi-replica shared buckets.
  */
 export async function checkRateLimitPolicyAsync(
   key: string,
