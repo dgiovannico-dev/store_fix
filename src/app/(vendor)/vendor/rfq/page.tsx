@@ -4,6 +4,7 @@ import { Role } from "@prisma/client";
 import { auth } from "@/auth";
 import { listVendorQuoteBids } from "@/application/rfq/rfq-service";
 import { formatMoney } from "@/i18n/format";
+import { tenantMessages } from "@/i18n/tenant-messages";
 import { prisma } from "@/infrastructure/db/prisma";
 
 export default async function VendorRfqListPage() {
@@ -21,6 +22,7 @@ export default async function VendorRfqListPage() {
   });
   if (!membership?.vendorId) redirect("/vendor/inbox");
 
+  const msg = await tenantMessages(session.tenantId);
   const bids = await listVendorQuoteBids({
     tenantId: session.tenantId,
     role: session.role,
@@ -30,15 +32,15 @@ export default async function VendorRfqListPage() {
   return (
     <main className="mx-auto max-w-3xl px-4 py-10 sm:px-6">
       <h1 className="font-[family-name:var(--font-sora)] text-2xl font-semibold text-[var(--primary)]">
-        Richieste preventivo
+        {msg.rfq.vendorTitle}
       </h1>
       <p className="mt-1 text-sm text-[var(--muted-foreground)]">
-        Solo le RFQ a cui sei stato invitato.
+        {msg.rfq.vendorHint}
       </p>
       <ul className="mt-8 divide-y divide-[var(--border)]">
         {bids.length === 0 ? (
           <li className="py-6 text-sm text-[var(--muted-foreground)]">
-            Nessun invito RFQ.
+            {msg.rfq.vendorEmpty}
           </li>
         ) : (
           bids.map((b) => (
@@ -50,7 +52,7 @@ export default async function VendorRfqListPage() {
                 {b.quoteRequest.title}
               </Link>
               <p className="mt-1 text-xs text-[var(--muted-foreground)]">
-                RFQ {b.quoteRequest.status} · tua offerta: {b.status}
+                {b.quoteRequest.status} · {b.status}
                 {b.amountEur != null ? ` · ${formatMoney(b.amountEur)}` : ""}
               </p>
             </li>

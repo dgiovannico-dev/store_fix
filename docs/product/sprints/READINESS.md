@@ -18,7 +18,7 @@
 
 1. VPS EU + DNS + `compose.prod` (unica via al Go)
 2. Integrazione: **push diretto su `develop`** (niente PR); consolidamento su `main` solo via release/hotfix GitFlow
-3. Non inventare Fase 3 fuori backlog — sviluppo F3-02+ solo dopo F3-01 / GO VPS
+3. Non inventare Fase 3 fuori backlog — F3-02…F3-08 Done in-repo (soft-gate); F3-01 / GO VPS resta umano
 
 ## Verify locale
 

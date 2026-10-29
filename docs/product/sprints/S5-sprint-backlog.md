@@ -41,7 +41,7 @@ Oltre al DoD globale in [`DEFINITION_OF_DONE.md`](./DEFINITION_OF_DONE.md) e all
 
 - [x] AC delle story E14 in-scope soddisfatti (o esplicitamente slippati con nota)
 - [ ] Staging e (se disponibile) prod: HTTPS, health ready/live, no Mailpit — **gap VPS** ([S5-EXIT-GAPS.md](./S5-EXIT-GAPS.md))
-- [x] CI green su `develop` (lint, typecheck, test, build, audit policy) — workflow pronto; remote PR ancora da esercitare
+- [x] CI green su `develop` (lint, typecheck, test, build, audit policy) — PASS 2026-10-29; GitFlow senza PR (push diretto `develop`)
 - [x] Almeno un **DR restore drill** staging annotato — **locale PASS** 2026-10-29; ripetere su VPS staging
 - [x] Smoke Flusso A staging green pre-exit — **domain test PASS**; UI staging = gap VPS
 - [x] Runbook + release checklist presenti sotto `docs/ops/`

@@ -6,6 +6,7 @@ import { getQuoteRequest } from "@/application/rfq/rfq-service";
 import { canMutate } from "@/domain/rbac/can";
 import { RbacAction } from "@/domain/rbac/actions";
 import { formatMoney } from "@/i18n/format";
+import { tenantMessages } from "@/i18n/tenant-messages";
 
 export default async function RfqDetailPage({
   params,
@@ -17,6 +18,7 @@ export default async function RfqDetailPage({
   if (!canMutate(session.role, RbacAction.manageRfq)) redirect("/app/tickets");
 
   const { id } = await params;
+  const msg = await tenantMessages(session.tenantId);
   const request = await getQuoteRequest({
     tenantId: session.tenantId,
     role: session.role,
@@ -28,14 +30,14 @@ export default async function RfqDetailPage({
     <main className="mx-auto max-w-3xl px-4 py-10 sm:px-6">
       <p className="text-sm">
         <Link href="/app/rfq" className="text-[var(--primary)] hover:underline">
-          ← RFQ
+          {msg.rfq.back}
         </Link>
       </p>
       <h1 className="mt-2 font-[family-name:var(--font-sora)] text-2xl font-semibold text-[var(--primary)]">
         {request.title}
       </h1>
       <p className="mt-1 text-sm text-[var(--muted-foreground)]">
-        Stato: {request.status}
+        {msg.rfq.status}: {request.status}
         {request.store ? ` · ${request.store.name}` : ""}
         {request.ticketId ? (
           <>
@@ -53,7 +55,7 @@ export default async function RfqDetailPage({
         <p className="mt-4 whitespace-pre-wrap text-sm">{request.notes}</p>
       ) : null}
 
-      <h2 className="mt-8 text-sm font-semibold">Offerte</h2>
+      <h2 className="mt-8 text-sm font-semibold">{msg.rfq.offers}</h2>
       <ul className="mt-3 divide-y divide-[var(--border)]">
         {request.bids.map((b) => (
           <li
@@ -64,9 +66,7 @@ export default async function RfqDetailPage({
               <p className="font-medium">{b.vendor.name}</p>
               <p className="text-[var(--muted-foreground)]">
                 {b.status}
-                {b.amountEur != null
-                  ? ` · ${formatMoney(b.amountEur)}`
-                  : ""}
+                {b.amountEur != null ? ` · ${formatMoney(b.amountEur)}` : ""}
                 {b.note ? ` — ${b.note}` : ""}
               </p>
             </div>
@@ -81,13 +81,13 @@ export default async function RfqDetailPage({
                   type="submit"
                   className="rounded-[var(--radius)] border border-[var(--border)] px-3 py-1.5 text-xs font-medium hover:bg-[var(--muted)]"
                 >
-                  Aggiudica
+                  {msg.rfq.award}
                 </button>
               </form>
             ) : null}
             {request.awardedBidId === b.id ? (
               <span className="text-xs font-medium text-emerald-700">
-                Aggiudicata
+                {msg.rfq.awarded}
               </span>
             ) : null}
           </li>

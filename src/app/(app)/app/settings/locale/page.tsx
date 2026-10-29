@@ -4,7 +4,7 @@ import { getTenantI18nPrefs } from "@/application/tenant/i18n-prefs";
 import { updateTenantI18nAction } from "@/app/actions/tenant-i18n";
 import { canMutate } from "@/domain/rbac/can";
 import { RbacAction } from "@/domain/rbac/actions";
-import { t } from "@/i18n";
+import { tenantMessages } from "@/i18n/tenant-messages";
 
 export default async function LocaleSettingsPage() {
   const session = await auth();
@@ -14,16 +14,16 @@ export default async function LocaleSettingsPage() {
   }
 
   const prefs = await getTenantI18nPrefs(session.tenantId);
-  const msg = t(prefs.locale);
+  const msg = await tenantMessages(session.tenantId);
 
   return (
     <main className="mx-auto max-w-lg px-4 py-10 sm:px-6">
       <h1 className="font-[family-name:var(--font-sora)] text-2xl font-semibold text-[var(--primary)]">
-        Lingua e regione
+        {msg.localeSettings.title}
       </h1>
       <p className="mt-1 text-sm text-[var(--muted-foreground)]">
-        Preferenze tenant (catalogo UI {prefs.locale.toUpperCase()}, valuta{" "}
-        {prefs.currency}). Workspace: {msg.appName}.
+        {msg.localeSettings.hint} ({prefs.locale.toUpperCase()} /{" "}
+        {prefs.currency}). {msg.appName}.
       </p>
 
       <form
@@ -34,7 +34,7 @@ export default async function LocaleSettingsPage() {
         className="mt-8 space-y-4 rounded-[var(--radius)] border border-[var(--border)] p-4"
       >
         <label className="block text-sm">
-          Lingua UI
+          {msg.localeSettings.language}
           <select
             name="defaultLocale"
             defaultValue={prefs.locale}
@@ -45,7 +45,7 @@ export default async function LocaleSettingsPage() {
           </select>
         </label>
         <label className="block text-sm">
-          Valuta (ISO 4217)
+          {msg.localeSettings.currency}
           <input
             name="currency"
             defaultValue={prefs.currency}
@@ -54,7 +54,7 @@ export default async function LocaleSettingsPage() {
           />
         </label>
         <label className="block text-sm">
-          Locale date (BCP 47)
+          {msg.localeSettings.dateLocale}
           <input
             name="dateLocale"
             defaultValue={prefs.dateLocale}
@@ -65,7 +65,7 @@ export default async function LocaleSettingsPage() {
           type="submit"
           className="rounded-[var(--radius)] bg-[var(--primary)] px-4 py-2 text-sm font-medium text-[var(--primary-foreground)]"
         >
-          Salva
+          {msg.localeSettings.save}
         </button>
       </form>
     </main>

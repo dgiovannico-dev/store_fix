@@ -6,6 +6,7 @@ import {
   proposeQuoteAction,
   type QuoteActionState,
 } from "@/app/actions/ticket-quote";
+import { QuoteAmountFields } from "@/components/tickets/quote-amount-fields";
 
 const initial: QuoteActionState = {};
 
@@ -60,26 +61,7 @@ export function QuotePanel({
       {mode === "propose" ? (
         <form action={proposeAction} className="space-y-3">
           <input type="hidden" name="ticketId" value={ticketId} />
-          <label className="block text-sm font-medium">
-            Importo EUR *
-            <input
-              name="amountEur"
-              type="number"
-              step="0.01"
-              min="0.01"
-              required
-              defaultValue={estimatedCost ?? undefined}
-              className="mt-1 w-full rounded-[var(--radius)] border border-[var(--border)] px-3 py-2 text-base"
-            />
-          </label>
-          <label className="block text-sm font-medium">
-            Nota (opz.)
-            <input
-              name="note"
-              maxLength={500}
-              className="mt-1 w-full rounded-[var(--radius)] border border-[var(--border)] px-3 py-2 text-base"
-            />
-          </label>
+          <QuoteAmountFields defaultAmount={estimatedCost} />
           {proposeState.error ? (
             <p className="text-sm text-[var(--critical)]" role="alert">
               {proposeState.error}
