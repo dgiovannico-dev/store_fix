@@ -76,15 +76,16 @@ fi
 # Auto-approve attempt (fails harmlessly if same author / no permission)
 gh pr review "$PR" --approve -b "Auto-approved (GitFlow policy)" 2>/dev/null || true
 
-# Never delete long-lived GitFlow branches
-DELETE_ARGS=()
+# Delete only short-lived heads. Repo setting delete_branch_on_merge MUST stay
+# false — otherwise develop→main would wipe the develop ref.
+MERGE_FLAGS=(--merge)
 if [[ "$HEAD_REF" != "main" && "$HEAD_REF" != "develop" ]]; then
-  DELETE_ARGS=(--delete-branch)
+  MERGE_FLAGS+=(--delete-branch)
 fi
 
 # Prefer auto-merge (waits checks if required); fallback immediate merge
-if ! gh pr merge "$PR" --auto --merge "${DELETE_ARGS[@]}" 2>/dev/null; then
-  gh pr merge "$PR" --merge "${DELETE_ARGS[@]}"
+if ! gh pr merge "$PR" --auto "${MERGE_FLAGS[@]}" 2>/dev/null; then
+  gh pr merge "$PR" "${MERGE_FLAGS[@]}"
 fi
 
 echo "Merged PR #$PR → $BASE"

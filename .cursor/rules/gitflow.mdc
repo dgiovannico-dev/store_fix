@@ -73,7 +73,8 @@ gh pr merge --auto --merge --delete-branch
 
 - **Mai** `git push --force` su `main` o `develop`
 - Preferire **merge commit** (`gh pr merge --merge`) per storia GitFlow leggibile
-- Dopo merge: branch feature eliminato (`--delete-branch`)
+- Dopo merge: branch `feature/*` / `bugfix/*` eliminato (`--delete-branch`); **mai** cancellare `develop`/`main`
+- Repo GitHub: `allow_auto_merge=true`, **`delete_branch_on_merge=false`** (altrimenti PR develop→main cancella `develop`)
 
 ## Commit
 
