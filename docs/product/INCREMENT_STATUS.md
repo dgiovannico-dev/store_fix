@@ -16,11 +16,12 @@ MVP lab S1–S5 chiuso; **Fase 2 + debt in-repo chiusi**.
 Go prod resta bloccato su VPS ([`../ops/NEXT_VPS.md`](../ops/NEXT_VPS.md)).  
 **Niente Fase 3** finché non è in `BACKLOG.md`.
 
-## Cosa fare adesso (solo umano / esplicito)
+## Cosa fare adesso
 
-1. **VPS EU / staging** — [`../ops/NEXT_VPS.md`](../ops/NEXT_VPS.md)
-2. **Commit / PR → develop** — bozza [`.scratch/lab-freeze/PR_DRAFT.md`](../../.scratch/lab-freeze/PR_DRAFT.md) — **solo se richiesto** (`crea PR…` / `commit`)
-3. Opz. remoto: `STRESS_TICKETS=5000` su runner dedicata
+1. ~~**PR → develop**~~ — aperta [#1](https://github.com/dgiovannico-dev/store_fix/pull/1) — attendere **CI green**
+2. **VPS EU / staging** — checklist [`../ops/NEXT_VPS.md`](../ops/NEXT_VPS.md) (umano su host)
+3. **Fase 3 draft** — [`BACKLOG.md`](./BACKLOG.md) § Fase 3; sviluppo solo dopo F3-01 / GO VPS
+4. Opz. remoto: `STRESS_TICKETS=5000` su runner dedicata
 
 ## Verify locale
 

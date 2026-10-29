@@ -5,9 +5,10 @@
 > **Gate codice:** approvazione umana esplicita + lavoro su branch `develop` / `feature/*` (non commit diretti su `main`).  
 > **Vincolo hard:** stack **100% open source / self-host**, nessun componente SaaS a pagamento. Dettaglio: [`STACK.md`](./STACK.md).  
 > **RBAC:** [`RBAC.md`](./RBAC.md).  
-> **Scope:** MVP (Fase 1) + production-ready (**E14 / S5**). **Fase 2 Done** (F2-01…F2-09, 2026-10-29).  
+> **Scope:** MVP (Fase 1) + production-ready (**E14 / S5**). **Fase 2 Done** (F2-01…F2-09, 2026-10-29). **Fase 3 = draft** (sotto; gate VPS).  
 > **Lingua UI MVP:** italiano. Mercato: Italia / EUR.  
-> **Go prod:** NO-GO finché VPS — [`sprints/S5-EXIT-GAPS.md`](./sprints/S5-EXIT-GAPS.md) · [`../ops/NEXT_VPS.md`](../ops/NEXT_VPS.md).
+> **Go prod:** NO-GO finché VPS — [`sprints/S5-EXIT-GAPS.md`](./sprints/S5-EXIT-GAPS.md) · [`../ops/NEXT_VPS.md`](../ops/NEXT_VPS.md).  
+> **PR integrazione:** [#1](https://github.com/dgiovannico-dev/store_fix/pull/1) → `develop`.
 
 ---
 
@@ -588,6 +589,23 @@ E00 Platform OSS (Compose, SeaweedFS, Mailpit, pg-boss, Prisma schema)
 | F2-07 | AI assist (classify / suggest vendor / summarize) | Done 2026-10-29 — categoria + vendor (API+UI ops panel); human-confirm select; summarize stretch |
 | F2-08 | Email-to-ticket SMTP inbound (ex US-E11-02) | Done 2026-10-29 — webhook `/api/inbound/email` + dedup Message-ID (IMAP poll opz. futuro) |
 | F2-09 | Audit config membership/ruoli (ex US-E10-08 se droppata) | Done 2026-10-29 — `ConfigAuditEvent` + `/app/settings/audit` |
+
+---
+
+## Fase 3 (draft) — post-pilota / post-VPS
+
+> **Gate:** nessuno sviluppo F3-02…F3-08 finché **F3-01** (Go VPS / exit S5) non è verde. **OSS-only**. WhatsApp Business Cloud API a pagamento resta **fuori scope**.
+
+| ID | Titolo | Priorità | AC (1 riga) | Dip. VPS GO |
+|----|--------|----------|-------------|-------------|
+| **F3-01** | Exit pilota produzione (chiusura gap E14/S5) | **P0** | HTTPS ACME, staging parity, migrate-on-deploy, DR remoto, smoke Flusso A UI, CI green `develop`, tag `v0.1.0` dry-run → **GO pilota** | **Sì** (prerequisito) |
+| **F3-02** | Observability GlitchTip (`observe`) staging/prod | **P1** | Profile Compose `observe` su VPS **oppure** policy log-only firmata post-review | **Sì** |
+| **F3-03** | AI riassunto note ticket (stretch F2-07) | **P1** | Riassunto Ollama su note/eventi; persistenza solo dopo conferma umana | No (Ollama opz.) |
+| **F3-04** | Email-to-ticket IMAP poll (stretch F2-08) | **P1** | Worker pg-boss IMAP UNSEEN → `processInboundEmail`; dedup Message-ID; no SaaS inbound | **Sì** |
+| **F3-05** | PM ricorrente RRULE (evoluzione F2-04) | **P1** | RRULE genera `PlannedMaintenanceEvent` + reminder pg-boss; calendario mostra serie | No |
+| **F3-06** | Multi-lingua / multi-regione light | **P2** | `defaultLocale` IT+EN; date/valuta configurabili; niente rewrite i18n big-bang | No |
+| **F3-07** | RFQ vendor interno (no marketplace) | **P2** | Ops richiede preventivi a N vendor del tenant; no escrow/billing/directory pubblica | No |
+| **F3-08** | Push store (ntfy / webhook self-host) | **P2** | Eventi ticket → ntfy o webhook; **vietato** WA Cloud API | **Sì** |
 
 ---
 

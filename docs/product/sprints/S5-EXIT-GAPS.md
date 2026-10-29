@@ -28,7 +28,7 @@
 | DR drill **su staging** | US-E14-09 | ripetere restore scratch remoto |
 | Smoke Flusso A **UI staging** | US-E14-12 | checklist manuale post-deploy |
 | Migrate-on-deploy su **staging VPS** | US-E14-05 | `deploy-migrate.sh` **prod** (container `app`) end-to-end — lab dry-run già PASS in tabella locale |
-| CI green su remote `develop` | US-E14-04 | push/PR (workflow + gate p95 presenti; serve remote) |
+| CI green su remote `develop` | US-E14-04 | PR [#1](https://github.com/dgiovannico-dev/store_fix/pull/1) aperta verso `develop`; workflow + gate p95 presenti — **gap fino a CI green** |
 | Tag `v0.1.0` dry-run | US-E14-14 | dopo staging green |
 
 ## Slip espliciti
