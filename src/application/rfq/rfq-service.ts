@@ -57,7 +57,7 @@ export async function createQuoteRequest(input: {
 
   const parsed = createSchema.safeParse(input.data);
   if (!parsed.success) {
-    return { ok: false as const, message: "Dati RFQ non validi", code: "invalidRfqData" };
+    return { ok: false as const, code: "invalidRfqData" };
   }
 
   let storeId: string | null = null;
@@ -69,7 +69,7 @@ export async function createQuoteRequest(input: {
         deletedAt: null,
       },
     });
-    if (!ticket) return { ok: false as const, message: "Ticket non trovato", code: "ticketNotFound" };
+    if (!ticket) return { ok: false as const, code: "ticketNotFound" };
     storeId = ticket.storeId;
   }
 
@@ -80,7 +80,7 @@ export async function createQuoteRequest(input: {
     },
   });
   if (vendors.length !== parsed.data.vendorIds.length) {
-    return { ok: false as const, message: "Uno o più fornitori non validi", code: "vendorsInvalid" };
+    return { ok: false as const, code: "vendorsInvalid" };
   }
 
   const uniqueIds = [...new Set(parsed.data.vendorIds)];
@@ -175,9 +175,9 @@ export async function getQuoteRequest(input: {
   if (input.role === Role.vendor) {
     assertCan(input.role, RbacAction.respondRfq);
     const vendorId = input.membership?.vendorId;
-    if (!vendorId) throw new ForbiddenError("Membership vendor richiesta", "membershipVendorRequired");
+    if (!vendorId) throw new ForbiddenError(undefined, "membershipVendorRequired");
     const own = request.bids.filter((b) => b.vendorId === vendorId);
-    if (own.length === 0) throw new ForbiddenError("RFQ non assegnata", "rfqNotAssigned");
+    if (own.length === 0) throw new ForbiddenError(undefined, "rfqNotAssigned");
     return { ...request, bids: own };
   }
 
@@ -193,7 +193,7 @@ export async function listVendorQuoteBids(input: {
   requireTenantId(input.tenantId);
   assertCan(input.role, RbacAction.respondRfq);
   const vendorId = input.membership.vendorId;
-  if (!vendorId) throw new ForbiddenError("Membership vendor richiesta", "membershipVendorRequired");
+  if (!vendorId) throw new ForbiddenError(undefined, "membershipVendorRequired");
 
   return prisma.quoteBid.findMany({
     where: {
@@ -229,20 +229,22 @@ export async function submitQuoteBid(input: {
     assertCan(input.role, RbacAction.respondRfq);
   } catch (e) {
     if (e instanceof ForbiddenError) {
-      return { ok: false as const, message: e.message, code: e.code };
+      return { ok: false as const, code: e.code ?? "forbidden" };
     }
     throw e;
   }
   const vendorId = input.membership.vendorId;
-  if (!vendorId) return { ok: false as const, message: "Membership vendor richiesta", code: "membershipVendorRequired" };
+  if (!vendorId) {
+    return { ok: false as const, code: "membershipVendorRequired" };
+  }
 
   const parsed = bidSchema.safeParse(input.data);
   if (!parsed.success) {
-    return { ok: false as const, message: "Importo non valido", code: "amountInvalid" };
+    return { ok: false as const, code: "amountInvalid" };
   }
   const amount = parseQuoteAmount(parsed.data.amountEur);
   if (amount == null) {
-    return { ok: false as const, message: "Importo non valido", code: "amountInvalid" };
+    return { ok: false as const, code: "amountInvalid" };
   }
 
   const bid = await prisma.quoteBid.findFirst({
@@ -253,7 +255,7 @@ export async function submitQuoteBid(input: {
     },
     include: { quoteRequest: true },
   });
-  if (!bid) return { ok: false as const, message: "Invito non trovato", code: "rfqInviteNotFound" };
+  if (!bid) return { ok: false as const, code: "rfqInviteNotFound" };
 
   if (
     !canSubmitRfqBid({
@@ -261,7 +263,7 @@ export async function submitQuoteBid(input: {
       bidStatus: bid.status,
     })
   ) {
-    return { ok: false as const, message: "RFQ non accettabile", code: "rfqNotAcceptable" };
+    return { ok: false as const, code: "rfqNotAcceptable" };
   }
 
   const updated = await prisma.quoteBid.update({
@@ -294,10 +296,10 @@ export async function awardQuoteBid(input: {
     },
     include: { bids: true },
   });
-  if (!request) return { ok: false as const, message: "RFQ non trovata", code: "rfqNotFound" };
+  if (!request) return { ok: false as const, code: "rfqNotFound" };
 
   const bid = request.bids.find((b) => b.id === input.bidId);
-  if (!bid) return { ok: false as const, message: "Offerta non trovata", code: "bidNotFound" };
+  if (!bid) return { ok: false as const, code: "bidNotFound" };
 
   if (
     !canAwardRfqBid({
@@ -306,7 +308,7 @@ export async function awardQuoteBid(input: {
       amountEur: bid.amountEur,
     })
   ) {
-    return { ok: false as const, message: "Offerta non aggiudicabile", code: "bidNotAwardable" };
+    return { ok: false as const, code: "bidNotAwardable" };
   }
 
   const amount = Number(bid.amountEur);
