@@ -4,7 +4,8 @@
 **Chiusura:** tutte le checkbox sotto + [`RELEASE_CHECKLIST.md`](./RELEASE_CHECKLIST.md) → aggiornare exit gaps a **GO** · tag `v0.1.0` ([`RELEASE.md`](./RELEASE.md)).
 
 > Provisioning **manuale** sull’host; nessuno script di bootstrap automatico remoto.  
-> Preflight locale (repo/Docker): `npm run vps:preflight` → [`../../scripts/vps-preflight.sh`](../../scripts/vps-preflight.sh).
+> Preflight locale: `npm run vps:preflight` · Wizard guidato: `npm run vps:wizard`  
+> ([`../../scripts/vps-preflight.sh`](../../scripts/vps-preflight.sh), [`../../scripts/vps-setup-wizard.sh`](../../scripts/vps-setup-wizard.sh)).
 
 ## 0 — Prerequisito repo / CI
 
