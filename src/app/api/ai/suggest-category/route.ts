@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { suggestTicketCategory } from "@/application/ai/suggest-ticket-category";
+import { checkRateLimitPolicyAsync } from "@/infrastructure/rate-limit-async";
 import { RATE_LIMIT } from "@/infrastructure/rate-limit-policies";
-import { checkRateLimitPolicy } from "@/infrastructure/rate-limit";
 import { tooManyRequestsFromLimit } from "@/infrastructure/rate-limit-response";
 import { logJson } from "@/infrastructure/log";
 import { actionError } from "@/i18n/action-errors";
@@ -16,7 +16,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: await actionError("unauthorized") }, { status: 401 });
   }
 
-  const limit = checkRateLimitPolicy(
+  const limit = await checkRateLimitPolicyAsync(
     `ai-suggest:${session.tenantId}:${session.user.id}`,
     RATE_LIMIT.aiSuggest,
   );
