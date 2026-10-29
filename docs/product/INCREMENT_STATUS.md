@@ -19,6 +19,7 @@ Autopilot continua su debt / hardening / gap codice (es. job `gdpr.purge` reale)
 ### Prove locali
 
 - `npm run verify:local` · `npm audit` → 0 · `npm run build` OK
+- `npm run smoke:http` PASS (2026-10-29) · **anche in CI** post-`next start`
 - `compose:prod|lab|observe:config` OK · `vps:preflight` OK (preflight ≠ deploy)
 
 ## Quando riprenderà il deploy (umano)
