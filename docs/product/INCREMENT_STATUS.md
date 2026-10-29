@@ -1,7 +1,7 @@
 # Increment status — FacilityFlow Retail
 
 **Aggiornato:** 2026-10-29 — **dev-only** (nessun deploy VPS); F3-01 resta tracking umano  
-Hardening recente in-repo: `domainErrors` code-first EN; security headers (COOP/CORP/XPCDP/Permissions-Policy/OAC); HSTS Caddy gate; font locali CI-stable.
+Hardening recente in-repo: `domainErrors` code-first EN; security headers (COOP/CORP/XPCDP/Permissions-Policy/OAC/`Cache-Control`/`Clear-Site-Data`/CSP object+base+upgrade); CSRF `/logout`; HSTS Caddy gate; font locali CI-stable.
 
 | Sprint / fase | Stato | Note |
 |---------------|-------|------|
