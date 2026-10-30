@@ -58,7 +58,7 @@ Build Docker `app`/`worker`: context snello via [`.dockerignore`](../../.dockeri
 `mailpit` image pin `axllent/mailpit:v1.32.0@sha256:0790692be935ea4420d085694f7985b1f692ca6a8771ab0e0bd8ba75ac180498` + healthcheck `/mailpit readyz` ([docs](https://mailpit.axllent.org/docs/integration/healthcheck/)).  
 Profile `full`: `app` attende postgres + seaweed + mailpit healthy; `worker` attende postgres + mailpit.  
 Profile `observe`: Valkey `8.1.11-alpine` + `valkey-cli ping`; GlitchTip attende valkey healthy.  
-Image pin (lab+prod): `postgres:16.15-alpine@sha256:0cefaabd882e42bcb2a2f3dc56d3ce4770560ba62fd7f197f1a2e008fd5731ab` (SoR + GlitchTip DB); prod Caddy `caddy:2.9.1-alpine@sha256:b4e3952384eb9524a887633ce65c752dd7c71314d2c2acf98cd5c715aaa534f0`; SeaweedFS `chrislusf/seaweedfs:3.80@sha256:1055999e…` (tag+index digest).
+Image pin (lab+prod): `postgres:16.15-alpine@sha256:0cefaabd882e42bcb2a2f3dc56d3ce4770560ba62fd7f197f1a2e008fd5731ab` (SoR + GlitchTip DB); prod Caddy `caddy:2.11.7-alpine@sha256:eb4d35b7452d1ab6171fbdbe8d9275b2301dad6dad92115d91e19fb9b24d510f`; SeaweedFS `chrislusf/seaweedfs:3.80@sha256:1055999e…` (tag+index digest).
 
 **Dependabot** ([`.github/dependabot.yml`](../../.github/dependabot.yml)): weekly `docker` + `docker-compose` + `npm` + `github-actions` → PRs su `develop`. Aggiorna `tag@sha256` insieme. Gate test: digests postgres/seaweed/valkey allineati lab↔prod (`compose.prod.yaml` può richiedere sync manuale se Dependabot tocca solo `docker-compose.yml`).
 

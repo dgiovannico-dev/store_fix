@@ -11,7 +11,7 @@ Badge (default branch `main`):
 - `lint`, `typecheck`, `test` (Postgres service)
 - `secrets:scan`
 - `compose:prod|lab|observe:config` (YAML interpolate, no stack up)
-- `caddy:validate` (`deploy/Caddyfile` via `caddy:2.9.1-alpine@sha256:b4e3952384eb9524a887633ce65c752dd7c71314d2c2acf98cd5c715aaa534f0`, no stack up) — US-E14-01
+- `caddy:validate` (`deploy/Caddyfile` via `caddy:2.11.7-alpine@sha256:eb4d35b7452d1ab6171fbdbe8d9275b2301dad6dad92115d91e19fb9b24d510f`, no stack up) — US-E14-01
 - `build` (`next build`) con cache npm
 - `npm audit --audit-level=high` (**fail hard**; waiver: [`AUDIT.md`](./AUDIT.md))
 - Job parallelo **`osv`**: `scripts/osv-scan.sh` su `package-lock.json` (T5.21 / US-E14-10)
