@@ -24,7 +24,7 @@ Badge (default branch `main`):
 
 Default: **GitHub-hosted** free tier. Self-hosted OK se OS/agent allineati; **nessun** secret di produzione nelle PR.
 
-Env test: `DATABASE_URL` verso service `postgres:16` del job; `AUTH_SECRET` fittizio solo CI.
+Env test: `DATABASE_URL` verso service `postgres:16.15-alpine`; Node **22.23.4** (`setup-node` + `.nvmrc`, allineato a Dockerfiles); `AUTH_SECRET` fittizio solo CI.
 
 ## Branch protection consigliata (lab / pilota)
 
