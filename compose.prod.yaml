@@ -12,7 +12,7 @@ x-logging: &default-logging
 
 services:
   postgres:
-    image: postgres:16.15-alpine@sha256:0cefaabd882e42bcb2a2f3dc56d3ce4770560ba62fd7f197f1a2e008fd5731ab
+    image: postgres:18.6-alpine@sha256:10a5c69a83035ab5239f5620d708520e8b28f5aa1f2b20143e6024532edadfb5
     restart: unless-stopped
     logging: *default-logging
     cpus: 1.0
@@ -175,7 +175,7 @@ services:
 
   # F3-02 GlitchTip — docker compose -f compose.prod.yaml --profile observe --env-file .env.prod up -d
   glitchtip-db:
-    image: postgres:16.15-alpine@sha256:0cefaabd882e42bcb2a2f3dc56d3ce4770560ba62fd7f197f1a2e008fd5731ab
+    image: postgres:18.6-alpine@sha256:10a5c69a83035ab5239f5620d708520e8b28f5aa1f2b20143e6024532edadfb5
     profiles: ["observe"]
     restart: unless-stopped
     logging: *default-logging
