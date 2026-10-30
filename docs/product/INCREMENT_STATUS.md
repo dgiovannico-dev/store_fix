@@ -1,7 +1,7 @@
 # Increment status — FacilityFlow Retail
 
 **Aggiornato:** 2026-10-29 — **dev-only** (nessun deploy VPS); F3-01 resta tracking umano  
-Hardening recente in-repo: Dependabot (npm/docker/compose/actions → develop); Compose/CI digests; Node **22.23.4**; ADR-0009.
+Hardening recente in-repo: Dependabot weekly; Node Dockerfile digest pin; Compose/CI digests; ADR-0009.
 
 | Sprint / fase | Stato | Note |
 |---------------|-------|------|
