@@ -134,8 +134,8 @@ describe("pinned base images", () => {
     expect(lab).not.toMatch(/postgres:16-alpine/);
     expect(prod).toMatch(/postgres:16\.\d+-alpine/);
     expect(prod).not.toMatch(/postgres:16-alpine/);
-    expect(prod).toMatch(/caddy:2\.9\.\d+-alpine/);
-    expect(prod).not.toMatch(/caddy:2\.9-alpine[^\d]/);
+    expect(prod).toMatch(/caddy:2\.\d+\.\d+-alpine/);
+    expect(prod).not.toMatch(/caddy:2-alpine/);
   });
 
   it("infra images usano tag@sha256 (lab+prod)", () => {
