@@ -9,7 +9,7 @@
 |-------|-------|------|
 | `compose.prod.yaml config` | PASS | env dummy + `cpus`/`mem_limit` |
 | `compose.lab.yaml` merge | PASS | porte 8080/8443 |
-| Caddyfile `caddy validate` | PASS | image `caddy:2.9.1-alpine` (`npm run caddy:validate` / CI) |
+| Caddyfile `caddy validate` | PASS | image `caddy:2.9.1-alpine@sha256:b4e3952384eb9524a887633ce65c752dd7c71314d2c2acf98cd5c715aaa534f0` (`npm run caddy:validate` / CI) |
 | `/api/health/live` + `ready` | PASS | ready `db:up` |
 | Security headers | PASS | CSP (`script-src-attr`/`media-src`/`frame-src`…)/XFO/nosniff/COOP/CORP/XPCDP/Permissions-Policy (hid/serial/bluetooth/attribution…)/OAC/`Cache-Control`/`X-DNS-Prefetch-Control`/`X-Robots-Tag` + `/robots.txt`; logout CSRF+RL+`Clear-Site-Data`; API RL exports/attachments/notifications/form-options (`RATE_LIMITS.md`); **HSTS** Caddyfile; HTTPS+HSTS live = gap VPS |
 | p95 lista HQ seed | PASS | ≪ 300 ms (`npm run perf:hq-list`); **anche in CI** PR/`develop`; stress 50×100 → p95 ~4 ms; **50×5000** locale 2026-10-29 → p95 **~6.4 ms** (`stress-retail`) |

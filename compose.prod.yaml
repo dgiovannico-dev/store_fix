@@ -12,7 +12,7 @@ x-logging: &default-logging
 
 services:
   postgres:
-    image: postgres:16.15-alpine
+    image: postgres:16.15-alpine@sha256:0cefaabd882e42bcb2a2f3dc56d3ce4770560ba62fd7f197f1a2e008fd5731ab
     restart: unless-stopped
     logging: *default-logging
     cpus: 1.0
@@ -175,7 +175,7 @@ services:
 
   # F3-02 GlitchTip — docker compose -f compose.prod.yaml --profile observe --env-file .env.prod up -d
   glitchtip-db:
-    image: postgres:16.15-alpine
+    image: postgres:16.15-alpine@sha256:0cefaabd882e42bcb2a2f3dc56d3ce4770560ba62fd7f197f1a2e008fd5731ab
     profiles: ["observe"]
     restart: unless-stopped
     logging: *default-logging
@@ -192,7 +192,7 @@ services:
       retries: 10
 
   glitchtip-valkey:
-    image: valkey/valkey:8.1.11-alpine
+    image: valkey/valkey:8.1.11-alpine@sha256:2602ace2be6569bc2bbb06f873776516ab9089821525be34f4305c67eb9db02a
     profiles: ["observe"]
     restart: unless-stopped
     logging: *default-logging
@@ -244,7 +244,7 @@ services:
       EMAIL_URL: ${GLITCHTIP_EMAIL_URL:-consolemail://}
 
   caddy:
-    image: caddy:2.9.1-alpine
+    image: caddy:2.9.1-alpine@sha256:b4e3952384eb9524a887633ce65c752dd7c71314d2c2acf98cd5c715aaa534f0
     restart: unless-stopped
     logging: *default-logging
     security_opt:
