@@ -25,5 +25,19 @@ describe("Dockerfile non-root USER", () => {
       expect(raw).not.toMatch(/FROM node:22-alpine/);
     }
   });
+
+  it("CI e .nvmrc allineati al pin Dockerfile", () => {
+    const nvm = readFileSync(path.join(process.cwd(), ".nvmrc"), "utf8").trim();
+    const ci = readFileSync(
+      path.join(process.cwd(), ".github/workflows/ci.yml"),
+      "utf8",
+    );
+    const df = readFileSync(path.join(process.cwd(), "Dockerfile"), "utf8");
+    const m = df.match(/FROM node:(22\.\d+\.\d+)-alpine/);
+    expect(m?.[1]).toBeTruthy();
+    expect(nvm).toBe(m![1]);
+    expect(ci).toMatch(new RegExp(`node-version:\\s*"${m![1]}"`));
+  });
 });
+
 
