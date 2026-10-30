@@ -11,7 +11,7 @@ Badge (default branch `main`):
 - `lint`, `typecheck`, `test` (Postgres service)
 - `secrets:scan`
 - `compose:prod|lab|observe:config` (YAML interpolate, no stack up)
-- `caddy:validate` (`deploy/Caddyfile` via `caddy:2.9.1-alpine`, no stack up) — US-E14-01
+- `caddy:validate` (`deploy/Caddyfile` via `caddy:2.9.1-alpine@sha256:b4e3952384eb9524a887633ce65c752dd7c71314d2c2acf98cd5c715aaa534f0`, no stack up) — US-E14-01
 - `build` (`next build`) con cache npm
 - `npm audit --audit-level=high` (**fail hard**; waiver: [`AUDIT.md`](./AUDIT.md))
 - Job parallelo **`osv`**: `scripts/osv-scan.sh` su `package-lock.json` (T5.21 / US-E14-10)
@@ -24,7 +24,7 @@ Badge (default branch `main`):
 
 Default: **GitHub-hosted** free tier. Self-hosted OK se OS/agent allineati; **nessun** secret di produzione nelle PR.
 
-Env test: `DATABASE_URL` verso service `postgres:16.15-alpine`; Node **22.23.4** (`setup-node` + `.nvmrc`, allineato a Dockerfiles); `AUTH_SECRET` fittizio solo CI.
+Env test: `DATABASE_URL` verso service `postgres:16.15-alpine@sha256:0cefaabd882e42bcb2a2f3dc56d3ce4770560ba62fd7f197f1a2e008fd5731ab`; Node **22.23.4** (`setup-node` + `.nvmrc`, allineato a Dockerfiles); `AUTH_SECRET` fittizio solo CI.
 
 ## Branch protection consigliata (lab / pilota)
 

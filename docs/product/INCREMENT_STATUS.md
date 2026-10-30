@@ -1,7 +1,7 @@
 # Increment status — FacilityFlow Retail
 
 **Aggiornato:** 2026-10-29 — **dev-only** (nessun deploy VPS); F3-01 resta tracking umano  
-Hardening recente in-repo: SeaweedFS `3.80@sha256:…` digest pin; Node **22.23.4**; worker Seaweed/S3; ADR-0009; postgres/caddy/Mailpit/Valkey pins.
+Hardening recente in-repo: Compose/CI infra digests (postgres/caddy/mailpit/valkey/seaweed); Node **22.23.4**; worker Seaweed/S3; ADR-0009.
 
 | Sprint / fase | Stato | Note |
 |---------------|-------|------|
