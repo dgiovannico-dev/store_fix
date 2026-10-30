@@ -44,7 +44,7 @@ Almeno 1 restore drill per sprint release (S4 exit / E14 prep): annotare sotto.
 
 | Date | Environment | Dump | Target DB | Prod touched? | Esito | Note |
 |------|-------------|------|-----------|---------------|-------|------|
-| 2026-10-29 | Local Compose (`postgres:16-alpine`, DB `facilityflow`) | `npm run db:backup` → `backups/ff-20261029-002050.dump` (`-Fc`) | `facilityflow_restore_test` | **No** | **PASS** | `SELECT COUNT(*) FROM "Ticket"` → 15 (seed pilota). Host `pg_restore -l` può fallire per versione client; usare restore **nel** container. |
+| 2026-10-29 | Local Compose (`postgres:16-alpine` then; now `16.15-alpine@sha256:…`, DB `facilityflow`) | `npm run db:backup` → `backups/ff-20261029-002050.dump` (`-Fc`) | `facilityflow_restore_test` | **No** | **PASS** | `SELECT COUNT(*) FROM "Ticket"` → 15 (seed pilota). Host `pg_restore -l` può fallire per versione client; usare restore **nel** container. |
 | 2026-10-29 | Local Compose | `ff-20261029-010020.dump` — verify list via `pg_restore` **in container** (`pg-backup.sh`) | — | **No** | **PASS** | Fix mismatch Dump 1.15 vs host client; `deploy:migrate:lab` OK |
 
 **Comando sicuro (solo scratch DB):**
@@ -61,3 +61,5 @@ docker compose exec -T postgres dropdb -U facilityflow facilityflow_restore_test
 ```
 
 **Non** eseguire `pg_restore` contro `-d facilityflow` durante il drill.
+
+> **Image pin corrente (lab/prod):** `postgres:16.15-alpine@sha256:0cefaabd…` — vedi [`COMPOSE.md`](./COMPOSE.md).
