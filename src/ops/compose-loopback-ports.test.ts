@@ -161,7 +161,47 @@ describe("pinned base images", () => {
       new RegExp(`caddy:2\\.\\d+\\.\\d+-alpine${digest.source}`),
     );
   });
+
+  it("lab e prod condividono digest per immagini condivise", () => {
+    const lab = readFileSync(
+      path.join(process.cwd(), "docker-compose.yml"),
+      "utf8",
+    );
+    const prod = readFileSync(
+      path.join(process.cwd(), "compose.prod.yaml"),
+      "utf8",
+    );
+    const pin = (raw: string, re: RegExp) => {
+      const m = raw.match(re);
+      expect(m?.[0]).toBeTruthy();
+      return m![0];
+    };
+    expect(
+      pin(lab, /postgres:16\.\d+-alpine@sha256:[a-f0-9]{64}/),
+    ).toBe(pin(prod, /postgres:16\.\d+-alpine@sha256:[a-f0-9]{64}/));
+    expect(
+      pin(lab, /chrislusf\/seaweedfs:3\.\d+@sha256:[a-f0-9]{64}/),
+    ).toBe(pin(prod, /chrislusf\/seaweedfs:3\.\d+@sha256:[a-f0-9]{64}/));
+    expect(
+      pin(lab, /valkey\/valkey:8\.\d+\.\d+-alpine@sha256:[a-f0-9]{64}/),
+    ).toBe(pin(prod, /valkey\/valkey:8\.\d+\.\d+-alpine@sha256:[a-f0-9]{64}/));
+  });
 });
+
+describe("dependabot supply-chain", () => {
+  it("abilita npm + docker + docker-compose + github-actions su develop", () => {
+    const raw = readFileSync(
+      path.join(process.cwd(), ".github/dependabot.yml"),
+      "utf8",
+    );
+    expect(raw).toMatch(/package-ecosystem:\s*npm/);
+    expect(raw).toMatch(/package-ecosystem:\s*docker\b/);
+    expect(raw).toMatch(/package-ecosystem:\s*docker-compose/);
+    expect(raw).toMatch(/package-ecosystem:\s*github-actions/);
+    expect(raw).toMatch(/target-branch:\s*develop/);
+  });
+});
+
 
 
 

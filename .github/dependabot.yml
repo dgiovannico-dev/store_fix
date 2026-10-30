@@ -1,0 +1,61 @@
+# Dependabot — keep npm / Docker / Compose / Actions current.
+# Image refs use tag@sha256; Dependabot refreshes tag + digest together.
+# PRs target develop (GitFlow integration). Autopilot merges after verify.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    target-branch: develop
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    labels:
+      - dependencies
+    commit-message:
+      prefix: chore(deps)
+    groups:
+      npm-patch:
+        update-types:
+          - patch
+
+  - package-ecosystem: docker
+    directory: /
+    target-branch: develop
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    labels:
+      - dependencies
+      - docker
+    commit-message:
+      prefix: chore(docker)
+
+  # Scans docker-compose.yml / compose.yaml in directory (Compose v2/v3 GA).
+  # compose.prod.yaml is kept in sync via ops gate tests (same digests).
+  - package-ecosystem: docker-compose
+    directory: /
+    target-branch: develop
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    labels:
+      - dependencies
+      - docker
+    commit-message:
+      prefix: chore(compose)
+
+  - package-ecosystem: github-actions
+    directory: /
+    target-branch: develop
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    labels:
+      - dependencies
+      - github-actions
+    commit-message:
+      prefix: chore(ci)
