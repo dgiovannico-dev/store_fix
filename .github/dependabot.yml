@@ -1,6 +1,7 @@
 # Dependabot — keep npm / Docker / Compose / Actions current.
 # Image refs use tag@sha256; Dependabot refreshes tag + digest together.
 # PRs target develop (GitFlow integration). Autopilot merges after verify.
+# Majors ignored: Node 22, Postgres 16, Next 15, Prisma 6, Actions v5 — bump via explicit PR.
 version: 2
 updates:
   - package-ecosystem: npm
@@ -14,6 +15,10 @@ updates:
       - dependencies
     commit-message:
       prefix: chore(deps)
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - version-update:semver-major
     groups:
       npm-patch:
         update-types:
@@ -31,6 +36,10 @@ updates:
       - docker
     commit-message:
       prefix: chore(docker)
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - version-update:semver-major
 
   # Scans docker-compose.yml / compose.yaml in directory (Compose v2/v3 GA).
   # compose.prod.yaml is kept in sync via ops gate tests (same digests).
@@ -46,6 +55,10 @@ updates:
       - docker
     commit-message:
       prefix: chore(compose)
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - version-update:semver-major
 
   - package-ecosystem: github-actions
     directory: /
@@ -59,3 +72,7 @@ updates:
       - github-actions
     commit-message:
       prefix: chore(ci)
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - version-update:semver-major

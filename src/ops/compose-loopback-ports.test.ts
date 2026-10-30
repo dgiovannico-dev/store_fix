@@ -199,6 +199,7 @@ describe("dependabot supply-chain", () => {
     expect(raw).toMatch(/package-ecosystem:\s*docker-compose/);
     expect(raw).toMatch(/package-ecosystem:\s*github-actions/);
     expect(raw).toMatch(/target-branch:\s*develop/);
+    expect(raw).toMatch(/version-update:semver-major/);
   });
 });
 
