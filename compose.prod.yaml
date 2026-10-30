@@ -12,7 +12,7 @@ x-logging: &default-logging
 
 services:
   postgres:
-    image: postgres:16-alpine
+    image: postgres:16.15-alpine
     restart: unless-stopped
     logging: *default-logging
     cpus: 1.0
@@ -173,7 +173,7 @@ services:
 
   # F3-02 GlitchTip — docker compose -f compose.prod.yaml --profile observe --env-file .env.prod up -d
   glitchtip-db:
-    image: postgres:16-alpine
+    image: postgres:16.15-alpine
     profiles: ["observe"]
     restart: unless-stopped
     logging: *default-logging
@@ -242,7 +242,7 @@ services:
       EMAIL_URL: ${GLITCHTIP_EMAIL_URL:-consolemail://}
 
   caddy:
-    image: caddy:2.9-alpine
+    image: caddy:2.9.1-alpine
     restart: unless-stopped
     logging: *default-logging
     security_opt:
