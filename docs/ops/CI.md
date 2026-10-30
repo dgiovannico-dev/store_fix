@@ -27,7 +27,8 @@ Default: **GitHub-hosted** free tier. Self-hosted OK se OS/agent allineati; **ne
 Env test: `DATABASE_URL` verso service `postgres:16.15-alpine@sha256:0cefaabd882e42bcb2a2f3dc56d3ce4770560ba62fd7f197f1a2e008fd5731ab`; Node **22.23.4** (`setup-node` + `.nvmrc`, allineato a Dockerfiles); `AUTH_SECRET` fittizio solo CI.
 
 Supply-chain: Dependabot weekly su `develop` (npm patch group, Docker/Compose digests, Actions) — vedi [`.github/dependabot.yml`](../../.github/dependabot.yml).  
-Actions pin: `actions/checkout` / `setup-node` by **commit SHA** + comment versione (`ci.yml`); Dependabot `github-actions` aggiorna SHA.
+**No semver-major** auto (Node 22 / PG 16 / Next 15 / Prisma 6 / Actions v5): major solo con PR esplicita.  
+Actions pin: `actions/checkout` / `setup-node` by **commit SHA** + comment versione (`ci.yml`); Dependabot aggiorna SHA (patch/minor).
 
 ## Branch protection consigliata (lab / pilota)
 

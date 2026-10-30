@@ -1,7 +1,7 @@
 # Increment status — FacilityFlow Retail
 
 **Aggiornato:** 2026-10-29 — **dev-only** (nessun deploy VPS); F3-01 resta tracking umano  
-Hardening recente in-repo: CI Actions SHA pin; Dependabot weekly; Node/Compose digests; ADR-0009.
+Hardening recente in-repo: Dependabot ignore majors; CI Actions SHA pin; digests; ADR-0009.
 
 | Sprint / fase | Stato | Note |
 |---------------|-------|------|
