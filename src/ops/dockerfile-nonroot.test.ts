@@ -17,4 +17,13 @@ describe("Dockerfile non-root USER", () => {
     expect(raw).toMatch(/USER\s+worker/);
     expect(raw).toMatch(/adduser --system --uid 1001 worker/);
   });
+
+  it("pinna node a patch tag 22.x.y-alpine (no floating 22-alpine)", () => {
+    for (const file of ["Dockerfile", "Dockerfile.worker"]) {
+      const raw = readFileSync(path.join(process.cwd(), file), "utf8");
+      expect(raw).toMatch(/FROM node:22\.\d+\.\d+-alpine/);
+      expect(raw).not.toMatch(/FROM node:22-alpine/);
+    }
+  });
 });
+
