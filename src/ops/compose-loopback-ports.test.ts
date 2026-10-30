@@ -220,8 +220,12 @@ describe("CI Actions SHA pin", () => {
   });
 });
 
-
-
-
-
-
+describe("glitchtip image pin", () => {
+  it("lab e prod pinano glitchtip con digest", () => {
+    const pin = /glitchtip\/glitchtip:v\d+\.\d+\.\d+@sha256:[a-f0-9]{64}/;
+    for (const file of ["docker-compose.yml", "compose.prod.yaml"]) {
+      const raw = readFileSync(path.join(process.cwd(), file), "utf8");
+      expect(raw).toMatch(pin);
+    }
+  });
+});
