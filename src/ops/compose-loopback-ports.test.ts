@@ -202,6 +202,23 @@ describe("dependabot supply-chain", () => {
   });
 });
 
+describe("CI Actions SHA pin", () => {
+  it("checkout e setup-node usano commit SHA (no floating @vN)", () => {
+    const raw = readFileSync(
+      path.join(process.cwd(), ".github/workflows/ci.yml"),
+      "utf8",
+    );
+    expect(raw).toMatch(
+      /uses:\s*actions\/checkout@[0-9a-f]{40}\s+#\s*v\d+/,
+    );
+    expect(raw).toMatch(
+      /uses:\s*actions\/setup-node@[0-9a-f]{40}\s+#\s*v\d+/,
+    );
+    expect(raw).not.toMatch(/uses:\s*actions\/checkout@v\d+\s*$/m);
+    expect(raw).not.toMatch(/uses:\s*actions\/setup-node@v\d+\s*$/m);
+  });
+});
+
 
 
 
