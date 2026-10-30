@@ -29,7 +29,7 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - name: OSV-Scanner package-lock.json
         run: bash scripts/osv-scan.sh
         env:
@@ -63,7 +63,7 @@ jobs:
       PGBOSS_DISABLED: "true"
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
 
       - uses: actions/setup-node@v5
         with:
