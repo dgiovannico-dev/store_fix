@@ -98,6 +98,26 @@ describe("observe valkey health", () => {
   });
 });
 
+describe("pinned base images", () => {
+  it("postgres e caddy usano tag patch (no floating major-only alpine)", () => {
+    const lab = readFileSync(
+      path.join(process.cwd(), "docker-compose.yml"),
+      "utf8",
+    );
+    const prod = readFileSync(
+      path.join(process.cwd(), "compose.prod.yaml"),
+      "utf8",
+    );
+    expect(lab).toMatch(/postgres:16\.\d+-alpine/);
+    expect(lab).not.toMatch(/postgres:16-alpine/);
+    expect(prod).toMatch(/postgres:16\.\d+-alpine/);
+    expect(prod).not.toMatch(/postgres:16-alpine/);
+    expect(prod).toMatch(/caddy:2\.9\.\d+-alpine/);
+    expect(prod).not.toMatch(/caddy:2\.9-alpine[^\d]/);
+  });
+});
+
+
 
 
 
