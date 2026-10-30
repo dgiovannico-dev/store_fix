@@ -204,7 +204,7 @@ services:
       start_period: 5s
 
   glitchtip-web:
-    image: glitchtip/glitchtip:v5.0.9
+    image: glitchtip/glitchtip:v5.2.1
     profiles: ["observe"]
     restart: unless-stopped
     logging: *default-logging
@@ -225,7 +225,7 @@ services:
       EMAIL_URL: ${GLITCHTIP_EMAIL_URL:-consolemail://}
 
   glitchtip-worker:
-    image: glitchtip/glitchtip:v5.0.9
+    image: glitchtip/glitchtip:v5.2.1
     profiles: ["observe"]
     restart: unless-stopped
     logging: *default-logging
