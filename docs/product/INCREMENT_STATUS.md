@@ -1,7 +1,7 @@
 # Increment status — FacilityFlow Retail
 
 **Aggiornato:** 2026-10-29 — **dev-only** (nessun deploy VPS); F3-01 resta tracking umano  
-Hardening recente in-repo: pin `postgres:16.15-alpine` + `caddy:2.9.1-alpine`; Mailpit/Valkey pins; worker non-root; SeaweedFS healthz.
+Hardening recente in-repo: worker waits Seaweed + S3 env (attachment.gc); ADR-0009 read_only deferred; postgres/caddy pins; Mailpit/Valkey pins.
 
 | Sprint / fase | Stato | Note |
 |---------------|-------|------|

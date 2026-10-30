@@ -73,7 +73,9 @@ Pubblicate su **`127.0.0.1` only** in `docker-compose.yml` (lab): evita bind `0.
 | `worker` | — | pg-boss · `email.send` / SLA stub; `no-new-privileges` |
 
 `app` / `worker` (profile `full`): `security_opt: no-new-privileges:true`.  
-Images: `Dockerfile` → `USER nextjs`; `Dockerfile.worker` → `USER worker` (uid 1001).
+Images: `Dockerfile` → `USER nextjs`; `Dockerfile.worker` → `USER worker` (uid 1001).  
+`worker` attende seaweed healthy + env `S3_*` (job `attachment.gc`).  
+`read_only` rootfs per app: **deferred** — [`ADR-0009`](../adr/0009-compose-app-readonly-deferred.md).
 
 ## Credenziali locali (non produzione)
 
