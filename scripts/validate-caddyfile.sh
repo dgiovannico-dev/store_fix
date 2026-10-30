@@ -4,7 +4,7 @@
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 CADDYFILE="${CADDYFILE:-$ROOT/deploy/Caddyfile}"
-IMAGE="${CADDY_IMAGE:-caddy:2.9.1-alpine}"
+IMAGE="${CADDY_IMAGE:-caddy:2.9.1-alpine@sha256:b4e3952384eb9524a887633ce65c752dd7c71314d2c2acf98cd5c715aaa534f0}"
 FF_DOMAIN="${FF_DOMAIN:-localhost}"
 
 if [[ ! -f "$CADDYFILE" ]]; then

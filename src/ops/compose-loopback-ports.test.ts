@@ -137,6 +137,30 @@ describe("pinned base images", () => {
     expect(prod).toMatch(/caddy:2\.9\.\d+-alpine/);
     expect(prod).not.toMatch(/caddy:2\.9-alpine[^\d]/);
   });
+
+  it("infra images usano tag@sha256 (lab+prod)", () => {
+    const digest = /@sha256:[a-f0-9]{64}/;
+    const lab = readFileSync(
+      path.join(process.cwd(), "docker-compose.yml"),
+      "utf8",
+    );
+    const prod = readFileSync(
+      path.join(process.cwd(), "compose.prod.yaml"),
+      "utf8",
+    );
+    for (const raw of [lab, prod]) {
+      expect(raw).toMatch(new RegExp(`postgres:16\\.\\d+-alpine${digest.source}`));
+      expect(raw).toMatch(
+        new RegExp(`valkey/valkey:8\\.\\d+\\.\\d+-alpine${digest.source}`),
+      );
+    }
+    expect(lab).toMatch(
+      new RegExp(`axllent/mailpit:v\\d+\\.\\d+\\.\\d+${digest.source}`),
+    );
+    expect(prod).toMatch(
+      new RegExp(`caddy:2\\.\\d+\\.\\d+-alpine${digest.source}`),
+    );
+  });
 });
 
 

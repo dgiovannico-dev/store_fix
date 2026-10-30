@@ -55,10 +55,10 @@ npm run dev              # terminale 1 → :3000 hot reload
 Build Docker `app`/`worker`: context snello via [`.dockerignore`](../../.dockerignore) (esclude `node_modules`/`.next`/`.git`).
 
 `seaweedfs` healthcheck: `wget --spider http://127.0.0.1:9333/cluster/healthz` (master readiness).  
-`mailpit` image pin `axllent/mailpit:v1.32.0` + healthcheck `/mailpit readyz` ([docs](https://mailpit.axllent.org/docs/integration/healthcheck/)).  
+`mailpit` image pin `axllent/mailpit:v1.32.0@sha256:0790692be935ea4420d085694f7985b1f692ca6a8771ab0e0bd8ba75ac180498` + healthcheck `/mailpit readyz` ([docs](https://mailpit.axllent.org/docs/integration/healthcheck/)).  
 Profile `full`: `app` attende postgres + seaweed + mailpit healthy; `worker` attende postgres + mailpit.  
 Profile `observe`: Valkey `8.1.11-alpine` + `valkey-cli ping`; GlitchTip attende valkey healthy.  
-Image pin (lab+prod): `postgres:16.15-alpine` (SoR + GlitchTip DB); prod Caddy `caddy:2.9.1-alpine`; SeaweedFS `chrislusf/seaweedfs:3.80@sha256:1055999e…` (tag+index digest).
+Image pin (lab+prod): `postgres:16.15-alpine@sha256:0cefaabd882e42bcb2a2f3dc56d3ce4770560ba62fd7f197f1a2e008fd5731ab` (SoR + GlitchTip DB); prod Caddy `caddy:2.9.1-alpine@sha256:b4e3952384eb9524a887633ce65c752dd7c71314d2c2acf98cd5c715aaa534f0`; SeaweedFS `chrislusf/seaweedfs:3.80@sha256:1055999e…` (tag+index digest).
 
 ## Porte
 

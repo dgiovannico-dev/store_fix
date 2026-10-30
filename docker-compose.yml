@@ -1,6 +1,6 @@
 services:
   postgres:
-    image: postgres:16.15-alpine
+    image: postgres:16.15-alpine@sha256:0cefaabd882e42bcb2a2f3dc56d3ce4770560ba62fd7f197f1a2e008fd5731ab
     restart: unless-stopped
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-facilityflow}
@@ -118,7 +118,7 @@ services:
   # Dev-only SMTP catcher — docker compose --profile dev up -d
   mailpit:
     # Pin tag (avoid floating :latest drift in lab).
-    image: axllent/mailpit:v1.32.0
+    image: axllent/mailpit:v1.32.0@sha256:0790692be935ea4420d085694f7985b1f692ca6a8771ab0e0bd8ba75ac180498
     profiles: ["dev", "full"]
     restart: unless-stopped
     ports:
@@ -135,7 +135,7 @@ services:
   # F3-02 GlitchTip self-host — docker compose --profile observe up -d
   # DB dedicato (non riusa SoR facilityflow). Zero Sentry Cloud.
   glitchtip-db:
-    image: postgres:16.15-alpine
+    image: postgres:16.15-alpine@sha256:0cefaabd882e42bcb2a2f3dc56d3ce4770560ba62fd7f197f1a2e008fd5731ab
     profiles: ["observe"]
     restart: unless-stopped
     environment:
@@ -151,7 +151,7 @@ services:
       retries: 10
 
   glitchtip-valkey:
-    image: valkey/valkey:8.1.11-alpine
+    image: valkey/valkey:8.1.11-alpine@sha256:2602ace2be6569bc2bbb06f873776516ab9089821525be34f4305c67eb9db02a
     profiles: ["observe"]
     restart: unless-stopped
     healthcheck:
