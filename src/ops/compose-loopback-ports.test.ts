@@ -98,6 +98,17 @@ describe("observe valkey health", () => {
   });
 });
 
+describe("worker seaweed wiring", () => {
+  it("lab e prod: worker depends_on seaweed healthy", () => {
+    for (const file of ["docker-compose.yml", "compose.prod.yaml"]) {
+      const raw = readFileSync(path.join(process.cwd(), file), "utf8");
+      const worker = raw.split(/\n  worker:\n/)[1] ?? "";
+      expect(worker).toMatch(/seaweedfs:[\s\S]*?condition:\s*service_healthy/);
+      expect(worker).toMatch(/S3_ENDPOINT:/);
+    }
+  });
+});
+
 describe("pinned base images", () => {
   it("postgres e caddy usano tag patch (no floating major-only alpine)", () => {
     const lab = readFileSync(
