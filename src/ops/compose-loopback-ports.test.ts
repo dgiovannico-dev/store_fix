@@ -68,4 +68,17 @@ describe("docker-compose.yml seaweedfs health", () => {
   });
 });
 
+describe("docker-compose.yml mailpit health", () => {
+  const raw = readFileSync(
+    path.join(process.cwd(), "docker-compose.yml"),
+    "utf8",
+  );
+
+  it("usa /mailpit readyz e app/worker attendono healthy", () => {
+    expect(raw).toMatch(/\/mailpit["']?\s*,\s*["']?readyz/);
+    expect(raw).toMatch(/mailpit:[\s\S]*?condition:\s*service_healthy/);
+  });
+});
+
+
 
