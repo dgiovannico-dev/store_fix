@@ -18,7 +18,7 @@ services:
       retries: 10
 
   seaweedfs:
-    image: chrislusf/seaweedfs:3.80@sha256:1055999e08eed1789b0ae45d235126e4495e23d3fb9d6396293fd42539b1ae6a
+    image: chrislusf/seaweedfs:3.99@sha256:8d5b323911a996d5ea152115306bed468d9a849d72bcbb3800ea8d91b7728563
     restart: unless-stopped
     command: 'server -dir=/data -s3 -ip.bind=0.0.0.0 -master.port=9333 -volume.port=8080 -s3.port=8333'
     ports:
