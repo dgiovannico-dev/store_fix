@@ -68,7 +68,8 @@ Pubblicate su **`127.0.0.1` only** in `docker-compose.yml` (lab): evita bind `0.
 | `app` | `127.0.0.1:3000` | profile `full` oppure `npm run dev` |
 | `worker` | — | pg-boss · `email.send` / SLA stub; `no-new-privileges` |
 
-`app` / `worker` (profile `full`): `security_opt: no-new-privileges:true`.
+`app` / `worker` (profile `full`): `security_opt: no-new-privileges:true`.  
+Images: `Dockerfile` → `USER nextjs`; `Dockerfile.worker` → `USER worker` (uid 1001).
 
 ## Credenziali locali (non produzione)
 
