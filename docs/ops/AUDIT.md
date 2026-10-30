@@ -22,7 +22,7 @@ Exit ≠ 0 se OSV trova CVE note; documentare waiver sotto se si accetta rischio
 | Pacchetto | Azione | Note |
 |-----------|--------|------|
 | `sharp` (via Next) | bump lock → `0.35.5` | `npm audit fix` non-breaking |
-| `nodemailer` | `10.3.0` + `overrides` | CVE ≤10.1.3; peer next-auth override |
+| `nodemailer` | `10.3.1` + `overrides` | CVE ≤10.1.3; peer next-auth override |
 | `vitest` / `vite` | Vitest **5.0.5** + Vite **^6.4** | Chiude tinypool critical |
 | `deepmerge-ts` / `postcss` | overrides `8.0.2` / `8.5.32` | Senza bump Prisma 7 / Next 16 |
 | `@vitejs/plugin-react` | rimosso | Non usato da `vitest.config.ts` |
