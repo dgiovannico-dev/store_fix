@@ -151,7 +151,7 @@ services:
       retries: 10
 
   glitchtip-valkey:
-    image: valkey/valkey:8.1.11-alpine@sha256:2602ace2be6569bc2bbb06f873776516ab9089821525be34f4305c67eb9db02a
+    image: valkey/valkey:9.1.2-alpine@sha256:48332870af354a799964c0012ae1194a0bf2bf894eb508f945810596dc2d8d11
     profiles: ["observe"]
     restart: unless-stopped
     healthcheck:
