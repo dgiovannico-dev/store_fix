@@ -88,6 +88,8 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+      seaweedfs:
+        condition: service_healthy
       mailpit:
         condition: service_healthy
     environment:
@@ -105,6 +107,12 @@ services:
       IMAP_TENANT_ID: ${IMAP_TENANT_ID:-}
       IMAP_POLL_CRON: ${IMAP_POLL_CRON:-*/2 * * * *}
       IMAP_MARK_SEEN: ${IMAP_MARK_SEEN:-true}
+      # attachment.gc needs Seaweed S3 API
+      S3_ENDPOINT: http://seaweedfs:8333
+      S3_ACCESS_KEY: ${S3_ACCESS_KEY:-admin}
+      S3_SECRET_KEY: ${S3_SECRET_KEY:-admin}
+      S3_BUCKET: ${S3_BUCKET:-facilityflow-attachments}
+      S3_FORCE_PATH_STYLE: "true"
     profiles: ["full"]
 
   # Dev-only SMTP catcher — docker compose --profile dev up -d
