@@ -43,7 +43,7 @@ services:
           memory: 256M
 
   seaweedfs:
-    image: chrislusf/seaweedfs:3.80
+    image: chrislusf/seaweedfs:3.80@sha256:1055999e08eed1789b0ae45d235126e4495e23d3fb9d6396293fd42539b1ae6a
     restart: unless-stopped
     logging: *default-logging
     cpus: 0.5

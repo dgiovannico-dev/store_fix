@@ -66,6 +66,17 @@ describe("docker-compose.yml seaweedfs health", () => {
       /seaweedfs:[\s\S]*?condition:\s*service_healthy/,
     );
   });
+
+  it("pinna seaweedfs a tag+digest (lab e prod)", () => {
+    const pin =
+      /chrislusf\/seaweedfs:3\.\d+@sha256:[a-f0-9]{64}/;
+    expect(raw).toMatch(pin);
+    const prod = readFileSync(
+      path.join(process.cwd(), "compose.prod.yaml"),
+      "utf8",
+    );
+    expect(prod).toMatch(pin);
+  });
 });
 
 describe("docker-compose.yml mailpit health", () => {
