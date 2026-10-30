@@ -54,6 +54,8 @@ services:
         condition: service_healthy
       seaweedfs:
         condition: service_healthy
+      mailpit:
+        condition: service_healthy
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER:-facilityflow}:${POSTGRES_PASSWORD:-facilityflow_dev}@postgres:5432/${POSTGRES_DB:-facilityflow}?schema=public
       NODE_ENV: production
@@ -86,6 +88,8 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+      mailpit:
+        condition: service_healthy
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER:-facilityflow}:${POSTGRES_PASSWORD:-facilityflow_dev}@postgres:5432/${POSTGRES_DB:-facilityflow}?schema=public
       SMTP_HOST: mailpit
@@ -111,6 +115,13 @@ services:
     ports:
       - "127.0.0.1:1025:1025"
       - "127.0.0.1:8025:8025"
+    # Official CLI readiness — https://mailpit.axllent.org/docs/integration/healthcheck/
+    healthcheck:
+      test: ["CMD", "/mailpit", "readyz"]
+      interval: 5s
+      timeout: 5s
+      retries: 6
+      start_period: 5s
 
   # F3-02 GlitchTip self-host — docker compose --profile observe up -d
   # DB dedicato (non riusa SoR facilityflow). Zero Sentry Cloud.

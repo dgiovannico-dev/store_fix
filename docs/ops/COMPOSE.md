@@ -54,7 +54,9 @@ npm run dev              # terminale 1 → :3000 hot reload
 
 Build Docker `app`/`worker`: context snello via [`.dockerignore`](../../.dockerignore) (esclude `node_modules`/`.next`/`.git`).
 
-`seaweedfs` healthcheck: `wget --spider http://127.0.0.1:9333/cluster/healthz` (master readiness). Profile `full` `app` attende `service_healthy` su postgres + seaweed.
+`seaweedfs` healthcheck: `wget --spider http://127.0.0.1:9333/cluster/healthz` (master readiness).  
+`mailpit` healthcheck: `/mailpit readyz` ([docs](https://mailpit.axllent.org/docs/integration/healthcheck/)).  
+Profile `full`: `app` attende postgres + seaweed + mailpit healthy; `worker` attende postgres + mailpit.
 
 ## Porte
 
