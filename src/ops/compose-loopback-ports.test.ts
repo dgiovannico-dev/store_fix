@@ -78,7 +78,26 @@ describe("docker-compose.yml mailpit health", () => {
     expect(raw).toMatch(/\/mailpit["']?\s*,\s*["']?readyz/);
     expect(raw).toMatch(/mailpit:[\s\S]*?condition:\s*service_healthy/);
   });
+
+  it("pinna mailpit a tag semver (no :latest)", () => {
+    expect(raw).toMatch(/axllent\/mailpit:v\d+\.\d+\.\d+/);
+    expect(raw).not.toMatch(/axllent\/mailpit:latest/);
+  });
 });
+
+describe("observe valkey health", () => {
+  it("lab e prod pinano valkey + ping healthcheck", () => {
+    for (const file of ["docker-compose.yml", "compose.prod.yaml"]) {
+      const raw = readFileSync(path.join(process.cwd(), file), "utf8");
+      expect(raw).toMatch(/valkey\/valkey:8\.1\.11-alpine/);
+      expect(raw).toMatch(/valkey-cli["']?\s*,\s*["']?ping/);
+      expect(raw).toMatch(
+        /glitchtip-valkey:[\s\S]*?condition:\s*service_healthy/,
+      );
+    }
+  });
+});
+
 
 
 

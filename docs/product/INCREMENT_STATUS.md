@@ -1,7 +1,7 @@
 # Increment status — FacilityFlow Retail
 
 **Aggiornato:** 2026-10-29 — **dev-only** (nessun deploy VPS); F3-01 resta tracking umano  
-Hardening recente in-repo: Mailpit `/mailpit readyz`; worker non-root; SeaweedFS healthz; compose loopback + `no-new-privileges`.
+Hardening recente in-repo: Mailpit pin `v1.32.0` + Valkey `8.1.11` health; worker non-root; SeaweedFS healthz; compose loopback.
 
 | Sprint / fase | Stato | Note |
 |---------------|-------|------|

@@ -109,7 +109,8 @@ services:
 
   # Dev-only SMTP catcher — docker compose --profile dev up -d
   mailpit:
-    image: axllent/mailpit:latest
+    # Pin tag (avoid floating :latest drift in lab).
+    image: axllent/mailpit:v1.32.0
     profiles: ["dev", "full"]
     restart: unless-stopped
     ports:
@@ -142,9 +143,15 @@ services:
       retries: 10
 
   glitchtip-valkey:
-    image: valkey/valkey:8-alpine
+    image: valkey/valkey:8.1.11-alpine
     profiles: ["observe"]
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "valkey-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 6
+      start_period: 5s
 
   glitchtip-web:
     image: glitchtip/glitchtip:v5.0.9
@@ -154,7 +161,7 @@ services:
       glitchtip-db:
         condition: service_healthy
       glitchtip-valkey:
-        condition: service_started
+        condition: service_healthy
     ports:
       - "127.0.0.1:${GLITCHTIP_PORT:-8000}:8000"
     environment:
@@ -175,7 +182,7 @@ services:
       glitchtip-db:
         condition: service_healthy
       glitchtip-valkey:
-        condition: service_started
+        condition: service_healthy
     environment:
       DATABASE_URL: postgres://glitchtip:${GLITCHTIP_DB_PASSWORD:-glitchtip_dev}@glitchtip-db:5432/glitchtip
       SECRET_KEY: ${GLITCHTIP_SECRET_KEY:-dev-only-change-me-glitchtip}
