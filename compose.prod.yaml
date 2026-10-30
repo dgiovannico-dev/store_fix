@@ -204,7 +204,7 @@ services:
       start_period: 5s
 
   glitchtip-web:
-    image: glitchtip/glitchtip:v5.2.1
+    image: glitchtip/glitchtip:v5.2.1@sha256:b9d6e5e8e47b7c992bfa80f82ba19ad74bdbeab9f0bef9a1d0791a7b551d744f
     profiles: ["observe"]
     restart: unless-stopped
     logging: *default-logging
@@ -225,7 +225,7 @@ services:
       EMAIL_URL: ${GLITCHTIP_EMAIL_URL:-consolemail://}
 
   glitchtip-worker:
-    image: glitchtip/glitchtip:v5.2.1
+    image: glitchtip/glitchtip:v5.2.1@sha256:b9d6e5e8e47b7c992bfa80f82ba19ad74bdbeab9f0bef9a1d0791a7b551d744f
     profiles: ["observe"]
     restart: unless-stopped
     logging: *default-logging
