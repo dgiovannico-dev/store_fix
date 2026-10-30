@@ -1,7 +1,10 @@
 # Increment status — FacilityFlow Retail
 
-**Aggiornato:** 2026-10-29 — **dev-only** (nessun deploy VPS); F3-01 resta tracking umano  
+**Aggiornato:** 2026-10-30 — **dev-only** (nessun deploy VPS); F3-01 resta tracking umano  
 Hardening recente in-repo: nodemailer **10.3.1**; SeaweedFS **3.99**; GlitchTip **v5.2.1**; React **19.3.1**; Caddy **2.11.7**.
+
+**Autopilot soft-stop (in-repo):** F3-02…F3-08 Done; supply-chain pins + Dependabot (no majors) + CI Actions SHA + digests Compose/Dockerfiles.  
+Niente altro item codice senza inventare Fase 4. Ripresa = **VPS/DNS umani** (F3-01) oppure nuova bozza backlog.
 
 | Sprint / fase | Stato | Note |
 |---------------|-------|------|
