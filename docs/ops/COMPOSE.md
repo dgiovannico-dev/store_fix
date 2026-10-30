@@ -58,7 +58,7 @@ Build Docker `app`/`worker`: context snello via [`.dockerignore`](../../.dockeri
 `mailpit` image pin `axllent/mailpit:v1.32.0` + healthcheck `/mailpit readyz` ([docs](https://mailpit.axllent.org/docs/integration/healthcheck/)).  
 Profile `full`: `app` attende postgres + seaweed + mailpit healthy; `worker` attende postgres + mailpit.  
 Profile `observe`: Valkey `8.1.11-alpine` + `valkey-cli ping`; GlitchTip attende valkey healthy.  
-Image pin (lab+prod): `postgres:16.15-alpine` (SoR + GlitchTip DB); prod Caddy `caddy:2.9.1-alpine`.
+Image pin (lab+prod): `postgres:16.15-alpine` (SoR + GlitchTip DB); prod Caddy `caddy:2.9.1-alpine`; SeaweedFS `chrislusf/seaweedfs:3.80@sha256:1055999e…` (tag+index digest).
 
 ## Porte
 
