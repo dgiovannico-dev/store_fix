@@ -609,10 +609,10 @@ E00 Platform OSS (Compose, SeaweedFS, Mailpit, pg-boss, Prisma schema)
 
 ---
 
-## Fase 4 (draft) — Kubernetes / Keycloak / Vault (VPS, no AWS)
+## Fase 4 — Kubernetes / Keycloak / Vault (VPS, no AWS)
 
-> **Confermato 2026-11-03.** Target prod: **k3s + Helm** su VPS EU (non EKS). IdP **Keycloak**; secret **OpenBao** (API compatibile Vault — ADR-0001 / no BSL). Lab resta Compose. ADR: [`../adr/0010-k3s-helm-on-vps.md`](../adr/0010-k3s-helm-on-vps.md), [`../adr/0011-keycloak-oidc-and-vault.md`](../adr/0011-keycloak-oidc-and-vault.md). Ops: [`../ops/KUBERNETES.md`](../ops/KUBERNETES.md).  
-> Autopilot implementa F4-01… in-repo; install k3s/Keycloak/OpenBao su host resta umano (come F3-01).
+> **Confermato 2026-11-03 · Done in-repo 2026-11-03.** Target prod: **k3s + Helm** su VPS EU (non EKS). IdP **Keycloak**; secret **OpenBao** (API Vault — ADR-0001). Lab resta Compose. ADR: [`../adr/0010-k3s-helm-on-vps.md`](../adr/0010-k3s-helm-on-vps.md), [`../adr/0011-keycloak-oidc-and-vault.md`](../adr/0011-keycloak-oidc-and-vault.md). Ops: [`../ops/KUBERNETES.md`](../ops/KUBERNETES.md) · cutover [`../ops/COMPOSE_TO_K3S.md`](../ops/COMPOSE_TO_K3S.md).  
+> Install k3s/Keycloak/OpenBao su host resta umano (come F3-01).
 
 | ID | Titolo | Priorità | AC (1 riga) | Dip. VPS |
 |----|--------|----------|-------------|----------|
@@ -620,7 +620,7 @@ E00 Platform OSS (Compose, SeaweedFS, Mailpit, pg-boss, Prisma schema)
 | **F4-02** | Helm values staging/prod + image digests + PDB | **P1** | Done 2026-11-03 — overlays + PDB + `helm:template` staging/prod | No |
 | **F4-03** | OpenBao + External Secrets → runtime Secret | **P1** | Done 2026-11-03 — `deploy/openbao` + ESO templates + `VAULT.md`; install/unseal host = umano | Sì (ops) |
 | **F4-04** | Keycloak OIDC + Auth.js broker | **P0** | Done 2026-11-03 — realm export + Auth.js Keycloak + prod Credentials off; install IdP host = umano | Sì (ops) |
-| **F4-05** | Runbook Compose→k3s + DR + smoke A su cluster | **P0** | Migrate doc; backup/restore; smoke Flusso A UI su ingress | **Sì** |
+| **F4-05** | Runbook Compose→k3s + DR + smoke A su cluster | **P0** | Done 2026-11-03 — `COMPOSE_TO_K3S.md`; cutover/smoke/DR host = umano | **Sì** |
 
 ---
 
