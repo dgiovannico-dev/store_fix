@@ -82,6 +82,8 @@
   "overrides": {
     "nodemailer": "10.3.1",
     "deepmerge-ts": "8.0.2",
-    "postcss": "8.5.32"
+    "postcss": "8.5.32",
+    "glob": "14.0.2",
+    "minimatch": "11.0.1"
   }
 }

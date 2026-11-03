@@ -34,9 +34,9 @@ kubeconfig: `/etc/rancher/k3s/k3s.yaml` (o `KUBECONFIG=` export per l’operator
 ```bash
 # Secret runtime (sostituito da Vault in F4-03)
 kubectl create namespace facilityflow
+# Prepare runtime.env (600) with DATABASE_URL and AUTH_SECRET — see SECRETS.md
 kubectl -n facilityflow create secret generic facilityflow-runtime \
-  --from-literal=DATABASE_URL='postgresql://...' \
-  --from-literal=AUTH_SECRET='...'
+  --from-env-file=./runtime.env
 
 helm upgrade --install ff ./deploy/helm/facilityflow \
   -n facilityflow \

@@ -25,6 +25,7 @@ Exit ≠ 0 se OSV trova CVE note; documentare waiver sotto se si accetta rischio
 | `nodemailer` | `10.3.1` + `overrides` | CVE ≤10.1.3; peer next-auth override |
 | `vitest` / `vite` | Vitest **5.0.5** + Vite **^6.4** | Chiude tinypool critical |
 | `deepmerge-ts` / `postcss` | overrides `8.0.2` / `8.5.32` | Senza bump Prisma 7 / Next 16 |
+| `glob` / `minimatch` | overrides `14.0.2` / `11.0.1` | OSV medium GHSA-3g3m / GHSA-g3hv (2026-11-03) |
 | `@vitejs/plugin-react` | rimosso | Non usato da `vitest.config.ts` |
 | `@sentry/node` build | `webpackIgnore` + `serverExternalPackages` | Fix `node:` UnhandledSchemeError su `next build` |
 

@@ -1,9 +1,9 @@
 FacilityFlow {{ .Chart.Version }} installed as release {{ .Release.Name }}.
 
-1. Create runtime secret (until Vault F4-03):
+1. Create runtime secret (until OpenBao F4-03), keys DATABASE_URL and AUTH_SECRET:
+   # copy docs/ops examples → runtime.env (mode 600), then:
    kubectl -n {{ .Release.Namespace }} create secret generic {{ .Values.external.existingSecret }} \
-     --from-literal=DATABASE_URL='postgresql://...' \
-     --from-literal=AUTH_SECRET='...'
+     --from-env-file=./runtime.env
 
 2. Ingress host: {{ .Values.ingress.host }}
    Point DNS A/AAAA to the VPS; ensure Traefik/Caddy ingress is ready.
