@@ -30,10 +30,12 @@ Exit ≠ 0 se OSV trova CVE note; documentare waiver sotto se si accetta rischio
 | `@vitejs/plugin-react` | rimosso | Non usato da `vitest.config.ts` |
 | `@sentry/node` build | `webpackIgnore` + `serverExternalPackages` | Fix `node:` UnhandledSchemeError su `next build` |
 
-**Baseline:** `npm audit` → **0 vulnerabilities** (2026-10-30).  
-**OSV:** `npm run audit:osv` → **No issues found** (2026-10-29, scanner v2.7.0); re-check after dep bumps with `npm run audit:osv`.
+**Baseline gate:** `npm audit --audit-level=high` → **0 high/critical** (2026-11-03).  
+Moderate residue: `minimatch` via eslint toolchain — waiver sopra (OSV fail high+ only).  
+**OSV:** `npm run audit:osv` (scanner v2.7.0); re-check after dep bumps.
 
 ## Waiver aperti
 
 Nessuno high/critical aperto.  
+Medium `minimatch` (eslint): vedi tabella.  
 Eventuali regression: riesaminare a GO staging VPS / bump Next–Prisma major.
