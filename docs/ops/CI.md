@@ -12,6 +12,7 @@ Badge (default branch `main`):
 - `secrets:scan`
 - `compose:prod|lab|observe:config` (YAML interpolate, no stack up)
 - `caddy:validate` (`deploy/Caddyfile` via `caddy:2.11.7-alpine@sha256:eb4d35b7452d1ab6171fbdbe8d9275b2301dad6dad92115d91e19fb9b24d510f`, no stack up) — US-E14-01
+- `helm:template` (lint + render base/staging/prod; PDB/ESO/OIDC asserts) — F4; Helm CLI `v3.16.4` in CI
 - `build` (`next build`) con cache npm
 - `npm audit --audit-level=high` (**fail hard**; waiver: [`AUDIT.md`](./AUDIT.md))
 - Job parallelo **`osv`**: `scripts/osv-scan.sh` su `package-lock.json` (T5.21 / US-E14-10)
