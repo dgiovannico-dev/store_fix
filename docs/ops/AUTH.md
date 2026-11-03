@@ -45,7 +45,7 @@ Per attivarlo in un fork: aggiungere `Email({ server: { host, port }, from })` i
 ## Keycloak OIDC (F4-04)
 
 Flag: `AUTH_OIDC_ENABLED` + `AUTH_KEYCLOAK_ID` / `AUTH_KEYCLOAK_SECRET` / `AUTH_KEYCLOAK_ISSUER`.  
-Realm export: `deploy/keycloak/realm-facilityflow.json`. Runbook: [`KEYCLOAK.md`](./KEYCLOAK.md).
+Realm export: `deploy/keycloak/realm-platform.json` (client `facilityflow-app`). Runbook: [`KEYCLOAK.md`](./KEYCLOAK.md) · [`PLATFORM_IAM.md`](./PLATFORM_IAM.md).
 
 ## Rate limit
 

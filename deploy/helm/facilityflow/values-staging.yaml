@@ -41,4 +41,4 @@ vault:
 keycloak:
   enabled: true
   credentialsEnabled: true
-  # issuer: https://auth.staging.example/realms/facilityflow
+  # issuer: https://auth.staging.example/realms/platform
