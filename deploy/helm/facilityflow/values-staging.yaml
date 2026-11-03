@@ -1,0 +1,34 @@
+# Overlay staging — helm upgrade -f values.yaml -f values-staging.yaml
+# Digests optional; tag is enough for staging rebuilds.
+
+app:
+  replicaCount: 1
+  image:
+    pullPolicy: Always
+  resources:
+    requests:
+      cpu: 200m
+      memory: 384Mi
+    limits:
+      cpu: 750m
+      memory: 768Mi
+
+worker:
+  replicaCount: 1
+  image:
+    pullPolicy: Always
+  resources:
+    requests:
+      cpu: 50m
+      memory: 192Mi
+    limits:
+      cpu: 400m
+      memory: 384Mi
+
+ingress:
+  host: staging.facilityflow.example
+  tls: true
+
+podDisruptionBudget:
+  enabled: true
+  minAvailable: 1

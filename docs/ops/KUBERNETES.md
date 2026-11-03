@@ -38,27 +38,39 @@ kubectl create namespace facilityflow
 kubectl -n facilityflow create secret generic facilityflow-runtime \
   --from-env-file=./runtime.env
 
+# Staging
 helm upgrade --install ff ./deploy/helm/facilityflow \
   -n facilityflow \
-  --set ingress.host="$FF_DOMAIN" \
+  -f deploy/helm/facilityflow/values-staging.yaml \
+  --set ingress.host="staging.$FF_DOMAIN" \
   --set app.image.repository=ghcr.io/OWNER/facilityflow \
   --set app.image.tag=0.1.0 \
   --set worker.image.repository=ghcr.io/OWNER/facilityflow-worker \
   --set worker.image.tag=0.1.0
+
+# Produzione — digests obbligatori (output CI build)
+helm upgrade --install ff ./deploy/helm/facilityflow \
+  -n facilityflow \
+  -f deploy/helm/facilityflow/values-prod.yaml \
+  --set ingress.host="$FF_DOMAIN" \
+  --set app.image.repository=ghcr.io/OWNER/facilityflow \
+  --set app.image.digest="sha256:${APP_DIGEST}" \
+  --set worker.image.repository=ghcr.io/OWNER/facilityflow-worker \
+  --set worker.image.digest="sha256:${WORKER_DIGEST}"
 ```
 
 Validazione locale **senza cluster** (CI/dev):
 
 ```bash
-npm run helm:template   # docker run alpine/helm template
+npm run helm:template   # lint + template base/staging/prod (PDB + digest check)
 ```
 
 ## Roadmap chart
 
 | Fase | Contenuto |
 |------|-----------|
-| **F4-01** | app + worker Deployments, Service, Ingress (questo scaffold) |
-| **F4-02** | values staging/prod, image digests, PDB, resources tuning |
+| **F4-01** | app + worker Deployments, Service, Ingress |
+| **F4-02** | Done — `values-staging.yaml` / `values-prod.yaml`, PDB, digests in prod render |
 | **F4-03** | OpenBao + External Secrets → `facilityflow-runtime` |
 | **F4-04** | Keycloak + Auth.js OIDC |
 | **F4-05** | Runbook Compose → k3s + DR |

@@ -1,0 +1,40 @@
+# Overlay produzione — require image digests at install:
+#   --set app.image.digest=sha256:... --set worker.image.digest=sha256:...
+# Digests come from CI build of Dockerfile / Dockerfile.worker (not the node base alone).
+
+app:
+  replicaCount: 2
+  image:
+    pullPolicy: IfNotPresent
+    # digest: "sha256:REPLACE_ME_APP"
+  resources:
+    requests:
+      cpu: 250m
+      memory: 512Mi
+    limits:
+      cpu: "1"
+      memory: 1Gi
+
+worker:
+  replicaCount: 2
+  image:
+    pullPolicy: IfNotPresent
+    # digest: "sha256:REPLACE_ME_WORKER"
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+ingress:
+  host: facilityflow.example
+  tls: true
+  annotations:
+    # traefik / cert-manager hooks when configured on the VPS
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+
+podDisruptionBudget:
+  enabled: true
+  minAvailable: 1
