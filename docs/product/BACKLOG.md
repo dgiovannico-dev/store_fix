@@ -609,11 +609,26 @@ E00 Platform OSS (Compose, SeaweedFS, Mailpit, pg-boss, Prisma schema)
 
 ---
 
+## Fase 4 (draft) — Kubernetes / Keycloak / Vault (VPS, no AWS)
+
+> **Confermato 2026-11-03.** Target prod: **k3s + Helm** su VPS EU (non EKS). IdP **Keycloak**; secret **OpenBao** (API compatibile Vault — ADR-0001 / no BSL). Lab resta Compose. ADR: [`../adr/0010-k3s-helm-on-vps.md`](../adr/0010-k3s-helm-on-vps.md), [`../adr/0011-keycloak-oidc-and-vault.md`](../adr/0011-keycloak-oidc-and-vault.md). Ops: [`../ops/KUBERNETES.md`](../ops/KUBERNETES.md).  
+> Autopilot implementa F4-01… in-repo; install k3s/Keycloak/OpenBao su host resta umano (come F3-01).
+
+| ID | Titolo | Priorità | AC (1 riga) | Dip. VPS |
+|----|--------|----------|-------------|----------|
+| **F4-01** | k3s + Helm chart scaffold (app/worker/ingress) | **P0** | Done 2026-11-03 — `deploy/helm/facilityflow` + `helm:template` + docs; lab Compose invariato | No (scaffold) / Sì (install) |
+| **F4-02** | Helm values staging/prod + image digests + PDB | **P1** | values overlay; digests allineati Dockerfiles; resource/PDB | No |
+| **F4-03** | OpenBao + External Secrets → runtime Secret | **P1** | OpenBao KV; ESO sync `facilityflow-runtime`; runbook unseal | Sì (ops) |
+| **F4-04** | Keycloak OIDC + Auth.js broker | **P0** | Realm export; Auth.js OIDC provider; Credentials lab-only in prod values | Sì (ops) |
+| **F4-05** | Runbook Compose→k3s + DR + smoke A su cluster | **P0** | Migrate doc; backup/restore; smoke Flusso A UI su ingress | **Sì** |
+
+---
+
 ## Open decisions — CHIUSE (default MVP)
 
 | # | Decisione | Default locked |
 |---|-----------|----------------|
-| 1 | Auth | **Auth.js** + Postgres |
+| 1 | Auth | **Auth.js** + Postgres (**F4:** Keycloak OIDC + Auth.js broker — ADR-0011) |
 | 2 | SLA clock start | Da **`open`** |
 | 3 | Verify reject | → **`in_progress`** + motivo |
 | 4 | Vendor multi-insegna | **No** (vendor per-tenant) |
