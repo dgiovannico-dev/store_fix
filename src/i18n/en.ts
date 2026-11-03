@@ -557,6 +557,8 @@ export const en = {
     email: "Email",
     password: "Password",
     signIn: "Sign in",
+    signInOidc: "Sign in with SSO (Keycloak)",
+    orEmail: "or with email",
     forgot: "Forgot password?",
     createWorkspace: "Create workspace",
     errCredentials: "Incorrect email or password.",

@@ -27,7 +27,7 @@ describe("Helm chart facilityflow (F4-01…03)", () => {
     }
   });
 
-  it("values espongono vault/keycloak; vault off di default", () => {
+  it("values espongono vault/keycloak; vault+keycloak off di default", () => {
     const values = readFileSync(path.join(chartRoot, "values.yaml"), "utf8");
     expect(values).toMatch(/vault:\s*\n\s*enabled:\s*false/);
     expect(values).toMatch(/keycloak:\s*\n\s*enabled:\s*false/);
@@ -36,7 +36,7 @@ describe("Helm chart facilityflow (F4-01…03)", () => {
     expect(values).toMatch(/secretPath:\s*facilityflow\/runtime/);
   });
 
-  it("staging/prod abilitano PDB + vault; prod replicaCount >= 2", () => {
+  it("staging/prod abilitano PDB + vault + keycloak; prod Credentials off", () => {
     const staging = readFileSync(
       path.join(chartRoot, "values-staging.yaml"),
       "utf8",
@@ -47,6 +47,9 @@ describe("Helm chart facilityflow (F4-01…03)", () => {
     expect(prod).toMatch(/replicaCount:\s*2/);
     expect(staging).toMatch(/vault:\s*\n\s*enabled:\s*true/);
     expect(prod).toMatch(/vault:\s*\n\s*enabled:\s*true/);
+    expect(staging).toMatch(/keycloak:\s*\n\s*enabled:\s*true/);
+    expect(prod).toMatch(/keycloak:\s*\n\s*enabled:\s*true/);
+    expect(prod).toMatch(/credentialsEnabled:\s*false/);
   });
 
   it("OpenBao values, policy e VAULT.md presenti", () => {
