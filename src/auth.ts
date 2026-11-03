@@ -4,7 +4,14 @@ import type { Role } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
+import Keycloak from "next-auth/providers/keycloak";
 import type { JWT } from "next-auth/jwt";
+import type { Provider } from "next-auth/providers";
+import {
+  isAuthCredentialsEnabled,
+  isAuthOidcEnabled,
+  keycloakProviderOptions,
+} from "@/infrastructure/auth/oidc-config";
 import {
   sessionTokenCookie,
   shouldUseSecureAuthCookies,
@@ -19,52 +26,85 @@ import { prisma } from "@/infrastructure/db/prisma";
 import { credentialsSchema } from "@/lib/auth/credentials";
 
 export { SESSION_MAX_AGE_SEC } from "@/infrastructure/auth/session-max-age";
+export {
+  isAuthCredentialsEnabled,
+  isAuthOidcEnabled,
+} from "@/infrastructure/auth/oidc-config";
 
 function emptyJwt(): JWT {
   return {};
+}
+
+function buildProviders(): Provider[] {
+  const providers: Provider[] = [];
+
+  if (isAuthCredentialsEnabled()) {
+    providers.push(
+      Credentials({
+        id: "credentials",
+        name: "Email e password",
+        credentials: {
+          email: { label: "Email", type: "email" },
+          password: { label: "Password", type: "password" },
+        },
+        authorize: async (raw) => {
+          const parsed = credentialsSchema.safeParse(raw);
+          if (!parsed.success) return null;
+
+          const email = parsed.data.email.toLowerCase();
+          const user = await prisma.user.findUnique({ where: { email } });
+          if (!user?.passwordHash) return null;
+
+          const valid = await bcrypt.compare(
+            parsed.data.password,
+            user.passwordHash,
+          );
+          if (!valid) return null;
+
+          return {
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            image: user.image,
+          };
+        },
+      }),
+    );
+  }
+
+  if (isAuthOidcEnabled()) {
+    providers.push(Keycloak(keycloakProviderOptions()));
+  }
+
+  if (providers.length === 0) {
+    // Safety net for misconfigured prod — keep Credentials so app boots
+    providers.push(
+      Credentials({
+        id: "credentials",
+        name: "Email e password",
+        credentials: {
+          email: { label: "Email", type: "email" },
+          password: { label: "Password", type: "password" },
+        },
+        authorize: async () => null,
+      }),
+    );
+  }
+
+  return providers;
 }
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
   /**
    * Credentials richiede JWT a livello Auth.js; persistiamo comunque Session in
-   * Postgres (token in JWT) per logout/revoke e AC T1.11.
+   * Postgres (token in JWT) per logout/revoke e AC T1.11. Stesso path per OIDC.
    */
   session: { strategy: "jwt", maxAge: SESSION_MAX_AGE_SEC },
   pages: {
     signIn: "/login",
   },
-  providers: [
-    Credentials({
-      id: "credentials",
-      name: "Email e password",
-      credentials: {
-        email: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" },
-      },
-      authorize: async (raw) => {
-        const parsed = credentialsSchema.safeParse(raw);
-        if (!parsed.success) return null;
-
-        const email = parsed.data.email.toLowerCase();
-        const user = await prisma.user.findUnique({ where: { email } });
-        if (!user?.passwordHash) return null;
-
-        const valid = await bcrypt.compare(
-          parsed.data.password,
-          user.passwordHash,
-        );
-        if (!valid) return null;
-
-        return {
-          id: user.id,
-          email: user.email,
-          name: user.name,
-          image: user.image,
-        };
-      },
-    }),
-  ],
+  providers: buildProviders(),
   callbacks: {
     async jwt({ token, user }): Promise<JWT> {
       const nowSec = Math.floor(Date.now() / 1000);

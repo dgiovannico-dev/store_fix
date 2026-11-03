@@ -44,3 +44,9 @@ vault:
   # Prefer kubernetes auth after bootstrap — see docs/ops/VAULT.md
   # auth:
   #   method: kubernetes
+
+# OIDC default; Credentials lab-only (ADR-0011 / F4-04)
+keycloak:
+  enabled: true
+  credentialsEnabled: false
+  # issuer: https://auth.example/realms/facilityflow

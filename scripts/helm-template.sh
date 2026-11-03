@@ -69,6 +69,23 @@ echo "$OUT_PROD" | grep -q 'kind: ExternalSecret' || {
   echo "helm-template FAIL: expected ExternalSecret in prod render" >&2
   exit 1
 }
+# F4-04: prod OIDC on, Credentials off
+echo "$OUT_PROD" | grep -q 'AUTH_OIDC_ENABLED' || {
+  echo "helm-template FAIL: expected AUTH_OIDC_ENABLED in prod render" >&2
+  exit 1
+}
+echo "$OUT_PROD" | grep -q 'name: AUTH_CREDENTIALS_ENABLED' || {
+  echo "helm-template FAIL: expected AUTH_CREDENTIALS_ENABLED in prod" >&2
+  exit 1
+}
+echo "$OUT_PROD" | grep -A1 'name: AUTH_CREDENTIALS_ENABLED' | grep -q '"0"' || {
+  echo "helm-template FAIL: prod Credentials must be disabled (0)" >&2
+  exit 1
+}
+echo "$OUT_PROD" | grep -q 'AUTH_KEYCLOAK_SECRET' || {
+  echo "helm-template FAIL: expected AUTH_KEYCLOAK_SECRET sync in prod" >&2
+  exit 1
+}
 
 # Base values keep vault off — no ExternalSecret
 OUT_BASE="$(run_helm template ff "${CHART}" --namespace facilityflow)"
@@ -76,5 +93,9 @@ if echo "$OUT_BASE" | grep -q 'kind: ExternalSecret'; then
   echo "helm-template FAIL: base values must not enable vault/ExternalSecret" >&2
   exit 1
 fi
+if echo "$OUT_BASE" | grep -q 'AUTH_OIDC_ENABLED'; then
+  echo "helm-template FAIL: base values must not enable Keycloak OIDC" >&2
+  exit 1
+fi
 
-echo "helm-template OK (base + staging + prod + OpenBao ESO)"
+echo "helm-template OK (base + staging + prod + OpenBao ESO + Keycloak)"

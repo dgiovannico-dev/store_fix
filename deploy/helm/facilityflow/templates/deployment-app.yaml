@@ -44,6 +44,23 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.external.existingSecret }}
                   key: AUTH_SECRET
+            {{- if .Values.keycloak.enabled }}
+            - name: AUTH_OIDC_ENABLED
+              value: "1"
+            - name: AUTH_CREDENTIALS_ENABLED
+              value: {{ ternary "1" "0" .Values.keycloak.credentialsEnabled | quote }}
+            - name: AUTH_KEYCLOAK_ID
+              value: {{ .Values.keycloak.clientId | quote }}
+            {{- with .Values.keycloak.issuer }}
+            - name: AUTH_KEYCLOAK_ISSUER
+              value: {{ . | quote }}
+            {{- end }}
+            - name: AUTH_KEYCLOAK_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.external.existingSecret }}
+                  key: AUTH_KEYCLOAK_SECRET
+            {{- end }}
           {{- with .Values.app.extraEnv }}
             {{- toYaml . | nindent 12 }}
           {{- end }}

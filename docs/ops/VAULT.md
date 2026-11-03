@@ -59,9 +59,10 @@ Dopo reboot nodo: ripetere **unseal** (file storage non auto-unseal). Opzionale:
 bao login   # root o admin token
 bao secrets enable -path=secret kv-v2
 
-# Put DATABASE_URL + AUTH_SECRET into KV (generate auth value with openssl rand -base64 32)
+# Put DATABASE_URL + AUTH_SECRET (+ AUTH_KEYCLOAK_SECRET when F4-04) into KV
 bao kv put secret/facilityflow/runtime @runtime.json
-# runtime.json example keys: DATABASE_URL, AUTH_SECRET — never commit the file
+# runtime.json keys: DATABASE_URL, AUTH_SECRET, AUTH_KEYCLOAK_SECRET — never commit the file
+# Generate AUTH_SECRET / client secret with: openssl rand -base64 32
 
 bao policy write facilityflow-eso deploy/openbao/policies/eso-read.hcl
 ```
