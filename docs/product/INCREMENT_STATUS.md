@@ -1,9 +1,9 @@
 # Increment status — FacilityFlow Retail
 
 **Aggiornato:** 2026-11-03 — **dev-only**; F3-01 VPS umano; **Fase 4 avviata** (k3s/Helm/Keycloak/Vault)  
-Hardening recente: Helm F4-01/02 (overlays + PDB + digests); OpenBao/Keycloak path ADR; Compose digests.
+Hardening recente: Helm F4-01…03 (overlays + PDB + OpenBao/ESO); Keycloak path ADR; Compose digests.
 
-**Autopilot:** F3-02…F3-08 Done; F4-01/02 Done in-repo; next F4-03 OpenBao. Install k3s/OpenBao/Keycloak su host = umano.
+**Autopilot:** F3-02…F3-08 Done; F4-01…03 Done in-repo; next F4-04 Keycloak OIDC. Install k3s/OpenBao/Keycloak su host = umano.
 
 | Sprint / fase | Stato | Note |
 |---------------|-------|------|

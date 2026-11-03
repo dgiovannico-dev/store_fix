@@ -32,3 +32,7 @@ ingress:
 podDisruptionBudget:
   enabled: true
   minAvailable: 1
+
+# ESO → facilityflow-runtime (prereq: OpenBao + ESO + token Secret — VAULT.md)
+vault:
+  enabled: true
