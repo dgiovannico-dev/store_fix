@@ -28,7 +28,7 @@
 
 ## 3 — Stack produzione
 
-> **Alternativa Fase 4:** k3s + Helm — [`KUBERNETES.md`](./KUBERNETES.md) (chart `deploy/helm/facilityflow`). Scegliere **un** path per host (Compose **oppure** k3s).
+> **Alternativa Fase 4:** k3s + Helm — [`KUBERNETES.md`](./KUBERNETES.md) · cutover [`COMPOSE_TO_K3S.md`](./COMPOSE_TO_K3S.md). Scegliere **un** path per host (Compose **oppure** k3s).
 
 - [ ] Clone repo in `/opt/facilityflow` (o path team)
 - [ ] `docker compose -f compose.prod.yaml --env-file .env.prod up -d --build` — [`COMPOSE_PROD.md`](./COMPOSE_PROD.md) **oppure** `helm upgrade --install` (F4)

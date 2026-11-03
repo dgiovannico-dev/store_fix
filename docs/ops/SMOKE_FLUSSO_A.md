@@ -28,10 +28,12 @@ Il lifecycle ticket end-to-end resta sul test dominio sopra (server actions, non
 
 ## Staging (manuale pre-exit)
 
-1. Login owner seed pilota
+1. Login owner seed pilota (Credentials **oppure** Keycloak SSO su k3s — [`KEYCLOAK.md`](./KEYCLOAK.md))
 2. Apri ticket frigo critico da store
 3. Assign vendor → vendor `in_progress` → `done` (foto+costo)
 4. Store verify
 5. Dashboard HQ mostra ticket verified / costi
+
+Su **Ingress k3s**: stessi passi contro `https://$FF_DOMAIN` — checklist cutover [`COMPOSE_TO_K3S.md`](./COMPOSE_TO_K3S.md) §5.
 
 Annotare data + esito in Sprint Review S5.
