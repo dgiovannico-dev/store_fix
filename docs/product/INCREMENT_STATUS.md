@@ -3,7 +3,7 @@
 **Aggiornato:** 2026-11-03 — **dev-only**; F3-01 VPS umano; **Fase 4 Done in-repo** (k3s/Helm/OpenBao/Keycloak/cutover)  
 Hardening recente: F4-01…05 + retro [`retros/F4-2026-11-03.md`](./retros/F4-2026-11-03.md); Compose digests.
 
-**Autopilot:** F3-02…F3-08 Done; **F4-01…05 Done in-repo**. Resta F3-01 / install k3s+OpenBao+Keycloak su host (umano). Niente Fase 5 inventata.
+**Autopilot:** F3-02…F3-08 Done; **F4-01…05 Done in-repo**; CI `helm:template`. Resta F3-01 / install k3s+OpenBao+Keycloak su host (umano). Niente Fase 5 inventata.
 
 | Sprint / fase | Stato | Note |
 |---------------|-------|------|
@@ -22,9 +22,9 @@ Autopilot continua su debt / hardening / gap codice senza inventare nuove Fase 3
 
 ### Prove locali
 
-- `npm run verify:local` · `npm audit` → 0 · `npm run build` OK
-- `npm run smoke:http` PASS (2026-10-29) · **anche in CI** post-`next start`
-- `compose:prod|lab|observe:config` OK · `vps:preflight` OK (preflight ≠ deploy)
+- `npm run verify:local` · `npm audit --audit-level=high` (0 high+; moderate eslint/minimatch waived) · `npm run build` OK
+- `npm run smoke:http` PASS · **anche in CI** post-`next start`
+- `npm run helm:template` · `compose:prod|lab|observe:config` OK · `vps:preflight` OK (preflight ≠ deploy)
 
 ## Quando riprenderà il deploy (umano)
 
