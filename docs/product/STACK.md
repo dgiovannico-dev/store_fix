@@ -22,8 +22,8 @@ Dettaglio backlog: [`BACKLOG.md`](./BACKLOG.md).
 | Area | Scelta OSS | Licenza tipica | Escluso (a pagamento / SaaS) |
 |------|------------|----------------|------------------------------|
 | App UI | **Next.js** App Router + **TypeScript** + **Tailwind** + **shadcn/ui**; companion approvati: **motion**, **TanStack** (Table/Query), **React Hook Form + Zod** | MIT | — |
-| Auth | **Auth.js** (NextAuth v5) + sessioni in Postgres; **F4:** Keycloak OIDC + Auth.js broker | ISC/MIT · Apache-2.0 | Clerk, Auth0, Supabase Auth managed |
-| Secrets (F4) | **OpenBao** (API Vault KV v2) + External Secrets su k3s; lab `.env` | MPL-2.0 | AWS Secrets Manager, Doppler, HCP Vault |
+| Auth | **Auth.js** (NextAuth v5) + sessioni in Postgres; **F4:** Keycloak IdP **condiviso** (realm `platform`) + Auth.js broker | ISC/MIT · Apache-2.0 | Clerk, Auth0, Supabase Auth managed |
+| Secrets (F4) | **OpenBao** piattaforma (KV `apps/<id>/`) + External Secrets; lab `.env` | MPL-2.0 | AWS Secrets Manager, Doppler, HCP Vault |
 | Orchestrazione (F4) | **k3s** + **Helm** su VPS EU | Apache-2.0 | EKS, GKE, AKS |
 | DB | **PostgreSQL 16** (container Compose) | PostgreSQL License | Neon, Supabase Cloud, PlanetScale |
 | ORM | **Prisma** | Apache-2.0 | — |

@@ -45,8 +45,8 @@ vault:
   # auth:
   #   method: kubernetes
 
-# OIDC default; Credentials lab-only (ADR-0011 / F4-04)
+# OIDC default; Credentials lab-only (ADR-0011 / F4-04/06)
 keycloak:
   enabled: true
   credentialsEnabled: false
-  # issuer: https://auth.example/realms/facilityflow
+  # issuer: https://auth.example/realms/platform
