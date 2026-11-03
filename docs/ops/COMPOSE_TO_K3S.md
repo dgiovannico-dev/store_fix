@@ -48,7 +48,7 @@ Annotare in [`BACKUP.md`](./BACKUP.md) restore-drill log (target scratch, **no**
 
 1. **k3s + Helm** — [`KUBERNETES.md`](./KUBERNETES.md)
 2. **ESO** poi **OpenBao** — [`VAULT.md`](./VAULT.md) (init/unseal, KV seed incl. `AUTH_KEYCLOAK_SECRET`)
-3. **Keycloak** (chart ufficiale/Bitnami) + import [`deploy/keycloak/realm-facilityflow.json`](../../deploy/keycloak/realm-facilityflow.json) — [`KEYCLOAK.md`](./KEYCLOAK.md)
+3. **Keycloak** (chart ufficiale/Bitnami) + import [`deploy/keycloak/realm-platform.json`](../../deploy/keycloak/realm-platform.json) — [`KEYCLOAK.md`](./KEYCLOAK.md) · multi-app [`PLATFORM_IAM.md`](./PLATFORM_IAM.md)
 4. Namespace `facilityflow`; token ESO Secret `openbao-eso-token`
 5. Postgres / Seaweed: restano **esterni** al chart (Compose sul nodo *oppure* StatefulSet dedicati). Se Compose DB resta: non esporre porte pubbliche.
 6. **Helm app** staging poi prod:
@@ -58,7 +58,7 @@ helm upgrade --install ff ./deploy/helm/facilityflow \
   -n facilityflow --create-namespace \
   -f deploy/helm/facilityflow/values-staging.yaml \
   --set ingress.host="staging.$FF_DOMAIN" \
-  --set keycloak.issuer="https://auth.$FF_DOMAIN/realms/facilityflow" \
+  --set keycloak.issuer="https://auth.$FF_DOMAIN/realms/platform" \
   --set app.image.repository=ghcr.io/OWNER/facilityflow \
   --set app.image.tag=0.1.0 \
   --set worker.image.repository=ghcr.io/OWNER/facilityflow-worker \

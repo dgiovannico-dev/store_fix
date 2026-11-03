@@ -2,34 +2,36 @@
 
 ## Status
 
-Accepted (Fase 4 — deferred implementation; path locked)
+Accepted (Fase 4 — path locked; **F4-06** multi-app platform)
 
 ## Date
 
-2026-11-03
+2026-11-03 (amended 2026-11-04)
 
 ## Context
 
-ADR-0003 locks Auth.js + Postgres sessions for MVP. Product now requires **Keycloak** as IdP and a **Vault** secret manager on the same self-hosted VPS/Kubernetes stack (ADR-0010). Both are OSS and self-hostable; a big-bang cutover would block pilota.
+ADR-0003 locks Auth.js + Postgres sessions for MVP. Product requires **Keycloak** as IdP and a **Vault** secret manager on the same self-hosted VPS/Kubernetes stack (ADR-0010). Both must serve **più applicativi** sullo stesso VPS (non solo FacilityFlow).
 
 ## Decision
 
-1. **Secrets (F4-03):** **OpenBao** (Vault-compatible KV v2 API, MPL-2.0) on the cluster — satisfies ADR-0001 (HashiCorp Vault post-2023 is BSL, not OSI). Inject via External Secrets Operator / agent into Helm. `.env.prod` remains for Compose lab only. Operators may say “Vault”; we mean the OpenBao binary unless an explicit waiver is recorded.
-2. **Auth (F4-04):** Introduce **Keycloak** as OIDC provider; FacilityFlow keeps **Auth.js as OIDC client/broker** first (Credentials may remain for lab/seed). Full removal of Auth.js credentials is a later slice after Keycloak realms/roles map to Membership/RBAC.
-3. Supersede ADR-0003 only when OIDC path is default in prod values and Credentials are lab-only — track in BACKLOG F4-04 DoD.
+1. **Secrets:** **OpenBao** (Vault-compatible KV v2, MPL-2.0) is a **shared platform** service (ADR-0001 — no HashiCorp Vault BSL). Layout: `secret/apps/<app-id>/…` + per-app ESO policies. FacilityFlow path: `secret/apps/facilityflow/runtime`. Inject via External Secrets into each app’s namespace Secret.
+2. **Auth:** **Keycloak** is a **shared IdP**. Default: **one realm `platform`** + **one confidential OIDC client per application** (SSO). Separate realms only for distinct user populations. FacilityFlow client: `facilityflow-app`; Auth.js remains OIDC broker (Credentials lab-only in prod).
+3. FacilityFlow must **not** embed OpenBao/Keycloak as chart subcharts owned by the app; install once, onboard apps via clients + policies — [`docs/ops/PLATFORM_IAM.md`](../ops/PLATFORM_IAM.md).
+4. Supersede ADR-0003 only when OIDC is default in prod values and Credentials are lab-only (F4-04 DoD).
 
 ## Consequences
 
-- New ADR does **not** delete Auth.js tables yet; dual path during migration.
-- Vault unseal / init is human ops on VPS — documented in [`docs/ops/VAULT.md`](../ops/VAULT.md) (F4-03).
-- Keycloak realm export checked into `deploy/keycloak/` (no secrets).
-- VPS RAM: plan Keycloak + Vault alongside app (≥ 8 GB recommended).
+- Issuer URL: `https://auth.<domain>/realms/platform` (not `/realms/facilityflow`).
+- Operators say “Vault” → OpenBao unless waived.
+- Realm export: [`deploy/keycloak/realm-platform.json`](../../deploy/keycloak/realm-platform.json).
+- VPS RAM: plan shared Keycloak + OpenBao + N apps (≥ 8 GB).
 
 ## Alternatives rejected
 
 | Alternative | Perché no |
 |-------------|-----------|
-| Replace Auth.js overnight | Breaks sessions/RBAC/tests; no thin slice |
-| Cloud IdP (Auth0/Clerk) | Violates ADR-0001 OSS-only |
-| Keep only `.env` files in K8s | No rotation/audit; conflicts with Vault ask |
-| SaaS Vault (HCP) | Paid cloud; out of VPS self-host intent |
+| Realm Keycloak per ogni app | Niente SSO; overhead admin |
+| Un solo client OIDC per tutte le app | Redirect/audience confusi; blast radius |
+| Policy OpenBao `secret/*` per ogni ESO | Lateral secret read tra app |
+| Cloud IdP / HCP Vault | Viola ADR-0001 OSS-only / self-host |
+| Replace Auth.js overnight | Breaks sessions/RBAC |

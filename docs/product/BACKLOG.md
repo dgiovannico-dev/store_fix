@@ -611,7 +611,7 @@ E00 Platform OSS (Compose, SeaweedFS, Mailpit, pg-boss, Prisma schema)
 
 ## Fase 4 — Kubernetes / Keycloak / Vault (VPS, no AWS)
 
-> **Confermato 2026-11-03 · Done in-repo 2026-11-03.** Target prod: **k3s + Helm** su VPS EU (non EKS). IdP **Keycloak**; secret **OpenBao** (API Vault — ADR-0001). Lab resta Compose. ADR: [`../adr/0010-k3s-helm-on-vps.md`](../adr/0010-k3s-helm-on-vps.md), [`../adr/0011-keycloak-oidc-and-vault.md`](../adr/0011-keycloak-oidc-and-vault.md). Ops: [`../ops/KUBERNETES.md`](../ops/KUBERNETES.md) · cutover [`../ops/COMPOSE_TO_K3S.md`](../ops/COMPOSE_TO_K3S.md).  
+> **Confermato 2026-11-03 · Done in-repo 2026-11-03 (+ F4-06 2026-11-04).** Target prod: **k3s + Helm** su VPS EU (non EKS). IdP **Keycloak** e secret **OpenBao** = **piattaforma condivisa** multi-app ([`../ops/PLATFORM_IAM.md`](../ops/PLATFORM_IAM.md)). Lab resta Compose. ADR: [`../adr/0010-k3s-helm-on-vps.md`](../adr/0010-k3s-helm-on-vps.md), [`../adr/0011-keycloak-oidc-and-vault.md`](../adr/0011-keycloak-oidc-and-vault.md). Ops: [`../ops/KUBERNETES.md`](../ops/KUBERNETES.md) · cutover [`../ops/COMPOSE_TO_K3S.md`](../ops/COMPOSE_TO_K3S.md).  
 > Install k3s/Keycloak/OpenBao su host resta umano (come F3-01).
 
 | ID | Titolo | Priorità | AC (1 riga) | Dip. VPS |
@@ -621,6 +621,7 @@ E00 Platform OSS (Compose, SeaweedFS, Mailpit, pg-boss, Prisma schema)
 | **F4-03** | OpenBao + External Secrets → runtime Secret | **P1** | Done 2026-11-03 — `deploy/openbao` + ESO templates + `VAULT.md`; install/unseal host = umano | Sì (ops) |
 | **F4-04** | Keycloak OIDC + Auth.js broker | **P0** | Done 2026-11-03 — realm export + Auth.js Keycloak + prod Credentials off; install IdP host = umano | Sì (ops) |
 | **F4-05** | Runbook Compose→k3s + DR + smoke A su cluster | **P0** | Done 2026-11-03 — `COMPOSE_TO_K3S.md`; cutover/smoke/DR host = umano | **Sì** |
+| **F4-06** | Keycloak + OpenBao multi-app (piattaforma) | **P0** | Done 2026-11-04 — realm `platform` + KV `apps/<id>/` + policy per-app + `PLATFORM_IAM.md` | Sì (ops) |
 
 ---
 

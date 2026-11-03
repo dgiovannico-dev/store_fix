@@ -9,7 +9,7 @@ const fullOidc = {
   AUTH_OIDC_ENABLED: "1",
   AUTH_KEYCLOAK_ID: "facilityflow-app",
   AUTH_KEYCLOAK_SECRET: "s3cret",
-  AUTH_KEYCLOAK_ISSUER: "https://auth.example/realms/facilityflow",
+  AUTH_KEYCLOAK_ISSUER: "https://auth.example/realms/platform",
 };
 
 describe("oidc-config (F4-04)", () => {
@@ -47,9 +47,9 @@ describe("oidc-config (F4-04)", () => {
   it("keycloakProviderOptions normalizza issuer trailing slash", () => {
     const opts = keycloakProviderOptions({
       ...fullOidc,
-      AUTH_KEYCLOAK_ISSUER: "https://auth.example/realms/facilityflow/",
+      AUTH_KEYCLOAK_ISSUER: "https://auth.example/realms/platform/",
     });
-    expect(opts.issuer).toBe("https://auth.example/realms/facilityflow");
+    expect(opts.issuer).toBe("https://auth.example/realms/platform");
     expect(opts.clientId).toBe("facilityflow-app");
   });
 });

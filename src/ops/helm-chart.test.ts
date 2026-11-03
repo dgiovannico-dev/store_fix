@@ -33,7 +33,7 @@ describe("Helm chart facilityflow (F4-01…03)", () => {
     expect(values).toMatch(/keycloak:\s*\n\s*enabled:\s*false/);
     expect(values).toMatch(/existingSecret:\s*facilityflow-runtime/);
     expect(values).toMatch(/podDisruptionBudget:\s*\n\s*enabled:\s*false/);
-    expect(values).toMatch(/secretPath:\s*facilityflow\/runtime/);
+    expect(values).toMatch(/secretPath:\s*apps\/facilityflow\/runtime/);
   });
 
   it("staging/prod abilitano PDB + vault + keycloak; prod Credentials off", () => {
@@ -56,9 +56,9 @@ describe("Helm chart facilityflow (F4-01…03)", () => {
     expect(
       existsSync(path.join(openbaoRoot, "values-standalone.yaml")),
     ).toBe(true);
-    expect(existsSync(path.join(openbaoRoot, "policies/eso-read.hcl"))).toBe(
-      true,
-    );
+    expect(
+      existsSync(path.join(openbaoRoot, "policies/facilityflow-eso.hcl")),
+    ).toBe(true);
     expect(existsSync(path.join(process.cwd(), "docs/ops/VAULT.md"))).toBe(
       true,
     );

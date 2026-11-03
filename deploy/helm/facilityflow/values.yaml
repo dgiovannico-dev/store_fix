@@ -66,8 +66,8 @@ vault:
   enabled: false
   server: "http://openbao.openbao.svc:8200"
   kvMount: secret
-  # KV v2 path without mount prefix (ESO remoteRef.key)
-  secretPath: facilityflow/runtime
+  # KV v2 path without mount prefix (ESO remoteRef.key) — F4-06 multi-app layout
+  secretPath: apps/facilityflow/runtime
   refreshInterval: 1h
   auth:
     # token (bootstrap) | kubernetes
@@ -79,12 +79,12 @@ vault:
       role: facilityflow-eso
       audiences: ["openbao"]
 
-# Keycloak OIDC (F4-04) — Auth.js broker; Credentials lab-only when enabled in prod
+# Keycloak OIDC (F4-04/06) — shared realm platform; Credentials lab-only in prod
 keycloak:
   enabled: false
   clientId: facilityflow-app
-  # issuer: https://auth.example/realms/facilityflow
-  # When enabled, set issuer via values or --set; client secret via OpenBao/runtime Secret
+  # issuer: https://auth.example/realms/platform
+  # Shared IdP — see docs/ops/PLATFORM_IAM.md
   credentialsEnabled: true
 
 # PDB (F4-02) — enable in staging/prod overlays

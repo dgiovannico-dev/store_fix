@@ -1,11 +1,10 @@
-# OpenBao policy for External Secrets Operator (F4-03).
-# Apply after init: bao policy write facilityflow-eso deploy/openbao/policies/eso-read.hcl
-# KV v2 path: secret/data/facilityflow/runtime
+# Deprecated alias (F4-03 name) → use facilityflow-eso.hcl
+# Kept so old runbook snippets still resolve; same ACL as facilityflow-eso.
 
-path "secret/data/facilityflow/*" {
+path "secret/data/apps/facilityflow/*" {
   capabilities = ["read"]
 }
 
-path "secret/metadata/facilityflow/*" {
+path "secret/metadata/apps/facilityflow/*" {
   capabilities = ["read", "list"]
 }

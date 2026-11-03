@@ -1,0 +1,101 @@
+{
+  "realm": "platform",
+  "enabled": true,
+  "displayName": "Platform IdP (shared)",
+  "registrationAllowed": false,
+  "loginWithEmailAllowed": true,
+  "duplicateEmailsAllowed": false,
+  "resetPasswordAllowed": true,
+  "editUsernameAllowed": false,
+  "sslRequired": "external",
+  "roles": {
+    "realm": [
+      {
+        "name": "offline_access",
+        "description": "${role_offline-access}"
+      },
+      {
+        "name": "uma_authorization",
+        "description": "${role_uma_authorization}"
+      }
+    ]
+  },
+  "clients": [
+    {
+      "clientId": "facilityflow-app",
+      "name": "FacilityFlow App",
+      "description": "FacilityFlow Retail — OIDC confidential client (one client per app)",
+      "enabled": true,
+      "publicClient": false,
+      "secret": "REPLACE_AT_IMPORT",
+      "protocol": "openid-connect",
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "authorizationServicesEnabled": false,
+      "fullScopeAllowed": true,
+      "rootUrl": "${FF_APP_URL}",
+      "baseUrl": "/",
+      "redirectUris": [
+        "${FF_APP_URL}/api/auth/callback/keycloak",
+        "http://localhost:3000/api/auth/callback/keycloak"
+      ],
+      "webOrigins": ["${FF_APP_URL}", "http://localhost:3000", "+"],
+      "attributes": {
+        "pkce.code.challenge.method": "S256",
+        "post.logout.redirect.uris": "${FF_APP_URL}/*##http://localhost:3000/*"
+      },
+      "protocolMappers": [
+        {
+          "name": "email",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-property-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.attribute": "email",
+            "claim.name": "email",
+            "jsonType.label": "String",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "userinfo.token.claim": "true"
+          }
+        },
+        {
+          "name": "audience-facilityflow",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "consentRequired": false,
+          "config": {
+            "included.client.audience": "facilityflow-app",
+            "id.token.claim": "false",
+            "access.token.claim": "true"
+          }
+        }
+      ]
+    },
+    {
+      "clientId": "example-sibling-app",
+      "name": "Example Sibling App (template)",
+      "description": "Disabled stub — duplicate & rename when onboarding another app on the shared realm",
+      "enabled": false,
+      "publicClient": false,
+      "secret": "REPLACE_AT_IMPORT_SIBLING",
+      "protocol": "openid-connect",
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "fullScopeAllowed": true,
+      "rootUrl": "${SIBLING_APP_URL}",
+      "redirectUris": [
+        "${SIBLING_APP_URL}/api/auth/callback/keycloak"
+      ],
+      "webOrigins": ["${SIBLING_APP_URL}", "+"],
+      "attributes": {
+        "pkce.code.challenge.method": "S256"
+      }
+    }
+  ],
+  "_comment": "F4-06 — shared realm platform; one confidential client per application. No real secrets. App RBAC stays in each SoR (ADR-0011)."
+}
