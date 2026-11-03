@@ -72,10 +72,11 @@ npm run helm:template   # lint + template base/staging/prod (PDB + digest check)
 | **F4-02** | Done — overlays + PDB + digests |
 | **F4-03** | Done in-repo — OpenBao values + ESO SecretStore/ExternalSecret → `facilityflow-runtime`; [`VAULT.md`](./VAULT.md) |
 | **F4-04** | Done in-repo — realm export + Auth.js Keycloak; [`KEYCLOAK.md`](./KEYCLOAK.md) |
-| **F4-05** | Runbook Compose → k3s + DR |
+| **F4-05** | Done in-repo — [`COMPOSE_TO_K3S.md`](./COMPOSE_TO_K3S.md) (cutover + DR + smoke A); install host = umano |
 
 Postgres / SeaweedFS: restano **esterni** al chart app (Compose sul nodo o StatefulSet dedicati).
 
 ## Relazione con F3-01
 
-Exit pilota può chiudersi su **Compose** (path attuale `NEXT_VPS.md`) **oppure** su k3s quando helm install + smoke Flusso A sono verdi. Non richiedere entrambi sullo stesso host piccolo.
+Exit pilota può chiudersi su **Compose** (path attuale `NEXT_VPS.md`) **oppure** su k3s quando helm install + smoke Flusso A sono verdi. Non richiedere entrambi sullo stesso host piccolo.  
+Cutover passo-passo: [`COMPOSE_TO_K3S.md`](./COMPOSE_TO_K3S.md).

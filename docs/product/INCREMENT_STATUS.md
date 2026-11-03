@@ -1,9 +1,9 @@
 # Increment status — FacilityFlow Retail
 
 **Aggiornato:** 2026-11-03 — **dev-only**; F3-01 VPS umano; **Fase 4 avviata** (k3s/Helm/Keycloak/Vault)  
-Hardening recente: Helm F4-01…04 (OpenBao/ESO + Keycloak OIDC broker); Compose digests.
+Hardening recente: Fase 4 in-repo completa (F4-01…05 Helm/OpenBao/Keycloak/cutover doc); Compose digests.
 
-**Autopilot:** F3-02…F3-08 Done; F4-01…04 Done in-repo; next F4-05 Compose→k3s runbook. Install k3s/OpenBao/Keycloak su host = umano.
+**Autopilot:** F3-02…F3-08 Done; **F4-01…05 Done in-repo**. Resta F3-01 / install k3s+OpenBao+Keycloak su host (umano). Niente Fase 5 inventata.
 
 | Sprint / fase | Stato | Note |
 |---------------|-------|------|
@@ -13,7 +13,7 @@ Hardening recente: Helm F4-01…04 (OpenBao/ESO + Keycloak OIDC broker); Compose
 | Fase 2 (F2-01…F2-09) | **Done** | Intake, preventivi, scorecard, PM, CSV, PWA, AI, email inbound, audit |
 | Fase 3 (F3-02…F3-08) | **Done in-repo** | observe, summarize, IMAP, RRULE, i18n prefs, RFQ, store push |
 | F3-01 Exit pilota | **Blocked (skip deploy)** | Host/DNS/VPS — Compose **o** k3s (F4) |
-| Fase 4 (F4-01…05) | **In progress** | k3s+Helm · Vault · Keycloak — [`BACKLOG.md`](./BACKLOG.md) · [`../ops/KUBERNETES.md`](../ops/KUBERNETES.md) |
+| Fase 4 (F4-01…05) | **Done in-repo** | k3s+Helm · OpenBao · Keycloak · cutover — [`COMPOSE_TO_K3S.md`](../ops/COMPOSE_TO_K3S.md) |
 
 ## Modalità corrente
 
