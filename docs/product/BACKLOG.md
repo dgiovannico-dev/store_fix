@@ -619,7 +619,7 @@ E00 Platform OSS (Compose, SeaweedFS, Mailpit, pg-boss, Prisma schema)
 | **F4-01** | k3s + Helm chart scaffold (app/worker/ingress) | **P0** | Done 2026-11-03 — `deploy/helm/facilityflow` + `helm:template` + docs; lab Compose invariato | No (scaffold) / Sì (install) |
 | **F4-02** | Helm values staging/prod + image digests + PDB | **P1** | Done 2026-11-03 — overlays + PDB + `helm:template` staging/prod | No |
 | **F4-03** | OpenBao + External Secrets → runtime Secret | **P1** | Done 2026-11-03 — `deploy/openbao` + ESO templates + `VAULT.md`; install/unseal host = umano | Sì (ops) |
-| **F4-04** | Keycloak OIDC + Auth.js broker | **P0** | Realm export; Auth.js OIDC provider; Credentials lab-only in prod values | Sì (ops) |
+| **F4-04** | Keycloak OIDC + Auth.js broker | **P0** | Done 2026-11-03 — realm export + Auth.js Keycloak + prod Credentials off; install IdP host = umano | Sì (ops) |
 | **F4-05** | Runbook Compose→k3s + DR + smoke A su cluster | **P0** | Migrate doc; backup/restore; smoke Flusso A UI su ingress | **Sì** |
 
 ---

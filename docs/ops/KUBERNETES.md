@@ -71,7 +71,7 @@ npm run helm:template   # lint + template base/staging/prod (PDB + digest check)
 | **F4-01** | app + worker Deployments, Service, Ingress |
 | **F4-02** | Done — overlays + PDB + digests |
 | **F4-03** | Done in-repo — OpenBao values + ESO SecretStore/ExternalSecret → `facilityflow-runtime`; [`VAULT.md`](./VAULT.md) |
-| **F4-04** | Keycloak + Auth.js OIDC |
+| **F4-04** | Done in-repo — realm export + Auth.js Keycloak; [`KEYCLOAK.md`](./KEYCLOAK.md) |
 | **F4-05** | Runbook Compose → k3s + DR |
 
 Postgres / SeaweedFS: restano **esterni** al chart app (Compose sul nodo o StatefulSet dedicati).

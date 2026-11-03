@@ -558,6 +558,8 @@ export const it = {
     email: "Email",
     password: "Password",
     signIn: "Accedi",
+    signInOidc: "Accedi con SSO (Keycloak)",
+    orEmail: "oppure con email",
     forgot: "Password dimenticata?",
     createWorkspace: "Crea workspace",
     errCredentials: "Email o password non corretti.",

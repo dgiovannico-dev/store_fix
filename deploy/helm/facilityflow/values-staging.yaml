@@ -36,3 +36,9 @@ podDisruptionBudget:
 # ESO → facilityflow-runtime (prereq: OpenBao + ESO + token Secret — VAULT.md)
 vault:
   enabled: true
+
+# Dual path during migration: OIDC + Credentials (set issuer on install)
+keycloak:
+  enabled: true
+  credentialsEnabled: true
+  # issuer: https://auth.staging.example/realms/facilityflow

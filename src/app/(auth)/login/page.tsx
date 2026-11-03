@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { auth } from "@/auth";
+import { auth, isAuthCredentialsEnabled, isAuthOidcEnabled } from "@/auth";
 import { loginAction } from "@/app/actions/login";
+import { loginOidcAction } from "@/app/actions/login-oidc";
 import { StatusPanel } from "@/components/ui/status-panel";
 import { requestLocale, requestMessages } from "@/i18n/request-locale";
 
@@ -21,6 +22,8 @@ export default async function LoginPage({ searchParams }: Props) {
   ]);
   const msg = msgCatalog.auth;
   const params = await searchParams;
+  const showCredentials = isAuthCredentialsEnabled();
+  const showOidc = isAuthOidcEnabled();
   const error =
     params.error === "CredentialsSignin"
       ? msg.errCredentials
@@ -45,75 +48,108 @@ export default async function LoginPage({ searchParams }: Props) {
           {msg.tagline}
         </p>
 
-        <form className="mt-10 space-y-5" action={loginAction}>
-          <input
-            type="hidden"
-            name="callbackUrl"
-            value={params.callbackUrl ?? "/onboarding"}
-          />
-
-          <div className="space-y-1.5">
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium text-[var(--foreground)]"
-            >
-              {msg.email}
-            </label>
+        {showOidc ? (
+          <form className="mt-10" action={loginOidcAction}>
             <input
-              id="email"
-              name="email"
-              type="email"
-              autoComplete="email"
-              required
-              className="w-full rounded-[var(--radius)] border border-[var(--border)] bg-white px-3 py-2.5 text-base outline-none ring-[var(--ring)] focus:ring-2"
+              type="hidden"
+              name="callbackUrl"
+              value={params.callbackUrl ?? "/onboarding"}
             />
-          </div>
-
-          <div className="space-y-1.5">
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium text-[var(--foreground)]"
+            <button
+              type="submit"
+              className="w-full rounded-[var(--radius)] border border-[var(--border)] bg-white px-4 py-3 text-base font-medium text-[var(--foreground)] transition hover:bg-[var(--muted)]"
             >
-              {msg.password}
-            </label>
-            <input
-              id="password"
-              name="password"
-              type="password"
-              autoComplete="current-password"
-              required
-              minLength={8}
-              className="w-full rounded-[var(--radius)] border border-[var(--border)] bg-white px-3 py-2.5 text-base outline-none ring-[var(--ring)] focus:ring-2"
-            />
-          </div>
+              {msg.signInOidc}
+            </button>
+          </form>
+        ) : null}
 
-          {error ? (
+        {showOidc && showCredentials ? (
+          <p className="mt-6 text-center text-sm text-[var(--muted-foreground)]">
+            {msg.orEmail}
+          </p>
+        ) : null}
+
+        {showCredentials ? (
+          <form
+            className={showOidc ? "mt-4 space-y-5" : "mt-10 space-y-5"}
+            action={loginAction}
+          >
+            <input
+              type="hidden"
+              name="callbackUrl"
+              value={params.callbackUrl ?? "/onboarding"}
+            />
+
+            <div className="space-y-1.5">
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-[var(--foreground)]"
+              >
+                {msg.email}
+              </label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                autoComplete="email"
+                required
+                className="w-full rounded-[var(--radius)] border border-[var(--border)] bg-white px-3 py-2.5 text-base outline-none ring-[var(--ring)] focus:ring-2"
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-[var(--foreground)]"
+              >
+                {msg.password}
+              </label>
+              <input
+                id="password"
+                name="password"
+                type="password"
+                autoComplete="current-password"
+                required
+                minLength={8}
+                className="w-full rounded-[var(--radius)] border border-[var(--border)] bg-white px-3 py-2.5 text-base outline-none ring-[var(--ring)] focus:ring-2"
+              />
+            </div>
+
+            {error ? (
+              <StatusPanel kind="error" title={error} locale={locale} />
+            ) : null}
+
+            <button
+              type="submit"
+              className="w-full rounded-[var(--radius)] bg-[var(--primary)] px-4 py-3 text-base font-medium text-[var(--primary-foreground)] transition hover:opacity-90"
+            >
+              {msg.signIn}
+            </button>
+          </form>
+        ) : error ? (
+          <div className="mt-8">
             <StatusPanel kind="error" title={error} locale={locale} />
-          ) : null}
+          </div>
+        ) : null}
 
-          <button
-            type="submit"
-            className="w-full rounded-[var(--radius)] bg-[var(--primary)] px-4 py-3 text-base font-medium text-[var(--primary-foreground)] transition hover:opacity-90"
-          >
-            {msg.signIn}
-          </button>
-        </form>
-
-        <p className="mt-6 text-sm text-[var(--muted-foreground)]">
-          <Link
-            href="/forgot-password"
-            className="font-medium text-[var(--primary)] underline-offset-4 hover:underline"
-          >
-            {msg.forgot}
-          </Link>
-          {" · "}
-          <Link
-            href="/register"
-            className="font-medium text-[var(--primary)] underline-offset-4 hover:underline"
-          >
-            {msg.createWorkspace}
-          </Link>
-        </p>
+        {showCredentials ? (
+          <p className="mt-6 text-sm text-[var(--muted-foreground)]">
+            <Link
+              href="/forgot-password"
+              className="font-medium text-[var(--primary)] underline-offset-4 hover:underline"
+            >
+              {msg.forgot}
+            </Link>
+            {" · "}
+            <Link
+              href="/register"
+              className="font-medium text-[var(--primary)] underline-offset-4 hover:underline"
+            >
+              {msg.createWorkspace}
+            </Link>
+          </p>
+        ) : null}
       </div>
     </main>
   );

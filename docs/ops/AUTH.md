@@ -2,7 +2,8 @@
 
 ## Sessioni
 
-- Provider: **Credentials** (email/password).
+- Provider lab: **Credentials** (email/password).
+- Provider prod (F4-04): **Keycloak OIDC** via Auth.js broker — [`KEYCLOAK.md`](./KEYCLOAK.md); Credentials lab-only (`AUTH_CREDENTIALS_ENABLED=0` in Helm prod).
 - Cookie sessione: **httpOnly**, `SameSite=Lax`, `Path=/` — vedi tabella cookie sotto.
 - Strategy: **JWT** (Auth.js) + riga `Session` in Postgres (token in JWT) per revoke — AC T1.11.
 - Claim sessione: `tenantId`, `role`, `membershipId` (Membership attiva).
@@ -40,6 +41,11 @@ Link: `/verify-email?token=…&email=…` — token SHA-256 in `VerificationToke
 Auth.js supporta il provider **Email** sullo stesso SMTP (`SMTP_*` / Mailpit).  
 Non è abilitato di default in MVP (Credentials + conferma email bastano per HQ).  
 Per attivarlo in un fork: aggiungere `Email({ server: { host, port }, from })` in `src/auth.ts` e documentare `AUTH_SECRET` + deliverability SMTP.
+
+## Keycloak OIDC (F4-04)
+
+Flag: `AUTH_OIDC_ENABLED` + `AUTH_KEYCLOAK_ID` / `AUTH_KEYCLOAK_SECRET` / `AUTH_KEYCLOAK_ISSUER`.  
+Realm export: `deploy/keycloak/realm-facilityflow.json`. Runbook: [`KEYCLOAK.md`](./KEYCLOAK.md).
 
 ## Rate limit
 
