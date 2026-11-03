@@ -8,7 +8,7 @@ cd "$ROOT"
 PATTERN='(AUTH_SECRET=|POSTGRES_PASSWORD=|S3_SECRET_KEY=|password\s*=\s*["'\''][^"'\'']{8,}|-----BEGIN (RSA |EC )?PRIVATE KEY-----)'
 
 # Escludi template env, docs ops e questo script (PATTERN self-match)
-HITS=$(git ls-files -z | xargs -0 grep -nE "$PATTERN" 2>/dev/null | grep -vE '\.env(\.prod)?\.example|secrets-scan\.sh|SECRETS\.md|SEED_PILOT\.md|seed-pilot\.ts|seed-stress\.ts|seed\.ts|COMPOSE_PROD\.md|docs/ops/AUTH\.md' || true)
+HITS=$(git ls-files -z | xargs -0 grep -nE "$PATTERN" 2>/dev/null | grep -vE '\.env(\.prod)?\.example|secrets-scan\.sh|SECRETS\.md|VAULT\.md|SEED_PILOT\.md|seed-pilot\.ts|seed-stress\.ts|seed\.ts|COMPOSE_PROD\.md|docs/ops/AUTH\.md' || true)
 
 if [[ -n "$HITS" ]]; then
   echo "secrets-scan FAIL — possibili secret in file tracked:"
