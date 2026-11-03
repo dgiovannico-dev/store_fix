@@ -60,10 +60,24 @@ ingress:
   tls: true
   annotations: {}
 
-# Placeholders — OpenBao (Vault API) / Keycloak in F4-03 / F4-04
+# OpenBao via External Secrets (F4-03). Requires ESO CRDs on cluster.
+# Runbook: docs/ops/VAULT.md · infra values: deploy/openbao/
 vault:
   enabled: false
-  # OpenBao addr example: http://openbao.openbao.svc:8200
+  server: "http://openbao.openbao.svc:8200"
+  kvMount: secret
+  # KV v2 path without mount prefix (ESO remoteRef.key)
+  secretPath: facilityflow/runtime
+  refreshInterval: 1h
+  auth:
+    # token (bootstrap) | kubernetes
+    method: token
+    tokenSecretName: openbao-eso-token
+    tokenSecretKey: token
+    kubernetes:
+      mountPath: kubernetes
+      role: facilityflow-eso
+      audiences: ["openbao"]
 
 keycloak:
   enabled: false

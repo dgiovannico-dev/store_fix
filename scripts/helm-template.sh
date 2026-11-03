@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Render Helm chart without a cluster (F4-01/02). Uses alpine/helm via Docker if helm CLI absent.
+# Render Helm chart without a cluster (F4-01…03). Uses alpine/helm via Docker if helm CLI absent.
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 CHART="${ROOT}/deploy/helm/facilityflow"
@@ -44,6 +44,19 @@ echo "$OUT" | grep -q 'kind: PodDisruptionBudget' || {
   echo "helm-template FAIL: expected PodDisruptionBudget in staging render" >&2
   exit 1
 }
+# F4-03: staging enables vault → ExternalSecret + SecretStore
+echo "$OUT" | grep -q 'kind: ExternalSecret' || {
+  echo "helm-template FAIL: expected ExternalSecret in staging render (vault.enabled)" >&2
+  exit 1
+}
+echo "$OUT" | grep -q 'kind: SecretStore' || {
+  echo "helm-template FAIL: expected SecretStore in staging render" >&2
+  exit 1
+}
+echo "$OUT" | grep -q 'name: facilityflow-runtime' || {
+  echo "helm-template FAIL: expected target Secret facilityflow-runtime" >&2
+  exit 1
+}
 OUT_PROD="$(run_helm template ff-prod "${CHART}" --namespace facilityflow \
   -f "${CHART}/values-prod.yaml" \
   --set app.image.digest=sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc \
@@ -52,5 +65,16 @@ echo "$OUT_PROD" | grep -q '@sha256:cccccccccccccccc' || {
   echo "helm-template FAIL: expected app image digest in prod render" >&2
   exit 1
 }
+echo "$OUT_PROD" | grep -q 'kind: ExternalSecret' || {
+  echo "helm-template FAIL: expected ExternalSecret in prod render" >&2
+  exit 1
+}
 
-echo "helm-template OK (base + staging + prod)"
+# Base values keep vault off — no ExternalSecret
+OUT_BASE="$(run_helm template ff "${CHART}" --namespace facilityflow)"
+if echo "$OUT_BASE" | grep -q 'kind: ExternalSecret'; then
+  echo "helm-template FAIL: base values must not enable vault/ExternalSecret" >&2
+  exit 1
+fi
+
+echo "helm-template OK (base + staging + prod + OpenBao ESO)"
