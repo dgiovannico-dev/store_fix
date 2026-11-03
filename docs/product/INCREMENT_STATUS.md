@@ -1,7 +1,7 @@
 # Increment status — FacilityFlow Retail
 
 **Aggiornato:** 2026-11-03 — **dev-only**; F3-01 VPS umano; **Fase 4 Done in-repo** (k3s/Helm/OpenBao/Keycloak/cutover)  
-Hardening recente: F4-01…05 + retro [`retros/F4-2026-11-03.md`](./retros/F4-2026-11-03.md); Compose digests.
+Hardening recente: F4-01…05 + CI helm + vitest/tailwind patch; retro [`retros/F4-2026-11-03.md`](./retros/F4-2026-11-03.md).
 
 **Autopilot:** F3-02…F3-08 Done; **F4-01…05 Done in-repo**; CI `helm:template`. Resta F3-01 / install k3s+OpenBao+Keycloak su host (umano). Niente Fase 5 inventata.
 
