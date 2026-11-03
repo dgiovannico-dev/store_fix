@@ -28,8 +28,10 @@
 
 ## 3 — Stack produzione
 
+> **Alternativa Fase 4:** k3s + Helm — [`KUBERNETES.md`](./KUBERNETES.md) (chart `deploy/helm/facilityflow`). Scegliere **un** path per host (Compose **oppure** k3s).
+
 - [ ] Clone repo in `/opt/facilityflow` (o path team)
-- [ ] `docker compose -f compose.prod.yaml --env-file .env.prod up -d --build` — [`COMPOSE_PROD.md`](./COMPOSE_PROD.md)
+- [ ] `docker compose -f compose.prod.yaml --env-file .env.prod up -d --build` — [`COMPOSE_PROD.md`](./COMPOSE_PROD.md) **oppure** `helm upgrade --install` (F4)
 - [ ] `ps` healthy; `live`/`ready` 200 (localhost + HTTPS via Caddy) — [`HEALTH.md`](./HEALTH.md) · [`PROXY.md`](./PROXY.md)
 - [ ] Da laptop: `npm run vps:remote-check` PASS
 

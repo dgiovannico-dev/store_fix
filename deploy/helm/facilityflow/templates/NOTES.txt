@@ -1,0 +1,12 @@
+FacilityFlow {{ .Chart.Version }} installed as release {{ .Release.Name }}.
+
+1. Create runtime secret (until Vault F4-03):
+   kubectl -n {{ .Release.Namespace }} create secret generic {{ .Values.external.existingSecret }} \
+     --from-literal=DATABASE_URL='postgresql://...' \
+     --from-literal=AUTH_SECRET='...'
+
+2. Ingress host: {{ .Values.ingress.host }}
+   Point DNS A/AAAA to the VPS; ensure Traefik/Caddy ingress is ready.
+
+3. Lab path remains Docker Compose — see docs/ops/COMPOSE.md.
+   K8s ops: docs/ops/KUBERNETES.md · ADR-0010 / ADR-0011.
