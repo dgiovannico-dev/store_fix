@@ -89,6 +89,15 @@ jobs:
         # US-E14-01 / T5.4 — sintassi proxy (HSTS site) senza stack up
         run: npm run caddy:validate
 
+      - name: Setup Helm
+        # F4 — pin chart render without cluster (matches scripts/helm-template.sh 3.16.x)
+        uses: azure/setup-helm@1a275c3b69536ee54be43f2070a358922e12c8d4 # v4.3.1
+        with:
+          version: "v3.16.4"
+
+      - name: Helm template (F4)
+        run: npm run helm:template
+
       - name: Prisma generate + migrate
         run: |
           npx prisma generate
