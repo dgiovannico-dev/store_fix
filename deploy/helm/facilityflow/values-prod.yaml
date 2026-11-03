@@ -38,3 +38,9 @@ ingress:
 podDisruptionBudget:
   enabled: true
   minAvailable: 1
+
+vault:
+  enabled: true
+  # Prefer kubernetes auth after bootstrap — see docs/ops/VAULT.md
+  # auth:
+  #   method: kubernetes

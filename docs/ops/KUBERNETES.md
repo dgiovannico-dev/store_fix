@@ -32,11 +32,10 @@ kubeconfig: `/etc/rancher/k3s/k3s.yaml` (o `KUBECONFIG=` export per l’operator
 ## Deploy chart (skeleton F4-01)
 
 ```bash
-# Secret runtime (sostituito da Vault in F4-03)
 kubectl create namespace facilityflow
-# Prepare runtime.env (600) with DATABASE_URL and AUTH_SECRET — see SECRETS.md
-kubectl -n facilityflow create secret generic facilityflow-runtime \
-  --from-env-file=./runtime.env
+# Bootstrap senza OpenBao (lab): runtime.env 600 — SECRETS.md
+# kubectl -n facilityflow create secret generic facilityflow-runtime --from-env-file=./runtime.env
+# Staging/prod: OpenBao + ESO (vault.enabled) — VAULT.md
 
 # Staging
 helm upgrade --install ff ./deploy/helm/facilityflow \
@@ -70,12 +69,12 @@ npm run helm:template   # lint + template base/staging/prod (PDB + digest check)
 | Fase | Contenuto |
 |------|-----------|
 | **F4-01** | app + worker Deployments, Service, Ingress |
-| **F4-02** | Done — `values-staging.yaml` / `values-prod.yaml`, PDB, digests in prod render |
-| **F4-03** | OpenBao + External Secrets → `facilityflow-runtime` |
+| **F4-02** | Done — overlays + PDB + digests |
+| **F4-03** | Done in-repo — OpenBao values + ESO SecretStore/ExternalSecret → `facilityflow-runtime`; [`VAULT.md`](./VAULT.md) |
 | **F4-04** | Keycloak + Auth.js OIDC |
 | **F4-05** | Runbook Compose → k3s + DR |
 
-Postgres / SeaweedFS: per F4-01 restano **esterni** al chart (Compose sul nodo o StatefulSet dedicati in F4-02).
+Postgres / SeaweedFS: restano **esterni** al chart app (Compose sul nodo o StatefulSet dedicati).
 
 ## Relazione con F3-01
 

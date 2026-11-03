@@ -21,7 +21,7 @@ ADR-0003 locks Auth.js + Postgres sessions for MVP. Product now requires **Keycl
 ## Consequences
 
 - New ADR does **not** delete Auth.js tables yet; dual path during migration.
-- Vault unseal / init is human ops on VPS (documented in `docs/ops/VAULT.md` when F4-03 lands).
+- Vault unseal / init is human ops on VPS — documented in [`docs/ops/VAULT.md`](../ops/VAULT.md) (F4-03).
 - Keycloak realm export checked into `deploy/keycloak/` (no secrets).
 - VPS RAM: plan Keycloak + Vault alongside app (≥ 8 GB recommended).
 

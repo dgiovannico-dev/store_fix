@@ -3,9 +3,10 @@ import path from "node:path";
 import { describe, expect, it } from "vitest";
 
 const chartRoot = path.join(process.cwd(), "deploy/helm/facilityflow");
+const openbaoRoot = path.join(process.cwd(), "deploy/openbao");
 
-describe("Helm chart facilityflow (F4-01/02)", () => {
-  it("ha Chart.yaml, values e template app/worker/ingress/pdb", () => {
+describe("Helm chart facilityflow (F4-01…03)", () => {
+  it("ha Chart.yaml, values e template app/worker/ingress/pdb/eso", () => {
     expect(existsSync(path.join(chartRoot, "Chart.yaml"))).toBe(true);
     expect(existsSync(path.join(chartRoot, "values.yaml"))).toBe(true);
     expect(existsSync(path.join(chartRoot, "values-staging.yaml"))).toBe(true);
@@ -17,21 +18,25 @@ describe("Helm chart facilityflow (F4-01/02)", () => {
       "templates/ingress.yaml",
       "templates/pdb-app.yaml",
       "templates/pdb-worker.yaml",
+      "templates/secretstore.yaml",
+      "templates/externalsecret.yaml",
+      "templates/serviceaccount-eso.yaml",
       "templates/_helpers.tpl",
     ]) {
       expect(existsSync(path.join(chartRoot, f))).toBe(true);
     }
   });
 
-  it("values espongono vault/keycloak disabilitati di default", () => {
+  it("values espongono vault/keycloak; vault off di default", () => {
     const values = readFileSync(path.join(chartRoot, "values.yaml"), "utf8");
     expect(values).toMatch(/vault:\s*\n\s*enabled:\s*false/);
     expect(values).toMatch(/keycloak:\s*\n\s*enabled:\s*false/);
     expect(values).toMatch(/existingSecret:\s*facilityflow-runtime/);
     expect(values).toMatch(/podDisruptionBudget:\s*\n\s*enabled:\s*false/);
+    expect(values).toMatch(/secretPath:\s*facilityflow\/runtime/);
   });
 
-  it("staging/prod abilitano PDB; prod replicaCount >= 2", () => {
+  it("staging/prod abilitano PDB + vault; prod replicaCount >= 2", () => {
     const staging = readFileSync(
       path.join(chartRoot, "values-staging.yaml"),
       "utf8",
@@ -40,9 +45,20 @@ describe("Helm chart facilityflow (F4-01/02)", () => {
     expect(staging).toMatch(/podDisruptionBudget:\s*\n\s*enabled:\s*true/);
     expect(prod).toMatch(/podDisruptionBudget:\s*\n\s*enabled:\s*true/);
     expect(prod).toMatch(/replicaCount:\s*2/);
+    expect(staging).toMatch(/vault:\s*\n\s*enabled:\s*true/);
+    expect(prod).toMatch(/vault:\s*\n\s*enabled:\s*true/);
   });
 
-  it("docs e ADR F4 presenti", () => {
+  it("OpenBao values, policy e VAULT.md presenti", () => {
+    expect(
+      existsSync(path.join(openbaoRoot, "values-standalone.yaml")),
+    ).toBe(true);
+    expect(existsSync(path.join(openbaoRoot, "policies/eso-read.hcl"))).toBe(
+      true,
+    );
+    expect(existsSync(path.join(process.cwd(), "docs/ops/VAULT.md"))).toBe(
+      true,
+    );
     expect(existsSync(path.join(process.cwd(), "docs/ops/KUBERNETES.md"))).toBe(
       true,
     );

@@ -43,6 +43,11 @@ docker compose -f compose.prod.yaml --env-file /etc/facilityflow/.env.prod up -d
 
 Opzionale: montare file secret Compose (`secrets:`). MVP file env 600 è accettabile su VPS single-tenant.
 
+## Kubernetes (F4-03)
+
+Su k3s, staging/prod usano **OpenBao** + External Secrets → Secret `facilityflow-runtime`.  
+Runbook init/unseal/KV: [`VAULT.md`](./VAULT.md). Compose lab resta su file env.
+
 ## Guardrail
 
 ```bash
