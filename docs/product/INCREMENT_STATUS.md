@@ -1,10 +1,9 @@
 # Increment status — FacilityFlow Retail
 
-**Aggiornato:** 2026-10-30 — **dev-only** (nessun deploy VPS); F3-01 resta tracking umano  
-Hardening recente in-repo: nodemailer **10.3.1**; SeaweedFS **3.99**; GlitchTip **v5.2.1**; React **19.3.1**; Caddy **2.11.7**.
+**Aggiornato:** 2026-11-03 — **dev-only**; F3-01 VPS umano; **Fase 4 avviata** (k3s/Helm/Keycloak/Vault)  
+Hardening recente: Helm scaffold F4-01; nodemailer **10.3.1**; digests Compose; Dependabot no-majors.
 
-**Autopilot soft-stop (in-repo):** F3-02…F3-08 Done; supply-chain pins + Dependabot (no majors) + CI Actions SHA + digests Compose/Dockerfiles.  
-Niente altro item codice senza inventare Fase 4. Ripresa = **VPS/DNS umani** (F3-01) oppure nuova bozza backlog.
+**Autopilot:** F3-02…F3-08 Done; F4-01 chart in-repo; F4-02…05 next. Install k3s/Vault/Keycloak su host = umano.
 
 | Sprint / fase | Stato | Note |
 |---------------|-------|------|
@@ -13,7 +12,8 @@ Niente altro item codice senza inventare Fase 4. Ripresa = **VPS/DNS umani** (F3
 | S5 | Lab PASS / **NO-GO VPS** | Ops E14; gap in [`sprints/S5-EXIT-GAPS.md`](./sprints/S5-EXIT-GAPS.md) |
 | Fase 2 (F2-01…F2-09) | **Done** | Intake, preventivi, scorecard, PM, CSV, PWA, AI, email inbound, audit |
 | Fase 3 (F3-02…F3-08) | **Done in-repo** | observe, summarize, IMAP, RRULE, i18n prefs, RFQ, store push |
-| F3-01 Exit pilota | **Blocked (skip deploy)** | Host/DNS/VPS — ripresa solo quando richiesto |
+| F3-01 Exit pilota | **Blocked (skip deploy)** | Host/DNS/VPS — Compose **o** k3s (F4) |
+| Fase 4 (F4-01…05) | **In progress** | k3s+Helm · Vault · Keycloak — [`BACKLOG.md`](./BACKLOG.md) · [`../ops/KUBERNETES.md`](../ops/KUBERNETES.md) |
 
 ## Modalità corrente
 

@@ -1,0 +1,74 @@
+# FacilityFlow — default values (lab/staging). Override per env; secrets via Vault (F4-03).
+# Images: keep digest pins aligned with Dockerfiles / COMPOSE.md.
+
+nameOverride: ""
+fullnameOverride: ""
+
+imagePullSecrets: []
+
+app:
+  enabled: true
+  replicaCount: 1
+  image:
+    repository: facilityflow/app
+    tag: "0.1.0"
+    # Prefer digest in prod: digest: "sha256:..."
+    digest: ""
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    port: 3000
+  resources:
+    requests:
+      cpu: 250m
+      memory: 512Mi
+    limits:
+      cpu: "1"
+      memory: 1Gi
+  env:
+    NODE_ENV: production
+    # NEXT_PUBLIC_APP_URL / AUTH_SECRET / DATABASE_URL injected from Secret (Vault later)
+  extraEnv: []
+
+worker:
+  enabled: true
+  replicaCount: 1
+  image:
+    repository: facilityflow/worker
+    tag: "0.1.0"
+    digest: ""
+    pullPolicy: IfNotPresent
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+# External Postgres / Seaweed (recommended). In-cluster DBs are out of F4-01 scope.
+external:
+  databaseUrlSecretKey: DATABASE_URL
+  existingSecret: facilityflow-runtime
+  s3Endpoint: ""
+  s3Bucket: facilityflow-attachments
+
+ingress:
+  enabled: true
+  className: traefik
+  host: facilityflow.example
+  tls: true
+  annotations: {}
+
+# Placeholders — OpenBao (Vault API) / Keycloak in F4-03 / F4-04
+vault:
+  enabled: false
+  # OpenBao addr example: http://openbao.openbao.svc:8200
+
+keycloak:
+  enabled: false
+  # issuer: https://auth.example/realms/facilityflow
+
+nodeSelector: {}
+tolerations: []
+affinity: {}

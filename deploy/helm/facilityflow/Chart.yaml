@@ -1,0 +1,13 @@
+apiVersion: v2
+name: facilityflow
+description: FacilityFlow Retail — app + worker on k3s (VPS EU, OSS-only)
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+keywords:
+  - facilityflow
+  - retail
+  - maintenance
+maintainers:
+  - name: FacilityFlow
+home: https://github.com/dgiovannico-dev/store_fix
