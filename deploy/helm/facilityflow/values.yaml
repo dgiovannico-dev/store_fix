@@ -69,6 +69,11 @@ keycloak:
   enabled: false
   # issuer: https://auth.example/realms/facilityflow
 
+# PDB (F4-02) — enable in staging/prod overlays
+podDisruptionBudget:
+  enabled: false
+  minAvailable: 1
+
 nodeSelector: {}
 tolerations: []
 affinity: {}
