@@ -17,6 +17,7 @@ Hardening recente: F4-01…06 + F5-UX + positioning [`COMPETITIVE_POSITIONING.md
 | Fase 5 (F5-UX-00…15) | **Done salvo F5-UX-14** | Day/Week/Month GCal ancora aperto |
 | Fase 6 (F6-01…10) | **Bozza PO** | Motivi di preferenza — conferma prima di sprint |
 | Fase 7 (F7-01…10) | **Bozza PO** | AI vLLM + multi-provider BYOK — [`AI_PLATFORM.md`](./AI_PLATFORM.md) |
+| Fase 8 (F8-01…10) | **Bozza PO** | Tutorial interattivo — [`INTERACTIVE_TUTORIAL.md`](./INTERACTIVE_TUTORIAL.md) |
 
 ## Modalità corrente
 
