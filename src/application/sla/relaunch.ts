@@ -52,25 +52,35 @@ export async function relaunchSlaTicket(input: {
     };
   }
 
-  await appendTicketEvent({
-    tenantId: input.tenantId,
-    ticketId: ticket.id,
-    actorUserId: input.actorUserId,
-    type: TicketEventType.slaRelaunch,
-    fromStatus: ticket.status,
-    toStatus: ticket.status,
-    meta: { note: parsed.data.note },
-  });
-
-  // Re-notify con chiave distinta dal breach originale (anti-idempotenza)
-  const { enqueueEmail } = await import("@/infrastructure/email/outbox");
+  const { appendEmailOutbox, kickEmailOutboxDispatch } = await import(
+    "@/infrastructure/email/outbox"
+  );
   const { resolveHqRecipients } = await import(
     "@/application/notifications/recipients"
   );
   const { NotificationType } = await import("@/domain/notification/types");
   const hq = await resolveHqRecipients(input.tenantId);
-  if (hq.length > 0) {
-    await prisma.notification.createMany({
+  const stamp = Date.now().toString(36);
+  const { locale } = await getTenantI18nPrefs(input.tenantId);
+  const relaunchPrefix = locale === "en" ? "SLA relaunch:" : "Rilancio SLA:";
+
+  await prisma.$transaction(async (tx) => {
+    await appendTicketEvent(
+      {
+        tenantId: input.tenantId,
+        ticketId: ticket.id,
+        actorUserId: input.actorUserId,
+        type: TicketEventType.slaRelaunch,
+        fromStatus: ticket.status,
+        toStatus: ticket.status,
+        meta: { note: parsed.data.note },
+      },
+      tx,
+    );
+
+    if (hq.length === 0) return;
+
+    await tx.notification.createMany({
       data: hq.map((r) => ({
         tenantId: input.tenantId,
         userId: r.userId,
@@ -83,25 +93,24 @@ export async function relaunchSlaTicket(input: {
         },
       })),
     });
-    const stamp = Date.now().toString(36);
-    const { locale } = await getTenantI18nPrefs(input.tenantId);
-    const relaunchPrefix = locale === "en" ? "SLA relaunch:" : "Rilancio SLA:";
-    await Promise.all(
-      hq.map((r) =>
-        enqueueEmail({
-          to: r.email,
-          template: "ticket_breach",
-          locale,
-          vars: {
-            ticketId: ticket.id,
-            storeName: ticket.store?.name,
-            summary: `${relaunchPrefix} ${parsed.data.note}`,
-          },
-          idempotencyKey: `ticket_breach:relaunch:${ticket.id}:${r.email}:${stamp}`,
-        }),
-      ),
-    );
-  }
+
+    for (const r of hq) {
+      await appendEmailOutbox(tx, {
+        to: r.email,
+        template: "ticket_breach",
+        locale,
+        tenantId: input.tenantId,
+        vars: {
+          ticketId: ticket.id,
+          storeName: ticket.store?.name,
+          summary: `${relaunchPrefix} ${parsed.data.note}`,
+        },
+        idempotencyKey: `ticket_breach:relaunch:${ticket.id}:${r.email}:${stamp}`,
+      });
+    }
+  });
+
+  if (hq.length > 0) await kickEmailOutboxDispatch();
 
   return { ok: true as const, ticket };
 }

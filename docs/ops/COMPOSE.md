@@ -72,7 +72,7 @@ Pubblicate su **`127.0.0.1` only** in `docker-compose.yml` (lab): evita bind `0.
 | `seaweedfs` | `127.0.0.1:8333` S3 · `9333` master | bucket via `npm run storage:init` |
 | `mailpit` | `127.0.0.1:1025` SMTP · `8025` UI | solo profile `dev` / QA |
 | `app` | `127.0.0.1:3000` | profile `full` oppure `npm run dev` |
-| `worker` | — | pg-boss · `email.send` / SLA stub; `no-new-privileges` |
+| `worker` | — | pg-boss · `email.outbox_dispatch` / SLA / IMAP / PM; `no-new-privileges` |
 
 `app` / `worker` (profile `full`): `security_opt: no-new-privileges:true`.  
 Images: `Dockerfile` / `Dockerfile.worker` base `node:22.23.4-alpine@sha256:fe4f6d74…`; app `USER nextjs`; worker `USER worker` (uid 1001).  

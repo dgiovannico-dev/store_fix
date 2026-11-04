@@ -1,7 +1,10 @@
 import { createHash, randomBytes } from "crypto";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/infrastructure/db/prisma";
-import { enqueueEmail } from "@/infrastructure/email/outbox";
+import {
+  appendEmailOutbox,
+  kickEmailOutboxDispatch,
+} from "@/infrastructure/email/outbox";
 import { checkActionRateLimit } from "@/infrastructure/rate-limit-action";
 import { RATE_LIMIT } from "@/infrastructure/rate-limit-policies";
 import { rateLimitKey } from "@/infrastructure/security/client-ip";
@@ -48,26 +51,28 @@ export async function requestPasswordReset(
   if (!user) return;
 
   const identifier = `${RESET_PREFIX}${email}`;
-  await prisma.verificationToken.deleteMany({ where: { identifier } });
-
   const raw = randomBytes(32).toString("hex");
-  await prisma.verificationToken.create({
-    data: {
-      identifier,
-      token: hashToken(raw),
-      expires: new Date(Date.now() + RESET_TTL_MS),
-    },
-  });
-
   const url = `${appBaseUrl()}/reset-password?token=${raw}&email=${encodeURIComponent(email)}`;
-  // Pre-tenant: default IT (MVP); Accept-Language later.
-  await enqueueEmail({
-    to: email,
-    template: "password_reset",
-    locale: "it",
-    vars: { resetUrl: url },
-    idempotencyKey: `password_reset:${email}:${raw.slice(0, 8)}`,
+
+  await prisma.$transaction(async (tx) => {
+    await tx.verificationToken.deleteMany({ where: { identifier } });
+    await tx.verificationToken.create({
+      data: {
+        identifier,
+        token: hashToken(raw),
+        expires: new Date(Date.now() + RESET_TTL_MS),
+      },
+    });
+    // Pre-tenant: default IT (MVP); Accept-Language later.
+    await appendEmailOutbox(tx, {
+      to: email,
+      template: "password_reset",
+      locale: "it",
+      vars: { resetUrl: url },
+      idempotencyKey: `password_reset:${email}:${raw.slice(0, 8)}`,
+    });
   });
+  await kickEmailOutboxDispatch();
 }
 
 export async function resetPassword(input: {

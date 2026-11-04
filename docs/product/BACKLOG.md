@@ -5,7 +5,7 @@
 > **Gate codice:** approvazione umana esplicita + lavoro su branch `develop` / `feature/*` (non commit diretti su `main`).  
 > **Vincolo hard:** stack **100% open source / self-host**, nessun componente SaaS a pagamento. Dettaglio: [`STACK.md`](./STACK.md).  
 > **RBAC:** [`RBAC.md`](./RBAC.md).  
-> **Scope:** MVP (Fase 1) + production-ready (**E14 / S5**). **Fase 2 Done** (F2-01…F2-09). **Fase 3** in-repo Done (F3-02…08; **F3-01** = VPS umano). **Fase 4 Done in-repo** (F4-01…05, 2026-11-03). **Fase 5** UX (F5-UX-14 in corso). **Fase 6–8 GO PO 2026-11-04** — implementazione in corso (F3-01 resta host).  
+> **Scope:** MVP (Fase 1) + production-ready (**E14 / S5**). **Fase 2 Done** (F2-01…F2-09). **Fase 3** in-repo Done (F3-02…09; **F3-01** = VPS umano). **Fase 4 Done in-repo** (F4-01…05, 2026-11-03). **Fase 5** UX (F5-UX-14 in corso). **Fase 6–8 GO PO 2026-11-04** — implementazione in corso (F3-01 resta host).  
 > **Lingua UI MVP:** italiano. Mercato: Italia / EUR.  
 > **Go prod:** NO-GO finché VPS — [`sprints/S5-EXIT-GAPS.md`](./sprints/S5-EXIT-GAPS.md) · [`../ops/NEXT_VPS.md`](../ops/NEXT_VPS.md).  
 > **Integrazione:** GitFlow **con PR auto-merge** — `feature/*`/`bugfix/*` → PR → `develop`; lab sync / `release/*`/`hotfix/*` → `main` (`scripts/gitflow-ship-pr.sh`).
@@ -340,8 +340,8 @@ Eventi: nuovo ticket, assign, breach SLA, done, verified/rifiuto.
 **AC**
 - [x] Entità `Notification` (userId, type, ticketId?, payload, readAt)
 - [x] Regole destinatari documentate: nuovo→ops; assign→vendor; breach→ops; done→ops+store; verified/reject→ops+vendor
-- [x] Creazione in-app + enqueue email atomici rispetto all’evento dominio (o outbox pattern)
-- [x] Email outbox distinta da Notification UI (pg-boss `email.send`)
+- [x] Creazione in-app + enqueue email atomici rispetto all’evento dominio (UoW/outbox affidabile — F3-09)
+- [x] Email outbox distinta da Notification UI (`EmailOutbox` + `email.outbox_dispatch`)
 
 ---
 
@@ -594,7 +594,7 @@ E00 Platform OSS (Compose, SeaweedFS, Mailpit, pg-boss, Prisma schema)
 
 ## Fase 3 — post-pilota / post-VPS (in-repo Done; F3-01 = host)
 
-> **Gate soft:** F3-01 (VPS) resta tracking umano; **autopilot** può implementare F3-02…F3-08 in-repo in parallelo (OSS-only). WhatsApp Business Cloud API a pagamento resta **fuori scope**. Deploy prod solo dopo F3-01 GO.
+> **Gate soft:** F3-01 (VPS) resta tracking umano; **autopilot** può implementare F3-02…F3-09 in-repo in parallelo (OSS-only). WhatsApp Business Cloud API a pagamento resta **fuori scope**. Deploy prod solo dopo F3-01 GO.
 
 | ID | Titolo | Priorità | AC (1 riga) | Dip. VPS GO |
 |----|--------|----------|-------------|-------------|
@@ -606,6 +606,7 @@ E00 Platform OSS (Compose, SeaweedFS, Mailpit, pg-boss, Prisma schema)
 | **F3-06** | Multi-lingua / multi-regione light | **P2** | Done 2026-10-29 — `Tenant.defaultLocale/currency/dateLocale` + format helpers + `/app/settings/locale`; chrome usa prefs | No |
 | **F3-07** | RFQ vendor interno (no marketplace) | **P2** | Done 2026-10-29 — `QuoteRequest`/`QuoteBid`; HQ `/app/rfq` + vendor `/vendor/rfq`; award → ticket F2-02 | No |
 | **F3-08** | Push store (ntfy / webhook self-host) | **P2** | Done 2026-10-29 — `Store.webhookUrl`/`ntfyTopic` + emit created/assigned/done; env `NTFY_*`; no WA | No (env VPS) |
+| **F3-09** | Transactional email outbox (SoR send) | **P0** | Done — `EmailOutbox` + `appendEmailOutbox` stessa TX dominio; dispatcher `email.outbox_dispatch` SKIP LOCKED; no Set in-memory; `email.send` retired | No |
 
 ---
 
@@ -664,7 +665,7 @@ E00 Platform OSS (Compose, SeaweedFS, Mailpit, pg-boss, Prisma schema)
 | **F6-04** | Playbook breach one-click | **P1** | Done — `breachPlaybookAction` + nota template | No |
 | **F6-05** | Contratto vs misurato | **P1** | Done — `/app/contratti/performance` | No |
 | **F6-06** | Onboarding pilota 15×5 | **P0** | Done — copy pilota + link tutorial | No |
-| **F6-07** | Transactional email outbox | **P0** | Done — `EmailOutbox` + SKIP LOCKED drain | No |
+| **F6-07** | Transactional email outbox | **P0** | Done ≡ F3-09 — `EmailOutbox` + SKIP LOCKED dispatch | No |
 | **F6-08** | Calendario Day+Week+Month | **P1** | Done ≡ F5-UX-14 | No |
 | **F6-09** | Store wallboard / TV | **P2** | Done — `/app/wallboard` refresh 30s | No |
 | **F6-10** | Pacchetto Franchise HQ IT | **P1** | Done — onboarding copy franchise/pilota (seed SLA già E10) | No |
