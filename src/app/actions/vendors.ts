@@ -1,7 +1,6 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { auth } from "@/auth";
 import {
   createVendor,
   softDeleteVendor,
@@ -9,12 +8,7 @@ import {
 } from "@/domain/vendors/vendor-service";
 import { actionError } from "@/i18n/action-errors";
 import { actionResultError } from "@/i18n/domain-errors";
-
-async function sessionTenant() {
-  const session = await auth();
-  if (!session?.user?.id || !session.tenantId || !session.role) return null;
-  return session;
-}
+import { sessionTenant } from "@/lib/auth/session-tenant";
 
 function tradesFromForm(formData: FormData): string[] {
   const raw = String(formData.get("trades") ?? "");
