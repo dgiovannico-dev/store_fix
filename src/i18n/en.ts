@@ -129,6 +129,7 @@ export const en = {
   },
   common: {
     loading: "Loading…",
+    working: "Working…",
     error: "Something went wrong",
     empty: "No items",
     back: "Back",
@@ -718,6 +719,7 @@ export const en = {
     email: "Email",
     password: "Password",
     signIn: "Sign in",
+    signingIn: "Signing in…",
     signInOidc: "Sign in with SSO (Keycloak)",
     orEmail: "or with email",
     forgot: "Forgot password?",
@@ -735,12 +737,14 @@ export const en = {
     forgotHint:
       "Enter your email: if an account exists, you will get a reset link.",
     sendLink: "Send link",
+    sendingLink: "Sending…",
     backLogin: "Back to sign in",
     resetIncomplete: "Incomplete link.",
     requestNewLink: "Request a new link",
     newPasswordTitle: "New password",
     newPasswordPlaceholder: "New password",
     savePassword: "Save password",
+    savingPassword: "Saving…",
     verifyOk: "Email confirmed. You can sign in to the workspace.",
     verifyExpired:
       "The confirmation link expired. Request a new one from your account.",
