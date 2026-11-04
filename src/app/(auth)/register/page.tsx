@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useActionState } from "react";
 import { signupAction, type SignupActionState } from "@/app/actions/signup";
+import { AuthMistWash } from "@/components/auth/auth-mist-wash";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { StatusPanel } from "@/components/ui/status-panel";
@@ -17,10 +18,7 @@ export default function RegisterPage() {
 
   return (
     <main className="relative flex min-h-dvh flex-col items-center justify-center overflow-hidden px-6 py-16">
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_70%_15%,oklch(0.92_0.05_195/0.5),transparent_48%),radial-gradient(ellipse_at_20%_85%,oklch(0.93_0.04_210/0.65),transparent_40%),linear-gradient(165deg,oklch(0.985_0.01_210),oklch(0.94_0.025_195))]"
-      />
+      <AuthMistWash />
 
       <div className="relative z-10 w-full max-w-md">
         <h1 className="font-[family-name:var(--font-sora)] text-4xl font-semibold tracking-tight text-[var(--primary)] sm:text-5xl">

@@ -17,7 +17,7 @@ describe("web app manifest F2-06", () => {
     expect(m.lang).toBe("it");
     expect(m.display).toBe("standalone");
     expect(m.start_url).toBe("/app");
-    expect(m.theme_color).toBe("#2a3a55");
+    expect(m.theme_color).toBe("#0f766e");
     const sizes = (m.icons ?? []).map((i) => i.sizes);
     expect(sizes).toContain("192x192");
     expect(sizes).toContain("512x512");

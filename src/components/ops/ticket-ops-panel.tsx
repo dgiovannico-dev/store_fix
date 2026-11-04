@@ -79,7 +79,7 @@ export function TicketOpsPanel({
             <textarea
               name="note"
               rows={2}
-              className="mt-1 w-full rounded-[var(--radius)] border border-[var(--border)] bg-white px-3 py-2 text-sm"
+              className="mt-1 w-full rounded-[var(--radius)] border border-[var(--border)] bg-[var(--card)] px-3 py-2 text-sm"
             />
           </label>
           {triageState.error ? (
@@ -109,7 +109,7 @@ export function TicketOpsPanel({
               required
               value={vendorId}
               onChange={(e) => setVendorId(e.target.value)}
-              className="mt-1 w-full rounded-[var(--radius)] border border-[var(--border)] bg-white px-3 py-2 text-sm"
+              className="mt-1 w-full rounded-[var(--radius)] border border-[var(--border)] bg-[var(--card)] px-3 py-2 text-sm"
             >
               <option value="" disabled>
                 {labels.opsSelect}
@@ -168,7 +168,7 @@ export function TicketOpsPanel({
             <select
               name="priority"
               defaultValue={priority}
-              className="mt-1 w-full rounded-[var(--radius)] border border-[var(--border)] bg-white px-3 py-2 text-sm"
+              className="mt-1 w-full rounded-[var(--radius)] border border-[var(--border)] bg-[var(--card)] px-3 py-2 text-sm"
             >
               {priorities.map((p) => (
                 <option key={p.value} value={p.value}>
@@ -182,7 +182,7 @@ export function TicketOpsPanel({
             <textarea
               name="note"
               rows={2}
-              className="mt-1 w-full rounded-[var(--radius)] border border-[var(--border)] bg-white px-3 py-2 text-sm"
+              className="mt-1 w-full rounded-[var(--radius)] border border-[var(--border)] bg-[var(--card)] px-3 py-2 text-sm"
             />
           </label>
           {assignState.error ? (
@@ -212,7 +212,7 @@ export function TicketOpsPanel({
               required
               minLength={3}
               rows={2}
-              className="mt-1 w-full rounded-[var(--radius)] border border-[var(--border)] bg-white px-3 py-2 text-sm"
+              className="mt-1 w-full rounded-[var(--radius)] border border-[var(--border)] bg-[var(--card)] px-3 py-2 text-sm"
             />
           </label>
           {cancelState.error ? (

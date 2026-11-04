@@ -155,7 +155,7 @@ export function SegnalaChatWizard({
                 className={`rounded-[var(--radius)] border px-3 py-3 text-left text-sm font-medium ${
                   draft.category === c.value
                     ? "border-[var(--primary)] bg-[var(--primary)] text-[var(--primary-foreground)]"
-                    : "border-[var(--border)] bg-white"
+                    : "border-[var(--border)] bg-[var(--card)]"
                 }`}
               >
                 {c.label}
@@ -177,7 +177,7 @@ export function SegnalaChatWizard({
                 className={`rounded-[var(--radius)] border px-3 py-3 text-left text-sm font-medium ${
                   draft.priority === p.value
                     ? "border-[var(--primary)] bg-[var(--primary)] text-[var(--primary-foreground)]"
-                    : "border-[var(--border)] bg-white"
+                    : "border-[var(--border)] bg-[var(--card)]"
                 }`}
               >
                 {p.label}
@@ -194,7 +194,7 @@ export function SegnalaChatWizard({
                 setDraft((d) => ({ ...d, assetId: "" }));
                 setStep("description");
               }}
-              className="w-full rounded-[var(--radius)] border border-[var(--border)] bg-white px-3 py-3 text-left text-sm"
+              className="w-full rounded-[var(--radius)] border border-[var(--border)] bg-[var(--card)] px-3 py-3 text-left text-sm"
             >
               {labels.noAsset}
             </button>
@@ -206,7 +206,7 @@ export function SegnalaChatWizard({
                   setDraft((d) => ({ ...d, assetId: a.id }));
                   setStep("description");
                 }}
-                className="w-full rounded-[var(--radius)] border border-[var(--border)] bg-white px-3 py-3 text-left text-sm"
+                className="w-full rounded-[var(--radius)] border border-[var(--border)] bg-[var(--card)] px-3 py-3 text-left text-sm"
               >
                 {a.label}
               </button>
@@ -229,7 +229,7 @@ export function SegnalaChatWizard({
               minLength={5}
               rows={4}
               placeholder={labels.descriptionPlaceholder}
-              className="w-full rounded-[var(--radius)] border border-[var(--border)] bg-white px-3 py-3 text-base"
+              className="w-full rounded-[var(--radius)] border border-[var(--border)] bg-[var(--card)] px-3 py-3 text-base"
             />
             <button
               type="button"
