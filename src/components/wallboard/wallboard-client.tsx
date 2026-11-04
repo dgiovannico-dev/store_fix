@@ -251,6 +251,21 @@ export function WallboardClient(props: {
 
           <div ref={sentinelRef} className="h-8" aria-hidden />
 
+          {loadingMore ? (
+            <ul
+              className="mt-4 grid gap-4 md:grid-cols-2 xl:grid-cols-3"
+              aria-busy="true"
+              aria-live="polite"
+            >
+              {Array.from({ length: 3 }).map((_, i) => (
+                <li
+                  key={`skel-${i}`}
+                  className="h-56 animate-pulse rounded-[var(--radius)] border border-[var(--border)] bg-[var(--muted)]"
+                />
+              ))}
+            </ul>
+          ) : null}
+
           {nextSkip != null ? (
             <div className="mt-2 flex justify-center">
               <button

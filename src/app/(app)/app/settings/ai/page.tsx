@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Role } from "@prisma/client";
 import { auth } from "@/auth";
+import { getTenantI18nPrefs } from "@/application/tenant/i18n-prefs";
 import { PageFrame } from "@/components/layout/page-frame";
 import { AiSettingsClient } from "@/components/settings/ai-settings-client";
 import { resolvePlatformAiConfig } from "@/infrastructure/ai/llm-gateway";
@@ -22,9 +23,10 @@ export default async function AiSettingsPage() {
     redirect("/app/dashboard");
   }
 
-  const [cfg, msg] = await Promise.all([
+  const [cfg, msg, prefs] = await Promise.all([
     Promise.resolve(resolvePlatformAiConfig()),
     tenantMessages(session.tenantId),
+    getTenantI18nPrefs(session.tenantId),
   ]);
   const copy = msg.settingsAi;
 
@@ -45,6 +47,7 @@ export default async function AiSettingsPage() {
           source={cfg?.sourceLabel ?? copy.sourceHeuristic}
           model={cfg?.model ?? msg.common.emptyDash}
           labels={copy}
+          locale={prefs.locale}
         />
         <p className="text-sm text-[var(--muted-foreground)]">
           {copy.footerDocs}{" "}
