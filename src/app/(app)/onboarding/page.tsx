@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { SkipForward } from "lucide-react";
 import { auth } from "@/auth";
 import {
   ensureSlaDefaultsAction,
@@ -12,6 +13,7 @@ import {
   getOnboardingSnapshot,
   type OnboardingStepId,
 } from "@/domain/onboarding/progress";
+import { OnboardingTourLaunch } from "@/features/product-tour/onboarding-tour-launch";
 import { tenantMessages } from "@/i18n/tenant-messages";
 
 export default async function OnboardingPage() {
@@ -36,8 +38,8 @@ export default async function OnboardingPage() {
 
   return (
     <PageFrame narrow className="flex flex-col gap-6" data-tour="hq.onboarding">
-      <header className="flex items-start justify-between gap-4">
-        <div>
+      <header className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div className="min-w-0 flex-1">
           <h1 className="font-[family-name:var(--font-sora)] text-2xl font-semibold text-[var(--primary)]">
             {copy.title}
           </h1>
@@ -45,26 +47,28 @@ export default async function OnboardingPage() {
             {copy.hint}
           </p>
           <p className="mt-2 text-sm text-[var(--muted-foreground)]">
-            Pilota tipico: 15 store × 5 vendor. Per capire ogni sezione usa{" "}
-            <strong className="font-medium text-[var(--foreground)]">
-              Aiuto → Tutorial interattivo
-            </strong>{" "}
-            (o tasto <kbd className="rounded border px-1">?</kbd>) — non
-            sostituisce questa checklist.
+            {copy.pilotHint}
           </p>
         </div>
         {!snap.skippedAt && !snap.networkComplete ? (
-          <form action={skipOnboardingAction}>
+          <form action={skipOnboardingAction} className="shrink-0 self-start">
             <button
               type="submit"
-              className="text-sm text-[var(--signal-foreground)] underline-offset-4 hover:underline"
               title={copy.skipTitle}
+              className="inline-flex cursor-pointer items-center gap-2 rounded-full border border-[color-mix(in_oklab,var(--signal)_40%,var(--border))] bg-[color-mix(in_oklab,var(--signal)_8%,var(--card))] px-3.5 py-2 text-sm font-medium text-[var(--signal-foreground)] shadow-sm transition-colors hover:bg-[color-mix(in_oklab,var(--signal)_16%,var(--card))]"
             >
+              <SkipForward className="size-3.5 shrink-0" aria-hidden />
               {copy.skip}
             </button>
           </form>
         ) : null}
       </header>
+
+      <OnboardingTourLaunch
+        label={copy.tourLaunch}
+        hint={copy.tourLaunchHint}
+        cta={copy.tourLaunchCta}
+      />
 
       {snap.skippedAt ? (
         <div className="rounded-[var(--radius)] border border-[var(--signal)] bg-[oklch(0.96_0.04_85)] px-4 py-3 text-sm">

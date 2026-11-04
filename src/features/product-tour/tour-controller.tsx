@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { usePathname, useRouter } from "next/navigation";
+import { CircleHelp } from "lucide-react";
 import { driver, type DriveStep, type Driver } from "driver.js";
 import "driver.js/dist/driver.css";
 import "@/features/product-tour/tour.css";
@@ -14,14 +15,23 @@ import {
 
 const STORAGE_KEY = "ff.tour.resume";
 const SOFT_KEY = "ff.tour.softprompt";
+/** Detects Next.js server redirects that bounce the tour (e.g. dashboard → onboarding). */
+const BOUNCE_KEY = "ff.tour.bounce";
 
 type TourState = {
   audience: TourAudience;
   mode: "full" | "page";
-  /** Index into `defs` (not filtered). */
+  /** Index into full `defs` list. */
   index: number;
   defs: TourStepDef[];
 };
+
+type BounceGuard = {
+  target: string;
+  index: number;
+  from: string;
+};
+
 
 function readState(): TourState | null {
   try {
@@ -36,9 +46,54 @@ function readState(): TourState | null {
 function writeState(state: TourState | null) {
   if (!state) {
     window.sessionStorage.removeItem(STORAGE_KEY);
+    window.sessionStorage.removeItem(BOUNCE_KEY);
     return;
   }
   window.sessionStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+
+function readBounce(): BounceGuard | null {
+  try {
+    const raw = window.sessionStorage.getItem(BOUNCE_KEY);
+    if (!raw) return null;
+    return JSON.parse(raw) as BounceGuard;
+  } catch {
+    return null;
+  }
+}
+
+function writeBounce(guard: BounceGuard | null) {
+  if (!guard) {
+    window.sessionStorage.removeItem(BOUNCE_KEY);
+    return;
+  }
+  window.sessionStorage.setItem(BOUNCE_KEY, JSON.stringify(guard));
+}
+
+/** Skip steps whose route redirected us away (same target never reached). */
+function skipBlockedRoute(
+  defs: TourStepDef[],
+  fromIndex: number,
+  blockedRoute: string,
+): number {
+  let i = fromIndex;
+  while (i < defs.length && defs[i]?.route === blockedRoute) {
+    i += 1;
+  }
+  return i;
+}
+
+function stepFitsPath(step: TourStepDef, pathname: string): boolean {
+  if (!step.route) return true;
+  return pathname === step.route || pathname.startsWith(`${step.route}/`);
+}
+
+/** Soft-nav target; `tour=1` unlocks gated pages (e.g. dashboard) during the tour. */
+function tourHref(route: string): string {
+  if (route.includes("?")) {
+    return `${route}&tour=1`;
+  }
+  return `${route}?tour=1`;
 }
 
 function toDriveStep(d: TourStepDef): DriveStep {
@@ -71,7 +126,7 @@ export function startProductTour(
   const first = defs[0];
   if (first?.route && first.route !== pathname) {
     writeState({ audience, mode, index: 0, defs });
-    window.location.assign(first.route);
+    window.location.assign(tourHref(first.route));
     return;
   }
 
@@ -86,7 +141,13 @@ export function ProductTourHost(props: {
   const pathname = usePathname();
   const router = useRouter();
   const active = useRef<Driver | null>(null);
-  const navigating = useRef(false);
+  /** True while we intentionally tear down to change route. */
+  const pendingNav = useRef(false);
+  /** Keep sessionStorage across an intentional destroy+restart on same path. */
+  const keepStateOnDestroy = useRef(false);
+  /** Effect cleanup destroy must not wipe resume state (pathname changes). */
+  const silenceDestroy = useRef(false);
+  const runId = useRef(0);
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
@@ -112,7 +173,7 @@ export function ProductTourHost(props: {
     if (window.localStorage.getItem(SOFT_KEY)) return;
     const id = window.setTimeout(() => {
       const ok = window.confirm(
-        "Vuoi un tutorial guidato di FacilityFlow?\n\nTi accompagna sezione per sezione (puoi chiudere e ripartire da Aiuto o col tasto ?).",
+        "Vuoi un tutorial guidato di FacilityFlow?\n\nTi accompagna sezione per sezione (puoi chiudere e ripartire da Aiuto / Tutorial interattivo).",
       );
       window.localStorage.setItem(SOFT_KEY, ok ? "started" : "later");
       if (ok) startProductTour(props.audience, "full");
@@ -122,6 +183,7 @@ export function ProductTourHost(props: {
 
   useEffect(() => {
     let cancelled = false;
+    const myRun = ++runId.current;
 
     async function waitForSelector(
       selector: string,
@@ -129,7 +191,7 @@ export function ProductTourHost(props: {
     ): Promise<Element | null> {
       const start = Date.now();
       while (Date.now() - start < ms) {
-        if (cancelled) return null;
+        if (cancelled || myRun !== runId.current) return null;
         const el = document.querySelector(selector);
         if (el) return el;
         await new Promise((r) => setTimeout(r, 80));
@@ -137,114 +199,325 @@ export function ProductTourHost(props: {
       return document.querySelector(selector);
     }
 
-    async function runFromStorage() {
-      const parsed = readState();
-      if (!parsed || cancelled) return;
+    function clearTour() {
+      writeState(null);
+      pendingNav.current = false;
+    }
 
-      active.current?.destroy();
-      navigating.current = false;
+    function destroyQuiet() {
+      const d = active.current;
+      active.current = null;
+      if (!d) return;
+      silenceDestroy.current = true;
+      try {
+        d.destroy();
+      } catch {
+        /* already torn down */
+      } finally {
+        silenceDestroy.current = false;
+      }
+    }
+
+    async function runFromStorage() {
+      if (cancelled || myRun !== runId.current) return;
+      const loaded = readState();
+      if (!loaded) return;
+      // Narrow once — nested handlers (handleForward) must see TourState, not null.
+      const parsed: TourState = loaded;
+
+      destroyQuiet();
+      pendingNav.current = false;
 
       let index = Math.min(
         Math.max(0, parsed.index),
         Math.max(0, parsed.defs.length - 1),
       );
-      let step = parsed.defs[index];
-      if (!step) {
-        writeState(null);
-        return;
-      }
 
-      // Se lo step richiede un'altra route, naviga e riprendi.
-      if (step.route && step.route !== pathname) {
-        navigating.current = true;
+      // Advance until we find a step that belongs on this path (or needs nav).
+      while (index < parsed.defs.length) {
+        const candidate = parsed.defs[index]!;
+        if (!candidate.route || stepFitsPath(candidate, pathname)) {
+          break;
+        }
+
+        // Server redirected us away from candidate.route (e.g. /app/dashboard
+        // → /onboarding while network onboarding incomplete). Skip that chapter.
+        const bounce = readBounce();
+        if (bounce && bounce.target === candidate.route && pathname !== candidate.route) {
+          const skippedTo = skipBlockedRoute(
+            parsed.defs,
+            index,
+            candidate.route,
+          );
+          writeBounce(null);
+          index = skippedTo;
+          writeState({ ...parsed, index });
+          continue;
+        }
+
+        // Different route → navigate once, then resume.
+        pendingNav.current = true;
+        writeBounce({
+          target: candidate.route,
+          index,
+          from: pathname,
+        });
         writeState({ ...parsed, index });
-        router.push(step.route);
+        router.push(tourHref(candidate.route));
         return;
       }
 
-      if (step.element) {
-        await waitForSelector(step.element);
-      }
-
-      // Salta ancore assenti (RBAC / empty) restando sulla stessa route.
-      while (
-        step?.element &&
-        !document.querySelector(step.element) &&
-        index < parsed.defs.length - 1
-      ) {
-        const next = parsed.defs[index + 1];
-        if (next?.route && next.route !== pathname) break;
-        index += 1;
-        step = parsed.defs[index];
-        if (step?.element) await waitForSelector(step.element, 1500);
-      }
-
-      if (!step) {
-        writeState(null);
+      if (index >= parsed.defs.length) {
+        clearTour();
         return;
       }
 
-      const driveSteps = parsed.defs.map(toDriveStep);
+      // Skip missing anchors on this path. Always advance past missing steps
+      // (even at a route boundary) so progress numbers stay sequential.
+      while (index < parsed.defs.length) {
+        const step = parsed.defs[index]!;
+        if (step.route && !stepFitsPath(step, pathname)) break;
+        if (!step.element) break;
+        const found = await waitForSelector(step.element, 2500);
+        if (cancelled || myRun !== runId.current) return;
+        if (found || document.querySelector(step.element)) break;
+
+        // Soft-nav can report /app/dashboard while SSR redirected away — abort
+        // long skips and treat as gated bounce.
+        const livePath = window.location.pathname;
+
+        if (livePath !== pathname) {
+          // React pathname lag after redirect — let effect re-run on real path.
+          writeState({ ...parsed, index });
+          return;
+        }
+
+        const bounce = readBounce();
+        if (bounce && bounce.target === step.route) {
+          const skippedTo = skipBlockedRoute(parsed.defs, index, step.route);
+          writeBounce(null);
+          index = skippedTo;
+          writeState({ ...parsed, index });
+          // Re-enter from new index (may need another nav).
+          if (cancelled || myRun !== runId.current) return;
+          if (index >= parsed.defs.length) {
+            clearTour();
+            return;
+          }
+          const nextCand = parsed.defs[index]!;
+          if (nextCand.route && !stepFitsPath(nextCand, pathname)) {
+            pendingNav.current = true;
+            writeBounce({
+              target: nextCand.route,
+              index,
+              from: pathname,
+            });
+            writeState({ ...parsed, index });
+            router.push(tourHref(nextCand.route));
+            return;
+          }
+          continue;
+        }
+
+        // Anchor still missing but page stayed: show as centered popover.
+        break;
+      }
+
+      if (cancelled || myRun !== runId.current) return;
+
+      if (index >= parsed.defs.length) {
+        clearTour();
+        return;
+      }
+
+      const current = parsed.defs[index]!;
+      if (current.route && !stepFitsPath(current, pathname)) {
+        pendingNav.current = true;
+        writeBounce({
+          target: current.route,
+          index,
+          from: pathname,
+        });
+        writeState({ ...parsed, index });
+        router.push(tourHref(current.route));
+        return;
+      }
+
+      // Chapter on this pathname. Missing anchors → centered popover (keep number).
+      const localDefs: TourStepDef[] = [];
+      const localIndexMap: number[] = [];
+      for (let i = index; i < parsed.defs.length; i += 1) {
+        const s = parsed.defs[i]!;
+        if (s.route && !stepFitsPath(s, pathname)) break;
+        if (s.element && !document.querySelector(s.element)) {
+          localDefs.push({ ...s, element: undefined });
+        } else {
+          localDefs.push(s);
+        }
+        localIndexMap.push(i);
+      }
+
+      if (localDefs.length === 0) {
+        let nextIdx = index + 1;
+        while (
+          nextIdx < parsed.defs.length &&
+          (!parsed.defs[nextIdx]!.route ||
+            stepFitsPath(parsed.defs[nextIdx]!, pathname))
+        ) {
+          nextIdx += 1;
+        }
+        if (nextIdx >= parsed.defs.length) {
+          clearTour();
+          return;
+        }
+        const nextDef = parsed.defs[nextIdx]!;
+        pendingNav.current = true;
+        writeBounce({
+          target: nextDef.route!,
+          index: nextIdx,
+          from: pathname,
+        });
+        writeState({ ...parsed, index: nextIdx });
+        router.push(tourHref(nextDef.route!));
+        return;
+      }
+
+      // Align stored index to the first playable local step.
+      index = localIndexMap[0]!;
+      writeState({ ...parsed, index });
+
+      const lastLocalGlobal = localIndexMap[localDefs.length - 1]!;
+      const moreAfterLocal = lastLocalGlobal < parsed.defs.length - 1;
+      const doneLabel = moreAfterLocal ? "Avanti" : "Ho capito";
+      const globalTotal = parsed.defs.length;
+
+      // Tear down any overlapping instance after awaits (race-safe).
+      destroyQuiet();
 
       const d = driver({
         showProgress: true,
         animate: true,
         allowClose: true,
         smoothScroll: true,
+        skipMissingElement: false,
         overlayColor: "color-mix(in oklab, #0f172a 55%, transparent)",
         stagePadding: 10,
         stageRadius: 12,
         popoverClass: "ff-tour-popover",
         nextBtnText: "Avanti",
         prevBtnText: "Indietro",
-        doneBtnText: "Ho capito",
+        doneBtnText: doneLabel,
+        // Placeholders alone are chapter-local; onPopoverRender sets global N/M.
         progressText: "{{current}} / {{total}}",
-        steps: driveSteps,
-        onDestroyed: () => {
-          if (!navigating.current) writeState(null);
-          active.current = null;
+        steps: localDefs.map((def, localIdx) => {
+          const drive = toDriveStep(def);
+          const globalIdx = localIndexMap[localIdx]!;
+          return {
+            ...drive,
+            popover: {
+              ...drive.popover,
+              progressText: `${globalIdx + 1} / ${globalTotal}`,
+            },
+          };
+        }),
+        onPopoverRender: (popover, { index: localIdx }) => {
+          const globalIdx = localIndexMap[localIdx ?? 0] ?? index;
+          popover.progress.innerText = `${globalIdx + 1} / ${globalTotal}`;
+        },
+        onDestroyed: (_el, _step, opts) => {
+          if (active.current === d) active.current = null;
+          const reason = opts?.reason;
+          if (
+            silenceDestroy.current ||
+            pendingNav.current ||
+            keepStateOnDestroy.current
+          ) {
+            keepStateOnDestroy.current = false;
+            return;
+          }
+          // Programmatic destroy() reports "api" — do not wipe resume state
+          // (fixes race that cleared tour mid-chapter on tickets).
+          if (reason === "api" || reason === "replaced") return;
+          clearTour();
         },
         onNextClick: (_el, _step, { driver: drv }) => {
-          const idx = drv.getActiveIndex() ?? index;
-          const nextIdx = idx + 1;
-          const nextDef = parsed.defs[nextIdx];
-          if (!nextDef) {
-            drv.destroy();
-            return;
-          }
-          if (nextDef.route && nextDef.route !== pathname) {
-            navigating.current = true;
-            writeState({ ...parsed, index: nextIdx });
-            drv.destroy();
-            router.push(nextDef.route);
-            return;
-          }
-          writeState({ ...parsed, index: nextIdx });
-          drv.moveNext();
+          void handleForward(drv);
+        },
+        onDoneClick: (_el, _step, { driver: drv }) => {
+          void handleForward(drv);
         },
         onPrevClick: (_el, _step, { driver: drv }) => {
-          const idx = drv.getActiveIndex() ?? index;
-          const prevIdx = Math.max(0, idx - 1);
-          const prevDef = parsed.defs[prevIdx];
-          if (prevDef?.route && prevDef.route !== pathname) {
-            navigating.current = true;
-            writeState({ ...parsed, index: prevIdx });
+          const localIdx = drv.getActiveIndex() ?? 0;
+          const globalIdx = localIndexMap[localIdx] ?? index;
+          const prevGlobal = Math.max(0, globalIdx - 1);
+          const prevDef = parsed.defs[prevGlobal];
+
+          if (prevDef?.route && !stepFitsPath(prevDef, pathname)) {
+            pendingNav.current = true;
+            writeState({ ...parsed, index: prevGlobal });
             drv.destroy();
-            router.push(prevDef.route);
+            router.push(tourHref(prevDef.route));
             return;
           }
-          writeState({ ...parsed, index: prevIdx });
-          drv.movePrevious();
+
+          writeState({ ...parsed, index: prevGlobal });
+          if (localIdx > 0) {
+            drv.movePrevious();
+            return;
+          }
+          keepStateOnDestroy.current = true;
+          drv.destroy();
+          window.dispatchEvent(new CustomEvent("ff-tour-start"));
         },
       });
 
-      if (cancelled) {
-        d.destroy();
+      async function handleForward(drv: Driver) {
+        const localIdx = drv.getActiveIndex() ?? 0;
+        const globalIdx = localIndexMap[localIdx] ?? index;
+        const nextGlobal = globalIdx + 1;
+        const nextDef = parsed.defs[nextGlobal];
+
+        if (!nextDef) {
+          pendingNav.current = false;
+          keepStateOnDestroy.current = false;
+          clearTour();
+          drv.destroy();
+          return;
+        }
+
+        // Still on this page → advance inside local driver when next local exists.
+        if (!nextDef.route || stepFitsPath(nextDef, pathname)) {
+          writeState({ ...parsed, index: nextGlobal });
+          const nextLocalPos = localIndexMap.indexOf(nextGlobal);
+          if (nextLocalPos > localIdx && nextLocalPos < localDefs.length) {
+            const nextLocal = localDefs[nextLocalPos];
+            const anchorOk =
+              !nextLocal?.element ||
+              Boolean(document.querySelector(nextLocal.element));
+            if (anchorOk && nextLocalPos === localIdx + 1) {
+              drv.moveNext();
+              return;
+            }
+          }
+          keepStateOnDestroy.current = true;
+          drv.destroy();
+          window.dispatchEvent(new CustomEvent("ff-tour-start"));
+          return;
+        }
+
+        pendingNav.current = true;
+        writeState({ ...parsed, index: nextGlobal });
+        drv.destroy();
+        router.push(tourHref(nextDef.route));
+      }
+
+      if (cancelled || myRun !== runId.current) {
+        destroyQuiet();
         return;
       }
+
       active.current = d;
-      writeState({ ...parsed, index });
-      d.drive(index);
+      d.drive(0);
     }
 
     function onStart() {
@@ -255,14 +528,15 @@ export function ProductTourHost(props: {
     const existing = readState();
     let timer: number | undefined;
     if (existing) {
-      timer = window.setTimeout(() => void runFromStorage(), 350);
+      timer = window.setTimeout(() => void runFromStorage(), 200);
     }
 
     return () => {
       cancelled = true;
       if (timer) window.clearTimeout(timer);
       window.removeEventListener("ff-tour-start", onStart);
-      active.current?.destroy();
+      // Do not clear session state here — cleanup runs on every pathname change.
+      destroyQuiet();
     };
   }, [pathname, router, props.audience]);
 
@@ -275,20 +549,31 @@ export function TourHelpButtons(props: {
   pageLabel: string;
 }) {
   return (
-    <div className="flex flex-col gap-1 p-2" data-tour="help.tour">
+    <div className="flex flex-col gap-1.5 p-2" data-tour="help.tour">
       <button
         type="button"
-        className="rounded-[var(--radius)] px-3 py-2 text-left text-sm text-[var(--muted-foreground)] hover:bg-[var(--muted)] hover:text-[var(--foreground)]"
+        className="flex cursor-pointer items-center gap-2.5 rounded-full border border-[color-mix(in_oklab,var(--primary)_30%,var(--border))] bg-[color-mix(in_oklab,var(--primary)_8%,var(--card))] px-3 py-2 text-left text-sm font-medium text-[var(--primary)] shadow-sm transition-colors hover:bg-[color-mix(in_oklab,var(--primary)_14%,var(--card))]"
         onClick={() => startProductTour(props.audience, "full")}
       >
+        <span className="inline-flex size-6 shrink-0 items-center justify-center rounded-full bg-[var(--primary)] text-[var(--primary-foreground)]">
+          <CircleHelp className="size-3.5" aria-hidden strokeWidth={2.25} />
+        </span>
         {props.label}
       </button>
       <button
         type="button"
-        className="rounded-[var(--radius)] px-3 py-2 text-left text-sm text-[var(--muted-foreground)] hover:bg-[var(--muted)] hover:text-[var(--foreground)]"
+        className="flex cursor-pointer items-center gap-2.5 rounded-full border border-[var(--border)] bg-[var(--card)] px-3 py-2 text-left text-sm text-[var(--foreground)] shadow-sm transition-colors hover:border-[color-mix(in_oklab,var(--primary)_25%,var(--border))] hover:bg-[var(--muted)]"
         onClick={() => startProductTour(props.audience, "page")}
       >
-        {props.pageLabel}
+        <span className="inline-flex size-6 shrink-0 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--muted)] text-[var(--muted-foreground)]">
+          <CircleHelp className="size-3.5" aria-hidden strokeWidth={2} />
+        </span>
+        <span className="min-w-0 leading-snug">
+          <span className="block font-medium">{props.pageLabel}</span>
+          <span className="block text-[11px] font-normal text-[var(--muted-foreground)]">
+            Solo questa schermata
+          </span>
+        </span>
       </button>
     </div>
   );

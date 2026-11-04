@@ -29,7 +29,16 @@ function hqSteps(): TourStepDef[] {
       side: "right",
       title: "Benvenuto in FacilityFlow HQ",
       description:
-        "Questa è la console della rete (punti vendita e fornitori). A sinistra trovi il menu principale; in alto breadcrumb, notifiche e, nel menu laterale in basso, «Tutorial interattivo» e «Spiega questa pagina». Puoi rilanciare il giro in qualsiasi momento con il tasto ? (fuori dai campi di testo). FacilityFlow è il System of Record: stato ticket, SLA e costi vivono qui — non su WhatsApp o fogli Excel.",
+        "Questa è la console della rete (punti vendita e fornitori). A sinistra trovi il menu principale; in alto breadcrumb, notifiche e, nel menu laterale in basso, «Tutorial interattivo» (icona Aiuto) e «Spiega questa pagina». Puoi rilanciare il giro in qualsiasi momento da lì. FacilityFlow è il System of Record: stato ticket, SLA e costi vivono qui — non su WhatsApp o fogli Excel.",
+    },
+    {
+      id: "hq.onboarding",
+      route: "/onboarding",
+      element: "[data-tour='hq.onboarding']",
+      side: "bottom",
+      title: "Checklist di avvio rete",
+      description:
+        "Prima di usare la dashboard operativa completa la checklist (o «Salta per ora»): store, fornitori, SLA e invito store manager. Finché la rete non è pronta, FacilityFlow ti riporta qui se apri la dashboard — è voluto, non un errore.",
     },
     {
       id: "hq.dashboard",

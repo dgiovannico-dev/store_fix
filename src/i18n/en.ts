@@ -19,9 +19,32 @@ export const en = {
     ai: "AI assist",
     signOut: "Sign out",
     overview: "Overview",
+    wallboard: "Ops wallboard",
     work: "Work",
     costs: "Costs",
     timeline: "Timeline",
+  },
+  wallboard: {
+    title: "Live open interventions",
+    subtitle:
+      "Ops-room view: open tickets or jobs already past their SLA. Refreshes automatically every 30 seconds.",
+    countLabel: "Interventions to watch",
+    countAria: "{n} interventions to watch",
+    emptyTitle: "No critical interventions listed",
+    emptyBody:
+      "When there are open or overdue SLA tickets, they appear here large for the room.",
+    storeLabel: "Store",
+    categoryLabel: "Fault type",
+    priorityLabel: "Urgency",
+    statusLabel: "Status",
+    openedLabel: "Opened",
+    breachedBadge: "Overdue — SLA exceeded",
+    onTrackBadge: "Still on time",
+    openTicket: "Open detail",
+    refreshHint: "Auto-refresh every 30 seconds",
+    agoMinutes: "{n} min ago",
+    agoHours: "{n} h ago",
+    agoDays: "{n} days ago",
   },
   meta: {
     description:
@@ -739,7 +762,7 @@ export const en = {
   onboarding: {
     title: "FacilityFlow · Network setup",
     hint: "Complete the network in under 15 minutes",
-    skip: "Skip ⚠",
+    skip: "Skip for now",
     skipTitle:
       "You can resume from the dashboard. Some KPIs will stay empty.",
     skippedBanner: "Onboarding skipped. Some KPIs will stay empty.",
@@ -755,5 +778,10 @@ export const en = {
       "Optional sample ticket — open from Report or ticket list when the network is ready.",
     continue: "Continue →",
     networkReady: "Network ready. You can open the dashboard.",
+    tourLaunch: "Interactive tutorial",
+    tourLaunchHint: "A guided walkthrough of each section — click to start now.",
+    tourLaunchCta: "Start",
+    pilotHint:
+      "Typical pilot: 15 stores × 5 vendors. This checklist remains the source of truth for network setup.",
   },
 } as const satisfies MessageCatalog;
