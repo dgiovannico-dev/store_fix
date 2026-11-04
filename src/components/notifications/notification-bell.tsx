@@ -205,10 +205,13 @@ export function NotificationBell({
           type="button"
           variant="outline"
           size="icon"
-          className="relative size-10 shrink-0"
+          className="relative size-10 shrink-0 border-[var(--chrome-border)] text-[var(--nav-icon)] hover:bg-[var(--sidebar-accent)] hover:text-[var(--nav-icon-active)]"
           aria-label={aria}
         >
-          <Bell className="size-[1.15rem] stroke-[1.75]" aria-hidden />
+          <Bell
+            className="size-[1.15rem] stroke-[1.75] text-[var(--nav-icon)]"
+            aria-hidden
+          />
           {count > 0 ? (
             <span
               className={cn(

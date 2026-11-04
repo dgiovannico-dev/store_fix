@@ -66,11 +66,19 @@ function NavLink({
       className={cn(
         "flex items-center gap-3 rounded-[var(--radius)] px-3 py-2 text-sm font-medium transition-colors",
         active
-          ? "bg-[var(--primary)] text-[var(--primary-foreground)]"
-          : "text-[var(--muted-foreground)] hover:bg-[var(--muted)] hover:text-[var(--foreground)]",
+          ? "bg-[var(--sidebar-accent)] text-[var(--sidebar-accent-foreground)] shadow-[inset_3px_0_0_0_var(--primary)]"
+          : "text-[var(--sidebar-foreground)]/75 hover:bg-[var(--accent)] hover:text-[var(--accent-foreground)]",
       )}
     >
-      <NavIcon name={item.icon} className="size-4 shrink-0" />
+      <NavIcon
+        name={item.icon}
+        className={cn(
+          "size-4 shrink-0 stroke-[1.75]",
+          active
+            ? "text-[var(--nav-icon-active)]"
+            : "text-[var(--nav-icon)]",
+        )}
+      />
       <span className="truncate">{item.label}</span>
     </Link>
   );
@@ -91,7 +99,7 @@ function SidebarNav({
 }) {
   const pathname = usePathname();
   return (
-    <div className="flex h-full flex-col">
+    <div className="flex h-full flex-col bg-[var(--sidebar)] text-[var(--sidebar-foreground)]">
       <div className="px-3 py-4">
         <Link
           href={items[0]?.href ?? "/app/dashboard"}
@@ -101,7 +109,7 @@ function SidebarNav({
           {brand}
         </Link>
       </div>
-      <Separator />
+      <Separator className="bg-[var(--sidebar-border)]" />
       <nav className="flex flex-1 flex-col gap-0.5 p-2">
         {items.map((item) => (
           <NavLink
@@ -121,14 +129,17 @@ function SidebarNav({
         pageScopeHint={tour.pageScopeHint}
         locale={tour.locale}
       />
-      <div className="border-t border-[var(--border)] p-2">
+      <div className="border-t border-[var(--sidebar-border)] p-2">
         <form action="/logout" method="post">
           <Button
             type="submit"
             variant="ghost"
-            className="w-full justify-start gap-3 text-[var(--muted-foreground)]"
+            className="w-full justify-start gap-3 text-[var(--nav-icon)] hover:bg-[var(--accent)] hover:text-[var(--accent-foreground)]"
           >
-            <LogOut className="size-4 shrink-0" aria-hidden />
+            <LogOut
+              className="size-4 shrink-0 text-[var(--nav-icon)]"
+              aria-hidden
+            />
             {signOutLabel}
           </Button>
         </form>
@@ -162,7 +173,7 @@ export function HqShell(props: {
         labels={props.tourLabels}
         locale={props.locale}
       />
-      <aside className="sticky top-0 hidden h-dvh w-[var(--sidebar-width)] shrink-0 border-r border-[var(--border)] bg-[var(--card)] lg:block">
+      <aside className="sticky top-0 hidden h-dvh w-[var(--sidebar-width)] shrink-0 border-r border-[var(--sidebar-border)] bg-[var(--sidebar)] lg:block">
         <SidebarNav
           items={props.items}
           brand={props.brand}
@@ -172,16 +183,16 @@ export function HqShell(props: {
       </aside>
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="sticky top-0 z-40 flex h-14 items-center gap-3 border-b border-[var(--border)] bg-[var(--card)]/95 px-3 backdrop-blur supports-[backdrop-filter]:bg-[var(--card)]/80 sm:px-6">
+        <header className="sticky top-0 z-40 flex h-14 items-center gap-3 border-b border-[var(--chrome-border)] bg-[var(--chrome)]/90 px-3 backdrop-blur-md supports-[backdrop-filter]:bg-[var(--chrome)]/75 sm:px-6">
           <Sheet open={mobileNavOpen} onOpenChange={setMobileNavOpen}>
             <SheetTrigger asChild>
               <Button
                 variant="outline"
                 size="icon"
-                className="lg:hidden"
+                className="border-[var(--chrome-border)] text-[var(--nav-icon)] lg:hidden"
                 aria-label={props.shellLabels.openMenu}
               >
-                <Menu className="size-4" />
+                <Menu className="size-4 text-[var(--nav-icon)]" />
               </Button>
             </SheetTrigger>
             <SheetContent
