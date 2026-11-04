@@ -449,10 +449,10 @@ export const en = {
     cancelled: "Cancelled",
   },
   ticketDetail: {
-    back: "← Tickets",
+    back: "Back",
     backInbox: "← Inbox",
-    backWallboard: "← Live interventions",
-    backReturn: "← Back",
+    backWallboard: "Back",
+    backReturn: "Back",
     createdBanner: "Ticket opened. ID:",
     statusPrefix: "status",
     assetPrefix: "Asset:",

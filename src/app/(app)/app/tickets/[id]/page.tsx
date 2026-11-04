@@ -31,10 +31,7 @@ import { canDecideQuote } from "@/domain/ticket/quote";
 import { listTicketEvents } from "@/infrastructure/db/ticket-event-repository";
 import { prisma } from "@/infrastructure/db/prisma";
 import { tenantMessages } from "@/i18n/tenant-messages";
-import {
-  isWallboardReturnPath,
-  safeAppReturnPath,
-} from "@/lib/safe-return-path";
+import { safeAppReturnPath } from "@/lib/safe-return-path";
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -134,11 +131,8 @@ export default async function TicketDetailPage({
     ? safeAppReturnPath(sp.returnTo, "/app/tickets")
     : null;
   const backHref = returnTo ?? "/app/tickets";
-  const backLabel = returnTo
-    ? isWallboardReturnPath(returnTo)
-      ? copy.backWallboard
-      : copy.backReturn
-    : copy.back;
+  // Same back button chrome for tickets list, wallboard, or other safe returnTo.
+  const backLabel = copy.back;
 
   const categoryLabel = intakeCategoryLabel(ticket.category, prefs.locale);
   const priorityLabel = intakePriorityLabel(ticket.priority, prefs.locale);
