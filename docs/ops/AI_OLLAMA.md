@@ -1,6 +1,9 @@
-# AI assist — Ollama (F2-07)
+# AI assist — Ollama (F2-07) → superseding F7
 
 Assist **locale/OSS** + **conferma umana**. Mai System of Record.
+
+> **F7 (bozza):** preferire **vLLM** OpenAI-compatible e multi-provider BYOK — vedi [`../product/AI_PLATFORM.md`](../product/AI_PLATFORM.md).  
+> Questo runbook resta valido finché il client usa `OLLAMA_*`; dopo F7-01 userai `AI_BASE_URL=http://…:11434/v1` (Ollama OpenAI compat) o vLLM `:8000/v1`.
 
 ## Config
 

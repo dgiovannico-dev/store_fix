@@ -16,6 +16,7 @@ Hardening recente: F4-01…06 + F5-UX + positioning [`COMPETITIVE_POSITIONING.md
 | Fase 4 (F4-01…06) | **Done in-repo** | k3s+Helm · OpenBao/Keycloak **shared** · cutover — [`PLATFORM_IAM.md`](../ops/PLATFORM_IAM.md) |
 | Fase 5 (F5-UX-00…15) | **Done salvo F5-UX-14** | Day/Week/Month GCal ancora aperto |
 | Fase 6 (F6-01…10) | **Bozza PO** | Motivi di preferenza — conferma prima di sprint |
+| Fase 7 (F7-01…10) | **Bozza PO** | AI vLLM + multi-provider BYOK — [`AI_PLATFORM.md`](./AI_PLATFORM.md) |
 
 ## Modalità corrente
 
