@@ -7,6 +7,7 @@ import {
   DataTable,
   dataTableLabelsFromCommon,
 } from "@/components/ui/data-table";
+import { RowActionLink, RowActionSubmit } from "@/components/ui/row-actions";
 import type { MessageCatalog } from "@/i18n";
 
 type Common = MessageCatalog["common"];
@@ -17,12 +18,7 @@ function ArchiveButton(props: {
 }) {
   return (
     <form action={props.action}>
-      <button
-        type="submit"
-        className="text-sm text-[var(--critical)] underline-offset-4 hover:underline"
-      >
-        {props.label}
-      </button>
+      <RowActionSubmit label={props.label} variant="archive" />
     </form>
   );
 }
@@ -78,12 +74,11 @@ export function StoresDataTable(props: {
         cell: ({ row }) =>
           props.canEdit ? (
             <div className="flex justify-end gap-3">
-              <Link
+              <RowActionLink
                 href={`/app/stores/${row.original.id}`}
-                className="text-sm text-[var(--primary)] hover:underline"
-              >
-                {props.editLabel}
-              </Link>
+                label={props.editLabel}
+                variant="edit"
+              />
               <ArchiveButton
                 label={props.archiveLabel}
                 action={props.onArchive.bind(null, row.original.id)}
@@ -112,6 +107,7 @@ export function VendorsDataTable(props: {
   common: Common;
   nameHeader: string;
   metaHeader: string;
+  editLabel: string;
   archiveLabel: string;
   canEdit: boolean;
   onArchive: (id: string) => Promise<void>;
@@ -146,7 +142,12 @@ export function VendorsDataTable(props: {
         enableSorting: false,
         cell: ({ row }) =>
           props.canEdit ? (
-            <div className="flex justify-end">
+            <div className="flex justify-end gap-3">
+              <RowActionLink
+                href={`/app/vendors/${row.original.id}`}
+                label={props.editLabel}
+                variant="edit"
+              />
               <ArchiveButton
                 label={props.archiveLabel}
                 action={props.onArchive.bind(null, row.original.id)}

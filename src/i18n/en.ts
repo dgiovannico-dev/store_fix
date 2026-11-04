@@ -61,6 +61,7 @@ export const en = {
     listHint: "Vendors with store coverage",
     emptyList: "No vendors yet. Add one to assign tickets.",
     add: "Add vendor",
+    edit: "Edit",
     archive: "Archive",
     coverageLegend: "Store coverage",
     needStoresHint: "No stores yet: create stores first.",

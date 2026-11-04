@@ -106,6 +106,7 @@ export default async function VendorsPage() {
             common={msg.common}
             nameHeader={msg.vendor.namePlaceholder}
             metaHeader={msg.vendor.tradesPlaceholder}
+            editLabel={msg.vendor.edit}
             archiveLabel={msg.vendor.archive}
             canEdit={canEdit}
             onArchive={async (id) => {

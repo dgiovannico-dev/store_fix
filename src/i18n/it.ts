@@ -59,6 +59,7 @@ export const it = {
     listHint: "Vendor con coverage sui punti vendita",
     emptyList: "Nessun fornitore. Aggiungine uno per assegnare ticket.",
     add: "Aggiungi fornitore",
+    edit: "Modifica",
     archive: "Archivia",
     coverageLegend: "Coverage store",
     needStoresHint: "Nessuno store: crea prima i punti vendita.",
