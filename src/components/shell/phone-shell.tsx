@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { startProductTour } from "@/features/product-tour/tour-launcher";
 import type { ProductTourUiLabels } from "@/features/product-tour/tour-controller";
-import type { MessageCatalog } from "@/i18n";
+import type { Locale, MessageCatalog } from "@/i18n";
 import type { NavItem } from "./nav-config";
 import { NavIcon } from "./nav-icons";
 
@@ -48,6 +48,7 @@ export function PhoneShell(props: {
   shellLabels: MessageCatalog["shell"];
   tourHelpAria: string;
   tourLaunchLabel: string;
+  locale: Locale;
 }) {
   const pathname = usePathname();
   const audience = props.audience ?? "store";
@@ -61,6 +62,7 @@ export function PhoneShell(props: {
         audience={audience}
         softPrompt
         labels={props.tourLabels}
+        locale={props.locale}
       />
       <header className="sticky top-0 z-40 border-b border-[var(--border)] bg-[var(--card)]">
         <div className="flex h-14 items-center gap-3 px-4">
@@ -77,7 +79,9 @@ export function PhoneShell(props: {
               data-tour="help.tour"
               aria-label={props.tourHelpAria}
               title={props.tourLaunchLabel}
-              onClick={() => startProductTour(audience, "full")}
+              onClick={() =>
+                startProductTour(audience, "full", props.locale)
+              }
             >
               <CircleHelp className="size-4" aria-hidden />
             </button>
