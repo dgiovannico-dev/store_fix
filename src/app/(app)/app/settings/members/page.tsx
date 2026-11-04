@@ -15,6 +15,7 @@ import { getTenantI18nPrefs } from "@/application/tenant/i18n-prefs";
 import { tenantMessages } from "@/i18n/tenant-messages";
 import { PageFrame } from "@/components/layout/page-frame";
 import { MultiCheckPicker } from "@/components/ui/multi-check-picker";
+import { PendingSubmitButton } from "@/components/ui/pending-submit-button";
 import { RowActionSubmit } from "@/components/ui/row-actions";
 
 export default async function MembersPage() {
@@ -121,12 +122,11 @@ export default async function MembersPage() {
                     </select>
                   </label>
                 ) : null}
-                <button
-                  type="submit"
-                  className="rounded-[var(--radius)] bg-[var(--primary)] px-3 py-1.5 text-sm font-medium text-[var(--primary-foreground)]"
-                >
-                  {copy.saveScope}
-                </button>
+                <PendingSubmitButton
+                  size="sm"
+                  label={copy.saveScope}
+                  pendingLabel={msg.common.working}
+                />
               </form>
             ) : null}
           </li>

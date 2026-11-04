@@ -18,6 +18,7 @@ import { PageFrame } from "@/components/layout/page-frame";
 import { ContractsDataTable } from "@/components/tables/entity-data-table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { PendingSubmitButton } from "@/components/ui/pending-submit-button";
 import { StatusPanel } from "@/components/ui/status-panel";
 import { formatMoney, withCurrency } from "@/i18n/format";
 import { controlClass } from "@/lib/ui-classes";
@@ -140,7 +141,10 @@ export default async function ContrattiPage({ searchParams }: Props) {
               prefs.currency,
             )}
           />
-          <Button type="submit">{msg.contracts.save}</Button>
+          <PendingSubmitButton
+            label={msg.contracts.save}
+            pendingLabel={msg.common.working}
+          />
         </form>
       ) : null}
 

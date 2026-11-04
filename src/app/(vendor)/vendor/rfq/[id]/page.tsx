@@ -5,6 +5,7 @@ import { submitQuoteBidAction } from "@/app/actions/rfq";
 import { getQuoteRequest } from "@/application/rfq/rfq-service";
 import { getTenantI18nPrefs } from "@/application/tenant/i18n-prefs";
 import { QuoteAmountFields } from "@/components/tickets/quote-amount-fields";
+import { PendingSubmitButton } from "@/components/ui/pending-submit-button";
 import { rfqRequestStatusLabel } from "@/domain/rfq/status-labels";
 import { formatMoney, withCurrency } from "@/i18n/format";
 import { tenantMessages } from "@/i18n/tenant-messages";
@@ -87,12 +88,14 @@ export default async function VendorRfqDetailPage({
             noteLabel={msg.rfq.noteLabel}
             className="mt-1 w-full rounded-[var(--radius)] border border-[var(--border)] px-3 py-2"
           />
-          <button
-            type="submit"
-            className="min-h-11 w-full rounded-[var(--radius)] bg-[var(--primary)] px-4 py-3 text-base font-medium text-[var(--primary-foreground)]"
-          >
-            {bid.status === "submitted" ? msg.rfq.updateBid : msg.rfq.sendBid}
-          </button>
+          <PendingSubmitButton
+            size="lg"
+            className="min-h-11 w-full"
+            label={
+              bid.status === "submitted" ? msg.rfq.updateBid : msg.rfq.sendBid
+            }
+            pendingLabel={msg.common.working}
+          />
         </form>
       ) : null}
     </main>

@@ -13,6 +13,7 @@ import {
 import { formatMoney } from "@/i18n/format";
 import { tenantMessages } from "@/i18n/tenant-messages";
 import { PageFrame } from "@/components/layout/page-frame";
+import { PendingSubmitButton } from "@/components/ui/pending-submit-button";
 
 export default async function RfqDetailPage({
   params,
@@ -84,12 +85,12 @@ export default async function RfqDetailPage({
                   await awardQuoteBidAction(request.id, b.id);
                 }}
               >
-                <button
-                  type="submit"
-                  className="rounded-[var(--radius)] border border-[var(--border)] px-3 py-1.5 text-xs font-medium hover:bg-[var(--muted)]"
-                >
-                  {msg.rfq.award}
-                </button>
+                <PendingSubmitButton
+                  size="sm"
+                  variant="outline"
+                  label={msg.rfq.award}
+                  pendingLabel={msg.common.working}
+                />
               </form>
             ) : null}
             {request.awardedBidId === b.id ? (

@@ -14,8 +14,8 @@ import { listVendors } from "@/application/vendors/vendor-service";
 import { getTenantI18nPrefs } from "@/application/tenant/i18n-prefs";
 import { PageFrame } from "@/components/layout/page-frame";
 import { AssetsDataTable } from "@/components/tables/entity-data-table";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { PendingSubmitButton } from "@/components/ui/pending-submit-button";
 import { StatusPanel } from "@/components/ui/status-panel";
 import { controlClass } from "@/lib/ui-classes";
 import { tenantMessages } from "@/i18n/tenant-messages";
@@ -90,9 +90,11 @@ export default async function AssetsPage() {
             </option>
           ))}
         </select>
-        <Button type="submit" className="sm:col-span-2">
-          {copy.add}
-        </Button>
+        <PendingSubmitButton
+          className="sm:col-span-2"
+          label={copy.add}
+          pendingLabel={msg.common.working}
+        />
       </form>
 
       {assets.length === 0 ? (
