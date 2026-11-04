@@ -67,17 +67,22 @@ export async function summarizeTicketNotes(input: {
   if (llmConfigured()) {
     const raw = await llmChatJson({
       system:
-        'Rispondi solo JSON {"summary":"…"}. Riassumi in italiano operativo max 5 punti. Non inventare fatti.',
+        'Rispondi solo JSON {"summary":"…","suggestedSolution":"…"}. summary: riassunto italiano operativo max 5 punti (bullet). suggestedSolution: 2-4 passi operativi plausibili da verificare con un umano, senza inventare pezzi/ricambi non menzionati. Non inventare fatti.',
       user: corpus.slice(0, 6000),
       signal: input.signal,
     });
     if (raw) {
       const parsed = parseOllamaSummaryJson(raw.content);
       if (parsed) {
+        const heuristic = summarizeNotesHeuristic(corpus);
         return {
-          summary: parsed,
+          summary: parsed.summary,
+          suggestedSolution:
+            parsed.suggestedSolution ?? heuristic.suggestedSolution,
           source: raw.source,
-          bulletCount: parsed.split("\n").filter((l) => l.trim()).length,
+          bulletCount: parsed.summary
+            .split("\n")
+            .filter((l) => l.trim()).length,
         };
       }
     }

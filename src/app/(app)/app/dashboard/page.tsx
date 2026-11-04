@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Role } from "@prisma/client";
+import { ListRestart } from "lucide-react";
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { resumeOnboardingAction } from "@/app/actions/onboarding";
@@ -135,8 +136,10 @@ export default async function DashboardPage({
               <form action={resumeOnboardingAction}>
                 <button
                   type="submit"
-                  className="text-sm underline-offset-4 hover:underline"
+                  title={msg.dashboard.cancelSkipHint}
+                  className="inline-flex cursor-pointer items-center gap-2 rounded-full border border-[color-mix(in_oklab,var(--signal)_40%,var(--border))] bg-[color-mix(in_oklab,var(--signal)_8%,var(--card))] px-3.5 py-2 text-sm font-medium text-[var(--signal-foreground)] shadow-sm transition-colors hover:bg-[color-mix(in_oklab,var(--signal)_16%,var(--card))]"
                 >
+                  <ListRestart className="size-3.5 shrink-0" aria-hidden />
                   {msg.dashboard.cancelSkip}
                 </button>
               </form>
