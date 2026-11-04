@@ -5,7 +5,7 @@
 > **Gate codice:** approvazione umana esplicita + lavoro su branch `develop` / `feature/*` (non commit diretti su `main`).  
 > **Vincolo hard:** stack **100% open source / self-host**, nessun componente SaaS a pagamento. Dettaglio: [`STACK.md`](./STACK.md).  
 > **RBAC:** [`RBAC.md`](./RBAC.md).  
-> **Scope:** MVP (Fase 1) + production-ready (**E14 / S5**). **Fase 2 Done** (F2-01…F2-09). **Fase 3** in-repo Done (F3-02…09; **F3-01** = VPS umano). **Fase 4 Done in-repo** (F4-01…05, 2026-11-03). **Fase 5** UX (F5-UX-14 in corso). **Fase 6–8 GO PO 2026-11-04** — implementazione in corso (F3-01 resta host).  
+> **Scope:** MVP (Fase 1) + production-ready (**E14 / S5**). **Fase 2 Done** (F2-01…F2-09). **Fase 3** in-repo Done (F3-02…09; **F3-01** = VPS umano). **Fase 4 Done in-repo** (F4-01…05, 2026-11-03). **Fase 5** UX Done (F5-UX-14 GCal Day/Week/Month). **Fase 6–8 GO PO 2026-11-04** — implementazione in corso (F3-01 resta host).  
 > **Lingua UI MVP:** italiano. Mercato: Italia / EUR.  
 > **Go prod:** NO-GO finché VPS — [`sprints/S5-EXIT-GAPS.md`](./sprints/S5-EXIT-GAPS.md) · [`../ops/NEXT_VPS.md`](../ops/NEXT_VPS.md).  
 > **Integrazione:** GitFlow **con PR auto-merge** — `feature/*`/`bugfix/*` → PR → `develop`; lab sync / `release/*`/`hotfix/*` → `main` (`scripts/gitflow-ship-pr.sh`).
@@ -646,7 +646,7 @@ E00 Platform OSS (Compose, SeaweedFS, Mailpit, pg-boss, Prisma schema)
 | **F5-UX-11** | Breadcrumb + Esci fuori topbar | **P1** | Done 2026-11-04 — breadcrumb HQ/phone; Esci in sidebar (non topbar dashboard) | No |
 | **F5-UX-12** | Icone azioni row (edit/archive/…) | **P1** | Done 2026-11-04 — `RowActionLink`/`RowActionSubmit` Lucide + label su tabelle CRUD, members, PM | No |
 | **F5-UX-13** | Calendario PM stile Google Calendar | **P0** | Done 2026-11-04 — viste mese/settimana/agenda; create/detail popover ancorato al click (no sheet) | No |
-| **F5-UX-14** | Calendario Day → Week → Month (ordine GCal) | **P1** | Done 2026-11-04 — toggle Giorno/Settimana/Mese/Agenda; Day colonna oraria; default Week | No |
+| **F5-UX-14** | Calendario Day → Week → Month (ordine GCal) | **P1** | Done 2026-11-04 — tab Giorno→Settimana→Mese; Day timed 06–21 + create-at-slot; no Agenda; default day phone / month HQ | No |
 | **F5-UX-15** | Lingua/back/ticket form/multi-select | **P1** | Done 2026-11-04 — locale select; no back ridondanti; nuovo ticket sezioni; MultiCheckPicker coverage/RFQ/members | No |
 
 ---
