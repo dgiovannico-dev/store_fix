@@ -13,6 +13,7 @@ import {
 import { getVendor } from "@/domain/vendors/vendor-service";
 import { getTenantI18nPrefs } from "@/application/tenant/i18n-prefs";
 import { PageFrame } from "@/components/layout/page-frame";
+import { MultiCheckPicker } from "@/components/ui/multi-check-picker";
 import { StatusPanel } from "@/components/ui/status-panel";
 import { formatMoney } from "@/i18n/format";
 import { tenantMessages } from "@/i18n/tenant-messages";
@@ -61,13 +62,7 @@ export default async function VendorDetailPage({ params }: Props) {
 
   return (
     <PageFrame>
-      <Link
-        href="/app/vendors"
-        className="text-sm text-[var(--muted-foreground)] underline-offset-4 hover:underline"
-      >
-        ← Fornitori
-      </Link>
-      <h1 className="mt-4 font-[family-name:var(--font-sora)] text-2xl font-semibold">
+      <h1 className="font-[family-name:var(--font-sora)] text-2xl font-semibold">
         {vendor.name}
       </h1>
 
@@ -163,22 +158,16 @@ export default async function VendorDetailPage({ params }: Props) {
             defaultValue={vendor.trades.join(", ")}
             className="w-full rounded-[var(--radius)] border border-[var(--border)] px-3 py-2"
           />
-          <fieldset className="space-y-2">
-            <legend className="text-sm font-medium">
-              {msg.vendor.coverageLegend}
-            </legend>
-            {stores.map((s) => (
-              <label key={s.id} className="flex items-center gap-2 text-sm">
-                <input
-                  type="checkbox"
-                  name="storeCoverageIds"
-                  value={s.id}
-                  defaultChecked={coverage.has(s.id)}
-                />
-                {s.name}
-              </label>
-            ))}
-          </fieldset>
+          <MultiCheckPicker
+            name="storeCoverageIds"
+            legend={msg.vendor.coverageLegend}
+            options={stores.map((s) => ({ id: s.id, label: s.name }))}
+            defaultSelected={[...coverage]}
+            searchPlaceholder={msg.common.searchList}
+            selectedCountLabel={msg.common.selectedCount}
+            selectAllLabel={msg.common.selectAllFiltered}
+            clearLabel={msg.common.clearSelection}
+          />
           <button
             type="submit"
             className="rounded-[var(--radius)] bg-[var(--primary)] px-4 py-2 text-sm font-medium text-[var(--primary-foreground)]"

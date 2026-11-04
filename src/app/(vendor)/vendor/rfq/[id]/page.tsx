@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { Role } from "@prisma/client";
 import { auth } from "@/auth";
@@ -52,15 +51,7 @@ export default async function VendorRfqDetailPage({
 
   return (
     <main className="px-4 py-6 pb-8">
-      <p className="text-sm">
-        <Link
-          href="/vendor/rfq"
-          className="text-[var(--primary)] hover:underline"
-        >
-          {msg.rfq.back}
-        </Link>
-      </p>
-      <h1 className="mt-2 font-[family-name:var(--font-sora)] text-xl font-semibold text-[var(--primary)]">
+      <h1 className="font-[family-name:var(--font-sora)] text-xl font-semibold text-[var(--primary)]">
         {request.title}
       </h1>
       <p className="mt-1 text-sm text-[var(--muted-foreground)]">

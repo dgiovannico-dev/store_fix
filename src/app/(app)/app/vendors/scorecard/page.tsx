@@ -60,13 +60,7 @@ export default async function VendorScorecardPage({ searchParams }: Props) {
 
   return (
     <PageFrame>
-      <Link
-        href="/app/vendors"
-        className="text-sm text-[var(--muted-foreground)] underline-offset-4 hover:underline"
-      >
-        ← {msg.nav.vendors}
-      </Link>
-      <h1 className="mt-4 font-[family-name:var(--font-sora)] text-2xl font-semibold text-[var(--primary)]">
+      <h1 className="font-[family-name:var(--font-sora)] text-2xl font-semibold text-[var(--primary)]">
         {msg.scorecard.title}
       </h1>
       <p className="mt-1 text-sm text-[var(--muted-foreground)]">
