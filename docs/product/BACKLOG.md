@@ -625,6 +625,22 @@ E00 Platform OSS (Compose, SeaweedFS, Mailpit, pg-boss, Prisma schema)
 
 ---
 
+## Fase 5 — UX/UI FinTech-density (in-repo)
+
+> **Confermato 2026-11-04.** Refactor shell + densità allineato a DESIGN_SYSTEM / IA + pattern dashboard SaaS. Brand Sora/Plex slate+ambra invariato. Nessun dark mode / nuova palette. No dipendenza VPS.
+
+| ID | Titolo | Priorità | AC (1 riga) | Dip. VPS |
+|----|--------|----------|-------------|----------|
+| **F5-UX-00** | Foundation shadcn Radix + tokens | **P1** | Done 2026-11-04 — primitives + StatusPanel + tokens `--text-*` | No |
+| **F5-UX-01** | Shell HQ sidebar + Phone bottom nav | **P0** | Done 2026-11-04 — HqShell + PhoneShell per audience | No |
+| **F5-UX-02** | Tickets list densa + SLA badge | **P0** | Done 2026-11-04 — filtri sticky; colonne triage; badge SLA | No |
+| **F5-UX-03** | Ticket detail Tabs hub | **P1** | Done 2026-11-04 — header sticky + Tabs | No |
+| **F5-UX-04** | HQ Dashboard metric strip | **P1** | Done 2026-11-04 — KPI strip; tabella store densità | No |
+| **F5-UX-05** | Store intake + vendor PhoneShell | **P1** | Done 2026-11-04 — bottom nav; sticky CTA; touch ≥44px | No |
+| **F5-UX-06** | Auth / onboarding / CRUD polish | **P2** | Done 2026-11-04 — login; onboarding progress; liste dense | No |
+
+---
+
 ## Open decisions — CHIUSE (default MVP)
 
 | # | Decisione | Default locked |

@@ -76,7 +76,7 @@ export function NewTicketForm({
   const storeAssets = assets.filter((a) => a.storeId === storeId);
 
   return (
-    <main className="mx-auto min-h-dvh w-full max-w-[390px] px-4 py-6">
+    <main className="px-4 py-6 pb-8">
       <div className="flex items-center justify-between gap-2">
         <Link
           href="/app/tickets"
@@ -207,7 +207,7 @@ export function NewTicketForm({
           <button
             type="submit"
             disabled={pending}
-            className="sticky bottom-4 w-full rounded-[var(--radius)] bg-[var(--primary)] px-4 py-3.5 text-base font-medium text-[var(--primary-foreground)] disabled:opacity-60"
+            className="sticky bottom-20 z-10 min-h-11 w-full rounded-[var(--radius)] bg-[var(--primary)] px-4 py-3.5 text-base font-medium text-[var(--primary-foreground)] shadow-sm disabled:opacity-60"
           >
             {pending ? copy.submitting : copy.submit}
           </button>

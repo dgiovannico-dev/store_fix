@@ -6,6 +6,9 @@ import {
   listTicketsForMembership,
   type TicketListFilters,
 } from "@/application/tickets/list-tickets";
+import { PageFrame } from "@/components/layout/page-frame";
+import { SlaBadge } from "@/components/tickets/sla-badge";
+import { Button } from "@/components/ui/button";
 import { StatusPanel } from "@/components/ui/status-panel";
 import { getActiveMembership } from "@/domain/memberships/membership-service";
 import {
@@ -14,9 +17,9 @@ import {
 } from "@/domain/intake/chat-steps";
 import { can } from "@/domain/rbac/can";
 import { RbacAction } from "@/domain/rbac/actions";
+import { computeSlaBadge } from "@/domain/sla/badge";
 import { ticketStatusLabel } from "@/domain/ticket/status-labels";
 import { getTenantI18nPrefs } from "@/application/tenant/i18n-prefs";
-import { dateLocaleFor } from "@/i18n";
 import { tenantMessages } from "@/i18n/tenant-messages";
 import { prisma } from "@/infrastructure/db/prisma";
 import { requireTenantId } from "@/infrastructure/db/tenant-scope";
@@ -60,14 +63,12 @@ export default async function TicketsListPage({ searchParams }: Props) {
       sp.slaRisk === "overdue" || sp.slaRisk === "due_soon" ? sp.slaRisk : "",
   };
 
-  const started = performance.now();
   const visible = await listTicketsForMembership({
     tenantId: session.tenantId,
     role: session.role,
     membership,
     filters,
   });
-  const listMs = Math.round(performance.now() - started);
 
   const isHq = HQ.has(session.role);
   const canOpen = can(session.role, RbacAction.openTicket);
@@ -75,7 +76,7 @@ export default async function TicketsListPage({ searchParams }: Props) {
     tenantMessages(session.tenantId),
     getTenantI18nPrefs(session.tenantId),
   ]);
-  const dLocale = dateLocaleFor(prefs.locale);
+  const copy = msg.ticketDetail;
   const [stores, vendors] = isHq
     ? await Promise.all([
         prisma.store.findMany({
@@ -92,28 +93,28 @@ export default async function TicketsListPage({ searchParams }: Props) {
     : [[], []];
 
   return (
-    <main className="mx-auto max-w-3xl px-4 py-10 sm:px-6">
+    <PageFrame>
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <h1 className="font-[family-name:var(--font-sora)] text-2xl font-semibold text-[var(--primary)]">
             {msg.nav.tickets}
           </h1>
-          <p className="mt-2 text-sm text-[var(--muted-foreground)]">
-            {msg.ticketsList.scopeHint} · query {listMs} ms
+          <p className="mt-1 text-sm text-[var(--muted-foreground)]">
+            {msg.ticketsList.scopeHint}
           </p>
         </div>
         {canOpen ? (
-          <Link
-            href="/app/tickets/new"
-            className="rounded-[var(--radius)] bg-[var(--primary)] px-4 py-2 text-sm font-medium text-[var(--primary-foreground)]"
-          >
-            {msg.dashboard.ctaTicket}
-          </Link>
+          <Button asChild>
+            <Link href="/app/tickets/new">{msg.dashboard.ctaTicket}</Link>
+          </Button>
         ) : null}
       </div>
 
       {isHq ? (
-        <form className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3" method="get">
+        <form
+          className="sticky top-0 z-10 mt-6 grid gap-3 border-b border-[var(--border)] bg-[var(--background)]/95 py-3 backdrop-blur-sm sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6"
+          method="get"
+        >
           <FilterSelect
             name="status"
             label={msg.ticketsList.filterStatus}
@@ -159,12 +160,9 @@ export default async function TicketsListPage({ searchParams }: Props) {
             ]}
           />
           <div className="flex items-end gap-2">
-            <button
-              type="submit"
-              className="rounded-[var(--radius)] border border-[var(--border)] px-4 py-2 text-sm"
-            >
+            <Button type="submit" variant="outline" size="sm">
               {msg.ticketsList.filter}
-            </button>
+            </Button>
             <Link
               href="/app/tickets"
               className="px-2 py-2 text-sm text-[var(--muted-foreground)] underline-offset-4 hover:underline"
@@ -198,30 +196,80 @@ export default async function TicketsListPage({ searchParams }: Props) {
           </StatusPanel>
         </div>
       ) : (
-        <ul className="mt-8 divide-y divide-[var(--border)]">
-          {visible.map((tk) => (
-            <li key={tk.id} className="py-4">
-              <Link
-                href={`/app/tickets/${tk.id}`}
-                className="font-medium underline-offset-4 hover:underline"
-              >
-                {intakeCategoryLabel(tk.category, prefs.locale)} ·{" "}
-                {intakePriorityLabel(tk.priority, prefs.locale)}
-              </Link>
-              <p className="text-sm text-[var(--muted-foreground)]">
-                {tk.store.name} ·{" "}
-                {ticketStatusLabel(tk.status, prefs.locale)}
-                {tk.vendor ? ` · ${tk.vendor.name}` : ""} ·{" "}
-                {tk.slaDueAt
-                  ? `${msg.ticketDetail.slaOkPrefix} ${tk.slaDueAt.toLocaleString(dLocale)}`
-                  : msg.ticketDetail.slaNone}
-              </p>
-              <p className="mt-1 line-clamp-2 text-sm">{tk.description}</p>
-            </li>
-          ))}
-        </ul>
+        <div className="mt-4 overflow-x-auto">
+          <table className="w-full min-w-[40rem] text-left text-sm">
+            <thead>
+              <tr className="border-b border-[var(--border)] text-[length:var(--text-caption)] uppercase tracking-wide text-[var(--muted-foreground)]">
+                <th className="py-2 pr-3 font-medium">
+                  {msg.ticketsList.colId}
+                </th>
+                <th className="py-2 pr-3 font-medium">
+                  {msg.ticketsList.colStore}
+                </th>
+                <th className="py-2 pr-3 font-medium">
+                  {msg.ticketsList.colStatus}
+                </th>
+                <th className="py-2 pr-3 font-medium">
+                  {msg.ticketsList.colPriority}
+                </th>
+                <th className="py-2 pr-3 font-medium">
+                  {msg.ticketsList.colSla}
+                </th>
+                <th className="py-2 font-medium">
+                  {msg.ticketsList.colVendor}
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {visible.map((tk) => {
+                const sla = computeSlaBadge({
+                  slaDueAt: tk.slaDueAt,
+                  slaBreachedAt: tk.slaBreachedAt,
+                  openedAt: tk.openedAt,
+                  dateLocale: prefs.dateLocale,
+                  labels: {
+                    breached: copy.slaBreached,
+                    none: copy.slaNone,
+                    riskPrefix: copy.slaRiskPrefix,
+                    okPrefix: copy.slaOkPrefix,
+                  },
+                });
+                const shortId = tk.id.slice(0, 8);
+                return (
+                  <tr
+                    key={tk.id}
+                    className="border-b border-[var(--border)]/70 hover:bg-[var(--muted)]/40"
+                  >
+                    <td className="py-2.5 pr-3">
+                      <Link
+                        href={`/app/tickets/${tk.id}`}
+                        className="font-medium text-[var(--primary)] underline-offset-2 hover:underline"
+                        title={intakeCategoryLabel(tk.category, prefs.locale)}
+                      >
+                        <code className="text-xs">{shortId}</code>
+                      </Link>
+                    </td>
+                    <td className="py-2.5 pr-3">{tk.store.name}</td>
+                    <td className="py-2.5 pr-3">
+                      {ticketStatusLabel(tk.status, prefs.locale)}
+                    </td>
+                    <td className="py-2.5 pr-3">
+                      {intakePriorityLabel(tk.priority, prefs.locale)}
+                    </td>
+                    <td className="py-2.5 pr-3">
+                      <SlaBadge tone={sla.tone} label={sla.label} />
+                    </td>
+                    <td className="py-2.5 text-[var(--muted-foreground)]">
+                      {tk.vendor?.name ?? "—"}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
       )}
-    </main>
+    </PageFrame>
   );
 }
 
@@ -234,11 +282,13 @@ function FilterSelect(props: {
 }) {
   return (
     <label className="block text-sm">
-      <span className="font-medium">{props.label}</span>
+      <span className="text-[length:var(--text-caption)] font-medium text-[var(--muted-foreground)]">
+        {props.label}
+      </span>
       <select
         name={props.name}
         defaultValue={props.value}
-        className="mt-1 w-full rounded-[var(--radius)] border border-[var(--border)] bg-white px-3 py-2 text-sm"
+        className="mt-1 h-9 w-full rounded-[var(--radius)] border border-[var(--border)] bg-[var(--card)] px-2 text-sm"
       >
         <option value="">{props.allLabel}</option>
         {props.options.map((o) => (

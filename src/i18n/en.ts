@@ -7,6 +7,7 @@ export const en = {
     tickets: "Tickets",
     stores: "Stores",
     vendors: "Vendors",
+    assets: "Assets",
     contracts: "Contracts",
     calendar: "PM calendar",
     rfq: "RFQ",
@@ -16,6 +17,10 @@ export const en = {
     notifications: "Notifications",
     locale: "Language",
     signOut: "Sign out",
+    overview: "Overview",
+    work: "Work",
+    costs: "Costs",
+    timeline: "Timeline",
   },
   meta: {
     description:
@@ -307,6 +312,12 @@ export const en = {
     filterStore: "Store",
     filterVendor: "Vendor",
     filterSla: "SLA",
+    colId: "ID",
+    colStore: "Store",
+    colStatus: "Status",
+    colSla: "SLA",
+    colVendor: "Vendor",
+    colPriority: "Priority",
   },
   ticketStatus: {
     open: "Open",
@@ -339,6 +350,10 @@ export const en = {
     slaNone: "SLA —",
     slaRiskPrefix: "SLA at risk · by",
     slaOkPrefix: "SLA by",
+    tabOverview: "Overview",
+    tabWork: "Work",
+    tabCosts: "Costs",
+    tabTimeline: "Timeline",
   },
   ticketTimeline: {
     empty: "No timeline events.",
