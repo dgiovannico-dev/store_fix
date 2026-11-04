@@ -4,6 +4,7 @@ import { auth } from "@/auth";
 import { createVendorAction, deleteVendorAction } from "@/app/actions/vendors";
 import { getTenantI18nPrefs } from "@/application/tenant/i18n-prefs";
 import { PageFrame } from "@/components/layout/page-frame";
+import { VendorsDataTable } from "@/components/tables/entity-data-table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { StatusPanel } from "@/components/ui/status-panel";
@@ -100,60 +101,34 @@ export default async function VendorsPage() {
           />
         </div>
       ) : (
-        <div className="mt-6 overflow-x-auto">
-          <table className="w-full min-w-[28rem] text-left text-sm">
-            <thead>
-              <tr className="border-b border-[var(--border)] text-[length:var(--text-caption)] uppercase tracking-wide text-[var(--muted-foreground)]">
-                <th className="py-2 pr-3 font-medium">
-                  {msg.vendor.namePlaceholder}
-                </th>
-                <th className="py-2 pr-3 font-medium">
-                  {msg.vendor.tradesPlaceholder}
-                </th>
-                <th className="py-2 font-medium" />
-              </tr>
-            </thead>
-            <tbody>
-              {vendors.map((v) => (
-                <tr
-                  key={v.id}
-                  className="border-b border-[var(--border)]/70 hover:bg-[var(--muted)]/40"
-                >
-                  <td className="py-2.5 pr-3 font-medium">
-                    <Link
-                      href={`/app/vendors/${v.id}`}
-                      className="text-[var(--primary)] underline-offset-4 hover:underline"
-                    >
-                      {v.name}
-                    </Link>
-                  </td>
-                  <td className="py-2.5 pr-3 text-[var(--muted-foreground)]">
-                    {v.trades.length ? v.trades.join(", ") : "—"}
-                    {v.storeCoverageIds.length
-                      ? ` · ${v.storeCoverageIds.length} store`
-                      : ""}
-                  </td>
-                  <td className="py-2.5 text-right">
-                    {canEdit ? (
-                      <form
-                        action={async () => {
-                          "use server";
-                          await deleteVendorAction(v.id);
-                        }}
-                      >
-                        <button
-                          type="submit"
-                          className="text-sm text-[var(--critical)] underline-offset-4 hover:underline"
-                        >
-                          {msg.vendor.archive}
-                        </button>
-                      </form>
-                    ) : null}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="mt-6">
+          <VendorsDataTable
+            common={msg.common}
+            nameHeader={msg.vendor.namePlaceholder}
+            metaHeader={msg.vendor.tradesPlaceholder}
+            archiveLabel={msg.vendor.archive}
+            canEdit={canEdit}
+            onArchive={async (id) => {
+              "use server";
+              await deleteVendorAction(id);
+            }}
+            rows={vendors.map((v) => {
+              const meta = [
+                v.trades.length ? v.trades.join(", ") : "—",
+                v.storeCoverageIds.length
+                  ? `${v.storeCoverageIds.length} store`
+                  : "",
+              ]
+                .filter(Boolean)
+                .join(" · ");
+              return {
+                id: v.id,
+                name: v.name,
+                meta,
+                searchText: `${v.name} ${meta}`,
+              };
+            })}
+          />
         </div>
       )}
     </PageFrame>

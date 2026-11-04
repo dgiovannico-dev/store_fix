@@ -1,9 +1,9 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Role } from "@prisma/client";
 import { auth } from "@/auth";
 import { listVendorQuoteBids } from "@/application/rfq/rfq-service";
 import { getTenantI18nPrefs } from "@/application/tenant/i18n-prefs";
+import { SimpleLinkDataTable } from "@/components/tables/entity-data-table";
 import { StatusPanel } from "@/components/ui/status-panel";
 import {
   rfqBidStatusLabel,
@@ -55,27 +55,29 @@ export default async function VendorRfqListPage() {
           />
         </div>
       ) : (
-        <ul className="mt-4 divide-y divide-[var(--border)]">
-          {bids.map((b) => (
-            <li key={b.id}>
-              <Link
-                href={`/vendor/rfq/${b.quoteRequest.id}`}
-                className="block min-h-11 py-3 active:bg-[var(--muted)]/50"
-              >
-                <span className="font-medium text-[var(--primary)]">
-                  {b.quoteRequest.title}
-                </span>
-                <p className="mt-1 text-sm text-[var(--muted-foreground)]">
-                  {rfqRequestStatusLabel(b.quoteRequest.status, prefs.locale)} ·{" "}
-                  {rfqBidStatusLabel(b.status, prefs.locale)}
-                  {b.amountEur != null
-                    ? ` · ${formatMoney(b.amountEur, prefs)}`
-                    : ""}
-                </p>
-              </Link>
-            </li>
-          ))}
-        </ul>
+        <div className="mt-3">
+          <SimpleLinkDataTable
+            common={msg.common}
+            titleHeader={msg.rfq.title}
+            metaHeader={msg.rfq.status}
+            rows={bids.map((b) => {
+              const meta = [
+                rfqRequestStatusLabel(b.quoteRequest.status, prefs.locale),
+                rfqBidStatusLabel(b.status, prefs.locale),
+                b.amountEur != null ? formatMoney(b.amountEur, prefs) : null,
+              ]
+                .filter(Boolean)
+                .join(" · ");
+              return {
+                id: b.id,
+                title: b.quoteRequest.title,
+                meta,
+                href: `/vendor/rfq/${b.quoteRequest.id}`,
+                searchText: `${b.quoteRequest.title} ${meta}`,
+              };
+            })}
+          />
+        </div>
       )}
     </main>
   );

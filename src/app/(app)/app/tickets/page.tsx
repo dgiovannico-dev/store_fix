@@ -7,7 +7,7 @@ import {
   type TicketListFilters,
 } from "@/application/tickets/list-tickets";
 import { PageFrame } from "@/components/layout/page-frame";
-import { SlaBadge } from "@/components/tickets/sla-badge";
+import { TicketsDataTable } from "@/components/tables/tickets-data-table";
 import { Button } from "@/components/ui/button";
 import { StatusPanel } from "@/components/ui/status-panel";
 import { getActiveMembership } from "@/domain/memberships/membership-service";
@@ -196,77 +196,54 @@ export default async function TicketsListPage({ searchParams }: Props) {
           </StatusPanel>
         </div>
       ) : (
-        <div className="mt-4 overflow-x-auto">
-          <table className="w-full min-w-[40rem] text-left text-sm">
-            <thead>
-              <tr className="border-b border-[var(--border)] text-[length:var(--text-caption)] uppercase tracking-wide text-[var(--muted-foreground)]">
-                <th className="py-2 pr-3 font-medium">
-                  {msg.ticketsList.colId}
-                </th>
-                <th className="py-2 pr-3 font-medium">
-                  {msg.ticketsList.colStore}
-                </th>
-                <th className="py-2 pr-3 font-medium">
-                  {msg.ticketsList.colStatus}
-                </th>
-                <th className="py-2 pr-3 font-medium">
-                  {msg.ticketsList.colPriority}
-                </th>
-                <th className="py-2 pr-3 font-medium">
-                  {msg.ticketsList.colSla}
-                </th>
-                <th className="py-2 font-medium">
-                  {msg.ticketsList.colVendor}
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {visible.map((tk) => {
-                const sla = computeSlaBadge({
-                  slaDueAt: tk.slaDueAt,
-                  slaBreachedAt: tk.slaBreachedAt,
-                  openedAt: tk.openedAt,
-                  dateLocale: prefs.dateLocale,
-                  labels: {
-                    breached: copy.slaBreached,
-                    none: copy.slaNone,
-                    riskPrefix: copy.slaRiskPrefix,
-                    okPrefix: copy.slaOkPrefix,
-                  },
-                });
-                const shortId = tk.id.slice(0, 8);
-                return (
-                  <tr
-                    key={tk.id}
-                    className="border-b border-[var(--border)]/70 hover:bg-[var(--muted)]/40"
-                  >
-                    <td className="py-2.5 pr-3">
-                      <Link
-                        href={`/app/tickets/${tk.id}`}
-                        className="font-medium text-[var(--primary)] underline-offset-2 hover:underline"
-                        title={intakeCategoryLabel(tk.category, prefs.locale)}
-                      >
-                        <code className="text-xs">{shortId}</code>
-                      </Link>
-                    </td>
-                    <td className="py-2.5 pr-3">{tk.store.name}</td>
-                    <td className="py-2.5 pr-3">
-                      {ticketStatusLabel(tk.status, prefs.locale)}
-                    </td>
-                    <td className="py-2.5 pr-3">
-                      {intakePriorityLabel(tk.priority, prefs.locale)}
-                    </td>
-                    <td className="py-2.5 pr-3">
-                      <SlaBadge tone={sla.tone} label={sla.label} />
-                    </td>
-                    <td className="py-2.5 text-[var(--muted-foreground)]">
-                      {tk.vendor?.name ?? "—"}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+        <div className="mt-4">
+          <TicketsDataTable
+            common={msg.common}
+            headers={msg.ticketsList}
+            rows={visible.map((tk) => {
+              const sla = computeSlaBadge({
+                slaDueAt: tk.slaDueAt,
+                slaBreachedAt: tk.slaBreachedAt,
+                openedAt: tk.openedAt,
+                dateLocale: prefs.dateLocale,
+                labels: {
+                  breached: copy.slaBreached,
+                  none: copy.slaNone,
+                  riskPrefix: copy.slaRiskPrefix,
+                  okPrefix: copy.slaOkPrefix,
+                },
+              });
+              const statusLabel = ticketStatusLabel(tk.status, prefs.locale);
+              const priorityLabel = intakePriorityLabel(
+                tk.priority,
+                prefs.locale,
+              );
+              const categoryLabel = intakeCategoryLabel(
+                tk.category,
+                prefs.locale,
+              );
+              return {
+                id: tk.id,
+                shortId: tk.id.slice(0, 8),
+                storeName: tk.store.name,
+                statusLabel,
+                priorityLabel,
+                vendorName: tk.vendor?.name ?? "—",
+                slaTone: sla.tone,
+                slaLabel: sla.label,
+                searchText: [
+                  tk.id,
+                  tk.store.name,
+                  statusLabel,
+                  priorityLabel,
+                  categoryLabel,
+                  tk.vendor?.name ?? "",
+                  tk.description,
+                  sla.label,
+                ].join(" "),
+              };
+            })}
+          />
         </div>
       )}
     </PageFrame>

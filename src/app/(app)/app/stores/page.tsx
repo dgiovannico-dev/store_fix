@@ -4,6 +4,7 @@ import { auth } from "@/auth";
 import { createStoreAction, deleteStoreAction } from "@/app/actions/stores";
 import { getTenantI18nPrefs } from "@/application/tenant/i18n-prefs";
 import { PageFrame } from "@/components/layout/page-frame";
+import { StoresDataTable } from "@/components/tables/entity-data-table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { StatusPanel } from "@/components/ui/status-panel";
@@ -85,65 +86,29 @@ export default async function StoresPage() {
           />
         </div>
       ) : (
-        <div className="mt-6 overflow-x-auto">
-          <table className="w-full min-w-[28rem] text-left text-sm">
-            <thead>
-              <tr className="border-b border-[var(--border)] text-[length:var(--text-caption)] uppercase tracking-wide text-[var(--muted-foreground)]">
-                <th className="py-2 pr-3 font-medium">{msg.stores.namePlaceholder}</th>
-                <th className="py-2 pr-3 font-medium">{msg.stores.cityPlaceholder}</th>
-                <th className="py-2 font-medium" />
-              </tr>
-            </thead>
-            <tbody>
-              {stores.map((s) => (
-                <tr
-                  key={s.id}
-                  className="border-b border-[var(--border)]/70 hover:bg-[var(--muted)]/40"
-                >
-                  <td className="py-2.5 pr-3 font-medium">
-                    {canEdit ? (
-                      <Link
-                        href={`/app/stores/${s.id}`}
-                        className="text-[var(--primary)] hover:underline"
-                      >
-                        {s.name}
-                      </Link>
-                    ) : (
-                      s.name
-                    )}
-                  </td>
-                  <td className="py-2.5 pr-3 text-[var(--muted-foreground)]">
-                    {[s.city, s.address].filter(Boolean).join(" · ") || "—"}
-                  </td>
-                  <td className="py-2.5 text-right">
-                    {canEdit ? (
-                      <div className="flex items-center justify-end gap-3">
-                        <Link
-                          href={`/app/stores/${s.id}`}
-                          className="text-sm text-[var(--primary)] underline-offset-4 hover:underline"
-                        >
-                          {msg.stores.edit}
-                        </Link>
-                        <form
-                          action={async () => {
-                            "use server";
-                            await deleteStoreAction(s.id);
-                          }}
-                        >
-                          <button
-                            type="submit"
-                            className="text-sm text-[var(--critical)] underline-offset-4 hover:underline"
-                          >
-                            {msg.stores.archive}
-                          </button>
-                        </form>
-                      </div>
-                    ) : null}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="mt-6">
+          <StoresDataTable
+            common={msg.common}
+            nameHeader={msg.stores.namePlaceholder}
+            locationHeader={msg.stores.cityPlaceholder}
+            editLabel={msg.stores.edit}
+            archiveLabel={msg.stores.archive}
+            canEdit={canEdit}
+            onArchive={async (id) => {
+              "use server";
+              await deleteStoreAction(id);
+            }}
+            rows={stores.map((s) => {
+              const location =
+                [s.city, s.address].filter(Boolean).join(" · ") || "—";
+              return {
+                id: s.id,
+                name: s.name,
+                location,
+                searchText: `${s.name} ${location}`,
+              };
+            })}
+          />
         </div>
       )}
     </PageFrame>

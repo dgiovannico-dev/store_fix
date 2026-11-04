@@ -100,6 +100,13 @@ export const it = {
     empty: "Nessun elemento",
     back: "Indietro",
     filterAll: "Tutti",
+    searchPlaceholder: "Cerca…",
+    rowsPerPage: "Righe",
+    of: "di",
+    previous: "Precedente",
+    next: "Successiva",
+    page: "Pagina",
+    noResults: "Nessun risultato",
   },
   actionErrors: {
     accessRequired: "Accesso richiesto",
