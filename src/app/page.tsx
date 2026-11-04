@@ -11,7 +11,7 @@ export default async function HomePage() {
           {home.eyebrow}
         </p>
         <h1
-          className="text-4xl font-semibold tracking-tight text-[var(--foreground)]"
+          className="text-4xl font-semibold tracking-tight text-[var(--primary)]"
           style={{ fontFamily: "var(--font-sora), sans-serif" }}
         >
           FacilityFlow

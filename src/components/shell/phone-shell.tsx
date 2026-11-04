@@ -64,7 +64,7 @@ export function PhoneShell(props: {
         labels={props.tourLabels}
         locale={props.locale}
       />
-      <header className="sticky top-0 z-40 border-b border-[var(--border)] bg-[var(--card)]">
+      <header className="sticky top-0 z-40 border-b border-[var(--chrome-border)] bg-[var(--chrome)]/95 backdrop-blur-md">
         <div className="flex h-14 items-center gap-3 px-4">
           <Link
             href={props.items[0]?.href ?? "/"}
@@ -75,7 +75,7 @@ export function PhoneShell(props: {
           <div className="ml-auto flex items-center gap-2">
             <button
               type="button"
-              className="inline-flex size-10 items-center justify-center rounded-[var(--radius)] text-[var(--muted-foreground)] hover:bg-[var(--muted)]"
+              className="inline-flex size-10 items-center justify-center rounded-[var(--radius)] text-[var(--nav-icon)] hover:bg-[var(--sidebar-accent)] hover:text-[var(--nav-icon-active)]"
               data-tour="help.tour"
               aria-label={props.tourHelpAria}
               title={props.tourLaunchLabel}
@@ -83,7 +83,10 @@ export function PhoneShell(props: {
                 startProductTour(audience, "full", props.locale)
               }
             >
-              <CircleHelp className="size-4" aria-hidden />
+              <CircleHelp
+                className="size-4 stroke-[1.75] text-[var(--nav-icon)]"
+                aria-hidden
+              />
             </button>
             {props.topRight}
             <form action="/logout" method="post">
@@ -92,14 +95,14 @@ export function PhoneShell(props: {
                 variant="ghost"
                 size="icon"
                 aria-label={props.signOutLabel}
-                className="size-10 text-[var(--muted-foreground)]"
+                className="size-10 text-[var(--nav-icon)] hover:bg-[var(--sidebar-accent)] hover:text-[var(--nav-icon-active)]"
               >
-                <LogOut className="size-4" />
+                <LogOut className="size-4 stroke-[1.75] text-[var(--nav-icon)]" />
               </Button>
             </form>
           </div>
         </div>
-        <div className="border-t border-[var(--border)] px-4 py-2">
+        <div className="border-t border-[var(--sidebar-border)] px-4 py-2">
           <AppBreadcrumbs
             labels={props.breadcrumbLabels}
             homeHref={props.homeHref}
@@ -113,7 +116,7 @@ export function PhoneShell(props: {
 
       <nav
         aria-label={props.shellLabels.mainNav}
-        className="fixed inset-x-0 bottom-0 z-40 border-t border-[var(--border)] bg-[var(--card)] pb-[env(safe-area-inset-bottom)]"
+        className="fixed inset-x-0 bottom-0 z-40 border-t border-[var(--chrome-border)] bg-[var(--chrome)]/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-md"
       >
         <ul className="mx-auto flex max-w-[430px] items-stretch justify-around px-1 py-1">
           {props.items.map((item) => {
@@ -126,15 +129,25 @@ export function PhoneShell(props: {
                   href={item.href}
                   data-tour={tourAttrForHref(item.href)}
                   className={cn(
-                    "flex min-h-11 flex-col items-center justify-center gap-0.5 rounded-[var(--radius)] px-1 py-1.5 text-[10px] font-medium",
+                    "flex min-h-11 flex-col items-center justify-center gap-0.5 rounded-[var(--radius)] px-1 py-1.5 text-[10px] font-medium transition-colors",
                     active
-                      ? "text-[var(--primary)]"
-                      : "text-[var(--muted-foreground)]",
-                    emphasize &&
-                      "text-[var(--primary)] [&_svg]:size-6 [&_svg]:stroke-[2.25]",
+                      ? "bg-[var(--sidebar-accent)] text-[var(--sidebar-accent-foreground)]"
+                      : "text-[var(--muted-foreground)] hover:bg-[var(--accent)]",
+                    emphasize && !active && "text-[var(--primary)]",
+                    emphasize && "[&_svg]:size-6 [&_svg]:stroke-[2.25]",
                   )}
                 >
-                  <NavIcon name={item.icon} className="size-5" />
+                  <NavIcon
+                    name={item.icon}
+                    className={cn(
+                      "size-5 stroke-[1.75]",
+                      active
+                        ? "text-[var(--nav-icon-active)]"
+                        : emphasize
+                          ? "text-[var(--primary)]"
+                          : "text-[var(--nav-icon)]",
+                    )}
+                  />
                   <span className="truncate">{item.label}</span>
                 </Link>
               </li>

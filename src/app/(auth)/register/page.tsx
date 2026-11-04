@@ -19,7 +19,7 @@ export default function RegisterPage() {
     <main className="relative flex min-h-dvh flex-col items-center justify-center overflow-hidden px-6 py-16">
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_70%_15%,oklch(0.92_0.03_75/0.5),transparent_48%),radial-gradient(ellipse_at_20%_85%,oklch(0.93_0.02_250/0.65),transparent_40%),linear-gradient(165deg,oklch(0.97_0.01_95),oklch(0.94_0.015_250))]"
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_70%_15%,oklch(0.92_0.05_195/0.5),transparent_48%),radial-gradient(ellipse_at_20%_85%,oklch(0.93_0.04_210/0.65),transparent_40%),linear-gradient(165deg,oklch(0.985_0.01_210),oklch(0.94_0.025_195))]"
       />
 
       <div className="relative z-10 w-full max-w-md">

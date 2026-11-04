@@ -35,7 +35,9 @@
 
 ## 2. Direzione visuale
 
-**Metafora:** sala controllo facility retail — superfici chiare da negozio/ufficio, slate industriale, **ambra** per attenzione operativa, **rosso** solo per critico/breach.
+**Metafora:** sala controllo facility retail — mist cool + **teal verdant** brand, **ambra** solo per attenzione SLA, **rosso** solo per critico/breach.
+
+**Palette attiva (Cool Teal Facility):** primary `oklch(0.4 0.1 195)`; sidebar/chrome wash teal; icone nav `--nav-icon` / `--nav-icon-active`; signal amber invariato.
 
 **Anti-pattern (vietati)**
 
@@ -81,43 +83,20 @@ Allineati a Tailwind v4 / shadcn (`@theme`). Light = default.
 
 ```css
 :root {
-  /* Brand / superfici */
-  --background: oklch(0.985 0.004 95);      /* carta calma, non cream */
-  --foreground: oklch(0.22 0.02 250);       /* slate profondissimo */
-  --card: oklch(1 0 0);
-  --card-foreground: var(--foreground);
-  --popover: oklch(1 0 0);
-  --popover-foreground: var(--foreground);
-
-  --primary: oklch(0.32 0.04 250);          /* deep slate brand */
-  --primary-foreground: oklch(0.98 0.005 95);
-  --secondary: oklch(0.94 0.01 250);
-  --secondary-foreground: oklch(0.28 0.03 250);
-  --muted: oklch(0.955 0.008 250);
-  --muted-foreground: oklch(0.48 0.02 250);
-  --accent: oklch(0.93 0.02 250);
-  --accent-foreground: oklch(0.28 0.03 250);
-
-  --border: oklch(0.88 0.01 250);
-  --input: oklch(0.88 0.01 250);
-  --ring: oklch(0.55 0.12 75);              /* focus = ambra segnale */
-
-  /* Semantici facility / SLA */
-  --signal: oklch(0.78 0.14 75);            /* ambra attenzione */
-  --signal-foreground: oklch(0.28 0.06 70);
-  --critical: oklch(0.55 0.2 25);           /* rosso critico / breach */
-  --critical-foreground: oklch(0.98 0.01 25);
-  --success: oklch(0.55 0.12 150);
-  --success-foreground: oklch(0.98 0.02 150);
-  --info: oklch(0.55 0.08 250);
-  --info-foreground: oklch(0.98 0.01 250);
-
-  /* SLA mapping */
-  --sla-ok: var(--success);
-  --sla-risk: var(--signal);
-  --sla-breached: var(--critical);
-
-  --radius: 0.5rem; /* restrained — vedi §6 */
+  /* Cool Teal Facility — fonte di verità: src/app/globals.css */
+  --background: oklch(0.985 0.008 210);
+  --foreground: oklch(0.22 0.03 220);
+  --primary: oklch(0.4 0.1 195);           /* teal brand */
+  --primary-foreground: oklch(0.99 0.01 195);
+  --sidebar: oklch(0.968 0.018 205);
+  --sidebar-accent: oklch(0.92 0.045 195);
+  --nav-icon: oklch(0.52 0.055 205);
+  --nav-icon-active: oklch(0.38 0.11 195);
+  --ring: oklch(0.55 0.12 195);            /* focus = brand teal */
+  --signal: oklch(0.72 0.145 70);          /* ambra SLA only */
+  --critical: oklch(0.5 0.19 25);
+  --success: oklch(0.52 0.13 160);
+  --radius: 0.625rem;
 }
 ```
 

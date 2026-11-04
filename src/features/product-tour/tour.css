@@ -11,7 +11,7 @@
   font-family: var(--font-sora), ui-sans-serif, system-ui, sans-serif;
   font-weight: 600;
   font-size: 1.05rem !important;
-  color: var(--primary, #0f3d4c) !important;
+  color: var(--primary, oklch(0.4 0.1 195)) !important;
 }
 
 .ff-tour-popover .driver-popover-description {
@@ -32,8 +32,8 @@
 }
 
 .ff-tour-popover .driver-popover-next-btn {
-  background: var(--primary, #0f3d4c) !important;
-  color: var(--primary-foreground, #fff) !important;
+  background: var(--primary, oklch(0.4 0.1 195)) !important;
+  color: var(--primary-foreground, oklch(0.99 0.01 195)) !important;
   border: none !important;
   text-shadow: none !important;
   border-radius: 999px !important;
