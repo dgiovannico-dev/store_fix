@@ -61,6 +61,8 @@ export function hqSidebarItems(
     { href: "/app/assets", label: msg.nav.assets, icon: "assets" },
     { href: "/app/contratti", label: msg.nav.contracts, icon: "contracts" },
     { href: "/app/calendario", label: msg.nav.calendar, icon: "calendar" },
+    { href: "/app/finance/chargeback", label: msg.nav.costs, icon: "contracts" },
+    { href: "/app/wallboard", label: msg.nav.overview, icon: "dashboard" },
   ];
   if (role && canMutate(role, RbacAction.manageRfq)) {
     items.push({ href: "/app/rfq", label: msg.nav.rfq, icon: "rfq" });
@@ -69,6 +71,11 @@ export function hqSidebarItems(
     items.push({
       href: "/app/settings/locale",
       label: msg.nav.locale,
+      icon: "settings",
+    });
+    items.push({
+      href: "/app/settings/ai",
+      label: msg.nav.ai,
       icon: "settings",
     });
   }

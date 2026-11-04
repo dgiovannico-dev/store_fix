@@ -82,6 +82,7 @@ export async function AppChrome({ children }: { children: React.ReactNode }) {
   return (
     <PhoneShell
       brand={msg.appName}
+      audience={audience === "vendor" ? "vendor" : "store"}
       items={
         audience === "vendor"
           ? vendorBottomItems(prefs.locale)

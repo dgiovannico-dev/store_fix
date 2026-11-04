@@ -2,7 +2,7 @@
 
 ## Status
 
-Proposed (attende conferma PO)
+Accepted (GO PO 2026-11-04)
 
 ## Date
 

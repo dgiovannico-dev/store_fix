@@ -1,6 +1,6 @@
 # FacilityFlow Retail — AI Platform plan (vLLM + multi-provider)
 
-> **Stato:** bozza 2026-11-04 — **attende conferma PO** (cambio architetturale + BYOK cloud).  
+> **Stato:** **GO PO 2026-11-04** — implementazione F7 in corso.  
 > **ADR:** [`../adr/0012-ai-multi-provider-byok.md`](../adr/0012-ai-multi-provider-byok.md)  
 > **Vincolo invariato:** AI = **assist + conferma umana**. Mai System of Record (stato ticket, SLA, costi, permessi).  
 > **Default runtime:** **vLLM** OpenAI-compatible (`/v1/chat/completions`). Ollama resta preset compatibile.  

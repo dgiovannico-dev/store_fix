@@ -10,11 +10,15 @@ import { maintainPmJobs } from "../application/pm/maintain-pm";
 import { gcExpiredRateLimitBuckets } from "../application/rate-limit/gc-expired-buckets";
 import { checkSlaBreaches } from "../application/sla/check-breaches";
 import { sendEmail } from "../infrastructure/email/mailer";
+import { drainEmailOutbox } from "../infrastructure/email/outbox-drain";
 import { readImapInboundConfig } from "../infrastructure/email/imap-config";
 import { openImapflowMailbox } from "../infrastructure/email/imapflow-mailbox";
+import { runWeeklyHqDigest } from "../application/digest/weekly-hq-digest";
 import {
   QUEUE_ATTACHMENT_GC,
+  QUEUE_EMAIL_DIGEST_WEEKLY,
   QUEUE_EMAIL_IMAP_POLL,
+  QUEUE_EMAIL_OUTBOX_DRAIN,
   QUEUE_EMAIL_SEND,
   QUEUE_GDPR_PURGE,
   QUEUE_PM_MAINTAIN,
@@ -32,6 +36,8 @@ async function main() {
   boss.on("error", (err) => console.error("[worker/pg-boss]", err));
   await boss.start();
   await boss.createQueue(QUEUE_EMAIL_SEND);
+  await boss.createQueue(QUEUE_EMAIL_OUTBOX_DRAIN);
+  await boss.createQueue(QUEUE_EMAIL_DIGEST_WEEKLY);
   await boss.createQueue(QUEUE_SLA_CHECK);
   await boss.createQueue(QUEUE_EMAIL_IMAP_POLL);
   await boss.createQueue(QUEUE_PM_MAINTAIN);
@@ -55,6 +61,20 @@ async function main() {
       }
     },
   );
+
+  await boss.work(QUEUE_EMAIL_OUTBOX_DRAIN, async () => {
+    const result = await drainEmailOutbox(25);
+    console.log(
+      `[worker] email.outbox_drain → sent=${result.sent} failed=${result.failed}`,
+    );
+  });
+
+  await boss.work(QUEUE_EMAIL_DIGEST_WEEKLY, async () => {
+    const result = await runWeeklyHqDigest();
+    console.log(
+      `[worker] email.digest_weekly → tenants=${result.tenants} emails=${result.emails}`,
+    );
+  });
 
   await boss.work(QUEUE_SLA_CHECK, async () => {
     const result = await checkSlaBreaches();
@@ -110,6 +130,23 @@ async function main() {
     });
   } catch (e) {
     console.warn("[worker] schedule sla:", (e as Error).message);
+  }
+
+  try {
+    // F6-01 digest HQ — lunedì 08:00 Europe/Rome
+    await boss.schedule(QUEUE_EMAIL_DIGEST_WEEKLY, "0 8 * * 1", null, {
+      tz: "Europe/Rome",
+    });
+  } catch (e) {
+    console.warn("[worker] schedule digest:", (e as Error).message);
+  }
+
+  try {
+    await boss.schedule(QUEUE_EMAIL_OUTBOX_DRAIN, "*/2 * * * *", null, {
+      tz: "Europe/Rome",
+    });
+  } catch (e) {
+    console.warn("[worker] schedule outbox:", (e as Error).message);
   }
 
   try {
