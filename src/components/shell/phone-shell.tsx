@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import type { NavItem } from "./nav-config";
+import { NavIcon } from "./nav-icons";
 
 export function PhoneShell(props: {
   brand: string;
@@ -36,7 +37,6 @@ export function PhoneShell(props: {
       >
         <ul className="mx-auto flex max-w-[430px] items-stretch justify-around px-1 py-1">
           {props.items.map((item) => {
-            const Icon = item.icon;
             const active =
               pathname === item.href || pathname.startsWith(`${item.href}/`);
             const emphasize = item.href.includes("/new");
@@ -53,7 +53,7 @@ export function PhoneShell(props: {
                       "text-[var(--primary)] [&_svg]:size-6 [&_svg]:stroke-[2.25]",
                   )}
                 >
-                  <Icon className="size-5" />
+                  <NavIcon name={item.icon} className="size-5" />
                   <span className="truncate">{item.label}</span>
                 </Link>
               </li>

@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 import type { NavItem } from "./nav-config";
+import { NavIcon } from "./nav-icons";
 
 function NavLink({
   item,
@@ -25,7 +26,6 @@ function NavLink({
   active: boolean;
   onNavigate?: () => void;
 }) {
-  const Icon = item.icon;
   return (
     <Link
       href={item.href}
@@ -37,7 +37,7 @@ function NavLink({
           : "text-[var(--muted-foreground)] hover:bg-[var(--muted)] hover:text-[var(--foreground)]",
       )}
     >
-      <Icon className="size-4 shrink-0" />
+      <NavIcon name={item.icon} className="size-4 shrink-0" />
       <span className="truncate">{item.label}</span>
     </Link>
   );
