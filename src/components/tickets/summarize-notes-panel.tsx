@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { StatusPanel } from "@/components/ui/status-panel";
 import type { Locale, MessageCatalog } from "@/i18n";
 
@@ -9,6 +9,8 @@ type Props = {
   canOps: boolean;
   labels: MessageCatalog["ticketPanels"];
   locale?: Locale;
+  /** Genera riassunto + soluzione al mount (es. apertura dettaglio). */
+  autoGenerate?: boolean;
 };
 
 export function SummarizeNotesPanel({
@@ -16,11 +18,58 @@ export function SummarizeNotesPanel({
   canOps,
   labels,
   locale = "it",
+  autoGenerate = true,
 }: Props) {
   const [pending, setPending] = useState(false);
   const [summary, setSummary] = useState<string | null>(null);
+  const [solution, setSolution] = useState<string | null>(null);
   const [source, setSource] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const ranAuto = useRef(false);
+
+  const runAssist = useCallback(
+    async (signal?: AbortSignal) => {
+      setPending(true);
+      setError(null);
+      try {
+        const res = await fetch("/api/ai/summarize-ticket", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ticketId }),
+          signal,
+        });
+        if (!res.ok) {
+          const j = (await res.json().catch(() => ({}))) as {
+            error?: string;
+          };
+          setError(j.error ?? labels.summarizeError);
+          return;
+        }
+        const data = (await res.json()) as {
+          summary: string;
+          suggestedSolution?: string;
+          source: string;
+        };
+        setSummary(data.summary);
+        setSolution(data.suggestedSolution ?? null);
+        setSource(data.source);
+      } catch (e) {
+        if (e instanceof DOMException && e.name === "AbortError") return;
+        setError(labels.summarizeError);
+      } finally {
+        setPending(false);
+      }
+    },
+    [ticketId, labels.summarizeError],
+  );
+
+  useEffect(() => {
+    if (!canOps || !autoGenerate || ranAuto.current) return;
+    ranAuto.current = true;
+    const ac = new AbortController();
+    void runAssist(ac.signal);
+    return () => ac.abort();
+  }, [canOps, autoGenerate, runAssist]);
 
   if (!canOps) return null;
 
@@ -32,35 +81,15 @@ export function SummarizeNotesPanel({
       <p className="text-xs text-[var(--muted-foreground)]">
         {labels.summarizeHint}
       </p>
+      {pending && !summary ? (
+        <p className="text-sm text-[var(--muted-foreground)]" role="status">
+          {labels.summarizeAutoPending}
+        </p>
+      ) : null}
       <button
         type="button"
         disabled={pending}
-        onClick={async () => {
-          setPending(true);
-          setError(null);
-          try {
-            const res = await fetch("/api/ai/summarize-ticket", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ ticketId }),
-            });
-            if (!res.ok) {
-              const j = (await res.json().catch(() => ({}))) as {
-                error?: string;
-              };
-              setError(j.error ?? labels.summarizeError);
-              return;
-            }
-            const data = (await res.json()) as {
-              summary: string;
-              source: string;
-            };
-            setSummary(data.summary);
-            setSource(data.source);
-          } finally {
-            setPending(false);
-          }
-        }}
+        onClick={() => void runAssist()}
         className="rounded-[var(--radius)] border border-[var(--border)] px-3 py-2 text-sm font-medium disabled:opacity-60"
       >
         {pending ? labels.summarizePending : labels.summarizeBtn}
@@ -74,6 +103,17 @@ export function SummarizeNotesPanel({
             {labels.summarizeSource} {source} · {labels.summarizeNeedsConfirm}
           </p>
           {summary}
+        </div>
+      ) : null}
+      {solution ? (
+        <div className="rounded-[var(--radius)] border border-[color-mix(in_oklab,var(--signal)_35%,var(--border))] bg-[color-mix(in_oklab,var(--signal)_6%,var(--card))] p-3 text-sm whitespace-pre-wrap">
+          <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-[var(--muted-foreground)]">
+            {labels.summarizeSolutionTitle}
+          </p>
+          <p className="mb-2 text-xs text-[var(--muted-foreground)]">
+            {labels.summarizeNeedsConfirm}
+          </p>
+          {solution}
         </div>
       ) : null}
     </section>

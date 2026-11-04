@@ -45,6 +45,10 @@ export const en = {
     agoMinutes: "{n} min ago",
     agoHours: "{n} h ago",
     agoDays: "{n} days ago",
+    loadMore: "Load more interventions",
+    loadMorePending: "Loading…",
+    loadMoreError: "Could not load more interventions",
+    showingOf: "Showing {shown} of {total}",
   },
   meta: {
     description:
@@ -71,7 +75,8 @@ export const en = {
     closedList: "Closed / verified tickets",
     financeReadonly:
       "Read-only access: no mutations, internal notes unavailable.",
-    cancelSkip: "Undo skip",
+    cancelSkip: "Resume checklist",
+    cancelSkipHint: "Return to onboarding and continue where you left off",
     kpiAria: "KPI metrics",
   },
   vendor: {
@@ -372,6 +377,8 @@ export const en = {
   ticketDetail: {
     back: "← Tickets",
     backInbox: "← Inbox",
+    backWallboard: "← Live interventions",
+    backReturn: "← Back",
     createdBanner: "Ticket opened. ID:",
     statusPrefix: "status",
     assetPrefix: "Asset:",
@@ -462,14 +469,16 @@ export const en = {
     slaNote: "Relaunch note *",
     slaOk: "Relaunch sent",
     slaSubmit: "Relaunch ops notification",
-    summarizeTitle: "Summary assist",
+    summarizeTitle: "Summary & solution assist",
     summarizeHint:
       "AI/heuristic suggestion — does not write the ticket (read-only confirm).",
-    summarizeBtn: "Generate summary (assist)",
+    summarizeBtn: "Regenerate assist",
     summarizePending: "Generating…",
-    summarizeError: "Summary error",
+    summarizeError: "Assist error",
     summarizeSource: "Source:",
     summarizeNeedsConfirm: "read-only — human confirm",
+    summarizeSolutionTitle: "Possible solution (verify)",
+    summarizeAutoPending: "Preparing summary and suggestion…",
     vendorTitle: "Update work",
     vendorStart: "Start work",
     vendorWaiting: "Waiting for parts",
