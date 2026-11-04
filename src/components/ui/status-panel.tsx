@@ -62,9 +62,7 @@ export function StatusPanel(props: {
             ? "…"
             : msg.common.empty}
       </Badge>
-      <p className="font-[family-name:var(--font-sora)] text-[length:var(--text-h3)] font-semibold text-[var(--foreground)]">
-        {title}
-      </p>
+      <p className="text-h3 text-[var(--foreground)]">{title}</p>
       {props.body ? (
         <p className="max-w-md text-sm text-[var(--muted-foreground)]">
           {props.body}
