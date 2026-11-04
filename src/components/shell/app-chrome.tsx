@@ -1,16 +1,47 @@
 import { auth } from "@/auth";
 import { getTenantI18nPrefs } from "@/application/tenant/i18n-prefs";
+import type { BreadcrumbLabels } from "@/components/layout/app-breadcrumbs";
 import { NotificationBell } from "@/components/notifications/notification-bell";
-import { Button } from "@/components/ui/button";
 import { t } from "@/i18n";
 import { HqShell } from "./hq-shell";
 import {
   hqSidebarItems,
+  navHomeForAudience,
   shellAudienceForRole,
   storeBottomItems,
   vendorBottomItems,
 } from "./nav-config";
 import { PhoneShell } from "./phone-shell";
+
+function breadcrumbLabelsFromMsg(
+  msg: ReturnType<typeof t>,
+): BreadcrumbLabels {
+  return {
+    home: msg.common.home,
+    breadcrumb: msg.common.breadcrumb,
+    detail: msg.common.detail,
+    newItem: msg.common.newItem,
+    importCsv: msg.stores.importCsv,
+    scorecard: msg.scorecard.title,
+    members: msg.members.title,
+    audit: msg.audit.title,
+    locale: msg.nav.locale,
+    routes: {
+      dashboard: msg.nav.dashboard,
+      tickets: msg.nav.tickets,
+      stores: msg.nav.stores,
+      vendors: msg.nav.vendors,
+      assets: msg.nav.assets,
+      contratti: msg.nav.contracts,
+      calendario: msg.nav.calendar,
+      rfq: msg.nav.rfq,
+      segnala: msg.nav.segnala,
+      settings: msg.nav.locale,
+      inbox: msg.nav.inbox,
+      onboarding: msg.onboarding.title,
+    },
+  };
+}
 
 export async function AppChrome({ children }: { children: React.ReactNode }) {
   const session = await auth();
@@ -21,22 +52,16 @@ export async function AppChrome({ children }: { children: React.ReactNode }) {
     : { locale: "it" as const, currency: "EUR", dateLocale: "it-IT" };
   const msg = t(prefs.locale);
   const audience = shellAudienceForRole(session.role);
+  const homeHref = navHomeForAudience(audience);
 
   const topRight = (
-    <>
-      <NotificationBell
-        role={session.role}
-        labels={msg.notifBell}
-        dateLocale={prefs.dateLocale}
-        currency={prefs.currency}
-        locale={prefs.locale}
-      />
-      <form action="/logout" method="post">
-        <Button type="submit" variant="outline" size="sm">
-          {msg.nav.signOut}
-        </Button>
-      </form>
-    </>
+    <NotificationBell
+      role={session.role}
+      labels={msg.notifBell}
+      dateLocale={prefs.dateLocale}
+      currency={prefs.currency}
+      locale={prefs.locale}
+    />
   );
 
   if (audience === "hq") {
@@ -45,6 +70,9 @@ export async function AppChrome({ children }: { children: React.ReactNode }) {
         brand={msg.appName}
         items={hqSidebarItems(session.role, prefs.locale)}
         topRight={topRight}
+        signOutLabel={msg.nav.signOut}
+        breadcrumbLabels={breadcrumbLabelsFromMsg(msg)}
+        homeHref={homeHref}
       >
         {children}
       </HqShell>
@@ -60,6 +88,9 @@ export async function AppChrome({ children }: { children: React.ReactNode }) {
           : storeBottomItems(prefs.locale)
       }
       topRight={topRight}
+      signOutLabel={msg.nav.signOut}
+      breadcrumbLabels={breadcrumbLabelsFromMsg(msg)}
+      homeHref={homeHref}
     >
       {children}
     </PhoneShell>

@@ -2,7 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { LogOut } from "lucide-react";
 import type { ReactNode } from "react";
+import {
+  AppBreadcrumbs,
+  type BreadcrumbLabels,
+} from "@/components/layout/app-breadcrumbs";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { NavItem } from "./nav-config";
 import { NavIcon } from "./nav-icons";
@@ -12,19 +18,43 @@ export function PhoneShell(props: {
   items: NavItem[];
   topRight: ReactNode;
   children: ReactNode;
+  signOutLabel: string;
+  breadcrumbLabels: BreadcrumbLabels;
+  homeHref: string;
 }) {
   const pathname = usePathname();
 
   return (
     <div className="flex min-h-dvh flex-col bg-[var(--background)]">
-      <header className="sticky top-0 z-40 flex h-14 items-center gap-3 border-b border-[var(--border)] bg-[var(--card)] px-4">
-        <Link
-          href={props.items[0]?.href ?? "/"}
-          className="font-[family-name:var(--font-sora)] text-base font-semibold text-[var(--primary)]"
-        >
-          {props.brand}
-        </Link>
-        <div className="ml-auto flex items-center gap-2">{props.topRight}</div>
+      <header className="sticky top-0 z-40 border-b border-[var(--border)] bg-[var(--card)]">
+        <div className="flex h-14 items-center gap-3 px-4">
+          <Link
+            href={props.items[0]?.href ?? "/"}
+            className="font-[family-name:var(--font-sora)] text-base font-semibold text-[var(--primary)]"
+          >
+            {props.brand}
+          </Link>
+          <div className="ml-auto flex items-center gap-2">
+            {props.topRight}
+            <form action="/logout" method="post">
+              <Button
+                type="submit"
+                variant="ghost"
+                size="icon"
+                aria-label={props.signOutLabel}
+                className="size-10 text-[var(--muted-foreground)]"
+              >
+                <LogOut className="size-4" />
+              </Button>
+            </form>
+          </div>
+        </div>
+        <div className="border-t border-[var(--border)] px-4 py-2">
+          <AppBreadcrumbs
+            labels={props.breadcrumbLabels}
+            homeHref={props.homeHref}
+          />
+        </div>
       </header>
 
       <div className="mx-auto w-full max-w-[430px] flex-1 pb-24">

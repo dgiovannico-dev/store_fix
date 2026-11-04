@@ -107,6 +107,10 @@ export const it = {
     next: "Successiva",
     page: "Pagina",
     noResults: "Nessun risultato",
+    detail: "Dettaglio",
+    newItem: "Nuovo",
+    home: "Inizio",
+    breadcrumb: "Percorso",
   },
   actionErrors: {
     accessRequired: "Accesso richiesto",
