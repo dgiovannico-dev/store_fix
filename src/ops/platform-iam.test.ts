@@ -12,11 +12,18 @@ describe("Platform IAM multi-app (F4-06)", () => {
       "utf8",
     );
     expect(policy).toMatch(/secret\/data\/apps\/facilityflow\/\*/);
+    expect(policy).toMatch(/auth\/token\/lookup-self/);
     expect(policy).not.toMatch(/secret\/data\/\*/);
     expect(
       existsSync(
         path.join(process.cwd(), "deploy/openbao/policies/_template-app-eso.hcl"),
       ),
+    ).toBe(true);
+    expect(
+      existsSync(path.join(process.cwd(), "scripts/platform-app-onboard.sh")),
+    ).toBe(true);
+    expect(
+      existsSync(path.join(process.cwd(), "deploy/openbao/README.md")),
     ).toBe(true);
   });
 

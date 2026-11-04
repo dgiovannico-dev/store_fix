@@ -34,13 +34,21 @@ Keycloak e OpenBao (**“Vault”**) sono servizi **condivisi di piattaforma**, 
 
 ## Onboarding di una nuova app
 
-1. **Keycloak** — Admin → Clients → Create: redirect `{APP}/api/auth/callback/…`, PKCE S256, client auth on. Copiare pattern da [`deploy/keycloak/realm-platform.json`](../../deploy/keycloak/realm-platform.json).
-2. **OpenBao** — copiare policy da [`deploy/openbao/policies/_template-app-eso.hcl`](../../deploy/openbao/policies/_template-app-eso.hcl), sostituire `APP_ID`, `bao policy write <app>-eso …`.
-3. Seed KV: `bao kv put secret/apps/<app-id>/runtime @runtime.json`
-4. Token o Kubernetes role bound allo ServiceAccount del namespace app.
-5. ExternalSecret → Secret runtime **nel namespace dell’app** (mai cross-ns read).
+```bash
+npm run platform:onboard -- <app-id> [--namespace <ns>] [--client-id <oidc-client>]
+# es. npm run platform:onboard -- billing --namespace billing --client-id billing-app
+```
 
-Dettaglio operativo: [`KEYCLOAK.md`](./KEYCLOAK.md) · [`VAULT.md`](./VAULT.md).
+Genera `deploy/openbao/policies/<app-id>-eso.hcl` e stampa checklist Keycloak/OpenBao (nessun contatto al cluster).
+
+Manuale equivalente:
+
+1. **Keycloak** — Clients → Create (pattern [`realm-platform.json`](../../deploy/keycloak/realm-platform.json)).
+2. **OpenBao** — `bao policy write` + `bao kv put secret/apps/<app-id>/runtime`.
+3. Token o Kubernetes role bound allo SA del namespace app.
+4. ExternalSecret → Secret **nel namespace dell’app** (mai cross-ns).
+
+Dettaglio: [`KEYCLOAK.md`](./KEYCLOAK.md) · [`VAULT.md`](./VAULT.md) · [`../../deploy/openbao/README.md`](../../deploy/openbao/README.md).
 
 ## Cosa non fare
 
