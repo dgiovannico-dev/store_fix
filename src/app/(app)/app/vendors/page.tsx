@@ -8,6 +8,7 @@ import { VendorsDataTable } from "@/components/tables/entity-data-table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { MultiCheckPicker } from "@/components/ui/multi-check-picker";
+import { PendingSubmitButton } from "@/components/ui/pending-submit-button";
 import { StatusPanel } from "@/components/ui/status-panel";
 import { RbacAction } from "@/domain/rbac/actions";
 import { can, canMutate } from "@/domain/rbac/can";
@@ -86,7 +87,10 @@ export default async function VendorsPage() {
               {msg.vendor.needStoresHint}
             </p>
           )}
-          <Button type="submit">{msg.vendor.add}</Button>
+          <PendingSubmitButton
+            label={msg.vendor.add}
+            pendingLabel={msg.common.working}
+          />
         </form>
       ) : null}
 
