@@ -4,13 +4,13 @@ import { auth } from "@/auth";
 import { listQuoteRequests } from "@/application/rfq/rfq-service";
 import { getTenantI18nPrefs } from "@/application/tenant/i18n-prefs";
 import { PageFrame } from "@/components/layout/page-frame";
+import { RfqDataTable } from "@/components/tables/entity-data-table";
 import { Button } from "@/components/ui/button";
 import { StatusPanel } from "@/components/ui/status-panel";
 import { canMutate } from "@/domain/rbac/can";
 import { RbacAction } from "@/domain/rbac/actions";
 import { rfqRequestStatusLabel } from "@/domain/rfq/status-labels";
 import { formatMoney } from "@/i18n/format";
-import { tableHeadClass, tableRowClass } from "@/lib/ui-classes";
 import { tenantMessages } from "@/i18n/tenant-messages";
 
 export default async function RfqListPage() {
@@ -52,61 +52,36 @@ export default async function RfqListPage() {
           />
         </div>
       ) : (
-        <div className="mt-6 overflow-x-auto">
-          <table className="w-full min-w-[32rem] text-left text-sm">
-            <thead>
-              <tr className={tableHeadClass}>
-                <th className="py-2 pr-3 font-medium">{msg.rfq.title}</th>
-                <th className="py-2 pr-3 font-medium">{msg.rfq.status}</th>
-                <th className="py-2 pr-3 font-medium">{msg.rfq.offers}</th>
-                <th className="py-2 font-medium">{msg.rfq.colMin}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {items.map((r) => {
-                const submitted = r.bids.filter((b) => b.status === "submitted");
-                const amounts = submitted
-                  .map((b) => Number(b.amountEur))
-                  .filter((n) => Number.isFinite(n));
-                const min =
-                  amounts.length > 0
-                    ? formatMoney(Math.min(...amounts), prefs)
-                    : null;
-                return (
-                  <tr key={r.id} className={tableRowClass}>
-                    <td className="py-2.5 pr-3">
-                      <Link
-                        href={`/app/rfq/${r.id}`}
-                        className="font-medium text-[var(--primary)] hover:underline"
-                      >
-                        {r.title}
-                      </Link>
-                      {r.ticketId ? (
-                        <p className="text-xs text-[var(--muted-foreground)]">
-                          {r.ticketId.slice(0, 8)}…
-                        </p>
-                      ) : null}
-                    </td>
-                    <td className="py-2.5 pr-3">
-                      {rfqRequestStatusLabel(r.status, prefs.locale)}
-                    </td>
-                    <td className="py-2.5 pr-3 tabular-nums text-[var(--muted-foreground)]">
-                      {msg.rfq.submittedMeta.replace(
-                        "{n}",
-                        String(submitted.length),
-                      )}{" "}
-                      /{" "}
-                      {msg.rfq.invitesMeta.replace(
-                        "{n}",
-                        String(r.bids.length),
-                      )}
-                    </td>
-                    <td className="py-2.5 tabular-nums">{min ?? "—"}</td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+        <div className="mt-6">
+          <RfqDataTable
+            common={msg.common}
+            titleHeader={msg.rfq.title}
+            statusHeader={msg.rfq.status}
+            offersHeader={msg.rfq.offers}
+            minHeader={msg.rfq.colMin}
+            rows={items.map((r) => {
+              const submitted = r.bids.filter((b) => b.status === "submitted");
+              const amounts = submitted
+                .map((b) => Number(b.amountEur))
+                .filter((n) => Number.isFinite(n));
+              const min =
+                amounts.length > 0
+                  ? (formatMoney(Math.min(...amounts), prefs) ?? "—")
+                  : "—";
+              const status = rfqRequestStatusLabel(r.status, prefs.locale);
+              const offers = `${msg.rfq.submittedMeta.replace("{n}", String(submitted.length))} / ${msg.rfq.invitesMeta.replace("{n}", String(r.bids.length))}`;
+              const ticketHint = r.ticketId ? `${r.ticketId.slice(0, 8)}…` : "";
+              return {
+                id: r.id,
+                title: r.title,
+                status,
+                offers,
+                min,
+                ticketHint,
+                searchText: `${r.title} ${status} ${offers} ${ticketHint}`,
+              };
+            })}
+          />
         </div>
       )}
     </PageFrame>

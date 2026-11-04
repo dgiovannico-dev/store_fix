@@ -13,10 +13,11 @@ import { listStores } from "@/domain/stores/store-service";
 import { listVendors } from "@/domain/vendors/vendor-service";
 import { getTenantI18nPrefs } from "@/application/tenant/i18n-prefs";
 import { PageFrame } from "@/components/layout/page-frame";
+import { AssetsDataTable } from "@/components/tables/entity-data-table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { StatusPanel } from "@/components/ui/status-panel";
-import { controlClass, tableHeadClass, tableRowClass } from "@/lib/ui-classes";
+import { controlClass } from "@/lib/ui-classes";
 import { tenantMessages } from "@/i18n/tenant-messages";
 
 export default async function AssetsPage() {
@@ -98,50 +99,31 @@ export default async function AssetsPage() {
           <StatusPanel kind="empty" title={copy.empty} locale={prefs.locale} />
         </div>
       ) : (
-        <div className="mt-6 overflow-x-auto">
-          <table className="w-full min-w-[28rem] text-left text-sm">
-            <thead>
-              <tr className={tableHeadClass}>
-                <th className="py-2 pr-3 font-medium">{copy.labelPlaceholder}</th>
-                <th className="py-2 pr-3 font-medium">{copy.storePlaceholder}</th>
-                <th className="py-2 font-medium" />
-              </tr>
-            </thead>
-            <tbody>
-              {assets.map((a) => (
-                <tr key={a.id} className={tableRowClass}>
-                  <td className="py-2.5 pr-3">
-                    <span className="font-medium">{a.label}</span>
-                    <span className="ml-1 text-[var(--muted-foreground)]">
-                      · {intakeCategoryLabel(a.category, prefs.locale)}
-                    </span>
-                    <p className="text-xs text-[var(--muted-foreground)]">
-                      {[a.brandModel, a.location].filter(Boolean).join(" · ") ||
-                        "—"}
-                    </p>
-                  </td>
-                  <td className="py-2.5 pr-3 text-[var(--muted-foreground)]">
-                    {storeName.get(a.storeId) ?? "—"}
-                  </td>
-                  <td className="py-2.5 text-right">
-                    <form
-                      action={async () => {
-                        "use server";
-                        await deleteAssetAction(a.id);
-                      }}
-                    >
-                      <button
-                        type="submit"
-                        className="text-sm text-[var(--critical)] underline-offset-4 hover:underline"
-                      >
-                        {copy.archive}
-                      </button>
-                    </form>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="mt-6">
+          <AssetsDataTable
+            common={msg.common}
+            labelHeader={copy.labelPlaceholder}
+            storeHeader={copy.storePlaceholder}
+            archiveLabel={copy.archive}
+            onArchive={async (id) => {
+              "use server";
+              await deleteAssetAction(id);
+            }}
+            rows={assets.map((a) => {
+              const category = intakeCategoryLabel(a.category, prefs.locale);
+              const detail =
+                [a.brandModel, a.location].filter(Boolean).join(" · ") || "—";
+              const store = storeName.get(a.storeId) ?? "—";
+              return {
+                id: a.id,
+                label: a.label,
+                category,
+                detail,
+                storeName: store,
+                searchText: `${a.label} ${category} ${detail} ${store}`,
+              };
+            })}
+          />
         </div>
       )}
     </PageFrame>

@@ -102,6 +102,13 @@ export const en = {
     empty: "No items",
     back: "Back",
     filterAll: "All",
+    searchPlaceholder: "Search…",
+    rowsPerPage: "Rows",
+    of: "of",
+    previous: "Previous",
+    next: "Next",
+    page: "Page",
+    noResults: "No results",
   },
   actionErrors: {
     accessRequired: "Sign-in required",

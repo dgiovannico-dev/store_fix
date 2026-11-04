@@ -15,11 +15,12 @@ import {
 import { listVendors } from "@/domain/vendors/vendor-service";
 import { getTenantI18nPrefs } from "@/application/tenant/i18n-prefs";
 import { PageFrame } from "@/components/layout/page-frame";
+import { ContractsDataTable } from "@/components/tables/entity-data-table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { StatusPanel } from "@/components/ui/status-panel";
 import { formatMoney, withCurrency } from "@/i18n/format";
-import { controlClass, tableHeadClass, tableRowClass } from "@/lib/ui-classes";
+import { controlClass } from "@/lib/ui-classes";
 import { tenantMessages } from "@/i18n/tenant-messages";
 
 function expiryTone(endsOn: Date, now: Date) {
@@ -151,71 +152,38 @@ export default async function ContrattiPage({ searchParams }: Props) {
           />
         </div>
       ) : (
-        <div className="mt-6 overflow-x-auto">
-          <table className="w-full min-w-[32rem] text-left text-sm">
-            <thead>
-              <tr className={tableHeadClass}>
-                <th className="py-2 pr-3 font-medium">
-                  {msg.contracts.titlePlaceholder}
-                </th>
-                <th className="py-2 pr-3 font-medium">
-                  {msg.contracts.vendorPlaceholder}
-                </th>
-                <th className="py-2 pr-3 font-medium">{msg.contracts.endsOn}</th>
-                <th className="py-2 font-medium" />
-              </tr>
-            </thead>
-            <tbody>
-              {contracts.map((c) => (
-                <tr key={c.id} className={tableRowClass}>
-                  <td className="py-2.5 pr-3 font-medium">
-                    {c.title}
-                    {c.reference ? (
-                      <p className="text-xs font-normal text-[var(--muted-foreground)]">
-                        {c.reference}
-                      </p>
-                    ) : null}
-                  </td>
-                  <td className="py-2.5 pr-3">
-                    <Link
-                      href={`/app/vendors/${c.vendorId}`}
-                      className="text-[var(--primary)] hover:underline"
-                    >
-                      {c.vendor.name}
-                    </Link>
-                    <p className="text-xs text-[var(--muted-foreground)]">
-                      {c.store
-                        ? c.store.name
-                        : msg.contracts.networkWide}
-                    </p>
-                  </td>
-                  <td className={`py-2.5 pr-3 tabular-nums ${expiryTone(c.endsOn, now)}`}>
-                    {dayLabel(c.startsOn)} → {dayLabel(c.endsOn)}
-                    {c.annualFee != null
-                      ? ` · ${money(Number(c.annualFee))}`
-                      : ""}
-                  </td>
-                  <td className="py-2.5 text-right">
-                    {canEdit ? (
-                      <form
-                        action={async () => {
-                          "use server";
-                          await deleteVendorContractAction(c.id, c.vendorId);
-                        }}
-                      >
-                        <button
-                          type="submit"
-                          className="text-sm text-[var(--critical)] underline-offset-4 hover:underline"
-                        >
-                          {msg.contracts.archive}
-                        </button>
-                      </form>
-                    ) : null}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="mt-6">
+          <ContractsDataTable
+            common={msg.common}
+            titleHeader={msg.contracts.titlePlaceholder}
+            vendorHeader={msg.contracts.vendorPlaceholder}
+            endsHeader={msg.contracts.endsOn}
+            archiveLabel={msg.contracts.archive}
+            canEdit={canEdit}
+            onArchive={async (id, vendorId) => {
+              "use server";
+              await deleteVendorContractAction(id, vendorId);
+            }}
+            rows={contracts.map((c) => {
+              const scope = c.store
+                ? c.store.name
+                : msg.contracts.networkWide;
+              const period = `${dayLabel(c.startsOn)} → ${dayLabel(c.endsOn)}${
+                c.annualFee != null ? ` · ${money(Number(c.annualFee))}` : ""
+              }`;
+              return {
+                id: c.id,
+                vendorId: c.vendorId,
+                title: c.title,
+                reference: c.reference ?? "",
+                vendorName: c.vendor.name,
+                scope,
+                period,
+                toneClass: expiryTone(c.endsOn, now),
+                searchText: `${c.title} ${c.reference ?? ""} ${c.vendor.name} ${scope} ${period}`,
+              };
+            })}
+          />
         </div>
       )}
     </PageFrame>
