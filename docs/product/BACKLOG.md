@@ -5,7 +5,7 @@
 > **Gate codice:** approvazione umana esplicita + lavoro su branch `develop` / `feature/*` (non commit diretti su `main`).  
 > **Vincolo hard:** stack **100% open source / self-host**, nessun componente SaaS a pagamento. Dettaglio: [`STACK.md`](./STACK.md).  
 > **RBAC:** [`RBAC.md`](./RBAC.md).  
-> **Scope:** MVP (Fase 1) + production-ready (**E14 / S5**). **Fase 2 Done** (F2-01…F2-09). **Fase 3** in-repo Done (F3-02…08; **F3-01** = VPS umano). **Fase 4 Done in-repo** (F4-01…05, 2026-11-03). **Fase 5** UX Done (F5-UX-00…13,15; **F5-UX-14** aperto). **Fase 6** bozza PO — [`COMPETITIVE_POSITIONING.md`](./COMPETITIVE_POSITIONING.md). **Fase 7** AI platform bozza — [`AI_PLATFORM.md`](./AI_PLATFORM.md) / ADR-0012.  
+> **Scope:** MVP (Fase 1) + production-ready (**E14 / S5**). **Fase 2 Done** (F2-01…F2-09). **Fase 3** in-repo Done (F3-02…08; **F3-01** = VPS umano). **Fase 4 Done in-repo** (F4-01…05, 2026-11-03). **Fase 5** UX Done (F5-UX-00…13,15; **F5-UX-14** aperto). **Fase 6** bozza PO — [`COMPETITIVE_POSITIONING.md`](./COMPETITIVE_POSITIONING.md). **Fase 7** AI platform bozza — [`AI_PLATFORM.md`](./AI_PLATFORM.md) / ADR-0012. **Fase 8** tutorial interattivo bozza — [`INTERACTIVE_TUTORIAL.md`](./INTERACTIVE_TUTORIAL.md).  
 > **Lingua UI MVP:** italiano. Mercato: Italia / EUR.  
 > **Go prod:** NO-GO finché VPS — [`sprints/S5-EXIT-GAPS.md`](./sprints/S5-EXIT-GAPS.md) · [`../ops/NEXT_VPS.md`](../ops/NEXT_VPS.md).  
 > **Integrazione:** GitFlow **con PR auto-merge** — `feature/*`/`bugfix/*` → PR → `develop`; lab sync / `release/*`/`hotfix/*` → `main` (`scripts/gitflow-ship-pr.sh`).
@@ -690,6 +690,27 @@ E00 Platform OSS (Compose, SeaweedFS, Mailpit, pg-boss, Prisma schema)
 | **F7-08** | Similar ticket embeddings (B3) | **P2** | Opt-in; richiede `/v1/embeddings` | No |
 | **F7-09** | Vision caption intake (B2) | **P2** | Opt-in; solo se modello vision | No |
 | **F7-10** | Lock docs ADR-0012 Accepted + `AI_PROVIDERS.md` | **P0** | ADR Accepted; STACK allineato; runbook ops | No |
+
+---
+
+## Fase 8 — Tutorial interattivo prodotto (bozza PO)
+
+> **Stato:** bozza 2026-11-04 — **attende GO F8**. Spec: [`INTERACTIVE_TUTORIAL.md`](./INTERACTIVE_TUTORIAL.md).  
+> **Lib proposta:** Driver.js (MIT) + orchestratore multi-route FF; no Appcues/Shepherd AGPL.  
+> **Scope:** tour on-demand su **tutte** le sezioni per audience (HQ/store/vendor); complementa `/onboarding` (checklist).
+
+| ID | Titolo | Priorità | AC (1 riga) | Dip. VPS |
+|----|--------|----------|-------------|----------|
+| **F8-01** | Foundation tour + Help + shortcut `?` | **P0** | Start/stop/Esc; SSR-safe; destroy on nav | No |
+| **F8-02** | `data-tour` shell + tooltip branded DS | **P0** | Spotlight nav HQ/phone; token slate/ambra | No |
+| **F8-03** | Capitoli HQ ticket hub (dash/list/detail/new) | **P0** | Step su KPI, filtri, tabs, form | No |
+| **F8-04** | Capitoli HQ CRUD (stores/vendors/assets/contratti/scorecard) | **P1** | Ogni list/detail coperto | No |
+| **F8-05** | Capitoli HQ calendario + RFQ + settings | **P1** | Nessuna voce nav HQ senza step | No |
+| **F8-06** | Capitoli Store + Vendor phone | **P0** | Bottom nav + segnala/inbox/rfq | No |
+| **F8-07** | Capitolo Flusso A narrato multi-route | **P1** | Read-only story store→ops→vendor→verify | No |
+| **F8-08** | Soft first-login + progress + «Spiega questa pagina» | **P1** | Resume; capitolo locale da PageFrame | No |
+| **F8-09** | i18n IT/EN + a11y + skip dinamico | **P0** | Skip se target missing; Esc/focus trap | No |
+| **F8-10** | Auth/onboarding différance + runbook | **P2** | Docs ops; copy che distingue checklist | No |
 
 ---
 

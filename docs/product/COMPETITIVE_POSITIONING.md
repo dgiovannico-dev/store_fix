@@ -96,6 +96,8 @@ Obiettivo: motivi **precisi** di preferenza, non feature creep CMMS.
 
 **AI (Fase 7 bozza):** assist su triage/riassunti/RFQ/digest con **vLLM locale** + BYOK cloud — [`AI_PLATFORM.md`](./AI_PLATFORM.md). Differenziamo vs WA+Excel (zero assist strutturato) senza diventare chatbot SoR.
 
+**Tutorial (Fase 8 bozza):** tour interattivo on-demand su tutte le sezioni — [`INTERACTIVE_TUTORIAL.md`](./INTERACTIVE_TUTORIAL.md). Time-to-competence &lt; CMMS “figura da solo”.
+
 ---
 
 ## Come usare questo one-pager
