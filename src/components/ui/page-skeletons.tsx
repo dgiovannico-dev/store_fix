@@ -74,6 +74,22 @@ export function WallboardSkeleton() {
   );
 }
 
+/** Create / edit form pages (tickets/new, RFQ new, store edit). */
+export function FormPageSkeleton() {
+  return (
+    <div className="mx-auto w-full max-w-2xl space-y-4 px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
+      <Skeleton className="h-8 w-56" />
+      <Skeleton className="h-4 w-80 max-w-full" />
+      <div className="mt-4 space-y-3 rounded-[var(--radius)] border border-[var(--border)] p-4">
+        {Array.from({ length: 6 }).map((_, i) => (
+          <Skeleton key={i} className="h-11 w-full" />
+        ))}
+        <Skeleton className="mt-2 h-11 w-36" />
+      </div>
+    </div>
+  );
+}
+
 /** PM calendar month grid. */
 export function CalendarSkeleton() {
   return (

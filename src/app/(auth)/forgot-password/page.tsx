@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { headers } from "next/headers";
 import { requestPasswordReset } from "@/domain/auth/password-reset";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { PendingSubmitButton } from "@/components/ui/pending-submit-button";
 import { requestMessages } from "@/i18n/request-locale";
 
 export default async function ForgotPasswordPage() {
@@ -36,9 +36,12 @@ export default async function ForgotPasswordPage() {
             placeholder={msg.email}
             autoComplete="email"
           />
-          <Button type="submit" size="lg" className="w-full">
-            {msg.sendLink}
-          </Button>
+          <PendingSubmitButton
+            size="lg"
+            className="w-full"
+            label={msg.sendLink}
+            pendingLabel={msg.sendingLink}
+          />
         </form>
         <Link
           href="/login"
