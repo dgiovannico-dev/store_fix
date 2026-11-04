@@ -18,7 +18,7 @@ export function QuoteAmountFields({
   amountLabel,
   noteLabel,
   noteRequired = false,
-  className = "mt-1 w-full rounded-[var(--radius)] border border-[var(--border)] px-3 py-2 text-base",
+  className = "mt-1 w-full rounded-[var(--radius)] border border-[var(--border)] bg-[var(--card)] px-3 py-2 text-base",
 }: Props) {
   const defaultValue =
     defaultAmount === null || defaultAmount === undefined

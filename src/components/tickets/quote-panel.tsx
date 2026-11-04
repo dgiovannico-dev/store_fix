@@ -46,7 +46,7 @@ export function QuotePanel({
   const statusLabel = quoteStatusLabel(quoteStatus, locale);
 
   return (
-    <section className="mt-6 space-y-3 rounded-[var(--radius)] border border-[var(--border)] p-4">
+    <section className="mt-6 space-y-3 rounded-[var(--radius)] border border-[var(--border)] bg-[var(--card)] p-4">
       <h2 className="text-sm font-semibold">{labels.quoteTitle}</h2>
       <p className="text-sm text-[var(--muted-foreground)]">
         {labels.quoteStatusPrefix}{" "}
@@ -98,7 +98,7 @@ export function QuotePanel({
             <input
               name="reason"
               maxLength={500}
-              className="mt-1 w-full rounded-[var(--radius)] border border-[var(--border)] px-3 py-2 text-base"
+              className="mt-1 w-full rounded-[var(--radius)] border border-[var(--border)] bg-[var(--card)] px-3 py-2 text-base"
             />
           </label>
           {decideState.error ? (
@@ -125,7 +125,7 @@ export function QuotePanel({
               value="reject"
               disabled={decidePending}
               aria-busy={decidePending}
-              className="rounded-[var(--radius)] border border-[var(--border)] px-4 py-2 text-sm font-medium disabled:opacity-60"
+              className="rounded-[var(--radius)] border border-[var(--border)] bg-[var(--card)] px-4 py-2 text-sm font-medium disabled:opacity-60"
             >
               {decidePending ? labels.pending : labels.quoteReject}
             </button>

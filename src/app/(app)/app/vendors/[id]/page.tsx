@@ -67,7 +67,7 @@ export default async function VendorDetailPage({ params }: Props) {
       </h1>
 
       {score ? (
-        <section className="mt-6 rounded-[var(--radius)] border border-[var(--border)] p-4">
+        <section className="mt-6 rounded-[var(--radius)] border border-[var(--border)] bg-[var(--card)] p-4">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <h2 className="text-sm font-medium">{msg.scorecard.sectionTitle}</h2>
             <Link
@@ -140,23 +140,23 @@ export default async function VendorDetailPage({ params }: Props) {
             name="name"
             defaultValue={vendor.name}
             required
-            className="w-full rounded-[var(--radius)] border border-[var(--border)] px-3 py-2"
+            className="w-full rounded-[var(--radius)] border border-[var(--border)] bg-[var(--card)] px-3 py-2"
           />
           <input
             name="email"
             type="email"
             defaultValue={vendor.email ?? ""}
-            className="w-full rounded-[var(--radius)] border border-[var(--border)] px-3 py-2"
+            className="w-full rounded-[var(--radius)] border border-[var(--border)] bg-[var(--card)] px-3 py-2"
           />
           <input
             name="phone"
             defaultValue={vendor.phone ?? ""}
-            className="w-full rounded-[var(--radius)] border border-[var(--border)] px-3 py-2"
+            className="w-full rounded-[var(--radius)] border border-[var(--border)] bg-[var(--card)] px-3 py-2"
           />
           <input
             name="trades"
             defaultValue={vendor.trades.join(", ")}
-            className="w-full rounded-[var(--radius)] border border-[var(--border)] px-3 py-2"
+            className="w-full rounded-[var(--radius)] border border-[var(--border)] bg-[var(--card)] px-3 py-2"
           />
           <MultiCheckPicker
             name="storeCoverageIds"
