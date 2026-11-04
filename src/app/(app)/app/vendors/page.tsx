@@ -32,6 +32,7 @@ export default async function VendorsPage() {
 
   return (
     <PageFrame>
+      <div data-tour="page.vendors.root">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <h1 className="font-[family-name:var(--font-sora)] text-2xl font-semibold text-[var(--primary)]">
@@ -129,6 +130,8 @@ export default async function VendorsPage() {
           />
         </div>
       )}
+    
+      </div>
     </PageFrame>
   );
 }

@@ -36,6 +36,7 @@ export default async function CalendarioPmPage() {
 
   return (
     <PageFrame className="max-w-none lg:max-w-[90rem]">
+      <div data-tour="page.calendar.root">
       <PmCalendar
         locale={prefs.locale}
         dateLocale={dLocale}
@@ -82,6 +83,8 @@ export default async function CalendarioPmPage() {
           weekdays: copy.weekdays,
         }}
       />
+    
+      </div>
     </PageFrame>
   );
 }

@@ -71,7 +71,7 @@ export default async function ChargebackPage({
 
   return (
     <PageFrame>
-      <div className="space-y-6" data-tour="hq.finance.chargeback">
+      <div className="space-y-6" data-tour="page.chargeback.root">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
             <h1 className="font-[family-name:var(--font-sora)] text-2xl font-semibold text-[var(--primary)]">

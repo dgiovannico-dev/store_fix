@@ -4,18 +4,21 @@
   border: 1px solid var(--border, #e2e8f0) !important;
   border-radius: var(--radius, 0.75rem) !important;
   box-shadow: 0 12px 40px color-mix(in oklab, #0f172a 18%, transparent) !important;
-  max-width: 22rem;
+  max-width: min(28rem, calc(100vw - 2rem)) !important;
 }
 
 .ff-tour-popover .driver-popover-title {
   font-family: var(--font-sora), ui-sans-serif, system-ui, sans-serif;
   font-weight: 600;
+  font-size: 1.05rem !important;
   color: var(--primary, #0f3d4c) !important;
 }
 
 .ff-tour-popover .driver-popover-description {
   color: var(--muted-foreground, #64748b) !important;
-  line-height: 1.45;
+  line-height: 1.5 !important;
+  font-size: 0.9rem !important;
+  white-space: normal !important;
 }
 
 .ff-tour-popover .driver-popover-next-btn {

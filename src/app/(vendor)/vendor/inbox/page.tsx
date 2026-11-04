@@ -57,7 +57,7 @@ export default async function VendorInboxPage({ searchParams }: Props) {
   });
 
   return (
-    <main className="px-4 py-6">
+    <main className="px-4 py-6" data-tour="page.vendor.inbox">
       <h1 className="font-[family-name:var(--font-sora)] text-xl font-semibold text-[var(--primary)]">
         {msg.vendor.inboxTitle}
       </h1>

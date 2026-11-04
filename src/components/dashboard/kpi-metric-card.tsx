@@ -37,6 +37,7 @@ export function DashboardKpiGrid({
 }) {
   return (
     <section
+      data-tour="page.dashboard.kpi"
       aria-label={ariaLabel}
       className="mt-6 grid grid-cols-2 gap-x-6 gap-y-4 border-y border-[var(--border)] py-5 sm:grid-cols-3 lg:grid-cols-5"
     >
