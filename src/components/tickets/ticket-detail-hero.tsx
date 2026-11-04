@@ -1,5 +1,7 @@
 import Link from "next/link";
+import { ChevronLeft } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { SlaBadge } from "@/components/tickets/sla-badge";
 import type { SlaBadgeTone } from "@/domain/sla/badge";
 
@@ -33,19 +35,16 @@ export function TicketDetailHero(props: {
     <header className="overflow-hidden rounded-[var(--radius)] border border-[var(--border)] bg-[var(--card)] shadow-[0_1px_0_color-mix(in_oklab,var(--foreground)_6%,transparent)]">
       <div className="border-b border-[var(--border)] bg-[linear-gradient(180deg,color-mix(in_oklab,var(--primary)_6%,var(--card)),var(--card))] px-4 py-4 sm:px-5 sm:py-5">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <Link
-            href={props.backHref}
-            className="inline-flex text-sm font-medium text-[var(--primary)] underline-offset-4 hover:underline"
-          >
-            {props.backLabel}
-          </Link>
-          {props.rfqHref && props.rfqLabel ? (
-            <Link
-              href={props.rfqHref}
-              className="inline-flex h-9 items-center rounded-[var(--radius)] border border-[var(--border)] bg-[var(--card)] px-3 text-sm font-medium transition-colors hover:bg-[var(--muted)]"
-            >
-              {props.rfqLabel}
+          <Button asChild variant="outline" size="sm">
+            <Link href={props.backHref}>
+              <ChevronLeft className="size-4" aria-hidden />
+              {props.backLabel}
             </Link>
+          </Button>
+          {props.rfqHref && props.rfqLabel ? (
+            <Button asChild variant="outline" size="sm">
+              <Link href={props.rfqHref}>{props.rfqLabel}</Link>
+            </Button>
           ) : null}
         </div>
 
