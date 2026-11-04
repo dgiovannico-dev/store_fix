@@ -74,10 +74,8 @@ export function SummarizeNotesPanel({
   if (!canOps) return null;
 
   return (
-    <section className="mt-6 space-y-2 border-t border-[var(--border)] pt-6">
-      <h2 className="text-sm font-semibold uppercase tracking-wide text-[var(--muted-foreground)]">
-        {labels.summarizeTitle}
-      </h2>
+    <section className="space-y-3">
+      <h2 className="sr-only">{labels.summarizeTitle}</h2>
       <p className="text-xs text-[var(--muted-foreground)]">
         {labels.summarizeHint}
       </p>

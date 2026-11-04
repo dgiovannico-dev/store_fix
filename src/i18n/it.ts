@@ -475,6 +475,16 @@ export const it = {
     tabWork: "Lavori",
     tabCosts: "Costi",
     tabTimeline: "Timeline",
+    sectionIntake: "Segnalazione",
+    sectionActions: "Azioni",
+    sectionCosts: "Costi e preventivo",
+    sectionAssist: "Assistenza",
+    workEmpty:
+      "Nessuna azione disponibile per il tuo ruolo in questo stato.",
+    costsEmpty: "Costi non visibili per stato o permessi.",
+    ticketIdLabel: "ID",
+    storeLabel: "Punto vendita",
+    vendorLabel: "Fornitore",
   },
   ticketTimeline: {
     empty: "Nessun evento in timeline.",
