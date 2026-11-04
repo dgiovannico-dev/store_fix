@@ -1,29 +1,29 @@
 import { Role } from "@prisma/client";
-import {
-  CalendarDays,
-  ClipboardList,
-  FileText,
-  Gavel,
-  Home,
-  Inbox,
-  LayoutDashboard,
-  MapPin,
-  PlusCircle,
-  Settings2,
-  Ticket,
-  Users,
-  type LucideIcon,
-} from "lucide-react";
 import { canMutate } from "@/domain/rbac/can";
 import { RbacAction } from "@/domain/rbac/actions";
 import { t, type Locale } from "@/i18n";
 
 export type ShellAudience = "hq" | "store" | "vendor";
 
+/** Serializable icon keys — resolve Lucide components only in client shells. */
+export type NavIconName =
+  | "dashboard"
+  | "ticket"
+  | "store"
+  | "vendors"
+  | "assets"
+  | "contracts"
+  | "calendar"
+  | "rfq"
+  | "settings"
+  | "segnala"
+  | "newTicket"
+  | "inbox";
+
 export type NavItem = {
   href: string;
   label: string;
-  icon: LucideIcon;
+  icon: NavIconName;
 };
 
 export function shellAudienceForRole(
@@ -48,28 +48,28 @@ export function hqSidebarItems(
   const msg = t(locale);
   if (role === Role.viewer_finance) {
     return [
-      { href: "/app/dashboard", label: msg.nav.dashboard, icon: LayoutDashboard },
-      { href: "/app/tickets", label: msg.nav.tickets, icon: Ticket },
-      { href: "/app/contratti", label: msg.nav.contracts, icon: FileText },
+      { href: "/app/dashboard", label: msg.nav.dashboard, icon: "dashboard" },
+      { href: "/app/tickets", label: msg.nav.tickets, icon: "ticket" },
+      { href: "/app/contratti", label: msg.nav.contracts, icon: "contracts" },
     ];
   }
   const items: NavItem[] = [
-    { href: "/app/dashboard", label: msg.nav.dashboard, icon: LayoutDashboard },
-    { href: "/app/tickets", label: msg.nav.tickets, icon: Ticket },
-    { href: "/app/stores", label: msg.nav.stores, icon: MapPin },
-    { href: "/app/vendors", label: msg.nav.vendors, icon: Users },
-    { href: "/app/assets", label: msg.nav.assets, icon: ClipboardList },
-    { href: "/app/contratti", label: msg.nav.contracts, icon: FileText },
-    { href: "/app/calendario", label: msg.nav.calendar, icon: CalendarDays },
+    { href: "/app/dashboard", label: msg.nav.dashboard, icon: "dashboard" },
+    { href: "/app/tickets", label: msg.nav.tickets, icon: "ticket" },
+    { href: "/app/stores", label: msg.nav.stores, icon: "store" },
+    { href: "/app/vendors", label: msg.nav.vendors, icon: "vendors" },
+    { href: "/app/assets", label: msg.nav.assets, icon: "assets" },
+    { href: "/app/contratti", label: msg.nav.contracts, icon: "contracts" },
+    { href: "/app/calendario", label: msg.nav.calendar, icon: "calendar" },
   ];
   if (role && canMutate(role, RbacAction.manageRfq)) {
-    items.push({ href: "/app/rfq", label: msg.nav.rfq, icon: Gavel });
+    items.push({ href: "/app/rfq", label: msg.nav.rfq, icon: "rfq" });
   }
   if (role && canMutate(role, RbacAction.manageTenant)) {
     items.push({
       href: "/app/settings/locale",
       label: msg.nav.locale,
-      icon: Settings2,
+      icon: "settings",
     });
   }
   return items;
@@ -79,14 +79,14 @@ export function hqSidebarItems(
 export function storeBottomItems(locale: Locale = "it"): NavItem[] {
   const msg = t(locale);
   return [
-    { href: "/app/tickets", label: msg.nav.tickets, icon: Ticket },
-    { href: "/app/segnala", label: msg.nav.segnala, icon: Home },
+    { href: "/app/tickets", label: msg.nav.tickets, icon: "ticket" },
+    { href: "/app/segnala", label: msg.nav.segnala, icon: "segnala" },
     {
       href: "/app/tickets/new",
       label: msg.dashboard.ctaTicket,
-      icon: PlusCircle,
+      icon: "newTicket",
     },
-    { href: "/app/settings/locale", label: msg.nav.locale, icon: Settings2 },
+    { href: "/app/settings/locale", label: msg.nav.locale, icon: "settings" },
   ];
 }
 
@@ -94,8 +94,8 @@ export function storeBottomItems(locale: Locale = "it"): NavItem[] {
 export function vendorBottomItems(locale: Locale = "it"): NavItem[] {
   const msg = t(locale);
   return [
-    { href: "/vendor/inbox", label: msg.nav.inbox, icon: Inbox },
-    { href: "/vendor/rfq", label: msg.nav.rfq, icon: Gavel },
+    { href: "/vendor/inbox", label: msg.nav.inbox, icon: "inbox" },
+    { href: "/vendor/rfq", label: msg.nav.rfq, icon: "rfq" },
   ];
 }
 
