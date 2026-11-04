@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import {
   cancelPmEventAction,
@@ -22,6 +22,9 @@ import {
   buildMonthGrid,
   buildWeekDays,
   endOfWeekSunday,
+  formatHhMm,
+  hoursInRange,
+  minutesFromMidnight,
   sameYmd,
   startOfWeekMonday,
   toYmd,
@@ -64,9 +67,9 @@ export type PmCalendarCopy = {
   cancel: string;
   today: string;
   viewDay: string;
-  viewMonth: string;
   viewWeek: string;
-  viewAgenda: string;
+  viewMonth: string;
+  outsideHours: string;
   more: string;
   createTitle: string;
   detailTitle: string;
@@ -74,12 +77,18 @@ export type PmCalendarCopy = {
   weekdays: readonly string[];
 };
 
-type ViewMode = "day" | "week" | "month" | "agenda";
+/** GCal order: Day → Week → Month */
+type ViewMode = "day" | "week" | "month";
 
 type Panel =
-  | { kind: "create"; dateYmd: string; anchor: AnchorRect }
+  | { kind: "create"; dateYmd: string; timeHHmm: string; anchor: AnchorRect }
   | { kind: "event"; eventId: string; anchor: AnchorRect }
   | null;
+
+const DAY_HOUR_START = 6;
+const DAY_HOUR_END = 21;
+const DAY_PX_PER_HOUR = 56;
+const EVENT_VISUAL_MINUTES = 45;
 
 function parseLocal(iso: string): Date {
   return new Date(iso);
@@ -114,6 +123,12 @@ function weekTitle(anchor: Date, locale: string): string {
   return `${a} – ${b}`;
 }
 
+function eventBlockClass(overdue: boolean): string {
+  return overdue
+    ? "border-[color-mix(in_oklab,var(--critical)_35%,var(--border))] bg-[color-mix(in_oklab,var(--critical)_12%,transparent)] text-[var(--critical)]"
+    : "border-[color-mix(in_oklab,var(--primary)_28%,var(--border))] bg-[color-mix(in_oklab,var(--primary)_12%,transparent)] text-[var(--primary)]";
+}
+
 export function PmCalendar(props: {
   events: PmCalendarEvent[];
   stores: PmCalendarOption[];
@@ -124,11 +139,19 @@ export function PmCalendar(props: {
 }) {
   const { copy } = props;
   const [anchor, setAnchor] = useState(() => new Date());
-  const [view, setView] = useState<ViewMode>("week");
+  // HQ default month; phone switches to day on first mount (F5-UX-14)
+  const [view, setView] = useState<ViewMode>("month");
   const [panel, setPanel] = useState<Panel>(null);
   const [today] = useState(() => new Date());
   const [createError, setCreateError] = useState<string | null>(null);
   const [createPending, setCreatePending] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (window.matchMedia("(max-width: 767px)").matches) {
+      setView("day");
+    }
+  }, []);
 
   const eventsByDay = useMemo(() => {
     const map = new Map<string, PmCalendarEvent[]>();
@@ -161,7 +184,7 @@ export function PmCalendar(props: {
           month: "long",
           year: "numeric",
         })
-      : view === "week" || view === "agenda"
+      : view === "week"
         ? weekTitle(anchor, props.dateLocale)
         : monthTitle(anchor, props.dateLocale);
 
@@ -172,7 +195,7 @@ export function PmCalendar(props: {
   function goPrev() {
     setAnchor((d) => {
       if (view === "day") return addDays(d, -1);
-      if (view === "week" || view === "agenda") return addDays(d, -7);
+      if (view === "week") return addDays(d, -7);
       return addMonths(d, -1);
     });
   }
@@ -180,16 +203,17 @@ export function PmCalendar(props: {
   function goNext() {
     setAnchor((d) => {
       if (view === "day") return addDays(d, 1);
-      if (view === "week" || view === "agenda") return addDays(d, 7);
+      if (view === "week") return addDays(d, 7);
       return addMonths(d, 1);
     });
   }
 
-  function openCreate(day: Date, el: HTMLElement) {
+  function openCreate(day: Date, el: HTMLElement, timeHHmm = "09:00") {
     setCreateError(null);
     setPanel({
       kind: "create",
       dateYmd: toYmd(day),
+      timeHHmm,
       anchor: rectFromDom(el.getBoundingClientRect()),
     });
   }
@@ -265,7 +289,6 @@ export function PmCalendar(props: {
               ["day", copy.viewDay],
               ["week", copy.viewWeek],
               ["month", copy.viewMonth],
-              ["agenda", copy.viewAgenda],
             ] as const
           ).map(([id, label]) => (
             <button
@@ -293,8 +316,9 @@ export function PmCalendar(props: {
           today={today}
           eventsByDay={eventsByDay}
           dateLocale={props.dateLocale}
+          outsideHoursLabel={copy.outsideHours}
           isOverdue={isOverdue}
-          onOpenDay={openCreate}
+          onOpenSlot={openCreate}
           onOpenEvent={openEvent}
         />
       ) : null}
@@ -322,19 +346,6 @@ export function PmCalendar(props: {
           dateLocale={props.dateLocale}
           isOverdue={isOverdue}
           onOpenDay={openCreate}
-          onOpenEvent={openEvent}
-        />
-      ) : null}
-
-      {view === "agenda" ? (
-        <AgendaView
-          anchor={anchor}
-          events={props.events}
-          empty={copy.empty}
-          overdueLabel={copy.overdue}
-          dateLocale={props.dateLocale}
-          locale={props.locale}
-          isOverdue={isOverdue}
           onOpenEvent={openEvent}
         />
       ) : null}
@@ -418,7 +429,7 @@ export function PmCalendar(props: {
                   <input
                     name="scheduledTime"
                     type="time"
-                    defaultValue="09:00"
+                    defaultValue={panel.timeHHmm}
                     className={`mt-1 ${controlClass}`}
                   />
                 </label>
@@ -612,7 +623,12 @@ function MonthView(props: {
                 type="button"
                 onClick={(e) => {
                   e.stopPropagation();
-                  props.onOpenDay(day, e.currentTarget.closest('[role="gridcell"]') as HTMLElement ?? e.currentTarget);
+                  props.onOpenDay(
+                    day,
+                    (e.currentTarget.closest(
+                      '[role="gridcell"]',
+                    ) as HTMLElement) ?? e.currentTarget,
+                  );
                 }}
                 className={cn(
                   "mb-1 flex size-7 items-center justify-center rounded-full text-sm tabular hover:bg-[var(--muted)]",
@@ -648,9 +664,9 @@ function MonthView(props: {
                       e.stopPropagation();
                       props.onOpenDay(
                         day,
-                        e.currentTarget.closest(
+                        (e.currentTarget.closest(
                           '[role="gridcell"]',
-                        ) as HTMLElement ?? e.currentTarget,
+                        ) as HTMLElement) ?? e.currentTarget,
                       );
                     }}
                   >
@@ -666,19 +682,33 @@ function MonthView(props: {
   );
 }
 
+/** Timed day grid 06:00–21:00; events as absolute blocks (~45m visual). */
 function DayView(props: {
   anchor: Date;
   today: Date;
   eventsByDay: Map<string, PmCalendarEvent[]>;
   dateLocale: string;
+  outsideHoursLabel: string;
   isOverdue: (iso: string) => boolean;
-  onOpenDay: (d: Date, el: HTMLElement) => void;
+  onOpenSlot: (d: Date, el: HTMLElement, timeHHmm: string) => void;
   onOpenEvent: (id: string, el: HTMLElement) => void;
 }) {
   const key = toYmd(props.anchor);
   const dayEvents = props.eventsByDay.get(key) ?? [];
-  const hours = Array.from({ length: 24 }, (_, h) => h);
+  const hours = hoursInRange(DAY_HOUR_START, DAY_HOUR_END);
+  const rangeStartMin = DAY_HOUR_START * 60;
+  const rangeEndMin = (DAY_HOUR_END + 1) * 60;
+  const gridHeight = hours.length * DAY_PX_PER_HOUR;
   const isToday = sameYmd(props.anchor, props.today);
+
+  const outside = dayEvents.filter((ev) => {
+    const m = minutesFromMidnight(parseLocal(ev.scheduledAt));
+    return m < rangeStartMin || m >= rangeEndMin;
+  });
+  const timed = dayEvents.filter((ev) => {
+    const m = minutesFromMidnight(parseLocal(ev.scheduledAt));
+    return m >= rangeStartMin && m < rangeEndMin;
+  });
 
   return (
     <div className="overflow-hidden rounded-[var(--radius)] border border-[var(--border)] bg-[var(--card)]">
@@ -691,66 +721,101 @@ function DayView(props: {
           })}
           {isToday ? " · oggi" : ""}
         </p>
-        <Button
-          type="button"
-          size="sm"
-          variant="outline"
-          onClick={(e) => props.onOpenDay(props.anchor, e.currentTarget)}
-        >
-          +
-        </Button>
       </div>
-      <div className="max-h-[min(70vh,40rem)] overflow-y-auto">
-        {hours.map((h) => {
-          const slotEvents = dayEvents.filter((ev) => {
-            const d = parseLocal(ev.scheduledAt);
-            return d.getHours() === h;
-          });
-          return (
-            <div
-              key={h}
-              className="grid grid-cols-[3.5rem_1fr] border-b border-[var(--border)] last:border-b-0"
+
+      {outside.length > 0 ? (
+        <div className="space-y-1 border-b border-[var(--border)] px-3 py-2">
+          <p className="text-[11px] font-medium uppercase tracking-wide text-[var(--muted-foreground)]">
+            {props.outsideHoursLabel}
+          </p>
+          {outside.map((ev) => (
+            <button
+              key={ev.id}
+              type="button"
+              onClick={(e) => props.onOpenEvent(ev.id, e.currentTarget)}
+              className={cn(
+                "block w-full rounded-[var(--radius)] border px-2 py-1.5 text-left text-xs",
+                eventBlockClass(props.isOverdue(ev.scheduledAt)),
+              )}
             >
-              <div className="px-2 py-3 text-right text-xs tabular text-[var(--muted-foreground)]">
-                {String(h).padStart(2, "0")}:00
+              <span className="tabular text-[var(--muted-foreground)]">
+                {timeLabel(ev.scheduledAt, props.dateLocale)}
+              </span>
+              <span className="ml-2 font-medium">{ev.title}</span>
+            </button>
+          ))}
+        </div>
+      ) : null}
+
+      <div className="max-h-[min(70vh,42rem)] overflow-y-auto">
+        <div className="grid grid-cols-[3.5rem_1fr]">
+          <div
+            className="relative border-r border-[var(--border)]"
+            style={{ height: gridHeight }}
+            aria-hidden
+          >
+            {hours.map((h, i) => (
+              <div
+                key={h}
+                className="absolute right-2 -translate-y-1/2 text-xs tabular text-[var(--muted-foreground)]"
+                style={{ top: i * DAY_PX_PER_HOUR }}
+              >
+                {formatHhMm(h)}
               </div>
+            ))}
+          </div>
+
+          <div className="relative" style={{ height: gridHeight }}>
+            {hours.map((h, i) => (
               <button
+                key={h}
                 type="button"
-                className="min-h-[3rem] space-y-1 px-2 py-1.5 text-left hover:bg-[var(--muted)]/25"
+                aria-label={`${formatHhMm(h)}`}
+                className="absolute inset-x-0 border-b border-[var(--border)]/70 hover:bg-[var(--muted)]/30"
+                style={{
+                  top: i * DAY_PX_PER_HOUR,
+                  height: DAY_PX_PER_HOUR,
+                }}
                 onClick={(e) => {
                   if ((e.target as HTMLElement).closest("[data-event]")) return;
-                  props.onOpenDay(props.anchor, e.currentTarget);
+                  props.onOpenSlot(props.anchor, e.currentTarget, formatHhMm(h));
                 }}
-              >
-                {slotEvents.map((ev) => (
-                  <button
-                    key={ev.id}
-                    type="button"
-                    data-event
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      props.onOpenEvent(ev.id, e.currentTarget);
-                    }}
-                    className={cn(
-                      "block w-full rounded-[var(--radius)] border px-2 py-1.5 text-left text-xs",
-                      props.isOverdue(ev.scheduledAt)
-                        ? "border-[color-mix(in_oklab,var(--critical)_35%,var(--border))] bg-[color-mix(in_oklab,var(--critical)_10%,transparent)]"
-                        : "border-[var(--border)] bg-[color-mix(in_oklab,var(--primary)_8%,transparent)]",
-                    )}
-                  >
-                    <span className="tabular text-[var(--muted-foreground)]">
-                      {timeLabel(ev.scheduledAt, props.dateLocale)}
-                    </span>
-                    <span className="ml-2 font-medium">{ev.title}</span>
-                    <span className="mt-0.5 block truncate text-[var(--muted-foreground)]">
-                      {ev.storeName}
-                    </span>
-                  </button>
-                ))}
-              </button>
-            </div>
-          );
-        })}
+              />
+            ))}
+
+            {timed.map((ev) => {
+              const startMin = minutesFromMidnight(parseLocal(ev.scheduledAt));
+              const top =
+                ((startMin - rangeStartMin) / 60) * DAY_PX_PER_HOUR;
+              const height = Math.max(
+                (EVENT_VISUAL_MINUTES / 60) * DAY_PX_PER_HOUR,
+                28,
+              );
+              return (
+                <button
+                  key={ev.id}
+                  type="button"
+                  data-event
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    props.onOpenEvent(ev.id, e.currentTarget);
+                  }}
+                  className={cn(
+                    "absolute left-1 right-2 z-[1] overflow-hidden rounded-[var(--radius)] border px-2 py-1 text-left text-xs shadow-sm",
+                    eventBlockClass(props.isOverdue(ev.scheduledAt)),
+                  )}
+                  style={{ top, height }}
+                  title={ev.title}
+                >
+                  <span className="block truncate font-medium">{ev.title}</span>
+                  <span className="block truncate tabular text-[10px] opacity-80">
+                    {timeLabel(ev.scheduledAt, props.dateLocale)} · {ev.storeName}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -788,7 +853,10 @@ function WeekView(props: {
                 type="button"
                 onClick={(e) => {
                   e.stopPropagation();
-                  props.onOpenDay(day, e.currentTarget.parentElement ?? e.currentTarget);
+                  props.onOpenDay(
+                    day,
+                    e.currentTarget.parentElement ?? e.currentTarget,
+                  );
                 }}
                 className="mb-3 flex w-full flex-col items-center gap-1 rounded-[var(--radius)] px-1 py-2 hover:bg-[var(--muted)]/50"
               >
@@ -822,12 +890,10 @@ function WeekView(props: {
                       }}
                       className={cn(
                         "w-full rounded-[var(--radius)] border px-2 py-1.5 text-left text-xs",
-                        props.isOverdue(ev.scheduledAt)
-                          ? "border-[color-mix(in_oklab,var(--critical)_35%,var(--border))] bg-[color-mix(in_oklab,var(--critical)_10%,transparent)]"
-                          : "border-[var(--border)] bg-[color-mix(in_oklab,var(--primary)_8%,transparent)]",
+                        eventBlockClass(props.isOverdue(ev.scheduledAt)),
                       )}
                     >
-                      <span className="block tabular text-[var(--muted-foreground)]">
+                      <span className="block tabular text-[10px] opacity-80">
                         {timeLabel(ev.scheduledAt, props.dateLocale)}
                       </span>
                       <span className="font-medium">{ev.title}</span>
@@ -843,72 +909,5 @@ function WeekView(props: {
         })}
       </div>
     </div>
-  );
-}
-
-function AgendaView(props: {
-  anchor: Date;
-  events: PmCalendarEvent[];
-  empty: string;
-  overdueLabel: string;
-  dateLocale: string;
-  locale: Locale;
-  isOverdue: (iso: string) => boolean;
-  onOpenEvent: (id: string, el: HTMLElement) => void;
-}) {
-  const start = startOfWeekMonday(props.anchor);
-  const end = endOfWeekSunday(addDays(start, 21));
-  const list = props.events.filter((e) => {
-    const t = parseLocal(e.scheduledAt).getTime();
-    return t >= start.getTime() && t <= end.getTime();
-  });
-
-  if (list.length === 0) {
-    return (
-      <StatusPanel kind="empty" title={props.empty} locale={props.locale} />
-    );
-  }
-
-  let lastDay = "";
-  return (
-    <ul className="divide-y divide-[var(--border)] rounded-[var(--radius)] border border-[var(--border)] bg-[var(--card)]">
-      {list.map((e) => {
-        const day = toYmd(parseLocal(e.scheduledAt));
-        const showHeader = day !== lastDay;
-        lastDay = day;
-        return (
-          <li key={e.id}>
-            {showHeader ? (
-              <p className="bg-[var(--muted)]/40 px-4 py-2 text-sm font-medium capitalize text-[var(--muted-foreground)]">
-                {parseLocal(e.scheduledAt).toLocaleDateString(props.dateLocale, {
-                  weekday: "long",
-                  day: "numeric",
-                  month: "long",
-                })}
-              </p>
-            ) : null}
-            <button
-              type="button"
-              onClick={(ev) => props.onOpenEvent(e.id, ev.currentTarget)}
-              className="flex w-full items-start gap-3 px-4 py-3 text-left hover:bg-[var(--muted)]/30"
-            >
-              <span className="w-14 shrink-0 tabular text-sm text-[var(--muted-foreground)]">
-                {timeLabel(e.scheduledAt, props.dateLocale)}
-              </span>
-              <span className="min-w-0 flex-1">
-                <span className="font-medium">{e.title}</span>
-                <span className="mt-0.5 block text-sm text-[var(--muted-foreground)]">
-                  {e.storeName}
-                  {e.vendorName ? ` · ${e.vendorName}` : ""}
-                  {props.isOverdue(e.scheduledAt)
-                    ? ` · ${props.overdueLabel}`
-                    : ""}
-                </span>
-              </span>
-            </button>
-          </li>
-        );
-      })}
-    </ul>
   );
 }
