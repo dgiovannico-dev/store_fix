@@ -220,8 +220,10 @@ export function ProductTourHost(props: {
 
     async function runFromStorage() {
       if (cancelled || myRun !== runId.current) return;
-      const parsed = readState();
-      if (!parsed) return;
+      const loaded = readState();
+      if (!loaded) return;
+      // Narrow once — nested handlers (handleForward) must see TourState, not null.
+      const parsed: TourState = loaded;
 
       destroyQuiet();
       pendingNav.current = false;
