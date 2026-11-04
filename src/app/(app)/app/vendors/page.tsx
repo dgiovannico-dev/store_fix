@@ -7,6 +7,7 @@ import { PageFrame } from "@/components/layout/page-frame";
 import { VendorsDataTable } from "@/components/tables/entity-data-table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { MultiCheckPicker } from "@/components/ui/multi-check-picker";
 import { StatusPanel } from "@/components/ui/status-panel";
 import { RbacAction } from "@/domain/rbac/actions";
 import { can, canMutate } from "@/domain/rbac/can";
@@ -70,19 +71,15 @@ export default async function VendorsPage() {
           </div>
           <Input name="trades" placeholder={msg.vendor.tradesPlaceholder} />
           {stores.length > 0 ? (
-            <fieldset className="space-y-2">
-              <legend className="text-sm font-medium">
-                {msg.vendor.coverageLegend}
-              </legend>
-              <div className="flex flex-wrap gap-3">
-                {stores.map((s) => (
-                  <label key={s.id} className="flex items-center gap-2 text-sm">
-                    <input type="checkbox" name="storeCoverageIds" value={s.id} />
-                    {s.name}
-                  </label>
-                ))}
-              </div>
-            </fieldset>
+            <MultiCheckPicker
+              name="storeCoverageIds"
+              legend={msg.vendor.coverageLegend}
+              options={stores.map((s) => ({ id: s.id, label: s.name }))}
+              searchPlaceholder={msg.common.searchList}
+              selectedCountLabel={msg.common.selectedCount}
+              selectAllLabel={msg.common.selectAllFiltered}
+              clearLabel={msg.common.clearSelection}
+            />
           ) : (
             <p className="text-sm text-[var(--muted-foreground)]">
               {msg.vendor.needStoresHint}

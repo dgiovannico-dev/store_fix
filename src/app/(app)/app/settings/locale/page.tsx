@@ -6,6 +6,10 @@ import { canMutate } from "@/domain/rbac/can";
 import { RbacAction } from "@/domain/rbac/actions";
 import { tenantMessages } from "@/i18n/tenant-messages";
 import { PageFrame } from "@/components/layout/page-frame";
+import { Button } from "@/components/ui/button";
+import { controlClass } from "@/lib/ui-classes";
+
+const CURRENCIES = ["EUR", "USD", "GBP", "CHF"] as const;
 
 export default async function LocaleSettingsPage() {
   const session = await auth();
@@ -16,15 +20,19 @@ export default async function LocaleSettingsPage() {
 
   const prefs = await getTenantI18nPrefs(session.tenantId);
   const msg = await tenantMessages(session.tenantId);
+  const currencyDefault = CURRENCIES.includes(
+    prefs.currency as (typeof CURRENCIES)[number],
+  )
+    ? prefs.currency
+    : "EUR";
 
   return (
-    <PageFrame>
+    <PageFrame narrow>
       <h1 className="font-[family-name:var(--font-sora)] text-2xl font-semibold text-[var(--primary)]">
         {msg.localeSettings.title}
       </h1>
       <p className="mt-1 text-sm text-[var(--muted-foreground)]">
-        {msg.localeSettings.hint} ({prefs.locale.toUpperCase()} /{" "}
-        {prefs.currency}). {msg.appName}.
+        {msg.localeSettings.hint}
       </p>
 
       <form
@@ -32,42 +40,37 @@ export default async function LocaleSettingsPage() {
           "use server";
           await updateTenantI18nAction({}, fd);
         }}
-        className="mt-8 space-y-4 rounded-[var(--radius)] border border-[var(--border)] p-4"
+        className="mt-8 space-y-4 rounded-[var(--radius)] border border-[var(--border)] bg-[var(--card)] p-4 sm:p-6"
       >
-        <label className="block text-sm">
+        <label className="block text-sm font-medium">
           {msg.localeSettings.language}
           <select
             name="defaultLocale"
             defaultValue={prefs.locale}
-            className="mt-1 w-full rounded-[var(--radius)] border border-[var(--border)] px-3 py-2"
+            className={`mt-1.5 ${controlClass}`}
           >
             <option value="it">{msg.localeSettings.langIt}</option>
             <option value="en">{msg.localeSettings.langEn}</option>
           </select>
         </label>
-        <label className="block text-sm">
+        <label className="block text-sm font-medium">
           {msg.localeSettings.currency}
-          <input
+          <select
             name="currency"
-            defaultValue={prefs.currency}
-            maxLength={3}
-            className="mt-1 w-full rounded-[var(--radius)] border border-[var(--border)] px-3 py-2 uppercase"
-          />
+            defaultValue={currencyDefault}
+            className={`mt-1.5 ${controlClass}`}
+          >
+            {CURRENCIES.map((c) => (
+              <option key={c} value={c}>
+                {c}
+              </option>
+            ))}
+          </select>
         </label>
-        <label className="block text-sm">
-          {msg.localeSettings.dateLocale}
-          <input
-            name="dateLocale"
-            defaultValue={prefs.dateLocale}
-            className="mt-1 w-full rounded-[var(--radius)] border border-[var(--border)] px-3 py-2"
-          />
-        </label>
-        <button
-          type="submit"
-          className="rounded-[var(--radius)] bg-[var(--primary)] px-4 py-2 text-sm font-medium text-[var(--primary-foreground)]"
-        >
-          {msg.localeSettings.save}
-        </button>
+        <p className="text-xs text-[var(--muted-foreground)]">
+          {msg.localeSettings.formatHint}
+        </p>
+        <Button type="submit">{msg.localeSettings.save}</Button>
       </form>
     </PageFrame>
   );

@@ -22,7 +22,7 @@ export async function updateTenantI18nAction(
       currency: String(formData.get("currency") ?? "EUR")
         .trim()
         .toUpperCase(),
-      dateLocale: formData.get("dateLocale") || undefined,
+      // dateLocale derived from language server-side (no BCP 47 field in UI)
     },
   });
   if (!result.ok) return { error: await actionResultError(result) };

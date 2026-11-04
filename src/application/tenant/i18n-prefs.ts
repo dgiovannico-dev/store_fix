@@ -14,11 +14,7 @@ export type TenantI18nPrefs = {
 
 const updateSchema = z.object({
   defaultLocale: z.enum(["it", "en"]),
-  currency: z
-    .string()
-    .trim()
-    .regex(/^[A-Z]{3}$/, "currency ISO 4217"),
-  dateLocale: z.string().trim().min(2).max(16).optional(),
+  currency: z.enum(["EUR", "USD", "GBP", "CHF"]),
 });
 
 export async function getTenantI18nPrefs(
@@ -50,9 +46,7 @@ export async function updateTenantI18nPrefs(input: {
   if (!parsed.success) {
     return { ok: false as const, code: "invalidLocalePrefs" };
   }
-  const dateLocale =
-    parsed.data.dateLocale?.trim() ||
-    dateLocaleFor(parsed.data.defaultLocale);
+  const dateLocale = dateLocaleFor(parsed.data.defaultLocale);
   const tenant = await prisma.tenant.update({
     where: { id: input.tenantId },
     data: {

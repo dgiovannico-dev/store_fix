@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useActionState } from "react";
 import {
   importStoresAction,
@@ -24,12 +23,7 @@ export function StoreImportForm({
 
   return (
     <PageFrame>
-      <p className="text-sm text-[var(--muted-foreground)]">
-        <Link href="/app/stores" className="underline-offset-4 hover:underline">
-          {copy.back}
-        </Link>
-      </p>
-      <h1 className="mt-4 font-[family-name:var(--font-sora)] text-2xl font-semibold text-[var(--primary)]">
+      <h1 className="font-[family-name:var(--font-sora)] text-2xl font-semibold text-[var(--primary)]">
         {copy.title}
       </h1>
       <p className="mt-2 text-sm text-[var(--muted-foreground)]">

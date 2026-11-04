@@ -14,6 +14,7 @@ import { listVendors } from "@/domain/vendors/vendor-service";
 import { getTenantI18nPrefs } from "@/application/tenant/i18n-prefs";
 import { tenantMessages } from "@/i18n/tenant-messages";
 import { PageFrame } from "@/components/layout/page-frame";
+import { MultiCheckPicker } from "@/components/ui/multi-check-picker";
 import { RowActionSubmit } from "@/components/ui/row-actions";
 
 export default async function MembersPage() {
@@ -93,22 +94,16 @@ export default async function MembersPage() {
                   await updateMembershipAction(m.id, fd);
                 }}
               >
-                <fieldset className="space-y-2">
-                  <legend className="text-sm font-medium">{copy.storeScope}</legend>
-                  <div className="flex flex-wrap gap-3">
-                    {stores.map((s) => (
-                      <label key={s.id} className="flex items-center gap-2 text-sm">
-                        <input
-                          type="checkbox"
-                          name="storeIds"
-                          value={s.id}
-                          defaultChecked={m.storeIds.includes(s.id)}
-                        />
-                        {s.name}
-                      </label>
-                    ))}
-                  </div>
-                </fieldset>
+                <MultiCheckPicker
+                  name="storeIds"
+                  legend={copy.storeScope}
+                  options={stores.map((s) => ({ id: s.id, label: s.name }))}
+                  defaultSelected={m.storeIds}
+                  searchPlaceholder={msg.common.searchList}
+                  selectedCountLabel={msg.common.selectedCount}
+                  selectAllLabel={msg.common.selectAllFiltered}
+                  clearLabel={msg.common.clearSelection}
+                />
                 {m.role === "vendor" || vendors.length > 0 ? (
                   <label className="block text-sm">
                     {copy.vendorLinked}

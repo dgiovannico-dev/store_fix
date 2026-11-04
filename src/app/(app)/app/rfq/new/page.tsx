@@ -3,6 +3,7 @@ import { auth } from "@/auth";
 import { createQuoteRequestAction } from "@/app/actions/rfq";
 import { getTenantI18nPrefs } from "@/application/tenant/i18n-prefs";
 import { PageFrame } from "@/components/layout/page-frame";
+import { MultiCheckPicker } from "@/components/ui/multi-check-picker";
 import { StatusPanel } from "@/components/ui/status-panel";
 import { canMutate } from "@/domain/rbac/can";
 import { RbacAction } from "@/domain/rbac/actions";
@@ -74,15 +75,15 @@ export default async function NewRfqPage({
               className="mt-1 w-full rounded-[var(--radius)] border border-[var(--border)] px-3 py-2"
             />
           </label>
-          <fieldset className="space-y-2">
-            <legend className="text-sm font-medium">{msg.rfq.vendorsField}</legend>
-            {vendors.map((v) => (
-              <label key={v.id} className="flex items-center gap-2 text-sm">
-                <input type="checkbox" name="vendorIds" value={v.id} />
-                {v.name}
-              </label>
-            ))}
-          </fieldset>
+          <MultiCheckPicker
+            name="vendorIds"
+            legend={msg.rfq.vendorsField}
+            options={vendors.map((v) => ({ id: v.id, label: v.name }))}
+            searchPlaceholder={msg.common.searchList}
+            selectedCountLabel={msg.common.selectedCount}
+            selectAllLabel={msg.common.selectAllFiltered}
+            clearLabel={msg.common.clearSelection}
+          />
           <button
             type="submit"
             className="rounded-[var(--radius)] bg-[var(--primary)] px-4 py-2 text-sm font-medium text-[var(--primary-foreground)]"
