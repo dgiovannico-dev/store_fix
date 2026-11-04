@@ -37,12 +37,7 @@ export default async function RfqDetailPage({
 
   return (
     <PageFrame>
-      <p className="text-sm">
-        <Link href="/app/rfq" className="text-[var(--primary)] hover:underline">
-          {msg.rfq.back}
-        </Link>
-      </p>
-      <h1 className="mt-2 font-[family-name:var(--font-sora)] text-2xl font-semibold text-[var(--primary)]">
+      <h1 className="font-[family-name:var(--font-sora)] text-2xl font-semibold text-[var(--primary)]">
         {request.title}
       </h1>
       <p className="mt-1 text-sm text-[var(--muted-foreground)]">

@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { updateStoreAction } from "@/app/actions/stores";
@@ -30,15 +29,7 @@ export default async function StoreEditPage({
 
   return (
     <PageFrame>
-      <p className="text-sm">
-        <Link
-          href="/app/stores"
-          className="text-[var(--primary)] hover:underline"
-        >
-          ← {copy.title}
-        </Link>
-      </p>
-      <h1 className="mt-2 font-[family-name:var(--font-sora)] text-2xl font-semibold text-[var(--primary)]">
+      <h1 className="font-[family-name:var(--font-sora)] text-2xl font-semibold text-[var(--primary)]">
         {copy.editTitle.replace("{name}", store.name)}
       </h1>
       <p className="mt-1 text-sm text-[var(--muted-foreground)]">
