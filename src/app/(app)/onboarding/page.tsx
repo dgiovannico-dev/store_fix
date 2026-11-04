@@ -35,7 +35,7 @@ export default async function OnboardingPage() {
   };
 
   return (
-    <PageFrame narrow className="flex flex-col gap-6">
+    <PageFrame narrow className="flex flex-col gap-6" data-tour="hq.onboarding">
       <header className="flex items-start justify-between gap-4">
         <div>
           <h1 className="font-[family-name:var(--font-sora)] text-2xl font-semibold text-[var(--primary)]">
@@ -43,6 +43,14 @@ export default async function OnboardingPage() {
           </h1>
           <p className="mt-1 text-sm text-[var(--muted-foreground)]">
             {copy.hint}
+          </p>
+          <p className="mt-2 text-sm text-[var(--muted-foreground)]">
+            Pilota tipico: 15 store × 5 vendor. Per capire ogni sezione usa{" "}
+            <strong className="font-medium text-[var(--foreground)]">
+              Aiuto → Tutorial interattivo
+            </strong>{" "}
+            (o tasto <kbd className="rounded border px-1">?</kbd>) — non
+            sostituisce questa checklist.
           </p>
         </div>
         {!snap.skippedAt && !snap.networkComplete ? (

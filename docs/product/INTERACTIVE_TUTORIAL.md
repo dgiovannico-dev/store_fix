@@ -1,6 +1,6 @@
 # FacilityFlow Retail — Tutorial interattivo (piano)
 
-> **Stato:** bozza 2026-11-04 — **attende conferma PO**.  
+> **Stato:** **GO PO 2026-11-04** — implementazione F8 in corso.  
 > **Obiettivo:** tour **completo, dinamico, interattivo e curato** sulle sezioni dell’app (nessuna esclusa per il ruolo), **rilanciabile quando si vuole**.  
 > **Non sostituisce** `/onboarding` (checklist setup rete) — lo **complementa** (educazione prodotto).
 

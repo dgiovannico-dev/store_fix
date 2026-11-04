@@ -1,4 +1,6 @@
+import { Prisma } from "@prisma/client";
 import type { Locale } from "@/i18n";
+import { prisma } from "@/infrastructure/db/prisma";
 import {
   claimEmailIdempotency,
   emailIdempotencyKey,
@@ -9,21 +11,21 @@ import {
   type TemplateVars,
 } from "./templates";
 import { sendEmail } from "./mailer";
+import { drainEmailOutbox } from "./outbox-drain";
+
+export { drainEmailOutbox };
 
 export type EnqueueEmailInput = {
   to: string | string[];
   template: EmailTemplateId;
   vars?: TemplateVars;
-  /** Tenant UI locale (F3-06); default `it`. */
   locale?: Locale;
-  /** Override chiave; default template+ticketId+recipient */
   idempotencyKey?: string;
+  tenantId?: string;
 };
 
 /**
- * Enqueue immediato (dev) oppure via pg-boss job `email.send` (worker).
- * In MVP S1: se WORKER_INLINE=true o senza boss → invio diretto.
- * T2.25: skip se chiave idempotenza già claimata.
+ * F6-07 — enqueue into EmailOutbox (SoR). Inline send if no DATABASE / WORKER_INLINE.
  */
 export async function enqueueEmail(input: EnqueueEmailInput): Promise<{
   sent: boolean;
@@ -51,34 +53,59 @@ export async function enqueueEmail(input: EnqueueEmailInput): Promise<{
       continue;
     }
 
-    const { getBoss } = await import("../jobs/boss");
-    const boss = await getBoss();
-    if (!boss) {
+    try {
+      await prisma.emailOutbox.create({
+        data: {
+          tenantId: input.tenantId ?? null,
+          toAddr: to,
+          subject: rendered.subject,
+          textBody: rendered.text,
+          htmlBody: rendered.html,
+          idempotencyKey: key,
+          status: "pending",
+        },
+      });
+    } catch (e) {
+      if (
+        e instanceof Prisma.PrismaClientKnownRequestError &&
+        e.code === "P2002"
+      ) {
+        anySkipped = true;
+        continue;
+      }
+      throw e;
+    }
+
+    const inline =
+      process.env.WORKER_INLINE === "true" ||
+      process.env.FF_EMAIL_INLINE === "1";
+    if (inline) {
       await sendEmail({
         to,
         subject: rendered.subject,
         text: rendered.text,
         html: rendered.html,
       });
+      await prisma.emailOutbox.updateMany({
+        where: { idempotencyKey: key },
+        data: { status: "sent", sentAt: new Date() },
+      });
       anySent = true;
       continue;
     }
+
+    const { getBoss, QUEUE_EMAIL_OUTBOX_DRAIN } = await import("../jobs/boss");
+    const boss = await getBoss();
+    if (!boss) {
+      await drainEmailOutbox(5);
+      anySent = true;
+      continue;
+    }
+
     await boss.send(
-      "email.send",
-      {
-        to,
-        subject: rendered.subject,
-        text: rendered.text,
-        html: rendered.html,
-        idempotencyKey: key,
-      },
-      {
-        retryLimit: 5,
-        retryBackoff: true,
-        retryDelay: 30,
-        singletonKey: key,
-        singletonSeconds: 86_400,
-      },
+      QUEUE_EMAIL_OUTBOX_DRAIN,
+      {},
+      { singletonKey: "email-outbox-drain", singletonSeconds: 5 },
     );
     anySent = true;
   }

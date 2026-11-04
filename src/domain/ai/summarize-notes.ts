@@ -1,6 +1,8 @@
+import type { AiAssistSource } from "@/domain/ai/suggest-category";
+
 export type NotesSummary = {
   summary: string;
-  source: "heuristic" | "ollama";
+  source: AiAssistSource;
   bulletCount: number;
 };
 
