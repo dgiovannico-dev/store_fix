@@ -10,7 +10,7 @@ import { SlaBadge } from "@/components/tickets/sla-badge";
 import { TicketDetailTabs } from "@/components/tickets/ticket-detail-tabs";
 import { TicketTimeline } from "@/components/tickets/ticket-timeline";
 import { VendorTicketActions } from "@/components/vendor/vendor-ticket-actions";
-import { getActiveMembership } from "@/domain/memberships/membership-service";
+import { getActiveMembership } from "@/application/memberships/membership-service";
 import {
   intakeCategoryLabel,
   intakePriorityLabel,

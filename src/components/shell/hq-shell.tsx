@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LogOut, Menu } from "lucide-react";
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
+import dynamic from "next/dynamic";
 import {
   AppBreadcrumbs,
   type BreadcrumbLabels,
@@ -18,12 +19,17 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
-import {
-  ProductTourHost,
-  TourHelpButtons,
-} from "@/features/product-tour/tour-controller";
+import { TourHelpButtons } from "@/features/product-tour/tour-controller";
 import type { NavItem } from "./nav-config";
 import { NavIcon } from "./nav-icons";
+
+const ProductTourHost = dynamic(
+  () =>
+    import("@/features/product-tour/tour-controller").then(
+      (m) => m.ProductTourHost,
+    ),
+  { ssr: false },
+);
 
 function tourAttrForHref(href: string): string | undefined {
   if (href.includes("/dashboard")) return "nav.dashboard";
@@ -134,6 +140,9 @@ export function HqShell(props: {
   breadcrumbLabels: BreadcrumbLabels;
   homeHref: string;
 }) {
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const closeMobileNav = () => setMobileNavOpen(false);
+
   return (
     <div className="flex min-h-dvh bg-[var(--background)]" data-tour="shell.hq">
       <ProductTourHost audience="hq" softPrompt />
@@ -147,7 +156,7 @@ export function HqShell(props: {
 
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="sticky top-0 z-40 flex h-14 items-center gap-3 border-b border-[var(--border)] bg-[var(--card)]/95 px-3 backdrop-blur supports-[backdrop-filter]:bg-[var(--card)]/80 sm:px-6">
-          <Sheet>
+          <Sheet open={mobileNavOpen} onOpenChange={setMobileNavOpen}>
             <SheetTrigger asChild>
               <Button
                 variant="outline"
@@ -166,6 +175,7 @@ export function HqShell(props: {
                 items={props.items}
                 brand={props.brand}
                 signOutLabel={props.signOutLabel}
+                onNavigate={closeMobileNav}
               />
             </SheetContent>
           </Sheet>

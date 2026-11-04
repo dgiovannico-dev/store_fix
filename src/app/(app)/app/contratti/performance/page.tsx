@@ -1,53 +1,20 @@
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
+import { listContractPerformance } from "@/application/contracts/performance-query";
 import { PageFrame } from "@/components/layout/page-frame";
-import { prisma } from "@/infrastructure/db/prisma";
+import { can } from "@/domain/rbac/can";
+import { RbacAction } from "@/domain/rbac/actions";
 
-/** F6-05 — contratto vs misurato (PM due vs done). */
+/** F6-05 — contratto vs misurato (PM due vs done) — HQ / contract readers. */
 export default async function ContractPerformancePage() {
   const session = await auth();
-  if (!session?.tenantId) redirect("/login");
+  if (!session?.tenantId || !session.role) redirect("/login");
+  if (!can(session.role, RbacAction.crudVendorContract)) {
+    redirect("/app/tickets");
+  }
 
   const since = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000);
-  const contracts = await prisma.vendorContract.findMany({
-    where: { tenantId: session.tenantId, deletedAt: null },
-    include: {
-      vendor: { select: { name: true } },
-      store: { select: { name: true } },
-    },
-    take: 100,
-  });
-
-  const rows = await Promise.all(
-    contracts.map(async (c) => {
-      const [due, done] = await Promise.all([
-        prisma.plannedMaintenanceEvent.count({
-          where: {
-            tenantId: session.tenantId!,
-            vendorId: c.vendorId,
-            storeId: c.storeId ?? undefined,
-            scheduledAt: { gte: since },
-          },
-        }),
-        prisma.plannedMaintenanceEvent.count({
-          where: {
-            tenantId: session.tenantId!,
-            vendorId: c.vendorId,
-            storeId: c.storeId ?? undefined,
-            scheduledAt: { gte: since },
-            status: "done",
-          },
-        }),
-      ]);
-      return {
-        id: c.id,
-        vendor: c.vendor.name,
-        store: c.store?.name ?? "—",
-        due,
-        done,
-      };
-    }),
-  );
+  const rows = await listContractPerformance(session.tenantId, since);
 
   return (
     <PageFrame>
@@ -71,8 +38,8 @@ export default async function ContractPerformancePage() {
             <tbody>
               {rows.map((r) => (
                 <tr key={r.id} className="border-t border-[var(--border)]">
-                  <td className="px-3 py-2 font-medium">{r.vendor}</td>
-                  <td className="px-3 py-2">{r.store}</td>
+                  <td className="px-3 py-2 font-medium">{r.vendorName}</td>
+                  <td className="px-3 py-2">{r.storeName ?? "—"}</td>
                   <td className="px-3 py-2 tabular">{r.due}</td>
                   <td className="px-3 py-2 tabular">{r.done}</td>
                 </tr>

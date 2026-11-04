@@ -1,6 +1,6 @@
 import { Role } from "@prisma/client";
 import { describe, expect, it } from "vitest";
-import { roleLabel } from "./role-labels";
+import { roleLabel } from "./role";
 
 describe("roleLabel", () => {
   it("mappa ruoli IT/EN e fallback", () => {

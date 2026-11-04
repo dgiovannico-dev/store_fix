@@ -5,7 +5,7 @@ import { relaunchSlaTicket } from "@/application/sla/relaunch";
 import { createTicket } from "@/application/tickets/create-ticket";
 import { NotificationType } from "@/domain/notification/types";
 import { ensureDefaultSlaPolicies } from "@/domain/sla/defaults";
-import { createStore } from "@/domain/stores/store-service";
+import { createStore } from "@/application/stores/store-service";
 import { signupHqOwner } from "@/domain/tenancy/signup";
 import { TicketEventType } from "@/domain/ticket/event-types";
 import { listTicketEvents } from "@/infrastructure/db/ticket-event-repository";

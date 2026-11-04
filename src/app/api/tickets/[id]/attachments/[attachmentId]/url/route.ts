@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
-import { getActiveMembership } from "@/domain/memberships/membership-service";
+import { getActiveMembership } from "@/application/memberships/membership-service";
 import { canAccessStore } from "@/domain/rbac/store-scope";
 import { prisma } from "@/infrastructure/db/prisma";
 import { rejectIfRateLimited } from "@/infrastructure/rate-limit-guard";

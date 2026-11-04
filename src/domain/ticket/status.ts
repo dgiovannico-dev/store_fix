@@ -14,6 +14,15 @@ export const TICKET_STATUSES = [
 
 export type TicketStatusId = (typeof TICKET_STATUSES)[number];
 
+/** Aperti / in corso (SLA, digest, wallboard) — single source (R2.4). */
+export const OPEN_TICKET_STATUSES: TicketStatus[] = [
+  TicketStatus.open,
+  TicketStatus.triaged,
+  TicketStatus.assigned,
+  TicketStatus.in_progress,
+  TicketStatus.waiting_parts,
+];
+
 export const TERMINAL_STATUSES: ReadonlySet<TicketStatus> = new Set([
   TicketStatus.verified,
   TicketStatus.cancelled,

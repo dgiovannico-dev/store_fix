@@ -1,12 +1,17 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import {
+  hasSessionCookie,
+  requiresAuthSession,
+} from "@/infrastructure/auth/protected-path";
+import { shouldUseSecureAuthCookies } from "@/infrastructure/auth/secure-cookies";
 import { applyBaselineSecurityHeaders } from "@/infrastructure/security/apply-baseline-security-headers";
 import { evaluateApiCsrf } from "@/infrastructure/security/csrf-origin";
 import { resolveServerActionsAllowedOrigins } from "@/infrastructure/security/server-actions-origins";
 
 /**
- * Security baseline headers (US-E10-07 / T4.6) + CSRF gate on mutating `/api/*` + `/logout`.
- * Header values: `applyBaselineSecurityHeaders` · docs/ops/SECURITY_HEADERS.md
+ * Security baseline headers + CSRF + auth cookie gate on /app|/vendor|/onboarding.
+ * Full session validation resta in layout RSC (`auth()`); Edge evita Prisma JWT callback.
  */
 export function middleware(request: NextRequest) {
   const requestId =
@@ -38,6 +43,24 @@ export function middleware(request: NextRequest) {
     );
   }
 
+  const pathname = request.nextUrl.pathname;
+  if (requiresAuthSession(pathname)) {
+    const secure = shouldUseSecureAuthCookies({
+      NODE_ENV: process.env.NODE_ENV,
+      AUTH_URL: process.env.AUTH_URL,
+      NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
+      FF_DOMAIN: process.env.FF_DOMAIN,
+      AUTH_SECURE_COOKIES: process.env.AUTH_SECURE_COOKIES,
+    });
+    if (!hasSessionCookie(request.headers.get("cookie"), secure)) {
+      const login = new URL("/login", request.url);
+      login.searchParams.set("callbackUrl", pathname);
+      const redirect = NextResponse.redirect(login);
+      redirect.headers.set("X-Request-Id", requestId);
+      return redirect;
+    }
+  }
+
   const response = NextResponse.next({
     request: {
       headers: (() => {
@@ -49,7 +72,7 @@ export function middleware(request: NextRequest) {
   });
 
   applyBaselineSecurityHeaders(response.headers, {
-    pathname: request.nextUrl.pathname,
+    pathname,
     requestId,
     env: {
       NODE_ENV: process.env.NODE_ENV,

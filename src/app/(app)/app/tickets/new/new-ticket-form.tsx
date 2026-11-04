@@ -1,12 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import {
-  useActionState,
-  useEffect,
-  useState,
-  type ReactNode,
-} from "react";
+import { useActionState, useState, type ReactNode } from "react";
 import {
   createTicketAction,
   type CreateTicketState,
@@ -30,53 +25,23 @@ const initial: CreateTicketState = {};
 export function NewTicketForm({
   msg,
   locale = "it",
+  stores,
+  assets,
+  initialStoreId = "",
+  loadError = false,
 }: {
   msg: MessageCatalog;
   locale?: Locale;
+  stores: StoreOpt[];
+  assets: AssetOpt[];
+  initialStoreId?: string;
+  loadError?: boolean;
 }) {
   const categories = intakeCategoryOptions(locale);
   const priorities = intakePriorityOptions(locale);
-  const [stores, setStores] = useState<StoreOpt[]>([]);
-  const [assets, setAssets] = useState<AssetOpt[]>([]);
-  const [storeId, setStoreId] = useState("");
-  const [loadError, setLoadError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [storeId, setStoreId] = useState(initialStoreId);
   const [state, action, pending] = useActionState(createTicketAction, initial);
   const copy = msg.ticketsNew;
-
-  useEffect(() => {
-    let cancelled = false;
-    const pref =
-      typeof window !== "undefined"
-        ? new URLSearchParams(window.location.search).get("storeId")
-        : null;
-    (async () => {
-      try {
-        const res = await fetch("/api/tickets/form-options");
-        if (!res.ok) throw new Error(copy.loadStoresError);
-        const data = (await res.json()) as {
-          stores: StoreOpt[];
-          assets: AssetOpt[];
-        };
-        if (cancelled) return;
-        setStores(data.stores);
-        setAssets(data.assets);
-        const fromPref = pref && data.stores.some((s) => s.id === pref);
-        if (fromPref && pref) setStoreId(pref);
-        else if (data.stores[0]) setStoreId(data.stores[0].id);
-      } catch (e) {
-        if (!cancelled) {
-          setLoadError(e instanceof Error ? e.message : copy.loadError);
-        }
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, [copy.loadError, copy.loadStoresError]);
-
   const storeAssets = assets.filter((a) => a.storeId === storeId);
 
   return (
@@ -87,13 +52,9 @@ export function NewTicketForm({
       </h1>
       <p className="mt-1 text-sm text-[var(--muted-foreground)]">{copy.hint}</p>
 
-      {loading ? (
+      {loadError ? (
         <div className="mt-8">
-          <StatusPanel kind="loading" locale={locale} />
-        </div>
-      ) : loadError ? (
-        <div className="mt-8">
-          <StatusPanel kind="error" title={loadError} locale={locale} />
+          <StatusPanel kind="error" title={copy.loadError} locale={locale} />
         </div>
       ) : stores.length === 0 ? (
         <div className="mt-8">

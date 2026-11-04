@@ -5,7 +5,7 @@ import {
   createStore,
   softDeleteStore,
   updateStore,
-} from "@/domain/stores/store-service";
+} from "@/application/stores/store-service";
 import { actionError } from "@/i18n/action-errors";
 import { actionResultError } from "@/i18n/domain-errors";
 import { sessionTenant } from "@/lib/auth/session-tenant";

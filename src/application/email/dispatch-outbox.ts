@@ -31,15 +31,20 @@ type ClaimedRow = {
 /**
  * Claim PENDING (due) + stuck PROCESSING, send via Nodemailer, mark SENT / retry / DEAD.
  * Fenced updates require matching lockToken.
+ * `onlyIds` — test isolation: claim only listed rows (avoids cross-suite SKIP LOCKED races).
  */
 export async function processEmailOutboxBatch(
   limit = 20,
-  deps: { send?: typeof sendEmail } = {},
+  deps: { send?: typeof sendEmail; onlyIds?: string[] } = {},
 ): Promise<DispatchBatchResult> {
   const send = deps.send ?? sendEmail;
   const take = Math.min(Math.max(1, limit), 100);
   const lockToken = randomBytes(16).toString("hex");
   const stuckBefore = new Date(Date.now() - STUCK_MINUTES * 60_000);
+  const idFilter =
+    deps.onlyIds && deps.onlyIds.length > 0
+      ? Prisma.sql`AND id IN (${Prisma.join(deps.onlyIds)})`
+      : Prisma.empty;
 
   const rows = await prisma.$queryRaw<ClaimedRow[]>(Prisma.sql`
     UPDATE "EmailOutbox"
@@ -52,8 +57,11 @@ export async function processEmailOutboxBatch(
     WHERE id IN (
       SELECT id FROM "EmailOutbox"
       WHERE
-        (status = 'pending' AND "nextAttemptAt" <= NOW())
-        OR (status = 'processing' AND "lockedAt" IS NOT NULL AND "lockedAt" < ${stuckBefore})
+        (
+          (status = 'pending' AND "nextAttemptAt" <= NOW())
+          OR (status = 'processing' AND "lockedAt" IS NOT NULL AND "lockedAt" < ${stuckBefore})
+        )
+        ${idFilter}
       ORDER BY "createdAt" ASC
       LIMIT ${take}
       FOR UPDATE SKIP LOCKED

@@ -1,9 +1,10 @@
 # Increment status — FacilityFlow Retail
 
-**Aggiornato:** 2026-11-04 — **dev-only**; F3-01 VPS umano; F4 Done; **F5 UX Done** (F5-UX-14 aperto); **F6 bozza PO**  
-Hardening recente: F4-01…06 + F5-UX + positioning [`COMPETITIVE_POSITIONING.md`](./COMPETITIVE_POSITIONING.md).
+**Aggiornato:** 2026-11-04 — **dev-only**; F3-01 VPS umano; F4–F8 Done in-repo; **R0–R4 modular monolith anti-regressione Done** (ADR-0013).
 
-**Autopilot:** F3–F5 (salvo F5-UX-14 / F3-01). **Fase 6** in BACKLOG = bozza — conferma PO prima di implementare. Next in-repo ammissibile senza conferma: **F5-UX-14** / debt.
+Hardening recente: transactional email outbox (F3-09), calendar Day/Week/Month (F5-UX-14), refactor R0–R4 (auth gate, store-scope, notify-in-TX, layer moves, CQRS light reads, load/UX).
+
+**Autopilot:** F3–F8 in-repo chiusi salvo F3-01 VPS + F7-08/09 deferred. Next ammissibile: debt / flake / docs drift; **no** nuova Fase 3 fuori tabella.
 
 | Sprint / fase | Stato | Note |
 |---------------|-------|------|
@@ -11,24 +12,24 @@ Hardening recente: F4-01…06 + F5-UX + positioning [`COMPETITIVE_POSITIONING.md
 | S4 | Done | Dashboard HQ, seed 15×5, NFR, GDPR |
 | S5 | Lab PASS / **NO-GO VPS** | Ops E14; gap in [`sprints/S5-EXIT-GAPS.md`](./sprints/S5-EXIT-GAPS.md) |
 | Fase 2 (F2-01…F2-09) | **Done** | Intake, preventivi, scorecard, PM, CSV, PWA, AI, email inbound, audit |
-| Fase 3 (F3-02…F3-08) | **Done in-repo** | observe, summarize, IMAP, RRULE, i18n prefs, RFQ, store push |
+| Fase 3 (F3-02…F3-09) | **Done in-repo** | observe…outbox; F3-01 host |
 | F3-01 Exit pilota | **Blocked (skip deploy)** | Host/DNS/VPS — Compose **o** k3s (F4) |
-| Fase 4 (F4-01…06) | **Done in-repo** | k3s+Helm · OpenBao/Keycloak **shared** · cutover — [`PLATFORM_IAM.md`](../ops/PLATFORM_IAM.md) |
+| Fase 4 (F4-01…06) | **Done in-repo** | k3s+Helm · OpenBao/Keycloak **shared** |
 | Fase 5 (F5-UX-00…15) | **Done** | Incl. F5-UX-14 Day/Week/Month |
 | Fase 6 (F6-01…10) | **Done in-repo** | Digest, chargeback, outbox, wallboard, … |
 | Fase 7 (F7-01…10) | **Done core** | vLLM gateway + settings; F7-08/09 deferred |
 | Fase 8 (F8-01…10) | **Done in-repo** | Driver.js tour on-demand |
+| **Refactor R0–R4** | **Done** | Safety net → P0 security → layer moves → CQRS reads → load/UX; ADR-0013 |
 
 ## Modalità corrente
 
 **Solo sviluppi in-repo** — niente `vps:wizard` / compose.prod su host remoto finché non richiesto.  
-Autopilot continua su debt / hardening / gap codice senza inventare nuove Fase 3 fuori tabella F3. `gdpr.purge` + `attachment.gc` + `rate_limit.gc` in-repo. Baseline header: [`SECURITY_HEADERS.md`](../ops/SECURITY_HEADERS.md).
+Autopilot continua su debt / hardening / gap codice senza inventare nuove Fase 3 fuori tabella F3. Baseline: [`SECURITY_HEADERS.md`](../ops/SECURITY_HEADERS.md) · arch: [`adr/0013-modular-monolith-selective-cqrs.md`](../adr/0013-modular-monolith-selective-cqrs.md).
 
 ### Prove locali
 
-- `npm run verify:local` · `npm audit --audit-level=high` (0 high+; moderate eslint/minimatch waived) · `npm run build` OK
-- `npm run smoke:http` PASS · **anche in CI** post-`next start`
-- `npm run helm:template` · `compose:prod|lab|observe:config` OK · `vps:preflight` OK (preflight ≠ deploy)
+- `npm run verify:local` · `npm audit --audit-level=high` · `npm run build`
+- `npm run smoke:http` · `npm run helm:template` · `compose:prod|lab|observe:config`
 
 ## Quando riprenderà il deploy (umano)
 

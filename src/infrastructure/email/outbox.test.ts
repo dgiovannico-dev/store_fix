@@ -1,13 +1,28 @@
-import { beforeAll, describe, expect, it } from "vitest";
+import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { prisma } from "@/infrastructure/db/prisma";
 import { appendEmailOutbox, enqueueEmail } from "./outbox";
 import { processEmailOutboxBatch } from "@/application/email/dispatch-outbox";
 import { emailIdempotencyKey } from "./idempotency";
+import { cleanupEmailOutboxByKeyPrefix } from "@/test-utils/cleanup-tenant";
+
+const KEY_PREFIXES = [
+  "test-rollback:",
+  "test-dup:",
+  "test-dead:",
+  "test-stuck:",
+  "ticket_nuovo:T-disp-",
+];
 
 describe("EmailOutbox F3-09", () => {
   beforeAll(() => {
     process.env.PGBOSS_DISABLED = "true";
     process.env.SMTP_TRANSPORT = "json";
+  });
+
+  afterAll(async () => {
+    for (const p of KEY_PREFIXES) {
+      await cleanupEmailOutboxByKeyPrefix(p);
+    }
   });
 
   it("append + rollback → zero rows", async () => {
@@ -71,9 +86,13 @@ describe("EmailOutbox F3-09", () => {
     expect(first.sent).toBe(true);
     expect(first.skipped).toBe(false);
 
-    for (let i = 0; i < 10; i += 1) {
-      const r = await processEmailOutboxBatch(50);
-      if (r.claimed === 0) break;
+    const pending = await prisma.emailOutbox.findUniqueOrThrow({
+      where: { idempotencyKey: key },
+    });
+    if (pending.status !== "sent") {
+      const r = await processEmailOutboxBatch(5, { onlyIds: [pending.id] });
+      expect(r.claimed).toBe(1);
+      expect(r.sent).toBe(1);
     }
 
     const row = await prisma.emailOutbox.findUnique({
@@ -92,7 +111,7 @@ describe("EmailOutbox F3-09", () => {
 
   it("DEAD after max attempts", async () => {
     const key = `test-dead:${Date.now()}:${Math.random()}`;
-    await prisma.emailOutbox.create({
+    const row = await prisma.emailOutbox.create({
       data: {
         toAddr: "dead@example.com",
         subject: "dead",
@@ -105,13 +124,14 @@ describe("EmailOutbox F3-09", () => {
       },
     });
 
-    const result = await processEmailOutboxBatch(50, {
+    const result = await processEmailOutboxBatch(5, {
+      onlyIds: [row.id],
       send: async () => {
         throw new Error("smtp_down");
       },
     });
-    expect(result.claimed).toBeGreaterThanOrEqual(1);
-    expect(result.dead).toBeGreaterThanOrEqual(1);
+    expect(result.claimed).toBe(1);
+    expect(result.dead).toBe(1);
 
     const after = await prisma.emailOutbox.findUnique({
       where: { idempotencyKey: key },
@@ -137,8 +157,9 @@ describe("EmailOutbox F3-09", () => {
       },
     });
 
-    const result = await processEmailOutboxBatch(10);
-    expect(result.claimed).toBeGreaterThanOrEqual(1);
+    const result = await processEmailOutboxBatch(5, { onlyIds: [row.id] });
+    expect(result.claimed).toBe(1);
+    expect(result.sent).toBe(1);
 
     const after = await prisma.emailOutbox.findUnique({ where: { id: row.id } });
     expect(after?.status).toBe("sent");

@@ -24,4 +24,10 @@ describe("middleware security header wiring", () => {
   it("risolve allowedOrigins Server Actions", () => {
     expect(raw).toMatch(/resolveServerActionsAllowedOrigins/);
   });
+
+  it("gate sessione su path protetti", () => {
+    expect(raw).toMatch(/requiresAuthSession/);
+    expect(raw).toMatch(/hasSessionCookie/);
+  });
 });
+

@@ -8,7 +8,7 @@ import {
 } from "@/application/tickets/list-vendor-tickets";
 import { VendorInboxDataTable } from "@/components/tables/vendor-inbox-data-table";
 import { StatusPanel } from "@/components/ui/status-panel";
-import { getActiveMembership } from "@/domain/memberships/membership-service";
+import { getActiveMembership } from "@/application/memberships/membership-service";
 import {
   intakeCategoryLabel,
   intakePriorityLabel,

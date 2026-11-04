@@ -7,14 +7,14 @@ import {
   triageTicket,
 } from "@/application/tickets/transition-ticket";
 import { acceptInvite, createInvite } from "@/domain/invites/invite";
-import { updateMembership } from "@/domain/memberships/membership-service";
+import { updateMembership } from "@/application/memberships/membership-service";
 import { can } from "@/domain/rbac/can";
 import { RbacAction } from "@/domain/rbac/actions";
 import { ForbiddenError } from "@/domain/rbac/guards";
 import { ensureDefaultSlaPolicies } from "@/domain/sla/defaults";
-import { createStore } from "@/domain/stores/store-service";
+import { createStore } from "@/application/stores/store-service";
 import { signupHqOwner } from "@/domain/tenancy/signup";
-import { createVendor } from "@/domain/vendors/vendor-service";
+import { createVendor } from "@/application/vendors/vendor-service";
 import { prisma } from "@/infrastructure/db/prisma";
 import { cleanupTenant } from "@/test-utils/cleanup-tenant";
 

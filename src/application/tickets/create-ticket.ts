@@ -15,6 +15,7 @@ import { emitTicketNotification } from "@/application/notifications/emit";
 import { prisma } from "@/infrastructure/db/prisma";
 import { appendTicketEvent } from "@/infrastructure/db/ticket-event-repository";
 import { requireTenantId } from "@/infrastructure/db/tenant-scope";
+import { kickEmailOutboxDispatch } from "@/infrastructure/email/outbox";
 
 /** Nuove aperture: solo catalogo intake (legacy DB rows restano leggibili). */
 export const createTicketSchema = z.object({
@@ -97,6 +98,7 @@ export async function createTicket(input: {
         slaDueAt,
         ...statusTimestampData(TicketStatus.open, openedAt),
       },
+      include: { store: true, vendor: true },
     });
 
     await appendTicketEvent(
@@ -116,20 +118,18 @@ export async function createTicket(input: {
       tx,
     );
 
+    await emitTicketNotification({
+      kind: "created",
+      tenantId: input.tenantId,
+      ticket: created,
+      actorUserId: input.actorUserId,
+      db: tx,
+      skipKick: true,
+    });
+
     return created;
   });
-
-  const ticketWithStore = await prisma.ticket.findFirstOrThrow({
-    where: { id: ticket.id, tenantId: input.tenantId },
-    include: { store: true, vendor: true },
-  });
-
-  await emitTicketNotification({
-    kind: "created",
-    tenantId: input.tenantId,
-    ticket: ticketWithStore,
-    actorUserId: input.actorUserId,
-  }).catch((e) => console.error("[createTicket] notify", e));
+  await kickEmailOutboxDispatch();
 
   return { ok: true as const, ticket };
 }

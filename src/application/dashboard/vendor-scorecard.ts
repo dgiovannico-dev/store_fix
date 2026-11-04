@@ -1,4 +1,4 @@
-import { Role, TicketStatus } from "@prisma/client";
+import { Role } from "@prisma/client";
 import {
   buildSingleVendorScorecard,
   buildVendorScorecardRows,
@@ -7,16 +7,9 @@ import {
 import { can } from "@/domain/rbac/can";
 import { RbacAction } from "@/domain/rbac/actions";
 import { ForbiddenError } from "@/domain/rbac/guards";
+import { OPEN_TICKET_STATUSES } from "@/domain/ticket/status";
 import { prisma } from "@/infrastructure/db/prisma";
 import { requireTenantId } from "@/infrastructure/db/tenant-scope";
-
-const OPEN_STATUSES: TicketStatus[] = [
-  TicketStatus.open,
-  TicketStatus.triaged,
-  TicketStatus.assigned,
-  TicketStatus.in_progress,
-  TicketStatus.waiting_parts,
-];
 
 export type VendorScorecardOverview = {
   rangeDays: number;
@@ -48,7 +41,7 @@ export async function listVendorScorecards(input: {
       deletedAt: null,
       vendorId: { not: null },
       OR: [
-        { status: { in: OPEN_STATUSES } },
+        { status: { in: OPEN_TICKET_STATUSES } },
         { verifiedAt: { gte: from } },
         { doneAt: { gte: from } },
       ],

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { it as itCatalog } from "@/i18n/it";
-import { ticketEventLabel } from "./event-labels";
+import { ticketEventLabel } from "./ticket-event";
 
 describe("ticketEventLabel", () => {
   const labels = itCatalog.ticketTimeline;

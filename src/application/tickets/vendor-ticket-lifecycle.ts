@@ -202,7 +202,7 @@ export async function completeVendorWork(input: {
       tenantId: input.tenantId,
       ticket: result.ticket,
       actorUserId: input.actorUserId,
-    }).catch((e) => console.error("[complete] notify", e));
+    });
   }
 
   return result;

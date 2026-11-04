@@ -35,4 +35,20 @@ describe("store-scope", () => {
       }),
     ).toBe("none");
   });
+
+  it("store role con storeIds vuoti → none (non all)", () => {
+    expect(
+      scopedStoreIds({
+        role: Role.store_manager,
+        storeIds: [],
+        deletedAt: null,
+      }),
+    ).toBe("none");
+    expect(
+      canAccessStore(
+        { role: Role.store_staff, storeIds: [], deletedAt: null },
+        "any-store",
+      ),
+    ).toBe(false);
+  });
 });
