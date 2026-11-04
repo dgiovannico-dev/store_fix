@@ -67,6 +67,17 @@ export async function AppChrome({ children }: { children: React.ReactNode }) {
     />
   );
 
+  const tourLabels = {
+    softPromptConfirm: msg.tour.softPromptConfirm,
+    next: msg.tour.next,
+    prev: msg.tour.prev,
+    done: msg.tour.done,
+  };
+  const tourChrome = {
+    ...msg.tour,
+    launchLabel: msg.onboarding.tourLaunch,
+  };
+
   if (audience === "hq") {
     return (
       <HqShell
@@ -76,6 +87,10 @@ export async function AppChrome({ children }: { children: React.ReactNode }) {
         signOutLabel={msg.nav.signOut}
         breadcrumbLabels={breadcrumbLabelsFromMsg(msg)}
         homeHref={homeHref}
+        tourLabels={tourLabels}
+        tourChrome={tourChrome}
+        shellLabels={msg.shell}
+        closeLabel={msg.common.close}
       >
         {children}
       </HqShell>
@@ -95,6 +110,10 @@ export async function AppChrome({ children }: { children: React.ReactNode }) {
       signOutLabel={msg.nav.signOut}
       breadcrumbLabels={breadcrumbLabelsFromMsg(msg)}
       homeHref={homeHref}
+      tourLabels={tourLabels}
+      shellLabels={msg.shell}
+      tourHelpAria={msg.tour.helpAria}
+      tourLaunchLabel={msg.onboarding.tourLaunch}
     >
       {children}
     </PhoneShell>

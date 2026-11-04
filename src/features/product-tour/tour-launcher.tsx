@@ -60,6 +60,7 @@ export function TourHelpButtons(props: {
   audience: TourAudience;
   label: string;
   pageLabel: string;
+  pageScopeHint: string;
 }) {
   return (
     <div className="flex flex-col gap-1.5 p-2" data-tour="help.tour">
@@ -84,7 +85,7 @@ export function TourHelpButtons(props: {
         <span className="min-w-0 leading-snug">
           <span className="block font-medium">{props.pageLabel}</span>
           <span className="block text-[11px] font-normal text-[var(--muted-foreground)]">
-            Solo questa schermata
+            {props.pageScopeHint}
           </span>
         </span>
       </button>

@@ -62,7 +62,12 @@ export default async function NewRfqPage({
               required
               minLength={2}
               defaultValue={
-                sp.ticketId ? `Ticket ${sp.ticketId.slice(0, 8)}` : ""
+                sp.ticketId
+                  ? msg.rfq.defaultTitleFromTicket.replace(
+                      "{shortId}",
+                      sp.ticketId.slice(0, 8),
+                    )
+                  : ""
               }
               className="mt-1 w-full rounded-[var(--radius)] border border-[var(--border)] px-3 py-2"
             />

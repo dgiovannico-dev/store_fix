@@ -113,9 +113,12 @@ export default async function VendorsPage() {
             }}
             rows={vendors.map((v) => {
               const meta = [
-                v.trades.length ? v.trades.join(", ") : "—",
+                v.trades.length ? v.trades.join(", ") : msg.common.emptyDash,
                 v.storeCoverageIds.length
-                  ? `${v.storeCoverageIds.length} store`
+                  ? msg.vendor.storeCoverageCount.replace(
+                      "{n}",
+                      String(v.storeCoverageIds.length),
+                    )
                   : "",
               ]
                 .filter(Boolean)

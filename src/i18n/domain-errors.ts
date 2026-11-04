@@ -46,5 +46,7 @@ export async function actionResultError(result: {
   if (result.code && isDomainErrorKey(result.code)) {
     return domainError(result.code, result.params);
   }
-  return result.message ?? result.code ?? "Error";
+  if (result.message) return result.message;
+  if (result.code) return result.code;
+  return domainError("unknownError");
 }

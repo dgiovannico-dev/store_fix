@@ -4,6 +4,7 @@ import { auth } from "@/auth";
 import { listChargebackByStore } from "@/application/finance/chargeback-query";
 import { PageFrame } from "@/components/layout/page-frame";
 import { getActiveMembership } from "@/application/memberships/membership-service";
+import { tenantMessages } from "@/i18n/tenant-messages";
 
 const HQ = new Set<Role>([
   Role.owner,
@@ -28,10 +29,14 @@ export default async function ChargebackPage({
 
   const sp = await searchParams;
   const days = Math.min(Math.max(Number(sp.days ?? 30) || 30, 7), 365);
-  const rows = await listChargebackByStore(session.tenantId, days);
+  const [rows, msg] = await Promise.all([
+    listChargebackByStore(session.tenantId, days),
+    tenantMessages(session.tenantId),
+  ]);
+  const copy = msg.chargeback;
 
   const csv = [
-    "store,tickets,estimated_eur,actual_eur",
+    "store,tickets,estimated,actual",
     ...rows.map(
       (r) =>
         `"${r.name.replace(/"/g, '""')}",${r.tickets},${r.estimated.toFixed(2)},${r.actual.toFixed(2)}`,
@@ -44,10 +49,10 @@ export default async function ChargebackPage({
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
             <h1 className="font-[family-name:var(--font-sora)] text-2xl font-semibold text-[var(--primary)]">
-              Chargeback costi per PV
+              {copy.title}
             </h1>
             <p className="mt-1 text-sm text-[var(--muted-foreground)]">
-              Ultimi {days} giorni — stimati vs effettivi (ticket done/verificati).
+              {copy.subtitle.replace("{days}", String(days))}
             </p>
           </div>
           <a
@@ -55,17 +60,17 @@ export default async function ChargebackPage({
             href={`data:text/csv;charset=utf-8,${encodeURIComponent(csv)}`}
             download={`chargeback-${days}d.csv`}
           >
-            Esporta CSV
+            {copy.exportCsv}
           </a>
         </div>
         <div className="overflow-x-auto rounded-[var(--radius)] border border-[var(--border)]">
           <table className="w-full text-left text-sm">
             <thead className="bg-[var(--muted)]/40 text-[var(--muted-foreground)]">
               <tr>
-                <th className="px-3 py-2 font-medium">Punto vendita</th>
-                <th className="px-3 py-2 font-medium">Ticket</th>
-                <th className="px-3 py-2 font-medium">Stimato €</th>
-                <th className="px-3 py-2 font-medium">Effettivo €</th>
+                <th className="px-3 py-2 font-medium">{copy.colStore}</th>
+                <th className="px-3 py-2 font-medium">{copy.colTickets}</th>
+                <th className="px-3 py-2 font-medium">{copy.colEstimated}</th>
+                <th className="px-3 py-2 font-medium">{copy.colActual}</th>
               </tr>
             </thead>
             <tbody>
