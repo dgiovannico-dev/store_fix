@@ -39,7 +39,10 @@ function buildCrumbs(
   let acc = parts[0] === "app" || parts[0] === "vendor" ? `/${parts[0]}` : "";
   if (parts[0] === "onboarding") {
     return [
-      { href: "/onboarding", label: labels.routes.onboarding ?? "Onboarding" },
+      {
+        href: "/onboarding",
+        label: labels.routes.onboarding ?? labels.home,
+      },
     ];
   }
 
