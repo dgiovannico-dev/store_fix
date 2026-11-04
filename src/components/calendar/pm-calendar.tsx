@@ -7,16 +7,15 @@ import {
   completePmEventAction,
   createPmEventAction,
 } from "@/app/actions/pm-events";
+import { CalendarAnchorDialog } from "@/components/calendar/calendar-anchor-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { RowActionLink, RowActionSubmit } from "@/components/ui/row-actions";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet";
 import { StatusPanel } from "@/components/ui/status-panel";
+import {
+  rectFromDom,
+  type AnchorRect,
+} from "@/lib/calendar/anchor-position";
 import {
   addDays,
   addMonths,
@@ -77,8 +76,8 @@ export type PmCalendarCopy = {
 type ViewMode = "month" | "week" | "agenda";
 
 type Panel =
-  | { kind: "create"; dateYmd: string }
-  | { kind: "event"; eventId: string }
+  | { kind: "create"; dateYmd: string; anchor: AnchorRect }
+  | { kind: "event"; eventId: string; anchor: AnchorRect }
   | null;
 
 function parseLocal(iso: string): Date {
@@ -150,7 +149,7 @@ export function PmCalendar(props: {
 
   const selectedEvent =
     panel?.kind === "event"
-      ? props.events.find((e) => e.id === panel.eventId) ?? null
+      ? (props.events.find((e) => e.id === panel.eventId) ?? null)
       : null;
 
   const title =
@@ -163,24 +162,28 @@ export function PmCalendar(props: {
   }
 
   function goPrev() {
-    setAnchor((d) =>
-      view === "week" ? addDays(d, -7) : addMonths(d, -1),
-    );
+    setAnchor((d) => (view === "week" ? addDays(d, -7) : addMonths(d, -1)));
   }
 
   function goNext() {
-    setAnchor((d) =>
-      view === "week" ? addDays(d, 7) : addMonths(d, 1),
-    );
+    setAnchor((d) => (view === "week" ? addDays(d, 7) : addMonths(d, 1)));
   }
 
-  function openCreate(day: Date) {
+  function openCreate(day: Date, el: HTMLElement) {
     setCreateError(null);
-    setPanel({ kind: "create", dateYmd: toYmd(day) });
+    setPanel({
+      kind: "create",
+      dateYmd: toYmd(day),
+      anchor: rectFromDom(el.getBoundingClientRect()),
+    });
   }
 
-  function openEvent(id: string) {
-    setPanel({ kind: "event", eventId: id });
+  function openEvent(id: string, el: HTMLElement) {
+    setPanel({
+      kind: "event",
+      eventId: id,
+      anchor: rectFromDom(el.getBoundingClientRect()),
+    });
   }
 
   function isOverdue(iso: string): boolean {
@@ -200,7 +203,7 @@ export function PmCalendar(props: {
         </div>
         <Button
           type="button"
-          onClick={() => openCreate(anchor)}
+          onClick={(e) => openCreate(anchor, e.currentTarget)}
           className="gap-1.5"
           disabled={props.stores.length === 0}
         >
@@ -307,187 +310,179 @@ export function PmCalendar(props: {
         />
       ) : null}
 
-      <Sheet
+      <CalendarAnchorDialog
         open={panel !== null}
         onOpenChange={(open) => {
           if (!open) setPanel(null);
         }}
+        anchor={panel?.anchor ?? null}
+        title={
+          panel?.kind === "event" ? copy.detailTitle : copy.createTitle
+        }
+        closeLabel={copy.close}
       >
-        <SheetContent
-          side="right"
-          className="w-[min(26rem,100vw)] max-w-none gap-5 overflow-y-auto"
-        >
-          {panel?.kind === "create" ? (
-            <>
-              <SheetHeader>
-                <SheetTitle>{copy.createTitle}</SheetTitle>
-              </SheetHeader>
-              {props.stores.length === 0 ? (
-                <StatusPanel
-                  kind="empty"
-                  title={copy.empty}
-                  locale={props.locale}
-                />
-              ) : (
-                <form
-                  action={async (fd) => {
-                    setCreatePending(true);
-                    setCreateError(null);
-                    const result = await createPmEventAction({}, fd);
-                    setCreatePending(false);
-                    if (result.error) {
-                      setCreateError(result.error);
-                      return;
-                    }
-                    setPanel(null);
-                  }}
-                  className="space-y-3"
-                >
-                  <Input
-                    name="title"
+        {panel?.kind === "create" ? (
+          props.stores.length === 0 ? (
+            <StatusPanel
+              kind="empty"
+              title={copy.empty}
+              locale={props.locale}
+            />
+          ) : (
+            <form
+              action={async (fd) => {
+                setCreatePending(true);
+                setCreateError(null);
+                const result = await createPmEventAction({}, fd);
+                setCreatePending(false);
+                if (result.error) {
+                  setCreateError(result.error);
+                  return;
+                }
+                setPanel(null);
+              }}
+              className="space-y-3"
+            >
+              <Input
+                name="title"
+                required
+                minLength={2}
+                placeholder={copy.titlePlaceholder}
+                autoFocus
+              />
+              <select
+                name="storeId"
+                required
+                className={controlClass}
+                defaultValue=""
+              >
+                <option value="" disabled>
+                  {copy.storePlaceholder}
+                </option>
+                {props.stores.map((s) => (
+                  <option key={s.id} value={s.id}>
+                    {s.name}
+                  </option>
+                ))}
+              </select>
+              <select name="vendorId" className={controlClass} defaultValue="">
+                <option value="">{copy.vendorPlaceholder}</option>
+                {props.vendors.map((v) => (
+                  <option key={v.id} value={v.id}>
+                    {v.name}
+                  </option>
+                ))}
+              </select>
+              <div className="grid gap-3 grid-cols-2">
+                <label className="text-sm">
+                  {copy.dateLabel}
+                  <input
+                    name="scheduledDate"
+                    type="date"
                     required
-                    minLength={2}
-                    placeholder={copy.titlePlaceholder}
+                    defaultValue={panel.dateYmd}
+                    className={`mt-1 ${controlClass}`}
                   />
-                  <select
-                    name="storeId"
-                    required
-                    className={controlClass}
-                    defaultValue=""
-                  >
-                    <option value="" disabled>
-                      {copy.storePlaceholder}
-                    </option>
-                    {props.stores.map((s) => (
-                      <option key={s.id} value={s.id}>
-                        {s.name}
-                      </option>
-                    ))}
-                  </select>
-                  <select
-                    name="vendorId"
-                    className={controlClass}
-                    defaultValue=""
-                  >
-                    <option value="">{copy.vendorPlaceholder}</option>
-                    {props.vendors.map((v) => (
-                      <option key={v.id} value={v.id}>
-                        {v.name}
-                      </option>
-                    ))}
-                  </select>
-                  <div className="grid gap-3 sm:grid-cols-2">
-                    <label className="text-sm">
-                      {copy.dateLabel}
-                      <input
-                        name="scheduledDate"
-                        type="date"
-                        required
-                        defaultValue={panel.dateYmd}
-                        className={`mt-1 ${controlClass}`}
-                      />
-                    </label>
-                    <label className="text-sm">
-                      {copy.timeLabel}
-                      <input
-                        name="scheduledTime"
-                        type="time"
-                        defaultValue="09:00"
-                        className={`mt-1 ${controlClass}`}
-                      />
-                    </label>
-                  </div>
-                  <label className="block text-sm">
-                    {copy.recurrenceLabel}
-                    <select
-                      name="recurrence"
-                      defaultValue="none"
-                      className={`mt-1 ${controlClass}`}
-                    >
-                      <option value="none">{copy.recurrenceNone}</option>
-                      <option value="weekly">{copy.recurrenceWeekly}</option>
-                      <option value="monthly">{copy.recurrenceMonthly}</option>
-                      <option value="quarterly">
-                        {copy.recurrenceQuarterly}
-                      </option>
-                    </select>
-                  </label>
-                  {createError ? (
-                    <p className="text-sm text-[var(--critical)]">
-                      {createError}
-                    </p>
-                  ) : null}
-                  <Button type="submit" disabled={createPending}>
-                    {copy.schedule}
-                  </Button>
-                </form>
-              )}
-            </>
-          ) : null}
-
-          {panel?.kind === "event" && selectedEvent ? (
-            <>
-              <SheetHeader>
-                <SheetTitle>{copy.detailTitle}</SheetTitle>
-              </SheetHeader>
-              <div className="space-y-3">
-                <div>
-                  <p className="font-[family-name:var(--font-sora)] text-lg font-semibold">
-                    {selectedEvent.title}
-                  </p>
-                  <p className="mt-1 text-sm text-[var(--muted-foreground)]">
-                    {selectedEvent.storeName}
-                    {selectedEvent.vendorName
-                      ? ` · ${selectedEvent.vendorName}`
-                      : ""}
-                    {selectedEvent.assetLabel
-                      ? ` · ${selectedEvent.assetLabel}`
-                      : ""}
-                  </p>
-                  <p
-                    className={cn(
-                      "mt-2 text-sm",
-                      isOverdue(selectedEvent.scheduledAt)
-                        ? "text-[var(--critical)]"
-                        : "text-[var(--muted-foreground)]",
-                    )}
-                  >
-                    {parseLocal(
-                      selectedEvent.scheduledAt,
-                    ).toLocaleString(props.dateLocale)}
-                    {isOverdue(selectedEvent.scheduledAt)
-                      ? ` · ${copy.overdue}`
-                      : ""}
-                  </p>
-                </div>
-                <div className="flex flex-wrap items-center gap-2 border-t border-[var(--border)] pt-4">
-                  <RowActionLink
-                    href={`/app/tickets/new?storeId=${encodeURIComponent(selectedEvent.storeId)}`}
-                    label={copy.openTicket}
-                    variant="openTicket"
+                </label>
+                <label className="text-sm">
+                  {copy.timeLabel}
+                  <input
+                    name="scheduledTime"
+                    type="time"
+                    defaultValue="09:00"
+                    className={`mt-1 ${controlClass}`}
                   />
-                  <form
-                    action={async () => {
-                      await completePmEventAction(selectedEvent.id);
-                      setPanel(null);
-                    }}
-                  >
-                    <RowActionSubmit label={copy.done} variant="done" />
-                  </form>
-                  <form
-                    action={async () => {
-                      await cancelPmEventAction(selectedEvent.id);
-                      setPanel(null);
-                    }}
-                  >
-                    <RowActionSubmit label={copy.cancel} variant="cancel" />
-                  </form>
-                </div>
+                </label>
               </div>
-            </>
-          ) : null}
-        </SheetContent>
-      </Sheet>
+              <label className="block text-sm">
+                {copy.recurrenceLabel}
+                <select
+                  name="recurrence"
+                  defaultValue="none"
+                  className={`mt-1 ${controlClass}`}
+                >
+                  <option value="none">{copy.recurrenceNone}</option>
+                  <option value="weekly">{copy.recurrenceWeekly}</option>
+                  <option value="monthly">{copy.recurrenceMonthly}</option>
+                  <option value="quarterly">{copy.recurrenceQuarterly}</option>
+                </select>
+              </label>
+              {createError ? (
+                <p className="text-sm text-[var(--critical)]">{createError}</p>
+              ) : null}
+              <div className="flex justify-end gap-2 pt-1">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={() => setPanel(null)}
+                >
+                  {copy.cancel}
+                </Button>
+                <Button type="submit" disabled={createPending}>
+                  {copy.schedule}
+                </Button>
+              </div>
+            </form>
+          )
+        ) : null}
+
+        {panel?.kind === "event" && selectedEvent ? (
+          <div className="space-y-3">
+            <div>
+              <p className="font-[family-name:var(--font-sora)] text-base font-semibold">
+                {selectedEvent.title}
+              </p>
+              <p className="mt-1 text-sm text-[var(--muted-foreground)]">
+                {selectedEvent.storeName}
+                {selectedEvent.vendorName
+                  ? ` · ${selectedEvent.vendorName}`
+                  : ""}
+                {selectedEvent.assetLabel
+                  ? ` · ${selectedEvent.assetLabel}`
+                  : ""}
+              </p>
+              <p
+                className={cn(
+                  "mt-2 text-sm",
+                  isOverdue(selectedEvent.scheduledAt)
+                    ? "text-[var(--critical)]"
+                    : "text-[var(--muted-foreground)]",
+                )}
+              >
+                {parseLocal(selectedEvent.scheduledAt).toLocaleString(
+                  props.dateLocale,
+                )}
+                {isOverdue(selectedEvent.scheduledAt)
+                  ? ` · ${copy.overdue}`
+                  : ""}
+              </p>
+            </div>
+            <div className="flex flex-wrap items-center gap-2 border-t border-[var(--border)] pt-3">
+              <RowActionLink
+                href={`/app/tickets/new?storeId=${encodeURIComponent(selectedEvent.storeId)}`}
+                label={copy.openTicket}
+                variant="openTicket"
+              />
+              <form
+                action={async () => {
+                  await completePmEventAction(selectedEvent.id);
+                  setPanel(null);
+                }}
+              >
+                <RowActionSubmit label={copy.done} variant="done" />
+              </form>
+              <form
+                action={async () => {
+                  await cancelPmEventAction(selectedEvent.id);
+                  setPanel(null);
+                }}
+              >
+                <RowActionSubmit label={copy.cancel} variant="cancel" />
+              </form>
+            </div>
+          </div>
+        ) : null}
+      </CalendarAnchorDialog>
     </div>
   );
 }
@@ -496,14 +491,14 @@ function EventChip(props: {
   event: PmCalendarEvent;
   overdue: boolean;
   dateLocale: string;
-  onClick: () => void;
+  onClick: (el: HTMLElement) => void;
 }) {
   return (
     <button
       type="button"
       onClick={(e) => {
         e.stopPropagation();
-        props.onClick();
+        props.onClick(e.currentTarget);
       }}
       className={cn(
         "flex w-full min-w-0 items-center gap-1 rounded px-1 py-0.5 text-left text-[11px] leading-tight",
@@ -529,8 +524,8 @@ function MonthView(props: {
   moreLabel: string;
   dateLocale: string;
   isOverdue: (iso: string) => boolean;
-  onOpenDay: (d: Date) => void;
-  onOpenEvent: (id: string) => void;
+  onOpenDay: (d: Date, el: HTMLElement) => void;
+  onOpenEvent: (id: string, el: HTMLElement) => void;
 }) {
   const cells = buildMonthGrid(props.anchor);
   const month = props.anchor.getMonth();
@@ -568,14 +563,28 @@ function MonthView(props: {
             <div
               key={key}
               role="gridcell"
+              tabIndex={0}
+              onClick={(e) => {
+                if ((e.target as HTMLElement).closest("button")) return;
+                props.onOpenDay(day, e.currentTarget);
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  props.onOpenDay(day, e.currentTarget);
+                }
+              }}
               className={cn(
-                "min-h-[6.5rem] border-b border-r border-[var(--border)] p-1.5 last:border-r-0",
+                "min-h-[6.5rem] cursor-pointer border-b border-r border-[var(--border)] p-1.5 last:border-r-0 hover:bg-[var(--muted)]/25",
                 !inMonth && "bg-[var(--muted)]/20",
               )}
             >
               <button
                 type="button"
-                onClick={() => props.onOpenDay(day)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  props.onOpenDay(day, e.currentTarget.closest('[role="gridcell"]') as HTMLElement ?? e.currentTarget);
+                }}
                 className={cn(
                   "mb-1 flex size-7 items-center justify-center rounded-full text-sm tabular hover:bg-[var(--muted)]",
                   !inMonth && "text-[var(--muted-foreground)]",
@@ -599,14 +608,22 @@ function MonthView(props: {
                     event={ev}
                     overdue={props.isOverdue(ev.scheduledAt)}
                     dateLocale={props.dateLocale}
-                    onClick={() => props.onOpenEvent(ev.id)}
+                    onClick={(el) => props.onOpenEvent(ev.id, el)}
                   />
                 ))}
                 {rest > 0 ? (
                   <button
                     type="button"
                     className="w-full px-1 text-left text-[11px] font-medium text-[var(--muted-foreground)] hover:underline"
-                    onClick={() => props.onOpenDay(day)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      props.onOpenDay(
+                        day,
+                        e.currentTarget.closest(
+                          '[role="gridcell"]',
+                        ) as HTMLElement ?? e.currentTarget,
+                      );
+                    }}
                   >
                     {props.moreLabel.replace("{n}", String(rest))}
                   </button>
@@ -627,8 +644,8 @@ function WeekView(props: {
   weekdays: readonly string[];
   dateLocale: string;
   isOverdue: (iso: string) => boolean;
-  onOpenDay: (d: Date) => void;
-  onOpenEvent: (id: string) => void;
+  onOpenDay: (d: Date, el: HTMLElement) => void;
+  onOpenEvent: (id: string, el: HTMLElement) => void;
 }) {
   const days = buildWeekDays(props.anchor);
 
@@ -640,10 +657,20 @@ function WeekView(props: {
           const dayEvents = props.eventsByDay.get(key) ?? [];
           const isToday = sameYmd(day, props.today);
           return (
-            <div key={key} className="min-h-[22rem] p-2">
+            <div
+              key={key}
+              className="min-h-[22rem] cursor-pointer p-2 hover:bg-[var(--muted)]/20"
+              onClick={(e) => {
+                if ((e.target as HTMLElement).closest("button")) return;
+                props.onOpenDay(day, e.currentTarget);
+              }}
+            >
               <button
                 type="button"
-                onClick={() => props.onOpenDay(day)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  props.onOpenDay(day, e.currentTarget.parentElement ?? e.currentTarget);
+                }}
                 className="mb-3 flex w-full flex-col items-center gap-1 rounded-[var(--radius)] px-1 py-2 hover:bg-[var(--muted)]/50"
               >
                 <span className="text-[length:var(--text-caption)] uppercase tracking-wide text-[var(--muted-foreground)]">
@@ -670,7 +697,10 @@ function WeekView(props: {
                     <button
                       key={ev.id}
                       type="button"
-                      onClick={() => props.onOpenEvent(ev.id)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        props.onOpenEvent(ev.id, e.currentTarget);
+                      }}
                       className={cn(
                         "w-full rounded-[var(--radius)] border px-2 py-1.5 text-left text-xs",
                         props.isOverdue(ev.scheduledAt)
@@ -705,10 +735,10 @@ function AgendaView(props: {
   dateLocale: string;
   locale: Locale;
   isOverdue: (iso: string) => boolean;
-  onOpenEvent: (id: string) => void;
+  onOpenEvent: (id: string, el: HTMLElement) => void;
 }) {
   const start = startOfWeekMonday(props.anchor);
-  const end = endOfWeekSunday(addDays(start, 21)); // ~3 weeks window around nav
+  const end = endOfWeekSunday(addDays(start, 21));
   const list = props.events.filter((e) => {
     const t = parseLocal(e.scheduledAt).getTime();
     return t >= start.getTime() && t <= end.getTime();
@@ -740,7 +770,7 @@ function AgendaView(props: {
             ) : null}
             <button
               type="button"
-              onClick={() => props.onOpenEvent(e.id)}
+              onClick={(ev) => props.onOpenEvent(e.id, ev.currentTarget)}
               className="flex w-full items-start gap-3 px-4 py-3 text-left hover:bg-[var(--muted)]/30"
             >
               <span className="w-14 shrink-0 tabular text-sm text-[var(--muted-foreground)]">
