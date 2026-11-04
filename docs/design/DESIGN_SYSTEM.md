@@ -12,7 +12,7 @@
 
 - **Assunzioni:** shell app ≠ landing marketing; Flussi A/C guidano densità e priorità visuali; brand “FacilityFlow” hero su login/marketing, non solo nav.
 - **Ricerca:** shadcn/ui è lo standard de-facto per SaaS Next.js 2025–2026 (copy-in-repo, Tailwind v4, OKLCH, CLI v4); da luglio 2026 Base UI è default su progetti nuovi — FacilityFlow **pinna Radix** (`shadcn init -b radix`) come da STACK. Fonti: [ui.shadcn.com](https://ui.shadcn.com/), [Tailwind v4](https://ui.shadcn.com/docs/tailwind-v4), [Base UI default 2026-07](https://ui.shadcn.com/docs/changelog/2026-07-base-ui-default).
-- **Scelta di design:** slate profondo + ambra segnale + rosso critico SLA su superfici calme; tipografia Sora + IBM Plex Sans; card solo come container di interazione. Alternativa scartata: tema cream/terracotta o purple-indigo (stereotipo AI) e cataloghi Tailwind UI a pagamento.
+- **Scelta di design:** **Cool Teal Facility** (primary teal + mist chrome) + ambra solo SLA + rosso critico; tipografia Sora + IBM Plex Sans; card solo come container di interazione. Alternativa scartata: tema cream/terracotta o purple-indigo (stereotipo AI) e cataloghi Tailwind UI a pagamento.
 - **AI:** no — design system è SoR visuale; nessun assist generativo in MVP.
 - **Rischi:** drift vs Base UI default CLI; mitigazione: documentare `-b radix` in scaffold e SKILLS_MAP.
 
@@ -109,7 +109,7 @@ Allineati a Tailwind v4 / shadcn (`@theme`). Light = default.
 | `slaBreached` | `--critical` | Badge solid + bordo sinistro 3px sulla row |
 | `verified` / ok | `--success` | Badge soft |
 
-**Charts (Tremor o Recharts via shadcn):** palette sequenziale slate → info → signal → critical; mai rainbow marketing.
+**Charts (Tremor o Recharts via shadcn):** palette sequenziale primary → info → signal → critical; mai rainbow marketing.
 
 ---
 
@@ -182,7 +182,7 @@ Vietato: page transition marketing, parallax, confetti, skeleton shimmer aggress
 
 | Pattern prodotto | shadcn / OSS | Note |
 |------------------|--------------|------|
-| Button, Icon button | `Button` | Variant: default=slate, destructive=critical, outline, ghost |
+| Button, Icon button | `Button` | Variant: default=primary (teal), destructive=critical, outline, ghost |
 | Input, Textarea, Select | `Input` `Textarea` `Select` | + react-hook-form + zod |
 | Checkbox / Switch / Radio | rispettivi | |
 | Form field | `Form` + Label + FieldError | Messaggi IT |
@@ -314,7 +314,7 @@ Layout: icona lucide muted + titolo + 1 riga + CTA testo/button. **No card decor
 
 - Brand **FacilityFlow** hero-level (wordmark Sora display + claim 1 riga).
 - Un CTA primario: “Accedi” / “Crea workspace”.
-- Nessuna card in hero; superficie full-bleed soft gradient slate (non purple).
+- Nessuna card in hero; superficie full-bleed soft gradient teal-mist (non purple).
 
 ---
 

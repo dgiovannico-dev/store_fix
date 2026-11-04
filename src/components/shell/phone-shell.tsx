@@ -132,7 +132,7 @@ export function PhoneShell(props: {
                     "flex min-h-11 flex-col items-center justify-center gap-0.5 rounded-[var(--radius)] px-1 py-1.5 text-[10px] font-medium transition-colors",
                     active
                       ? "bg-[var(--sidebar-accent)] text-[var(--sidebar-accent-foreground)]"
-                      : "text-[var(--muted-foreground)] hover:bg-[var(--accent)]",
+                      : "text-[var(--nav-icon)] hover:bg-[var(--accent)] hover:text-[var(--nav-icon-active)]",
                     emphasize && !active && "text-[var(--primary)]",
                     emphasize && "[&_svg]:size-6 [&_svg]:stroke-[2.25]",
                   )}

@@ -74,7 +74,7 @@ export default async function OnboardingPage() {
       />
 
       {snap.skippedAt ? (
-        <div className="rounded-[var(--radius)] border border-[var(--signal)] bg-[oklch(0.96_0.04_85)] px-4 py-3 text-sm">
+        <div className="rounded-[var(--radius)] border border-[var(--signal)] bg-[var(--signal-soft)] px-4 py-3 text-sm">
           {copy.skippedBanner}{" "}
           <form action={resumeOnboardingAction} className="inline">
             <button

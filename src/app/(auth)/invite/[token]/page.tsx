@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 import { acceptInviteAction } from "@/app/actions/invite";
+import { AuthMistWash } from "@/components/auth/auth-mist-wash";
 import { StatusPanel } from "@/components/ui/status-panel";
 import { useLocale, useMessages } from "@/i18n/locale-context";
 
@@ -16,7 +17,9 @@ export default function AcceptInvitePage() {
   const locale = useLocale();
 
   return (
-    <main className="mx-auto flex min-h-dvh max-w-md flex-col justify-center gap-6 px-6">
+    <main className="relative flex min-h-dvh flex-col items-center justify-center overflow-hidden px-6 py-16">
+      <AuthMistWash />
+      <div className="relative z-10 mx-auto flex w-full max-w-md flex-col gap-6">
       <h1 className="font-[family-name:var(--font-sora)] text-3xl font-semibold text-[var(--primary)]">
         FacilityFlow
       </h1>
@@ -66,9 +69,13 @@ export default function AcceptInvitePage() {
           {pending ? msg.accepting : msg.acceptInvite}
         </button>
       </form>
-      <Link href="/login" className="text-sm text-[var(--muted-foreground)]">
+      <Link
+        href="/login"
+        className="text-sm font-medium text-[var(--primary)] underline-offset-4 hover:underline"
+      >
         {msg.inviteHaveAccount}
       </Link>
+      </div>
     </main>
   );
 }

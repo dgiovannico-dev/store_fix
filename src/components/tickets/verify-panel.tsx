@@ -69,7 +69,7 @@ export function VerifyPanel({
             required
             minLength={5}
             rows={2}
-            className="mt-1 w-full rounded-[var(--radius)] border border-[var(--border)] bg-white px-3 py-2 text-sm"
+            className="mt-1 w-full rounded-[var(--radius)] border border-[var(--border)] bg-[var(--card)] px-3 py-2 text-sm"
           />
         </label>
         {rejectState.error ? (

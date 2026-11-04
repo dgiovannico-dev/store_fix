@@ -94,7 +94,7 @@ export default async function RfqDetailPage({
               </form>
             ) : null}
             {request.awardedBidId === b.id ? (
-              <span className="text-xs font-medium text-emerald-700">
+              <span className="text-xs font-medium text-[var(--success)]">
                 {msg.rfq.awarded}
               </span>
             ) : null}
