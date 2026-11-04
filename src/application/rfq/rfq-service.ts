@@ -10,6 +10,7 @@ import { z } from "zod";
 import { RbacAction } from "@/domain/rbac/actions";
 import { assertCan, assertCanMutate, ForbiddenError } from "@/domain/rbac/guards";
 import { canAwardRfqBid, canSubmitRfqBid } from "@/domain/rfq/rules";
+import { assertTransition } from "@/domain/ticket/fsm";
 import { parseQuoteAmount } from "@/domain/ticket/quote";
 import { TicketEventType } from "@/domain/ticket/event-types";
 import { getTenantI18nPrefs } from "@/application/tenant/i18n-prefs";
@@ -323,13 +324,31 @@ export async function awardQuoteBid(input: {
   }
 
   const amount = Number(bid.amountEur);
+  try {
   await prisma.$transaction(async (tx) => {
-    await tx.quoteRequest.update({
-      where: { id: request.id },
+    const awarded = await tx.quoteRequest.updateMany({
+      where: {
+        id: request.id,
+        tenantId: input.tenantId,
+        status: QuoteRequestStatus.open,
+        deletedAt: null,
+      },
       data: {
         status: QuoteRequestStatus.awarded,
         awardedBidId: bid.id,
       },
+    });
+    if (awarded.count === 0) {
+      throw new Error("rfq_already_awarded");
+    }
+    await tx.quoteBid.updateMany({
+      where: {
+        quoteRequestId: request.id,
+        tenantId: input.tenantId,
+        id: { not: bid.id },
+        status: { not: QuoteBidStatus.withdrawn },
+      },
+      data: { status: QuoteBidStatus.withdrawn },
     });
 
     if (request.ticketId) {
@@ -341,11 +360,23 @@ export async function awardQuoteBid(input: {
         },
       });
       if (ticket) {
-        const nextStatus =
-          ticket.status === TicketStatus.open ||
-          ticket.status === TicketStatus.triaged
-            ? TicketStatus.assigned
-            : ticket.status;
+        let nextStatus = ticket.status;
+        if (ticket.status === TicketStatus.open) {
+          assertTransition(TicketStatus.open, TicketStatus.triaged, input.role);
+          assertTransition(
+            TicketStatus.triaged,
+            TicketStatus.assigned,
+            input.role,
+          );
+          nextStatus = TicketStatus.assigned;
+        } else if (ticket.status === TicketStatus.triaged) {
+          assertTransition(
+            TicketStatus.triaged,
+            TicketStatus.assigned,
+            input.role,
+          );
+          nextStatus = TicketStatus.assigned;
+        }
         await tx.ticket.update({
           where: { id: ticket.id },
           data: {
@@ -354,6 +385,9 @@ export async function awardQuoteBid(input: {
             quoteStatus: QuoteStatus.accepted,
             status: nextStatus,
             assignedAt: ticket.assignedAt ?? new Date(),
+            ...(ticket.status === TicketStatus.open
+              ? { triagedAt: new Date() }
+              : {}),
           },
         });
         await appendTicketEvent(
@@ -377,6 +411,13 @@ export async function awardQuoteBid(input: {
       }
     }
   });
+
+  } catch (e) {
+    if (e instanceof Error && e.message === "rfq_already_awarded") {
+      return { ok: false as const, code: "rfqAlreadyAwarded" };
+    }
+    throw e;
+  }
 
   return { ok: true as const };
 }

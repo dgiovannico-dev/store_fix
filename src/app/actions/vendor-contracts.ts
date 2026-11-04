@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import {
   createVendorContract,
   softDeleteVendorContract,
-} from "@/domain/vendor-contracts/vendor-contract-service";
+} from "@/application/vendor-contracts/vendor-contract-service";
 import { actionError } from "@/i18n/action-errors";
 import { actionResultError } from "@/i18n/domain-errors";
 import { sessionTenant } from "@/lib/auth/session-tenant";

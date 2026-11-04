@@ -2,10 +2,10 @@ import { Role, TicketPriority, TicketStatus } from "@prisma/client";
 import { afterAll, describe, expect, it } from "vitest";
 import { createTicket } from "@/application/tickets/create-ticket";
 import { ensureDefaultSlaPolicies } from "@/domain/sla/defaults";
-import { createStore } from "@/domain/stores/store-service";
+import { createStore } from "@/application/stores/store-service";
 import { signupHqOwner } from "@/domain/tenancy/signup";
 import { ForbiddenError } from "@/domain/rbac/guards";
-import { createVendor } from "@/domain/vendors/vendor-service";
+import { createVendor } from "@/application/vendors/vendor-service";
 import { prisma } from "@/infrastructure/db/prisma";
 import { cleanupTenant } from "@/test-utils/cleanup-tenant";
 import {

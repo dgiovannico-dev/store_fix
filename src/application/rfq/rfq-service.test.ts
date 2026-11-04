@@ -1,6 +1,6 @@
 import { QuoteStatus, Role, TicketPriority } from "@prisma/client";
 import { afterAll, describe, expect, it } from "vitest";
-import { createStore } from "@/domain/stores/store-service";
+import { createStore } from "@/application/stores/store-service";
 import { createTicket } from "@/application/tickets/create-ticket";
 import { signupHqOwner } from "@/domain/tenancy/signup";
 import { prisma } from "@/infrastructure/db/prisma";

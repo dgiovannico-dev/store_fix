@@ -5,8 +5,8 @@ import {
   createPmEvent,
   markPmEventDone,
   softDeletePmEvent,
-} from "@/domain/pm/pm-event-service";
-import { createPmSeries } from "@/domain/pm/pm-series-service";
+} from "@/application/pm/pm-event-service";
+import { createPmSeries } from "@/application/pm/pm-series-service";
 import { actionError } from "@/i18n/action-errors";
 import { actionResultError } from "@/i18n/domain-errors";
 import { sessionTenant } from "@/lib/auth/session-tenant";

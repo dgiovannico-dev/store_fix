@@ -2,16 +2,9 @@ import { Role, TicketStatus, type Membership } from "@prisma/client";
 import { can } from "@/domain/rbac/can";
 import { RbacAction } from "@/domain/rbac/actions";
 import { ForbiddenError } from "@/domain/rbac/guards";
+import { OPEN_TICKET_STATUSES } from "@/domain/ticket/status";
 import { prisma } from "@/infrastructure/db/prisma";
 import { requireTenantId } from "@/infrastructure/db/tenant-scope";
-
-const OPEN_STATUSES: TicketStatus[] = [
-  TicketStatus.open,
-  TicketStatus.triaged,
-  TicketStatus.assigned,
-  TicketStatus.in_progress,
-  TicketStatus.waiting_parts,
-];
 
 export type HqOverview = {
   rangeDays: number;
@@ -55,7 +48,7 @@ export async function getHqOverview(input: {
       tenantId: input.tenantId,
       deletedAt: null,
       OR: [
-        { status: { in: OPEN_STATUSES } },
+        { status: { in: OPEN_TICKET_STATUSES } },
         { verifiedAt: { gte: from } },
         { doneAt: { gte: from } },
         { slaBreachedAt: { not: null } },
@@ -64,7 +57,7 @@ export async function getHqOverview(input: {
     include: { store: { select: { id: true, name: true } } },
   });
 
-  const open = tickets.filter((t) => OPEN_STATUSES.includes(t.status));
+  const open = tickets.filter((t) => OPEN_TICKET_STATUSES.includes(t.status));
   const breached = open.filter((t) => t.slaBreachedAt != null);
   const atRisk = open.filter((t) => {
     if (t.slaBreachedAt || !t.slaDueAt) return false;
@@ -117,7 +110,7 @@ export async function getHqOverview(input: {
       breachedCount: 0,
       costs: 0,
     };
-    if (OPEN_STATUSES.includes(t.status)) {
+    if (OPEN_TICKET_STATUSES.includes(t.status)) {
       cur.openCount += 1;
       if (t.slaBreachedAt) cur.breachedCount += 1;
     }

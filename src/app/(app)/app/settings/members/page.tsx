@@ -7,10 +7,10 @@ import {
 } from "@/app/actions/memberships";
 import { RbacAction } from "@/domain/rbac/actions";
 import { can, canMutate } from "@/domain/rbac/can";
-import { listMemberships } from "@/domain/memberships/membership-service";
+import { listMemberships } from "@/application/memberships/membership-service";
 import { roleLabel } from "@/domain/rbac/role-labels";
-import { listStores } from "@/domain/stores/store-service";
-import { listVendors } from "@/domain/vendors/vendor-service";
+import { listStores } from "@/application/stores/store-service";
+import { listVendors } from "@/application/vendors/vendor-service";
 import { getTenantI18nPrefs } from "@/application/tenant/i18n-prefs";
 import { tenantMessages } from "@/i18n/tenant-messages";
 import { PageFrame } from "@/components/layout/page-frame";

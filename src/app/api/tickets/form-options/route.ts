@@ -1,8 +1,6 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
-import { listAssets } from "@/domain/assets/asset-service";
-import { getActiveMembership } from "@/domain/memberships/membership-service";
-import { listStores } from "@/domain/stores/store-service";
+import { loadTicketFormOptions } from "@/application/tickets/form-options";
 import { rejectIfRateLimited } from "@/infrastructure/rate-limit-guard";
 import { RATE_LIMIT } from "@/infrastructure/rate-limit-policies";
 import { actionError } from "@/i18n/action-errors";
@@ -19,25 +17,17 @@ export async function GET() {
   );
   if (limited) return limited;
 
-  const membership = await getActiveMembership(
-    session.user.id,
-    session.tenantId,
-  );
-  if (!membership) {
-    return NextResponse.json({ error: await actionError("membershipMissing") }, { status: 403 });
+  const result = await loadTicketFormOptions({
+    userId: session.user.id,
+    tenantId: session.tenantId,
+    role: session.role,
+  });
+  if ("error" in result) {
+    return NextResponse.json(
+      { error: await actionError("membershipMissing") },
+      { status: 403 },
+    );
   }
 
-  const [stores, assets] = await Promise.all([
-    listStores(session.tenantId, membership),
-    listAssets({ tenantId: session.tenantId, membership }),
-  ]);
-
-  return NextResponse.json({
-    stores: stores.map((s) => ({ id: s.id, name: s.name })),
-    assets: assets.map((a) => ({
-      id: a.id,
-      label: a.label,
-      storeId: a.storeId,
-    })),
-  });
+  return NextResponse.json(result);
 }

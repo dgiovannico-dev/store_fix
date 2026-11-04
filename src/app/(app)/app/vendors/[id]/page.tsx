@@ -5,12 +5,12 @@ import { updateVendorAction } from "@/app/actions/vendors";
 import { getVendorScorecard } from "@/application/dashboard/vendor-scorecard";
 import { RbacAction } from "@/domain/rbac/actions";
 import { can, canMutate } from "@/domain/rbac/can";
-import { listStores } from "@/domain/stores/store-service";
+import { listStores } from "@/application/stores/store-service";
 import {
   canReadVendorContracts,
   listVendorContracts,
-} from "@/domain/vendor-contracts/vendor-contract-service";
-import { getVendor } from "@/domain/vendors/vendor-service";
+} from "@/application/vendor-contracts/vendor-contract-service";
+import { getVendor } from "@/application/vendors/vendor-service";
 import { getTenantI18nPrefs } from "@/application/tenant/i18n-prefs";
 import { PageFrame } from "@/components/layout/page-frame";
 import { MultiCheckPicker } from "@/components/ui/multi-check-picker";

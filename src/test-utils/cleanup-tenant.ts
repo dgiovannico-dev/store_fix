@@ -20,5 +20,18 @@ export async function cleanupTenant(tenantId: string): Promise<void> {
   await prisma.vendor.deleteMany({ where: { tenantId } });
   await prisma.store.deleteMany({ where: { tenantId } });
   await prisma.membership.deleteMany({ where: { tenantId } });
+  // F3-09 / F7 — outbox + AI (R0 safety net)
+  await prisma.emailOutbox.deleteMany({ where: { tenantId } });
+  await prisma.aiInvocation.deleteMany({ where: { tenantId } });
+  await prisma.tenantAiConfig.deleteMany({ where: { tenantId } }).catch(() => {});
   await prisma.tenant.delete({ where: { id: tenantId } }).catch(() => {});
+}
+
+/** Cleanup outbox rows created without tenantId (auth/invite keys in unit tests). */
+export async function cleanupEmailOutboxByKeyPrefix(
+  prefix: string,
+): Promise<void> {
+  await prisma.emailOutbox.deleteMany({
+    where: { idempotencyKey: { startsWith: prefix } },
+  });
 }

@@ -2,10 +2,10 @@ import {
   suggestVendorHeuristic,
   type VendorSuggestion,
 } from "@/domain/ai/suggest-vendor";
-import { getActiveMembership } from "@/domain/memberships/membership-service";
+import { getActiveMembership } from "@/application/memberships/membership-service";
 import { canAccessStore } from "@/domain/rbac/store-scope";
 import { ForbiddenError } from "@/domain/rbac/guards";
-import { listVendors } from "@/domain/vendors/vendor-service";
+import { listVendors } from "@/application/vendors/vendor-service";
 import { requireTenantId } from "@/infrastructure/db/tenant-scope";
 
 export async function suggestTicketVendor(input: {

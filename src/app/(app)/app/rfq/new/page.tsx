@@ -7,7 +7,7 @@ import { MultiCheckPicker } from "@/components/ui/multi-check-picker";
 import { StatusPanel } from "@/components/ui/status-panel";
 import { canMutate } from "@/domain/rbac/can";
 import { RbacAction } from "@/domain/rbac/actions";
-import { listVendors } from "@/domain/vendors/vendor-service";
+import { listVendors } from "@/application/vendors/vendor-service";
 import { tenantMessages } from "@/i18n/tenant-messages";
 
 export default async function NewRfqPage({

@@ -10,7 +10,7 @@ import { PageFrame } from "@/components/layout/page-frame";
 import { TicketsDataTable } from "@/components/tables/tickets-data-table";
 import { Button } from "@/components/ui/button";
 import { StatusPanel } from "@/components/ui/status-panel";
-import { getActiveMembership } from "@/domain/memberships/membership-service";
+import { getActiveMembership } from "@/application/memberships/membership-service";
 import {
   intakeCategoryLabel,
   intakePriorityLabel,

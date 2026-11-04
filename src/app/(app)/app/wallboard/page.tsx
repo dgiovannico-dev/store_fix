@@ -1,48 +1,17 @@
 import { redirect } from "next/navigation";
-import { TicketStatus } from "@prisma/client";
 import { auth } from "@/auth";
+import { listWallboardTickets } from "@/application/dashboard/wallboard-query";
 import { WallboardClient } from "@/components/wallboard/wallboard-client";
-import { prisma } from "@/infrastructure/db/prisma";
+import { can } from "@/domain/rbac/can";
+import { RbacAction } from "@/domain/rbac/actions";
 
-/** F6-09 — TV mode aperti + breach. */
+/** F6-09 — TV mode aperti + breach (HQ only). */
 export default async function WallboardPage() {
   const session = await auth();
-  if (!session?.tenantId) redirect("/login");
+  if (!session?.tenantId || !session.role) redirect("/login");
+  if (!can(session.role, RbacAction.dashboardHq)) redirect("/app/tickets");
 
-  const tickets = await prisma.ticket.findMany({
-    where: {
-      tenantId: session.tenantId,
-      deletedAt: null,
-      OR: [
-        {
-          status: {
-            in: [
-              TicketStatus.open,
-              TicketStatus.assigned,
-              TicketStatus.in_progress,
-              TicketStatus.waiting_parts,
-            ],
-          },
-        },
-        { slaBreachedAt: { not: null }, status: { not: TicketStatus.verified } },
-      ],
-    },
-    include: { store: { select: { name: true } } },
-    orderBy: [{ slaBreachedAt: "desc" }, { openedAt: "asc" }],
-    take: 80,
-  });
+  const tickets = await listWallboardTickets(session.tenantId);
 
-  return (
-    <WallboardClient
-      tickets={tickets.map((t) => ({
-        id: t.id,
-        storeName: t.store.name,
-        category: t.category,
-        priority: t.priority,
-        status: t.status,
-        breached: Boolean(t.slaBreachedAt),
-        openedAt: t.openedAt.toISOString(),
-      }))}
-    />
-  );
+  return <WallboardClient tickets={tickets} />;
 }

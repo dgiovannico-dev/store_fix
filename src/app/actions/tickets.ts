@@ -10,7 +10,7 @@ import {
   cancelTicket,
   triageTicket,
 } from "@/application/tickets/transition-ticket";
-import { getActiveMembership } from "@/domain/memberships/membership-service";
+import { getActiveMembership } from "@/application/memberships/membership-service";
 import { rateLimitedRetryMessage } from "@/infrastructure/rate-limit-action";
 import { RATE_LIMIT } from "@/infrastructure/rate-limit-policies";
 import { actionError } from "@/i18n/action-errors";

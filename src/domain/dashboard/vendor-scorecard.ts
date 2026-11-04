@@ -1,12 +1,5 @@
 import { TicketStatus } from "@prisma/client";
-
-const OPEN_STATUSES: TicketStatus[] = [
-  TicketStatus.open,
-  TicketStatus.triaged,
-  TicketStatus.assigned,
-  TicketStatus.in_progress,
-  TicketStatus.waiting_parts,
-];
+import { OPEN_TICKET_STATUSES } from "@/domain/ticket/status";
 
 const CLOSED_STATUSES: TicketStatus[] = [
   TicketStatus.done,
@@ -75,7 +68,7 @@ export function buildVendorScorecardRows(input: {
       openAssignedCount: 0,
     };
 
-    if (OPEN_STATUSES.includes(t.status)) {
+    if (OPEN_TICKET_STATUSES.includes(t.status)) {
       cur.openAssignedCount += 1;
     }
 

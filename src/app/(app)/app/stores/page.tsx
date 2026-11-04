@@ -10,7 +10,7 @@ import { RowActionLink } from "@/components/ui/row-actions";
 import { StatusPanel } from "@/components/ui/status-panel";
 import { canMutate } from "@/domain/rbac/can";
 import { RbacAction } from "@/domain/rbac/actions";
-import { listStores } from "@/domain/stores/store-service";
+import { listStores } from "@/application/stores/store-service";
 import { tenantMessages } from "@/i18n/tenant-messages";
 
 export default async function StoresPage() {

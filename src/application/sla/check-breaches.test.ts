@@ -2,7 +2,7 @@ import { Role, TicketPriority, TicketStatus } from "@prisma/client";
 import { afterAll, describe, expect, it } from "vitest";
 import { createTicket } from "@/application/tickets/create-ticket";
 import { ensureDefaultSlaPolicies } from "@/domain/sla/defaults";
-import { createStore } from "@/domain/stores/store-service";
+import { createStore } from "@/application/stores/store-service";
 import { signupHqOwner } from "@/domain/tenancy/signup";
 import { NotificationType } from "@/domain/notification/types";
 import { prisma } from "@/infrastructure/db/prisma";
@@ -32,8 +32,8 @@ describe("checkSlaBreaches", () => {
       password: "TestPass123!",
       workspaceName: `Br ${stamp}`,
     });
-    expect(signup.ok).toBe(true);
-    if (!signup.ok) return;
+    expect(signup).toMatchObject({ ok: true });
+    if (!signup.ok) throw new Error("signup failed");
     tenantId = signup.tenantId;
     await ensureDefaultSlaPolicies(prisma, tenantId);
 
@@ -42,8 +42,8 @@ describe("checkSlaBreaches", () => {
       role: Role.owner,
       data: { name: "PV Br", timezone: "Europe/Rome" },
     });
-    expect(store.ok).toBe(true);
-    if (!store.ok) return;
+    expect(store).toMatchObject({ ok: true });
+    if (!store.ok) throw new Error("createStore failed");
 
     const created = await createTicket({
       tenantId,
@@ -61,8 +61,8 @@ describe("checkSlaBreaches", () => {
         description: "Ticket per breach SLA test",
       },
     });
-    expect(created.ok).toBe(true);
-    if (!created.ok) return;
+    expect(created).toMatchObject({ ok: true });
+    if (!created.ok) throw new Error("createTicket failed");
 
     await prisma.ticket.update({
       where: { id: created.ticket.id },
@@ -79,6 +79,7 @@ describe("checkSlaBreaches", () => {
       where: { id: created.ticket.id },
     });
     expect(row.slaBreachedAt).toBeTruthy();
+    const stampedAt = row.slaBreachedAt!.getTime();
 
     const notifs = await prisma.notification.count({
       where: {
@@ -89,7 +90,20 @@ describe("checkSlaBreaches", () => {
     });
     expect(notifs).toBeGreaterThan(0);
 
-    const second = await checkSlaBreaches();
-    expect(second.breached).toBe(0);
+    // Idempotency is per-ticket (global breached count may include siblings)
+    await checkSlaBreaches();
+    const row2 = await prisma.ticket.findFirstOrThrow({
+      where: { id: created.ticket.id },
+    });
+    expect(row2.slaBreachedAt!.getTime()).toBe(stampedAt);
+    const notifs2 = await prisma.notification.count({
+      where: {
+        tenantId,
+        ticketId: created.ticket.id,
+        type: NotificationType.ticketBreached,
+      },
+    });
+    expect(notifs2).toBe(notifs);
   });
 });
+

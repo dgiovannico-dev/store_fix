@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
 import { LogOut } from "lucide-react";
 import type { ReactNode } from "react";
@@ -10,12 +11,17 @@ import {
 } from "@/components/layout/app-breadcrumbs";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import {
-  ProductTourHost,
-  startProductTour,
-} from "@/features/product-tour/tour-controller";
+import { startProductTour } from "@/features/product-tour/tour-controller";
 import type { NavItem } from "./nav-config";
 import { NavIcon } from "./nav-icons";
+
+const ProductTourHost = dynamic(
+  () =>
+    import("@/features/product-tour/tour-controller").then(
+      (m) => m.ProductTourHost,
+    ),
+  { ssr: false },
+);
 
 function tourAttrForHref(href: string): string | undefined {
   if (href.includes("/tickets/new")) return "nav.newTicket";

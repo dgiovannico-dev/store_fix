@@ -1,6 +1,6 @@
 import { afterAll, describe, expect, it } from "vitest";
 import { ensureDefaultSlaPolicies } from "@/domain/sla/defaults";
-import { createStore } from "@/domain/stores/store-service";
+import { createStore } from "@/application/stores/store-service";
 import { Role } from "@prisma/client";
 import { signupHqOwner } from "@/domain/tenancy/signup";
 import { prisma } from "@/infrastructure/db/prisma";

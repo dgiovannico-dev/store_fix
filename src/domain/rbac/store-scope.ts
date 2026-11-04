@@ -7,12 +7,17 @@ const HQ_ROLES: Role[] = [
   Role.viewer_finance,
 ];
 
-/** HQ / empty storeIds = all stores del tenant. */
-export function isHqAllStores(membership: Pick<Membership, "role" | "storeIds">): boolean {
-  if (HQ_ROLES.includes(membership.role)) return true;
-  return membership.storeIds.length === 0 && membership.role !== Role.vendor;
+/** Solo ruoli HQ vedono tutti gli store del tenant. */
+export function isHqAllStores(
+  membership: Pick<Membership, "role" | "storeIds">,
+): boolean {
+  return HQ_ROLES.includes(membership.role);
 }
 
+/**
+ * Scope store: HQ → all; vendor → none; store role senza storeIds → none
+ * (non più "all" — anti-IDOR R1.2).
+ */
 export function scopedStoreIds(
   membership: Pick<Membership, "role" | "storeIds" | "deletedAt">,
 ): string[] | "all" | "none" {

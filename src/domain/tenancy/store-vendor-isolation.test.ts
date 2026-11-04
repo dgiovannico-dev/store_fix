@@ -1,13 +1,13 @@
 import { Role } from "@prisma/client";
 import { afterAll, describe, expect, it } from "vitest";
-import { createStore, listStores, updateStore } from "@/domain/stores/store-service";
+import { createStore, listStores, updateStore } from "@/application/stores/store-service";
 import {
   createVendor,
   getVendor,
   listVendors,
   softDeleteVendor,
   updateVendor,
-} from "@/domain/vendors/vendor-service";
+} from "@/application/vendors/vendor-service";
 import { prisma } from "@/infrastructure/db/prisma";
 import { signupHqOwner } from "./signup";
 import { cleanupTenant } from "@/test-utils/cleanup-tenant";

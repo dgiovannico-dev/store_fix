@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { requestAttachmentPresign } from "@/application/attachments/request-presign";
-import { getActiveMembership } from "@/domain/memberships/membership-service";
+import { getActiveMembership } from "@/application/memberships/membership-service";
 import { ForbiddenError } from "@/domain/rbac/guards";
 import { rejectIfRateLimited } from "@/infrastructure/rate-limit-guard";
 import { RATE_LIMIT } from "@/infrastructure/rate-limit-policies";
