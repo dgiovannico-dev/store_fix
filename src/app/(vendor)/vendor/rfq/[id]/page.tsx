@@ -10,7 +10,6 @@ import { rfqRequestStatusLabel } from "@/domain/rfq/status-labels";
 import { formatMoney, withCurrency } from "@/i18n/format";
 import { tenantMessages } from "@/i18n/tenant-messages";
 import { prisma } from "@/infrastructure/db/prisma";
-
 export default async function VendorRfqDetailPage({
   params,
 }: {
@@ -52,7 +51,7 @@ export default async function VendorRfqDetailPage({
   if (!bid) notFound();
 
   return (
-    <main className="mx-auto max-w-lg px-4 py-10 sm:px-6">
+    <main className="px-4 py-6 pb-8">
       <p className="text-sm">
         <Link
           href="/vendor/rfq"
@@ -61,7 +60,7 @@ export default async function VendorRfqDetailPage({
           {msg.rfq.back}
         </Link>
       </p>
-      <h1 className="mt-2 font-[family-name:var(--font-sora)] text-2xl font-semibold text-[var(--primary)]">
+      <h1 className="mt-2 font-[family-name:var(--font-sora)] text-xl font-semibold text-[var(--primary)]">
         {request.title}
       </h1>
       <p className="mt-1 text-sm text-[var(--muted-foreground)]">
@@ -99,7 +98,7 @@ export default async function VendorRfqDetailPage({
           />
           <button
             type="submit"
-            className="rounded-[var(--radius)] bg-[var(--primary)] px-4 py-2 text-sm font-medium text-[var(--primary-foreground)]"
+            className="min-h-11 w-full rounded-[var(--radius)] bg-[var(--primary)] px-4 py-3 text-base font-medium text-[var(--primary-foreground)]"
           >
             {bid.status === "submitted" ? msg.rfq.updateBid : msg.rfq.sendBid}
           </button>

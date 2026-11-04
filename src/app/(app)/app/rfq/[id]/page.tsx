@@ -12,6 +12,7 @@ import {
 } from "@/domain/rfq/status-labels";
 import { formatMoney } from "@/i18n/format";
 import { tenantMessages } from "@/i18n/tenant-messages";
+import { PageFrame } from "@/components/layout/page-frame";
 
 export default async function RfqDetailPage({
   params,
@@ -35,7 +36,7 @@ export default async function RfqDetailPage({
   if (!request) notFound();
 
   return (
-    <main className="mx-auto max-w-3xl px-4 py-10 sm:px-6">
+    <PageFrame>
       <p className="text-sm">
         <Link href="/app/rfq" className="text-[var(--primary)] hover:underline">
           {msg.rfq.back}
@@ -104,6 +105,6 @@ export default async function RfqDetailPage({
           </li>
         ))}
       </ul>
-    </main>
+    </PageFrame>
   );
 }

@@ -626,6 +626,7 @@ export const it = {
     offers: "Offerte",
     invitesMeta: "{n} invitati",
     submittedMeta: "{n} offerte",
+    colMin: "Min",
     award: "Aggiudica",
     awarded: "Aggiudicata",
     ticketLink: "ticket",
@@ -682,6 +683,8 @@ export const it = {
     membersLink: "Membri",
     emptyTitle: "Nessun evento",
     emptyBody: "Le modifiche a ruoli e membership appariranno qui.",
+    colEvent: "Evento",
+    colWhen: "Quando",
   },
   ticketsNew: {
     title: "Nuovo ticket",

@@ -1,15 +1,21 @@
 import Link from "next/link";
 import { headers } from "next/headers";
 import { requestPasswordReset } from "@/domain/auth/password-reset";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { requestMessages } from "@/i18n/request-locale";
 
 export default async function ForgotPasswordPage() {
   const msg = (await requestMessages()).auth;
 
   return (
-    <main className="relative flex min-h-dvh flex-col items-center justify-center px-6 py-16">
-      <div className="w-full max-w-md space-y-6">
-        <h1 className="font-[family-name:var(--font-sora)] text-3xl font-semibold text-[var(--primary)]">
+    <main className="relative flex min-h-dvh flex-col items-center justify-center overflow-hidden px-6 py-16">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_30%_20%,oklch(0.92_0.03_75/0.55),transparent_50%),linear-gradient(165deg,oklch(0.97_0.01_95),oklch(0.94_0.015_250))]"
+      />
+      <div className="relative z-10 w-full max-w-md space-y-6">
+        <h1 className="font-[family-name:var(--font-sora)] text-4xl font-semibold text-[var(--primary)]">
           FacilityFlow
         </h1>
         <p className="text-[var(--muted-foreground)]">{msg.forgotHint}</p>
@@ -23,19 +29,16 @@ export default async function ForgotPasswordPage() {
             );
           }}
         >
-          <input
+          <Input
             name="email"
             type="email"
             required
             placeholder={msg.email}
-            className="w-full rounded-[var(--radius)] border border-[var(--border)] bg-white px-3 py-2.5"
+            autoComplete="email"
           />
-          <button
-            type="submit"
-            className="w-full rounded-[var(--radius)] bg-[var(--primary)] px-4 py-3 font-medium text-[var(--primary-foreground)]"
-          >
+          <Button type="submit" size="lg" className="w-full">
             {msg.sendLink}
-          </button>
+          </Button>
         </form>
         <Link
           href="/login"

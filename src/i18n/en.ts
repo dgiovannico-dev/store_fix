@@ -624,6 +624,7 @@ export const en = {
     offers: "Bids",
     invitesMeta: "{n} invited",
     submittedMeta: "{n} bids",
+    colMin: "Min",
     award: "Award",
     awarded: "Awarded",
     ticketLink: "ticket",
@@ -680,6 +681,8 @@ export const en = {
     membersLink: "Members",
     emptyTitle: "No events",
     emptyBody: "Role and membership changes will appear here.",
+    colEvent: "Event",
+    colWhen: "When",
   },
   ticketsNew: {
     title: "New ticket",

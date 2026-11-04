@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useActionState } from "react";
 import { signupAction, type SignupActionState } from "@/app/actions/signup";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { StatusPanel } from "@/components/ui/status-panel";
 import { useLocale, useMessages } from "@/i18n/locale-context";
 
@@ -21,9 +23,9 @@ export default function RegisterPage() {
       />
 
       <div className="relative z-10 w-full max-w-md">
-        <p className="font-[family-name:var(--font-sora)] text-4xl font-semibold tracking-tight text-[var(--primary)] sm:text-5xl">
+        <h1 className="font-[family-name:var(--font-sora)] text-4xl font-semibold tracking-tight text-[var(--primary)] sm:text-5xl">
           FacilityFlow
-        </p>
+        </h1>
         <p className="mt-3 text-[var(--muted-foreground)]">{msg.registerHint}</p>
 
         <form action={formAction} className="mt-10 space-y-4">
@@ -57,13 +59,9 @@ export default function RegisterPage() {
             <StatusPanel kind="error" title={state.error} locale={locale} />
           ) : null}
 
-          <button
-            type="submit"
-            disabled={pending}
-            className="w-full rounded-[var(--radius)] bg-[var(--primary)] px-4 py-3 text-base font-medium text-[var(--primary-foreground)] transition hover:opacity-90 disabled:opacity-60"
-          >
+          <Button type="submit" size="lg" className="w-full" disabled={pending}>
             {pending ? msg.creating : msg.createWorkspace}
-          </button>
+          </Button>
         </form>
 
         <p className="mt-6 text-sm text-[var(--muted-foreground)]">
@@ -98,7 +96,7 @@ function Field(props: {
       >
         {props.label}
       </label>
-      <input
+      <Input
         id={props.id}
         name={props.name}
         type={props.type ?? "text"}
@@ -106,7 +104,6 @@ function Field(props: {
         autoComplete={props.autoComplete}
         minLength={props.minLength}
         required={props.required}
-        className="w-full rounded-[var(--radius)] border border-[var(--border)] bg-white px-3 py-2.5 text-base outline-none ring-[var(--ring)] focus:ring-2"
       />
     </div>
   );

@@ -14,15 +14,19 @@ import {
 } from "@/domain/vendor-contracts/vendor-contract-service";
 import { listVendors } from "@/domain/vendors/vendor-service";
 import { getTenantI18nPrefs } from "@/application/tenant/i18n-prefs";
+import { PageFrame } from "@/components/layout/page-frame";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { StatusPanel } from "@/components/ui/status-panel";
 import { formatMoney, withCurrency } from "@/i18n/format";
+import { controlClass, tableHeadClass, tableRowClass } from "@/lib/ui-classes";
 import { tenantMessages } from "@/i18n/tenant-messages";
 
 function expiryTone(endsOn: Date, now: Date) {
   if (endsOn.getTime() < now.getTime()) return "text-[var(--critical)]";
   const days =
     (endsOn.getTime() - now.getTime()) / (1000 * 60 * 60 * 24);
-  if (days <= 60) return "text-amber-700";
+  if (days <= 60) return "text-[var(--signal-foreground)]";
   return "text-[var(--muted-foreground)]";
 }
 
@@ -55,7 +59,7 @@ export default async function ContrattiPage({ searchParams }: Props) {
   const now = new Date();
 
   return (
-    <main className="mx-auto max-w-3xl px-4 py-10 sm:px-6">
+    <PageFrame>
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <h1 className="font-[family-name:var(--font-sora)] text-2xl font-semibold text-[var(--primary)]">
@@ -65,12 +69,11 @@ export default async function ContrattiPage({ searchParams }: Props) {
             {showAll ? msg.contracts.hintAll : msg.contracts.hintExpiring}
           </p>
         </div>
-        <Link
-          href={showAll ? "/app/contratti" : "/app/contratti?all=1"}
-          className="rounded-[var(--radius)] border border-[var(--border)] px-3 py-2 text-sm"
-        >
-          {showAll ? msg.contracts.filterExpiring : msg.contracts.filterAll}
-        </Link>
+        <Button asChild variant="outline" size="sm">
+          <Link href={showAll ? "/app/contratti" : "/app/contratti?all=1"}>
+            {showAll ? msg.contracts.filterExpiring : msg.contracts.filterAll}
+          </Link>
+        </Button>
       </div>
 
       {canEdit && vendors.length > 0 ? (
@@ -79,13 +82,13 @@ export default async function ContrattiPage({ searchParams }: Props) {
             "use server";
             await createVendorContractAction({}, fd);
           }}
-          className="mt-8 space-y-3 rounded-[var(--radius)] border border-[var(--border)] p-4"
+          className="mt-6 space-y-3 rounded-[var(--radius)] border border-[var(--border)] p-4"
         >
           <p className="text-sm font-medium">{msg.contracts.add}</p>
           <select
             name="vendorId"
             required
-            className="w-full rounded-[var(--radius)] border border-[var(--border)] px-3 py-2 text-sm"
+            className={controlClass}
             defaultValue=""
           >
             <option value="" disabled>
@@ -97,11 +100,7 @@ export default async function ContrattiPage({ searchParams }: Props) {
               </option>
             ))}
           </select>
-          <select
-            name="storeId"
-            className="w-full rounded-[var(--radius)] border border-[var(--border)] px-3 py-2 text-sm"
-            defaultValue=""
-          >
+          <select name="storeId" className={controlClass} defaultValue="">
             <option value="">{msg.contracts.networkWide}</option>
             {stores.map((s) => (
               <option key={s.id} value={s.id}>
@@ -109,39 +108,27 @@ export default async function ContrattiPage({ searchParams }: Props) {
               </option>
             ))}
           </select>
-          <input
+          <Input
             name="title"
             required
             minLength={2}
             placeholder={msg.contracts.titlePlaceholder}
-            className="w-full rounded-[var(--radius)] border border-[var(--border)] px-3 py-2 text-sm"
           />
-          <input
+          <Input
             name="reference"
             placeholder={msg.contracts.referencePlaceholder}
-            className="w-full rounded-[var(--radius)] border border-[var(--border)] px-3 py-2 text-sm"
           />
           <div className="grid gap-3 sm:grid-cols-2">
             <label className="text-sm">
               {msg.contracts.startsOn}
-              <input
-                name="startsOn"
-                type="date"
-                required
-                className="mt-1 w-full rounded-[var(--radius)] border border-[var(--border)] px-3 py-2"
-              />
+              <Input name="startsOn" type="date" required className="mt-1" />
             </label>
             <label className="text-sm">
               {msg.contracts.endsOn}
-              <input
-                name="endsOn"
-                type="date"
-                required
-                className="mt-1 w-full rounded-[var(--radius)] border border-[var(--border)] px-3 py-2"
-              />
+              <Input name="endsOn" type="date" required className="mt-1" />
             </label>
           </div>
-          <input
+          <Input
             name="annualFee"
             type="number"
             step="0.01"
@@ -150,19 +137,13 @@ export default async function ContrattiPage({ searchParams }: Props) {
               msg.contracts.feePlaceholder,
               prefs.currency,
             )}
-            className="w-full rounded-[var(--radius)] border border-[var(--border)] px-3 py-2 text-sm"
           />
-          <button
-            type="submit"
-            className="rounded-[var(--radius)] bg-[var(--primary)] px-4 py-2 text-sm font-medium text-[var(--primary-foreground)]"
-          >
-            {msg.contracts.save}
-          </button>
+          <Button type="submit">{msg.contracts.save}</Button>
         </form>
       ) : null}
 
       {contracts.length === 0 ? (
-        <div className="mt-10">
+        <div className="mt-8">
           <StatusPanel
             kind="empty"
             title={msg.contracts.empty}
@@ -170,52 +151,73 @@ export default async function ContrattiPage({ searchParams }: Props) {
           />
         </div>
       ) : (
-      <ul className="mt-10 divide-y divide-[var(--border)]">
-          {contracts.map((c) => (
-            <li
-              key={c.id}
-              className="flex flex-wrap items-start justify-between gap-3 py-4"
-            >
-              <div>
-                <p className="font-medium">{c.title}</p>
-                <p className="text-sm text-[var(--muted-foreground)]">
-                  <Link
-                    href={`/app/vendors/${c.vendorId}`}
-                    className="underline-offset-4 hover:underline"
-                  >
-                    {c.vendor.name}
-                  </Link>
-                  {c.store
-                    ? ` · ${c.store.name}`
-                    : ` · ${msg.contracts.networkWide}`}
-                  {c.reference ? ` · ${c.reference}` : ""}
-                </p>
-                <p className={`mt-1 text-sm ${expiryTone(c.endsOn, now)}`}>
-                  {dayLabel(c.startsOn)} → {dayLabel(c.endsOn)}
-                  {c.annualFee != null
-                    ? ` · ${money(Number(c.annualFee))}`
-                    : ""}
-                </p>
-              </div>
-              {canEdit ? (
-                <form
-                  action={async () => {
-                    "use server";
-                    await deleteVendorContractAction(c.id, c.vendorId);
-                  }}
-                >
-                  <button
-                    type="submit"
-                    className="text-sm text-[var(--critical)] underline-offset-4 hover:underline"
-                  >
-                    {msg.contracts.archive}
-                  </button>
-                </form>
-              ) : null}
-            </li>
-          ))}
-      </ul>
+        <div className="mt-6 overflow-x-auto">
+          <table className="w-full min-w-[32rem] text-left text-sm">
+            <thead>
+              <tr className={tableHeadClass}>
+                <th className="py-2 pr-3 font-medium">
+                  {msg.contracts.titlePlaceholder}
+                </th>
+                <th className="py-2 pr-3 font-medium">
+                  {msg.contracts.vendorPlaceholder}
+                </th>
+                <th className="py-2 pr-3 font-medium">{msg.contracts.endsOn}</th>
+                <th className="py-2 font-medium" />
+              </tr>
+            </thead>
+            <tbody>
+              {contracts.map((c) => (
+                <tr key={c.id} className={tableRowClass}>
+                  <td className="py-2.5 pr-3 font-medium">
+                    {c.title}
+                    {c.reference ? (
+                      <p className="text-xs font-normal text-[var(--muted-foreground)]">
+                        {c.reference}
+                      </p>
+                    ) : null}
+                  </td>
+                  <td className="py-2.5 pr-3">
+                    <Link
+                      href={`/app/vendors/${c.vendorId}`}
+                      className="text-[var(--primary)] hover:underline"
+                    >
+                      {c.vendor.name}
+                    </Link>
+                    <p className="text-xs text-[var(--muted-foreground)]">
+                      {c.store
+                        ? c.store.name
+                        : msg.contracts.networkWide}
+                    </p>
+                  </td>
+                  <td className={`py-2.5 pr-3 tabular-nums ${expiryTone(c.endsOn, now)}`}>
+                    {dayLabel(c.startsOn)} → {dayLabel(c.endsOn)}
+                    {c.annualFee != null
+                      ? ` · ${money(Number(c.annualFee))}`
+                      : ""}
+                  </td>
+                  <td className="py-2.5 text-right">
+                    {canEdit ? (
+                      <form
+                        action={async () => {
+                          "use server";
+                          await deleteVendorContractAction(c.id, c.vendorId);
+                        }}
+                      >
+                        <button
+                          type="submit"
+                          className="text-sm text-[var(--critical)] underline-offset-4 hover:underline"
+                        >
+                          {msg.contracts.archive}
+                        </button>
+                      </form>
+                    ) : null}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
-    </main>
+    </PageFrame>
   );
 }

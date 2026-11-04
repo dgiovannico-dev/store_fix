@@ -13,7 +13,11 @@ import {
 import { getTenantI18nPrefs } from "@/application/tenant/i18n-prefs";
 import { listStores } from "@/domain/stores/store-service";
 import { listVendors } from "@/domain/vendors/vendor-service";
+import { PageFrame } from "@/components/layout/page-frame";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { StatusPanel } from "@/components/ui/status-panel";
+import { controlClass } from "@/lib/ui-classes";
 import { dateLocaleFor } from "@/i18n";
 import { tenantMessages } from "@/i18n/tenant-messages";
 
@@ -40,7 +44,7 @@ export default async function CalendarioPmPage() {
   const now = new Date();
 
   return (
-    <main className="mx-auto max-w-3xl px-4 py-10 sm:px-6">
+    <PageFrame>
       <h1 className="font-[family-name:var(--font-sora)] text-2xl font-semibold text-[var(--primary)]">
         {copy.title}
       </h1>
@@ -57,17 +61,16 @@ export default async function CalendarioPmPage() {
           className="mt-8 space-y-3 rounded-[var(--radius)] border border-[var(--border)] p-4"
         >
           <p className="text-sm font-medium">{copy.add}</p>
-          <input
+          <Input
             name="title"
             required
             minLength={2}
             placeholder={copy.titlePlaceholder}
-            className="w-full rounded-[var(--radius)] border border-[var(--border)] px-3 py-2 text-sm"
           />
           <select
             name="storeId"
             required
-            className="w-full rounded-[var(--radius)] border border-[var(--border)] px-3 py-2 text-sm"
+            className={controlClass}
             defaultValue=""
           >
             <option value="" disabled>
@@ -81,7 +84,7 @@ export default async function CalendarioPmPage() {
           </select>
           <select
             name="vendorId"
-            className="w-full rounded-[var(--radius)] border border-[var(--border)] px-3 py-2 text-sm"
+            className={controlClass}
             defaultValue=""
           >
             <option value="">{copy.vendorPlaceholder}</option>
@@ -98,7 +101,7 @@ export default async function CalendarioPmPage() {
                 name="scheduledDate"
                 type="date"
                 required
-                className="mt-1 w-full rounded-[var(--radius)] border border-[var(--border)] px-3 py-2"
+                className={`mt-1 ${controlClass}`}
               />
             </label>
             <label className="text-sm">
@@ -107,7 +110,7 @@ export default async function CalendarioPmPage() {
                 name="scheduledTime"
                 type="time"
                 defaultValue="09:00"
-                className="mt-1 w-full rounded-[var(--radius)] border border-[var(--border)] px-3 py-2"
+                className={`mt-1 ${controlClass}`}
               />
             </label>
           </div>
@@ -116,7 +119,7 @@ export default async function CalendarioPmPage() {
             <select
               name="recurrence"
               defaultValue="none"
-              className="mt-1 w-full rounded-[var(--radius)] border border-[var(--border)] px-3 py-2 text-sm"
+              className={`mt-1 ${controlClass}`}
             >
               <option value="none">{copy.recurrenceNone}</option>
               <option value="weekly">{copy.recurrenceWeekly}</option>
@@ -124,12 +127,7 @@ export default async function CalendarioPmPage() {
               <option value="quarterly">{copy.recurrenceQuarterly}</option>
             </select>
           </label>
-          <button
-            type="submit"
-            className="rounded-[var(--radius)] bg-[var(--primary)] px-4 py-2 text-sm font-medium text-[var(--primary-foreground)]"
-          >
-            {copy.schedule}
-          </button>
+          <Button type="submit">{copy.schedule}</Button>
         </form>
       ) : null}
 
@@ -207,6 +205,6 @@ export default async function CalendarioPmPage() {
           })}
       </ul>
       )}
-    </main>
+    </PageFrame>
   );
 }

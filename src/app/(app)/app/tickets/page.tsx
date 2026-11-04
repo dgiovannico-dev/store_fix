@@ -112,7 +112,7 @@ export default async function TicketsListPage({ searchParams }: Props) {
 
       {isHq ? (
         <form
-          className="sticky top-0 z-10 mt-6 grid gap-3 border-b border-[var(--border)] bg-[var(--background)]/95 py-3 backdrop-blur-sm sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6"
+          className="sticky top-14 z-10 mt-6 grid gap-3 border-b border-[var(--border)] bg-[var(--background)]/95 py-3 backdrop-blur-sm sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6"
           method="get"
         >
           <FilterSelect
