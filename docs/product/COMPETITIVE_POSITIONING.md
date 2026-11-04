@@ -94,6 +94,8 @@ Obiettivo: motivi **precisi** di preferenza, non feature creep CMMS.
 
 **Esplicitamente non in F6:** inventari ricambi, IoT, WhatsApp Business API a pagamento, marketplace, ERP, multi-paese, AI come SoR.
 
+**AI (Fase 7 bozza):** assist su triage/riassunti/RFQ/digest con **vLLM locale** + BYOK cloud — [`AI_PLATFORM.md`](./AI_PLATFORM.md). Differenziamo vs WA+Excel (zero assist strutturato) senza diventare chatbot SoR.
+
 ---
 
 ## Come usare questo one-pager

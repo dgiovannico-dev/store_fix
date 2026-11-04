@@ -21,7 +21,7 @@ Every runtime component is OSI-approved (or equivalently permissive) and self-ho
 - Compose + runbooks are first-class (backup, TLS, SMTP deliverability).
 - No Clerk/Neon/R2/Resend/Inngest Cloud/Sentry Cloud in MVP.
 - Ops burden shifts to the team; mitigated by E00/E14 and `post-dev-verify`.
-- Fase 2 AI prefers local Ollama + human confirm — never SoR.
+- AI: local default (Ollama → **vLLM** OpenAI-compat, ADR-0012 Proposed) + human confirm — never SoR; cloud LLM only as tenant BYOK, never mandatory critical path.
 
 ## Alternatives rejected
 
