@@ -51,7 +51,7 @@ export default async function NewRfqPage({
             const result = await createQuoteRequestAction({}, fd);
             if (result.id) redirect(`/app/rfq/${result.id}`);
           }}
-          className="mt-8 space-y-4 rounded-[var(--radius)] border border-[var(--border)] p-4"
+          className="mt-8 space-y-4 rounded-[var(--radius)] border border-[var(--border)] bg-[var(--card)] p-4"
         >
           {sp.ticketId ? (
             <input type="hidden" name="ticketId" value={sp.ticketId} />
@@ -70,7 +70,7 @@ export default async function NewRfqPage({
                     )
                   : ""
               }
-              className="mt-1 w-full rounded-[var(--radius)] border border-[var(--border)] px-3 py-2"
+              className="mt-1 w-full rounded-[var(--radius)] border border-[var(--border)] bg-[var(--card)] px-3 py-2"
             />
           </label>
           <label className="block text-sm">
@@ -78,7 +78,7 @@ export default async function NewRfqPage({
             <textarea
               name="notes"
               rows={3}
-              className="mt-1 w-full rounded-[var(--radius)] border border-[var(--border)] px-3 py-2"
+              className="mt-1 w-full rounded-[var(--radius)] border border-[var(--border)] bg-[var(--card)] px-3 py-2"
             />
           </label>
           <MultiCheckPicker
