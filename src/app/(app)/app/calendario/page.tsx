@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import {
@@ -16,6 +15,7 @@ import { listVendors } from "@/domain/vendors/vendor-service";
 import { PageFrame } from "@/components/layout/page-frame";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { RowActionLink, RowActionSubmit } from "@/components/ui/row-actions";
 import { StatusPanel } from "@/components/ui/status-panel";
 import { controlClass } from "@/lib/ui-classes";
 import { dateLocaleFor } from "@/i18n";
@@ -166,25 +166,19 @@ export default async function CalendarioPmPage() {
                     {overdue ? ` · ${copy.overdue}` : ""}
                   </p>
                 </div>
-                <div className="flex flex-wrap gap-2">
-                  <Link
+                <div className="flex flex-wrap items-center gap-2">
+                  <RowActionLink
                     href={`/app/tickets/new?storeId=${encodeURIComponent(e.storeId)}`}
-                    className="rounded-[var(--radius)] border border-[var(--border)] px-3 py-1.5 text-sm"
-                  >
-                    {copy.openTicket}
-                  </Link>
+                    label={copy.openTicket}
+                    variant="openTicket"
+                  />
                   <form
                     action={async () => {
                       "use server";
                       await completePmEventAction(e.id);
                     }}
                   >
-                    <button
-                      type="submit"
-                      className="rounded-[var(--radius)] bg-[var(--primary)] px-3 py-1.5 text-sm font-medium text-[var(--primary-foreground)]"
-                    >
-                      {copy.done}
-                    </button>
+                    <RowActionSubmit label={copy.done} variant="done" />
                   </form>
                   <form
                     action={async () => {
@@ -192,12 +186,7 @@ export default async function CalendarioPmPage() {
                       await cancelPmEventAction(e.id);
                     }}
                   >
-                    <button
-                      type="submit"
-                      className="text-sm text-[var(--critical)] underline-offset-4 hover:underline"
-                    >
-                      {copy.cancel}
-                    </button>
+                    <RowActionSubmit label={copy.cancel} variant="cancel" />
                   </form>
                 </div>
               </li>

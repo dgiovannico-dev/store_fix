@@ -14,6 +14,7 @@ import { listVendors } from "@/domain/vendors/vendor-service";
 import { getTenantI18nPrefs } from "@/application/tenant/i18n-prefs";
 import { tenantMessages } from "@/i18n/tenant-messages";
 import { PageFrame } from "@/components/layout/page-frame";
+import { RowActionSubmit } from "@/components/ui/row-actions";
 
 export default async function MembersPage() {
   const session = await auth();
@@ -79,12 +80,7 @@ export default async function MembersPage() {
                     await disableMembershipAction(m.id);
                   }}
                 >
-                  <button
-                    type="submit"
-                    className="text-sm text-[var(--critical)] underline-offset-4 hover:underline"
-                  >
-                    {copy.disable}
-                  </button>
+                  <RowActionSubmit label={copy.disable} variant="disable" />
                 </form>
               ) : null}
             </div>
