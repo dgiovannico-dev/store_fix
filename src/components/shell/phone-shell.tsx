@@ -11,7 +11,7 @@ import {
 } from "@/components/layout/app-breadcrumbs";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { startProductTour } from "@/features/product-tour/tour-controller";
+import { startProductTour } from "@/features/product-tour/tour-launcher";
 import type { NavItem } from "./nav-config";
 import { NavIcon } from "./nav-icons";
 

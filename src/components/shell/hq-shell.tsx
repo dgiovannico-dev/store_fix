@@ -19,7 +19,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
-import { TourHelpButtons } from "@/features/product-tour/tour-controller";
+import { TourHelpButtons } from "@/features/product-tour/tour-launcher";
 import type { NavItem } from "./nav-config";
 import { NavIcon } from "./nav-icons";
 

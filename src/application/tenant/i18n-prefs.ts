@@ -1,3 +1,4 @@
+import { cache } from "react";
 import type { Role } from "@prisma/client";
 import { z } from "zod";
 import { RbacAction } from "@/domain/rbac/actions";
@@ -17,23 +18,24 @@ const updateSchema = z.object({
   currency: z.enum(["EUR", "USD", "GBP", "CHF"]),
 });
 
-export async function getTenantI18nPrefs(
-  tenantId: string,
-): Promise<TenantI18nPrefs> {
-  requireTenantId(tenantId);
-  const tenant = await prisma.tenant.findUnique({
-    where: { id: tenantId },
-    select: { defaultLocale: true, currency: true, dateLocale: true },
-  });
-  const locale: Locale = isLocale(tenant?.defaultLocale ?? "")
-    ? (tenant!.defaultLocale as Locale)
-    : "it";
-  return {
-    locale,
-    currency: tenant?.currency || "EUR",
-    dateLocale: tenant?.dateLocale || dateLocaleFor(locale),
-  };
-}
+/** Dedupes layout + page reads of the same tenant prefs in one RSC request. */
+export const getTenantI18nPrefs = cache(
+  async (tenantId: string): Promise<TenantI18nPrefs> => {
+    requireTenantId(tenantId);
+    const tenant = await prisma.tenant.findUnique({
+      where: { id: tenantId },
+      select: { defaultLocale: true, currency: true, dateLocale: true },
+    });
+    const locale: Locale = isLocale(tenant?.defaultLocale ?? "")
+      ? (tenant!.defaultLocale as Locale)
+      : "it";
+    return {
+      locale,
+      currency: tenant?.currency || "EUR",
+      dateLocale: tenant?.dateLocale || dateLocaleFor(locale),
+    };
+  },
+);
 
 export async function updateTenantI18nPrefs(input: {
   tenantId: string;
