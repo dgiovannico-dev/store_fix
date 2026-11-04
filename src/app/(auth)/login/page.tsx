@@ -3,6 +3,8 @@ import { redirect } from "next/navigation";
 import { auth, isAuthCredentialsEnabled, isAuthOidcEnabled } from "@/auth";
 import { loginAction } from "@/app/actions/login";
 import { loginOidcAction } from "@/app/actions/login-oidc";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { StatusPanel } from "@/components/ui/status-panel";
 import { requestLocale, requestMessages } from "@/i18n/request-locale";
 
@@ -41,9 +43,9 @@ export default async function LoginPage({ searchParams }: Props) {
       />
 
       <div className="relative z-10 w-full max-w-md">
-        <p className="font-[family-name:var(--font-sora)] text-4xl font-semibold tracking-tight text-[var(--primary)] sm:text-5xl">
+        <h1 className="font-[family-name:var(--font-sora)] text-4xl font-semibold tracking-tight text-[var(--primary)] sm:text-5xl">
           FacilityFlow
-        </p>
+        </h1>
         <p className="mt-3 max-w-sm text-[var(--muted-foreground)]">
           {msg.tagline}
         </p>
@@ -55,12 +57,9 @@ export default async function LoginPage({ searchParams }: Props) {
               name="callbackUrl"
               value={params.callbackUrl ?? "/onboarding"}
             />
-            <button
-              type="submit"
-              className="w-full rounded-[var(--radius)] border border-[var(--border)] bg-white px-4 py-3 text-base font-medium text-[var(--foreground)] transition hover:bg-[var(--muted)]"
-            >
+            <Button type="submit" variant="outline" size="lg" className="w-full">
               {msg.signInOidc}
-            </button>
+            </Button>
           </form>
         ) : null}
 
@@ -88,13 +87,12 @@ export default async function LoginPage({ searchParams }: Props) {
               >
                 {msg.email}
               </label>
-              <input
+              <Input
                 id="email"
                 name="email"
                 type="email"
                 autoComplete="email"
                 required
-                className="w-full rounded-[var(--radius)] border border-[var(--border)] bg-white px-3 py-2.5 text-base outline-none ring-[var(--ring)] focus:ring-2"
               />
             </div>
 
@@ -105,14 +103,13 @@ export default async function LoginPage({ searchParams }: Props) {
               >
                 {msg.password}
               </label>
-              <input
+              <Input
                 id="password"
                 name="password"
                 type="password"
                 autoComplete="current-password"
                 required
                 minLength={8}
-                className="w-full rounded-[var(--radius)] border border-[var(--border)] bg-white px-3 py-2.5 text-base outline-none ring-[var(--ring)] focus:ring-2"
               />
             </div>
 
@@ -120,12 +117,9 @@ export default async function LoginPage({ searchParams }: Props) {
               <StatusPanel kind="error" title={error} locale={locale} />
             ) : null}
 
-            <button
-              type="submit"
-              className="w-full rounded-[var(--radius)] bg-[var(--primary)] px-4 py-3 text-base font-medium text-[var(--primary-foreground)] transition hover:opacity-90"
-            >
+            <Button type="submit" size="lg" className="w-full">
               {msg.signIn}
-            </button>
+            </Button>
           </form>
         ) : error ? (
           <div className="mt-8">

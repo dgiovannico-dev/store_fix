@@ -36,7 +36,7 @@ export default async function SegnalaGuastoPage({ params }: Props) {
   );
   if (limit.limited) {
     return (
-      <main className="mx-auto max-w-[390px] px-4 py-12">
+      <main className="px-4 py-8">
         <h1 className="font-[family-name:var(--font-sora)] text-xl font-semibold">
           {copy.rateLimitedTitle}
         </h1>

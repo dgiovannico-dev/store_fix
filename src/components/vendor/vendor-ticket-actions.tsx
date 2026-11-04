@@ -36,7 +36,7 @@ export function VendorTicketActions({
   );
 
   return (
-    <section className="mt-8 space-y-6 border-t border-[var(--border)] pt-6">
+    <section className="space-y-6">
       <h2 className="text-sm font-semibold uppercase tracking-wide text-[var(--muted-foreground)]">
         {labels.vendorTitle}
       </h2>
@@ -48,7 +48,7 @@ export function VendorTicketActions({
           <button
             type="submit"
             disabled={statusPending}
-            className="w-full rounded-[var(--radius)] bg-[var(--primary)] px-4 py-3.5 text-base font-medium text-[var(--primary-foreground)] disabled:opacity-60"
+            className="min-h-11 w-full rounded-[var(--radius)] bg-[var(--primary)] px-4 py-3.5 text-base font-medium text-[var(--primary-foreground)] disabled:opacity-60"
           >
             {statusPending ? labels.pending : labels.vendorStart}
           </button>
@@ -62,7 +62,7 @@ export function VendorTicketActions({
           <button
             type="submit"
             disabled={statusPending}
-            className="w-full rounded-[var(--radius)] border border-[var(--border)] px-4 py-3.5 text-base font-medium disabled:opacity-60"
+            className="min-h-11 w-full rounded-[var(--radius)] border border-[var(--border)] px-4 py-3.5 text-base font-medium disabled:opacity-60"
           >
             {statusPending ? labels.pending : labels.vendorWaiting}
           </button>
@@ -126,7 +126,7 @@ export function VendorTicketActions({
           <button
             type="submit"
             disabled={completePending}
-            className="w-full rounded-[var(--radius)] bg-[var(--primary)] px-4 py-3.5 text-base font-medium text-[var(--primary-foreground)] disabled:opacity-60"
+            className="min-h-11 w-full rounded-[var(--radius)] bg-[var(--primary)] px-4 py-3.5 text-base font-medium text-[var(--primary-foreground)] disabled:opacity-60"
           >
             {completePending ? labels.pending : labels.vendorComplete}
           </button>

@@ -5,6 +5,7 @@ export const it = {
     tickets: "Ticket",
     stores: "Punti vendita",
     vendors: "Fornitori",
+    assets: "Asset",
     contracts: "Contratti",
     calendar: "Calendario PM",
     rfq: "RFQ",
@@ -14,6 +15,10 @@ export const it = {
     notifications: "Notifiche",
     locale: "Lingua",
     signOut: "Esci",
+    overview: "Panoramica",
+    work: "Lavori",
+    costs: "Costi",
+    timeline: "Timeline",
   },
   meta: {
     description:
@@ -307,6 +312,12 @@ export const it = {
     filterStore: "Punto vendita",
     filterVendor: "Fornitore",
     filterSla: "SLA",
+    colId: "ID",
+    colStore: "Punto vendita",
+    colStatus: "Stato",
+    colSla: "SLA",
+    colVendor: "Fornitore",
+    colPriority: "Priorità",
   },
   ticketStatus: {
     open: "Aperto",
@@ -339,6 +350,10 @@ export const it = {
     slaNone: "SLA —",
     slaRiskPrefix: "SLA a rischio · entro",
     slaOkPrefix: "SLA entro",
+    tabOverview: "Panoramica",
+    tabWork: "Lavori",
+    tabCosts: "Costi",
+    tabTimeline: "Timeline",
   },
   ticketTimeline: {
     empty: "Nessun evento in timeline.",
