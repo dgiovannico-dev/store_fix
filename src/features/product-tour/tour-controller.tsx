@@ -68,7 +68,6 @@ export function startProductTour(
       ? chapterForPath(audience, pathname)
       : stepsForAudience(audience);
 
-  let index = 0;
   const first = defs[0];
   if (first?.route && first.route !== pathname) {
     writeState({ audience, mode, index: 0, defs });
@@ -76,7 +75,7 @@ export function startProductTour(
     return;
   }
 
-  writeState({ audience, mode, index, defs });
+  writeState({ audience, mode, index: 0, defs });
   window.dispatchEvent(new CustomEvent("ff-tour-start"));
 }
 
