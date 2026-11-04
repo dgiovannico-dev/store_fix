@@ -8,6 +8,7 @@ import { TicketEventType } from "@/domain/ticket/event-types";
 import { prisma } from "@/infrastructure/db/prisma";
 import { appendTicketEvent } from "@/infrastructure/db/ticket-event-repository";
 import { requireTenantId } from "@/infrastructure/db/tenant-scope";
+import { t } from "@/i18n";
 
 export const relaunchSchema = z.object({
   note: z.string().trim().min(3).max(2000),
@@ -62,7 +63,7 @@ export async function relaunchSlaTicket(input: {
   const hq = await resolveHqRecipients(input.tenantId);
   const stamp = Date.now().toString(36);
   const { locale } = await getTenantI18nPrefs(input.tenantId);
-  const relaunchPrefix = locale === "en" ? "SLA relaunch:" : "Rilancio SLA:";
+  const relaunchPrefix = t(locale).slaOps.relaunchPrefix;
 
   await prisma.$transaction(async (tx) => {
     await appendTicketEvent(

@@ -150,6 +150,16 @@ export const en = {
     clearSelection: "Clear",
     close: "Close",
     emptyDash: "—",
+    storeFallback: "store",
+  },
+  digest: {
+    weeklySummary:
+      "7d digest — open/in progress: {open} · new SLA breaches: {breached} · verified costs: actual €{actual} · estimated €{estimated}",
+  },
+  slaOps: {
+    relaunchPrefix: "SLA relaunch:",
+    playbookNote:
+      "Breach playbook: automatic relaunch — verify vendor and update ETA within 2h.",
   },
   tour: {
     softPromptConfirm:
@@ -865,5 +875,6 @@ export const en = {
     tourLaunchCta: "Start",
     pilotHint:
       "Typical pilot: 15 stores × 5 vendors. This checklist remains the source of truth for network setup.",
+    blockedSprintHint: "(next sprint)",
   },
 } as const satisfies MessageCatalog;

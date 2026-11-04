@@ -131,7 +131,7 @@ async function maybePushStore(input: {
       ticketId: input.ticketId,
       storeId: input.storeId,
       storeName: store.name || input.storeName,
-      title: titles[input.kind] ?? "FacilityFlow",
+      title: titles[input.kind] ?? t(input.locale).appName,
       body: input.summary,
       url: ticketDeepLink(input.ticketId),
     },
@@ -157,8 +157,7 @@ export async function emitTicketNotification(input: {
   const prefs = await getTenantI18nPrefs(input.tenantId);
   const locale = prefs.locale;
   const storeName =
-    input.ticket.store?.name ??
-    (locale === "en" ? "store" : "punto vendita");
+    input.ticket.store?.name ?? t(locale).common.storeFallback;
   const ticketId = input.ticket.id;
   const summary = input.ticket.description.slice(0, 200);
   const vendor = input.ticket.vendor;

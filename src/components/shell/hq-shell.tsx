@@ -21,7 +21,7 @@ import {
 import { cn } from "@/lib/utils";
 import { TourHelpButtons } from "@/features/product-tour/tour-launcher";
 import type { ProductTourUiLabels } from "@/features/product-tour/tour-controller";
-import type { MessageCatalog } from "@/i18n";
+import type { Locale, MessageCatalog } from "@/i18n";
 import type { NavItem } from "./nav-config";
 import { NavIcon } from "./nav-icons";
 
@@ -86,7 +86,7 @@ function SidebarNav({
   items: NavItem[];
   brand: string;
   signOutLabel: string;
-  tour: MessageCatalog["tour"] & { launchLabel: string };
+  tour: MessageCatalog["tour"] & { launchLabel: string; locale: Locale };
   onNavigate?: () => void;
 }) {
   const pathname = usePathname();
@@ -119,6 +119,7 @@ function SidebarNav({
         label={tour.launchLabel}
         pageLabel={tour.explainPage}
         pageScopeHint={tour.pageScopeHint}
+        locale={tour.locale}
       />
       <div className="border-t border-[var(--border)] p-2">
         <form action="/logout" method="post">
@@ -145,9 +146,10 @@ export function HqShell(props: {
   breadcrumbLabels: BreadcrumbLabels;
   homeHref: string;
   tourLabels: ProductTourUiLabels;
-  tourChrome: MessageCatalog["tour"] & { launchLabel: string };
+  tourChrome: MessageCatalog["tour"] & { launchLabel: string; locale: Locale };
   shellLabels: MessageCatalog["shell"];
   closeLabel: string;
+  locale: Locale;
 }) {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const closeMobileNav = () => setMobileNavOpen(false);
@@ -158,6 +160,7 @@ export function HqShell(props: {
         audience="hq"
         softPrompt
         labels={props.tourLabels}
+        locale={props.locale}
       />
       <aside className="sticky top-0 hidden h-dvh w-[var(--sidebar-width)] shrink-0 border-r border-[var(--border)] bg-[var(--card)] lg:block">
         <SidebarNav

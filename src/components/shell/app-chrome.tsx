@@ -76,6 +76,7 @@ export async function AppChrome({ children }: { children: React.ReactNode }) {
   const tourChrome = {
     ...msg.tour,
     launchLabel: msg.onboarding.tourLaunch,
+    locale: prefs.locale,
   };
 
   if (audience === "hq") {
@@ -91,6 +92,7 @@ export async function AppChrome({ children }: { children: React.ReactNode }) {
         tourChrome={tourChrome}
         shellLabels={msg.shell}
         closeLabel={msg.common.close}
+        locale={prefs.locale}
       >
         {children}
       </HqShell>
@@ -114,6 +116,7 @@ export async function AppChrome({ children }: { children: React.ReactNode }) {
       shellLabels={msg.shell}
       tourHelpAria={msg.tour.helpAria}
       tourLaunchLabel={msg.onboarding.tourLaunch}
+      locale={prefs.locale}
     >
       {children}
     </PhoneShell>

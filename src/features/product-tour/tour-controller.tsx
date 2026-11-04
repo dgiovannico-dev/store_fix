@@ -6,6 +6,7 @@ import { driver, type DriveStep, type Driver } from "driver.js";
 import "driver.js/dist/driver.css";
 import "@/features/product-tour/tour.css";
 import { startProductTour } from "./tour-launcher";
+import type { Locale } from "@/i18n";
 import {
   type TourAudience,
   type TourStepDef,
@@ -121,6 +122,7 @@ export function ProductTourHost(props: {
   audience: TourAudience;
   softPrompt?: boolean;
   labels: ProductTourUiLabels;
+  locale: Locale;
 }) {
   const pathname = usePathname();
   const router = useRouter();
@@ -146,11 +148,11 @@ export function ProductTourHost(props: {
         return;
       }
       e.preventDefault();
-      startProductTour(props.audience, "full");
+      startProductTour(props.audience, "full", props.locale);
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [props.audience]);
+  }, [props.audience, props.locale]);
 
   useEffect(() => {
     if (!props.softPrompt) return;
@@ -158,10 +160,15 @@ export function ProductTourHost(props: {
     const id = window.setTimeout(() => {
       const ok = window.confirm(props.labels.softPromptConfirm);
       window.localStorage.setItem(SOFT_KEY, ok ? "started" : "later");
-      if (ok) startProductTour(props.audience, "full");
+      if (ok) startProductTour(props.audience, "full", props.locale);
     }, 1400);
     return () => window.clearTimeout(id);
-  }, [props.audience, props.softPrompt, props.labels.softPromptConfirm]);
+  }, [
+    props.audience,
+    props.softPrompt,
+    props.labels.softPromptConfirm,
+    props.locale,
+  ]);
 
   useEffect(() => {
     let cancelled = false;

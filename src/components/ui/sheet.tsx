@@ -28,10 +28,11 @@ export function SheetContent({
   className,
   children,
   side = "left",
-  closeLabel = "Close",
+  closeLabel,
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Content> & {
   side?: "left" | "right";
+  /** sr-only; pass from MessageCatalog.common.close */
   closeLabel?: string;
 }) {
   return (
@@ -50,7 +51,9 @@ export function SheetContent({
         {children}
         <DialogPrimitive.Close className="absolute right-3 top-3 rounded-[var(--radius)] p-2 text-[var(--muted-foreground)] hover:bg-[var(--muted)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]">
           <X className="size-4" />
-          <span className="sr-only">{closeLabel}</span>
+          {closeLabel ? (
+            <span className="sr-only">{closeLabel}</span>
+          ) : null}
         </DialogPrimitive.Close>
       </DialogPrimitive.Content>
     </SheetPortal>
