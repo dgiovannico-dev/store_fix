@@ -26,6 +26,7 @@ export function DayView(props: {
   eventsByDay: Map<string, PmCalendarEvent[]>;
   dateLocale: string;
   outsideHoursLabel: string;
+  todaySuffix: string;
   isOverdue: (iso: string) => boolean;
   onOpenSlot: (d: Date, el: HTMLElement, timeHHmm: string) => void;
   onOpenEvent: (id: string, el: HTMLElement) => void;
@@ -56,7 +57,7 @@ export function DayView(props: {
             day: "numeric",
             month: "long",
           })}
-          {isToday ? " · oggi" : ""}
+          {isToday ? props.todaySuffix : ""}
         </p>
       </div>
 

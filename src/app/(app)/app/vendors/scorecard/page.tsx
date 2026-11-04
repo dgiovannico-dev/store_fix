@@ -64,7 +64,8 @@ export default async function VendorScorecardPage({ searchParams }: Props) {
         {msg.scorecard.title}
       </h1>
       <p className="mt-1 text-sm text-[var(--muted-foreground)]">
-        {msg.scorecard.hint} · {msg.scorecard.rangeLabel} ({rangeDays}g)
+        {msg.scorecard.hint} · {msg.scorecard.rangeLabel}{" "}
+        {msg.scorecard.rangeDaysShort.replace("{n}", String(rangeDays))}
       </p>
 
       {overview.rows.length === 0 ? (

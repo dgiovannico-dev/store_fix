@@ -110,9 +110,17 @@ function toDriveStep(d: TourStepDef): DriveStep {
   };
 }
 
+export type ProductTourUiLabels = {
+  softPromptConfirm: string;
+  next: string;
+  prev: string;
+  done: string;
+};
+
 export function ProductTourHost(props: {
   audience: TourAudience;
   softPrompt?: boolean;
+  labels: ProductTourUiLabels;
 }) {
   const pathname = usePathname();
   const router = useRouter();
@@ -148,14 +156,12 @@ export function ProductTourHost(props: {
     if (!props.softPrompt) return;
     if (window.localStorage.getItem(SOFT_KEY)) return;
     const id = window.setTimeout(() => {
-      const ok = window.confirm(
-        "Vuoi un tutorial guidato di FacilityFlow?\n\nTi accompagna sezione per sezione (puoi chiudere e ripartire da Aiuto / Tutorial interattivo).",
-      );
+      const ok = window.confirm(props.labels.softPromptConfirm);
       window.localStorage.setItem(SOFT_KEY, ok ? "started" : "later");
       if (ok) startProductTour(props.audience, "full");
     }, 1400);
     return () => window.clearTimeout(id);
-  }, [props.audience, props.softPrompt]);
+  }, [props.audience, props.softPrompt, props.labels.softPromptConfirm]);
 
   useEffect(() => {
     let cancelled = false;
@@ -364,7 +370,7 @@ export function ProductTourHost(props: {
 
       const lastLocalGlobal = localIndexMap[localDefs.length - 1]!;
       const moreAfterLocal = lastLocalGlobal < parsed.defs.length - 1;
-      const doneLabel = moreAfterLocal ? "Avanti" : "Ho capito";
+      const doneLabel = moreAfterLocal ? props.labels.next : props.labels.done;
       const globalTotal = parsed.defs.length;
 
       // Tear down any overlapping instance after awaits (race-safe).
@@ -380,8 +386,8 @@ export function ProductTourHost(props: {
         stagePadding: 10,
         stageRadius: 12,
         popoverClass: "ff-tour-popover",
-        nextBtnText: "Avanti",
-        prevBtnText: "Indietro",
+        nextBtnText: props.labels.next,
+        prevBtnText: props.labels.prev,
         doneBtnText: doneLabel,
         // Placeholders alone are chapter-local; onPopoverRender sets global N/M.
         progressText: "{{current}} / {{total}}",
@@ -514,7 +520,7 @@ export function ProductTourHost(props: {
       // Do not clear session state here — cleanup runs on every pathname change.
       destroyQuiet();
     };
-  }, [pathname, router, props.audience]);
+  }, [pathname, router, props.audience, props.labels]);
 
   return null;
 }
