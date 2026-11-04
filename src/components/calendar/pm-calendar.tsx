@@ -376,8 +376,12 @@ export function PmCalendar(props: {
                 >
                   {copy.cancel}
                 </Button>
-                <Button type="submit" disabled={createPending}>
-                  {copy.schedule}
+                <Button
+                  type="submit"
+                  disabled={createPending}
+                  aria-busy={createPending}
+                >
+                  {createPending ? `${copy.schedule}…` : copy.schedule}
                 </Button>
               </div>
             </form>

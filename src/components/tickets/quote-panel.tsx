@@ -114,18 +114,20 @@ export function QuotePanel({
               name="decision"
               value="accept"
               disabled={decidePending}
+              aria-busy={decidePending}
               className="rounded-[var(--radius)] bg-[var(--primary)] px-4 py-2 text-sm font-medium text-[var(--primary-foreground)] disabled:opacity-60"
             >
-              {labels.quoteAccept}
+              {decidePending ? labels.pending : labels.quoteAccept}
             </button>
             <button
               type="submit"
               name="decision"
               value="reject"
               disabled={decidePending}
+              aria-busy={decidePending}
               className="rounded-[var(--radius)] border border-[var(--border)] px-4 py-2 text-sm font-medium disabled:opacity-60"
             >
-              {labels.quoteReject}
+              {decidePending ? labels.pending : labels.quoteReject}
             </button>
           </div>
         </form>

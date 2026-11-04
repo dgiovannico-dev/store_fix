@@ -1,9 +1,11 @@
 "use client";
 
 import Link from "next/link";
+import { useFormStatus } from "react-dom";
 import {
   Archive,
   Check,
+  Loader2,
   Pencil,
   TicketPlus,
   Upload,
@@ -87,20 +89,35 @@ export function RowActionLink(props: {
 
 export function RowActionSubmit(props: {
   label: string;
+  /** Shown while the parent form is submitting (defaults to label + …). */
+  pendingLabel?: string;
   variant: Extract<
     RowActionVariant,
     "archive" | "disable" | "cancel" | "done"
   >;
   className?: string;
 }) {
+  const { pending } = useFormStatus();
   const { Icon, className: tone } = VARIANTS[props.variant];
+  const pendingLabel = props.pendingLabel ?? `${props.label}…`;
   return (
     <button
       type="submit"
-      className={cn(baseClass, tone, props.className)}
+      disabled={pending}
+      aria-busy={pending}
+      className={cn(
+        baseClass,
+        tone,
+        "disabled:opacity-60",
+        props.className,
+      )}
     >
-      <Icon className="size-3.5 shrink-0" aria-hidden />
-      <span>{props.label}</span>
+      {pending ? (
+        <Loader2 className="size-3.5 shrink-0 animate-spin" aria-hidden />
+      ) : (
+        <Icon className="size-3.5 shrink-0" aria-hidden />
+      )}
+      <span>{pending ? pendingLabel : props.label}</span>
     </button>
   );
 }

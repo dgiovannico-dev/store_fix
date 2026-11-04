@@ -3,8 +3,8 @@ import { redirect } from "next/navigation";
 import { auth, isAuthCredentialsEnabled, isAuthOidcEnabled } from "@/auth";
 import { loginAction } from "@/app/actions/login";
 import { loginOidcAction } from "@/app/actions/login-oidc";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { PendingSubmitButton } from "@/components/ui/pending-submit-button";
 import { StatusPanel } from "@/components/ui/status-panel";
 import { requestLocale, requestMessages } from "@/i18n/request-locale";
 
@@ -57,9 +57,13 @@ export default async function LoginPage({ searchParams }: Props) {
               name="callbackUrl"
               value={params.callbackUrl ?? "/onboarding"}
             />
-            <Button type="submit" variant="outline" size="lg" className="w-full">
-              {msg.signInOidc}
-            </Button>
+            <PendingSubmitButton
+              variant="outline"
+              size="lg"
+              className="w-full"
+              label={msg.signInOidc}
+              pendingLabel={msg.signingIn}
+            />
           </form>
         ) : null}
 
@@ -117,9 +121,12 @@ export default async function LoginPage({ searchParams }: Props) {
               <StatusPanel kind="error" title={error} locale={locale} />
             ) : null}
 
-            <Button type="submit" size="lg" className="w-full">
-              {msg.signIn}
-            </Button>
+            <PendingSubmitButton
+              size="lg"
+              className="w-full"
+              label={msg.signIn}
+              pendingLabel={msg.signingIn}
+            />
           </form>
         ) : error ? (
           <div className="mt-8">

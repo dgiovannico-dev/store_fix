@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { resetPassword } from "@/domain/auth/password-reset";
+import { PendingSubmitButton } from "@/components/ui/pending-submit-button";
 import { StatusPanel } from "@/components/ui/status-panel";
 import { actionResultError } from "@/i18n/domain-errors";
 import { requestLocale, requestMessages } from "@/i18n/request-locale";
@@ -64,12 +65,12 @@ export default async function ResetPasswordPage({ searchParams }: Props) {
           placeholder={msg.newPasswordPlaceholder}
           className="w-full rounded-[var(--radius)] border border-[var(--border)] bg-white px-3 py-2.5"
         />
-        <button
-          type="submit"
-          className="w-full rounded-[var(--radius)] bg-[var(--primary)] px-4 py-3 font-medium text-[var(--primary-foreground)]"
-        >
-          {msg.savePassword}
-        </button>
+        <PendingSubmitButton
+          size="lg"
+          className="w-full"
+          label={msg.savePassword}
+          pendingLabel={msg.savingPassword}
+        />
       </form>
     </main>
   );
