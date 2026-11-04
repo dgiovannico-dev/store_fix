@@ -38,8 +38,8 @@ export function VerifyPanel({
   if (!canVerify || status !== "done") return null;
 
   return (
-    <section className="mt-8 space-y-4 border-t border-[var(--border)] pt-6">
-      <h2 className="text-sm font-semibold uppercase tracking-wide text-[var(--muted-foreground)]">
+    <section className="space-y-4">
+      <h2 className="font-[family-name:var(--font-sora)] text-sm font-semibold tracking-tight">
         {labels.verifyTitle}
       </h2>
       <form action={verifyAction}>

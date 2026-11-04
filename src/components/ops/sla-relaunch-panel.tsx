@@ -29,8 +29,8 @@ export function SlaRelaunchPanel({
   if (!canOps || !breached) return null;
 
   return (
-    <section className="mt-8 space-y-3 border-t border-[var(--border)] pt-6">
-      <h2 className="text-sm font-semibold uppercase tracking-wide text-[var(--muted-foreground)]">
+    <section className="space-y-3">
+      <h2 className="font-[family-name:var(--font-sora)] text-sm font-semibold tracking-tight">
         {labels.slaTitle}
       </h2>
       <form action={action} className="space-y-3">

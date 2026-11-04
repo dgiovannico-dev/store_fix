@@ -61,10 +61,8 @@ export function TicketOpsPanel({
   if (!canOps) return null;
 
   return (
-    <section className="mt-8 space-y-6 border-t border-[var(--border)] pt-6">
-      <h2 className="text-sm font-semibold uppercase tracking-wide text-[var(--muted-foreground)]">
-        {labels.opsTitle}
-      </h2>
+    <section className="space-y-5">
+      <h2 className="sr-only">{labels.opsTitle}</h2>
 
       {preferredHint ? (
         <p className="rounded-[var(--radius)] border border-[var(--border)] px-3 py-2 text-sm">

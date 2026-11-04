@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { Role } from "@prisma/client";
 import { notFound, redirect } from "next/navigation";
 import { auth } from "@/auth";
@@ -10,9 +9,10 @@ import { SlaRelaunchPanel } from "@/components/ops/sla-relaunch-panel";
 import { AttachmentGallery } from "@/components/tickets/attachment-gallery";
 import { AttachmentUploader } from "@/components/tickets/attachment-uploader";
 import { QuotePanel } from "@/components/tickets/quote-panel";
-import { SlaBadge } from "@/components/tickets/sla-badge";
 import { SummarizeNotesPanel } from "@/components/tickets/summarize-notes-panel";
+import { TicketDetailHero } from "@/components/tickets/ticket-detail-hero";
 import { TicketDetailTabs } from "@/components/tickets/ticket-detail-tabs";
+import { TicketPanelSection } from "@/components/tickets/ticket-panel-section";
 import { TicketTimeline } from "@/components/tickets/ticket-timeline";
 import { VerifyPanel } from "@/components/tickets/verify-panel";
 import { getActiveMembership } from "@/application/memberships/membership-service";
@@ -46,6 +46,21 @@ const HQ_OPS = new Set<Role>([
   Role.admin_hq,
   Role.ops_coordinator,
 ]);
+
+function leadFromDescription(text: string, max = 220): string {
+  const normalized = text.replace(/\s+/g, " ").trim();
+  if (normalized.length <= max) return normalized;
+  return `${normalized.slice(0, max - 1).trimEnd()}…`;
+}
+
+function titleFromDescription(text: string, fallback: string): string {
+  const first = text
+    .split(/\n+/)
+    .map((l) => l.trim())
+    .find((l) => l.length >= 8);
+  if (!first) return fallback;
+  return first.length > 96 ? `${first.slice(0, 93).trimEnd()}…` : first;
+}
 
 export default async function TicketDetailPage({
   params,
@@ -87,6 +102,7 @@ export default async function TicketDetailPage({
   const copy = msg.ticketDetail;
   const canOps = HQ_OPS.has(session.role);
   const showInternalNotes = can(session.role, RbacAction.triageTicket);
+  const canVerify = can(session.role, RbacAction.verifyTicket);
 
   const vendors = canOps
     ? await prisma.vendor.findMany({
@@ -124,51 +140,190 @@ export default async function TicketDetailPage({
       : copy.backReturn
     : copy.back;
 
-  return (
-    <PageFrame>
-      <div className="sticky top-14 z-20 -mx-4 border-b border-[var(--border)] bg-[var(--background)]/95 px-4 py-3 backdrop-blur-sm sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
-        <Link
-          href={backHref}
-          className="mb-2 inline-flex text-sm font-medium text-[var(--primary)] underline-offset-4 hover:underline"
-        >
-          {backLabel}
-        </Link>
-        {sp.created === "1" ? (
-          <p
-            className="mb-2 rounded-[var(--radius)] border border-[var(--success)] px-3 py-2 text-sm text-[var(--success)]"
-            role="status"
-          >
-            {copy.createdBanner} <code className="text-xs">{ticket.id}</code>
-          </p>
-        ) : null}
+  const categoryLabel = intakeCategoryLabel(ticket.category, prefs.locale);
+  const priorityLabel = intakePriorityLabel(ticket.priority, prefs.locale);
+  const statusLabel = ticketStatusLabel(ticket.status, prefs.locale);
+  const heroTitle = titleFromDescription(
+    ticket.description,
+    `${categoryLabel} · ${priorityLabel}`,
+  );
 
-        <div className="flex flex-wrap items-start justify-between gap-3">
-          <div className="min-w-0">
-            <h1 className="font-[family-name:var(--font-sora)] text-xl font-semibold sm:text-2xl">
-              {intakeCategoryLabel(ticket.category, prefs.locale)} ·{" "}
-              {intakePriorityLabel(ticket.priority, prefs.locale)}
-            </h1>
-            <p className="mt-1 text-sm text-[var(--muted-foreground)]">
-              {ticket.store.name} · {copy.statusPrefix}{" "}
-              <strong>{ticketStatusLabel(ticket.status, prefs.locale)}</strong>
-              {ticket.vendor ? ` · ${ticket.vendor.name}` : ""}
-            </p>
-            <div className="mt-2">
-              <SlaBadge tone={sla.tone} label={sla.label} />
-            </div>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {canOps ? (
-              <Link
-                href={`/app/rfq/new?ticketId=${ticket.id}`}
-                className="inline-flex h-10 items-center rounded-[var(--radius)] border border-[var(--border)] px-3 text-sm font-medium"
-              >
-                {copy.rfqLink}
-              </Link>
-            ) : null}
-          </div>
-        </div>
-      </div>
+  const intakeBlock = (
+    <TicketPanelSection title={copy.sectionIntake}>
+      <p className="whitespace-pre-wrap text-[15px] leading-relaxed text-[var(--foreground)]">
+        {ticket.description}
+      </p>
+    </TicketPanelSection>
+  );
+
+  const attachmentsBlock = (
+    <TicketPanelSection title={copy.attachments}>
+      <AttachmentGallery
+        ticketId={ticket.id}
+        labels={msg.ticketPanels}
+        photoWord={copy.photos}
+        locale={prefs.locale}
+        items={ticket.attachments.map((a) => ({
+          id: a.id,
+          mime: a.mime,
+          sizeBytes: a.sizeBytes,
+        }))}
+      />
+      {ticket.status !== "cancelled" && ticket.status !== "verified" ? (
+        <AttachmentUploader
+          ticketId={ticket.id}
+          labels={msg.ticketPanels}
+          locale={prefs.locale}
+        />
+      ) : null}
+    </TicketPanelSection>
+  );
+
+  const actionsInner = (
+    <>
+      <TicketOpsPanel
+        ticketId={ticket.id}
+        status={ticket.status}
+        priority={ticket.priority}
+        storeId={ticket.storeId}
+        category={ticket.category}
+        vendors={vendors}
+        preferredHint={hint}
+        canOps={canOps}
+        labels={msg.ticketPanels}
+        locale={prefs.locale}
+      />
+      <SlaRelaunchPanel
+        ticketId={ticket.id}
+        breached={!!ticket.slaBreachedAt}
+        canOps={canOps}
+        labels={msg.ticketPanels}
+        locale={prefs.locale}
+      />
+      <VerifyPanel
+        ticketId={ticket.id}
+        status={ticket.status}
+        canVerify={canVerify}
+        labels={msg.ticketPanels}
+        locale={prefs.locale}
+      />
+      {ticket.completionReport ? (
+        <p className="text-sm text-[var(--muted-foreground)]">
+          {copy.reportPrefix} {ticket.completionReport}
+        </p>
+      ) : null}
+      {!canOps && !(canVerify && ticket.status === "done") ? (
+        <p className="text-sm text-[var(--muted-foreground)]">{copy.workEmpty}</p>
+      ) : null}
+    </>
+  );
+
+  const actionsBlock = (
+    <TicketPanelSection
+      title={copy.sectionActions}
+      tone={
+        canVerify && ticket.status === "done" ? "emphasize" : "default"
+      }
+    >
+      {actionsInner}
+    </TicketPanelSection>
+  );
+
+  const assistBlock = canOps ? (
+    <TicketPanelSection title={copy.sectionAssist}>
+      <SummarizeNotesPanel
+        ticketId={ticket.id}
+        canOps={canOps}
+        labels={msg.ticketPanels}
+        locale={prefs.locale}
+      />
+    </TicketPanelSection>
+  ) : null;
+
+  const costsBlock = (
+    <TicketPanelSection title={copy.sectionCosts}>
+      {showCosts ? (
+        <p className="text-sm">
+          <span className="text-[var(--muted-foreground)]">
+            {copy.costsPrefix}{" "}
+          </span>
+          <span className="font-medium tabular">
+            {formatMoney(ticket.actualCost, prefs) ?? copy.actualDash}
+          </span>
+          {ticket.estimatedCost ? (
+            <span className="text-[var(--muted-foreground)]">
+              {" "}
+              · {copy.estimatePrefix}{" "}
+              {formatMoney(ticket.estimatedCost, prefs)}
+            </span>
+          ) : null}
+        </p>
+      ) : (
+        <p className="text-sm text-[var(--muted-foreground)]">
+          {copy.costsEmpty}
+        </p>
+      )}
+      {(canDecide || ticket.quoteStatus || ticket.estimatedCost) &&
+      (canDecide || showCosts) ? (
+        <QuotePanel
+          ticketId={ticket.id}
+          mode={canDecide ? "decide" : "readonly"}
+          quoteStatus={ticket.quoteStatus}
+          estimatedCost={
+            ticket.estimatedCost != null
+              ? Number(ticket.estimatedCost)
+              : null
+          }
+          labels={msg.ticketPanels}
+          locale={prefs.locale}
+          dateLocale={prefs.dateLocale}
+          currency={prefs.currency}
+        />
+      ) : null}
+    </TicketPanelSection>
+  );
+
+  const timelineBlock = (
+    <TicketPanelSection title={copy.tabTimeline}>
+      <TicketTimeline
+        events={events}
+        showInternalNotes={showInternalNotes}
+        labels={msg.ticketTimeline}
+        dateLocale={prefs.dateLocale}
+        locale={prefs.locale}
+        currency={prefs.currency}
+      />
+    </TicketPanelSection>
+  );
+
+  return (
+    <PageFrame className="max-w-6xl">
+      <TicketDetailHero
+        backHref={backHref}
+        backLabel={backLabel}
+        createdBanner={sp.created === "1" ? copy.createdBanner : null}
+        title={heroTitle}
+        descriptionLead={leadFromDescription(ticket.description)}
+        categoryLabel={categoryLabel}
+        priorityLabel={priorityLabel}
+        statusLabel={statusLabel}
+        storeName={ticket.store.name}
+        storeLabel={copy.storeLabel}
+        vendorName={ticket.vendor?.name}
+        vendorLabel={copy.vendorLabel}
+        assetLabel={ticket.asset?.label}
+        assetPrefix={copy.assetPrefix}
+        ticketId={ticket.id}
+        ticketIdLabel={copy.ticketIdLabel}
+        slaTone={sla.tone}
+        slaLabel={sla.label}
+        rfqHref={canOps ? `/app/rfq/new?ticketId=${ticket.id}` : null}
+        rfqLabel={canOps ? copy.rfqLink : null}
+        cancelReason={ticket.cancelReason}
+        cancelReasonLabel={copy.cancelReason}
+        rejectReason={ticket.rejectReason}
+        rejectReasonLabel={copy.rejectReason}
+      />
 
       <TicketDetailTabs
         labels={{
@@ -177,129 +332,26 @@ export default async function TicketDetailPage({
           costs: copy.tabCosts,
           timeline: copy.tabTimeline,
         }}
+        desktopSplit={{
+          main: (
+            <>
+              {intakeBlock}
+              {attachmentsBlock}
+              {assistBlock}
+            </>
+          ),
+          aside: actionsBlock,
+        }}
         overview={
           <>
-            <p className="whitespace-pre-wrap text-[var(--foreground)]">
-              {ticket.description}
-            </p>
-            {ticket.asset ? (
-              <p className="text-sm text-[var(--muted-foreground)]">
-                {copy.assetPrefix} {ticket.asset.label}
-              </p>
-            ) : null}
-            {ticket.cancelReason ? (
-              <p className="text-sm text-[var(--critical)]">
-                {copy.cancelReason} {ticket.cancelReason}
-              </p>
-            ) : null}
-            <section className="space-y-4">
-              <h2 className="text-sm font-semibold uppercase tracking-wide text-[var(--muted-foreground)]">
-                {copy.attachments}
-              </h2>
-              <AttachmentGallery
-                ticketId={ticket.id}
-                labels={msg.ticketPanels}
-                photoWord={copy.photos}
-                locale={prefs.locale}
-                items={ticket.attachments.map((a) => ({
-                  id: a.id,
-                  mime: a.mime,
-                  sizeBytes: a.sizeBytes,
-                }))}
-              />
-              {ticket.status !== "cancelled" && ticket.status !== "verified" ? (
-                <AttachmentUploader
-                  ticketId={ticket.id}
-                  labels={msg.ticketPanels}
-                  locale={prefs.locale}
-                />
-              ) : null}
-            </section>
-            <SummarizeNotesPanel
-              ticketId={ticket.id}
-              canOps={canOps}
-              labels={msg.ticketPanels}
-              locale={prefs.locale}
-            />
+            {intakeBlock}
+            {attachmentsBlock}
+            {assistBlock}
           </>
         }
-        work={
-          <>
-            <TicketOpsPanel
-              ticketId={ticket.id}
-              status={ticket.status}
-              priority={ticket.priority}
-              storeId={ticket.storeId}
-              category={ticket.category}
-              vendors={vendors}
-              preferredHint={hint}
-              canOps={canOps}
-              labels={msg.ticketPanels}
-              locale={prefs.locale}
-            />
-            <SlaRelaunchPanel
-              ticketId={ticket.id}
-              breached={!!ticket.slaBreachedAt}
-              canOps={canOps}
-              labels={msg.ticketPanels}
-              locale={prefs.locale}
-            />
-            <VerifyPanel
-              ticketId={ticket.id}
-              status={ticket.status}
-              canVerify={can(session.role, RbacAction.verifyTicket)}
-              labels={msg.ticketPanels}
-              locale={prefs.locale}
-            />
-            {ticket.completionReport ? (
-              <p className="text-sm text-[var(--muted-foreground)]">
-                {copy.reportPrefix} {ticket.completionReport}
-              </p>
-            ) : null}
-          </>
-        }
-        costs={
-          <>
-            {showCosts ? (
-              <p className="text-sm">
-                {copy.costsPrefix}{" "}
-                {formatMoney(ticket.actualCost, prefs) ?? copy.actualDash}
-                {ticket.estimatedCost
-                  ? ` · ${copy.estimatePrefix} ${formatMoney(ticket.estimatedCost, prefs)}`
-                  : ""}
-              </p>
-            ) : (
-              <p className="text-sm text-[var(--muted-foreground)]">—</p>
-            )}
-            {(canDecide || ticket.quoteStatus || ticket.estimatedCost) &&
-            (canDecide || showCosts) ? (
-              <QuotePanel
-                ticketId={ticket.id}
-                mode={canDecide ? "decide" : "readonly"}
-                quoteStatus={ticket.quoteStatus}
-                estimatedCost={
-                  ticket.estimatedCost != null
-                    ? Number(ticket.estimatedCost)
-                    : null
-                }
-                labels={msg.ticketPanels}
-                locale={prefs.locale}
-                dateLocale={prefs.dateLocale}
-                currency={prefs.currency}
-              />
-            ) : null}
-          </>
-        }
-        timeline={
-          <TicketTimeline
-            events={events}
-            showInternalNotes={showInternalNotes}
-            labels={msg.ticketTimeline}
-            dateLocale={prefs.dateLocale}
-            locale={prefs.locale}
-            currency={prefs.currency}
-          />
-        }
+        work={actionsBlock}
+        costs={costsBlock}
+        timeline={timelineBlock}
       />
     </PageFrame>
   );
