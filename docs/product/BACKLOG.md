@@ -644,7 +644,7 @@ E00 Platform OSS (Compose, SeaweedFS, Mailpit, pg-boss, Prisma schema)
 | **F5-UX-10** | Tabelle paginate/filtrabili (TanStack) | **P0** | Done 2026-11-04 — DataTable + tickets/stores/vendors/assets/contratti/rfq/inbox | No |
 | **F5-UX-11** | Breadcrumb + Esci fuori topbar | **P1** | Done 2026-11-04 — breadcrumb HQ/phone; Esci in sidebar (non topbar dashboard) | No |
 | **F5-UX-12** | Icone azioni row (edit/archive/…) | **P1** | Done 2026-11-04 — `RowActionLink`/`RowActionSubmit` Lucide + label su tabelle CRUD, members, PM | No |
-| **F5-UX-13** | Calendario PM stile Google Calendar | **P0** | Done 2026-11-04 — viste mese/settimana/agenda, toolbar Oggi/nav, chip + Sheet create/detail | No |
+| **F5-UX-13** | Calendario PM stile Google Calendar | **P0** | Done 2026-11-04 — viste mese/settimana/agenda; create/detail popover ancorato al click (no sheet) | No |
 
 ---
 
