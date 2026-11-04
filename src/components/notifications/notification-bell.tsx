@@ -130,6 +130,8 @@ export function NotificationBell({
   const [open, setOpen] = useState(false);
   const [count, setCount] = useState(0);
   const [items, setItems] = useState<Item[]>([]);
+  const [listLoading, setListLoading] = useState(false);
+  const [mutating, setMutating] = useState(false);
 
   const refreshCount = useCallback(async () => {
     if (document.visibilityState === "hidden") return;
@@ -142,10 +144,15 @@ export function NotificationBell({
   }, []);
 
   const loadList = useCallback(async () => {
-    const res = await fetch("/api/notifications", { cache: "no-store" });
-    if (!res.ok) return;
-    const data = (await res.json()) as { items: Item[] };
-    setItems(data.items ?? []);
+    setListLoading(true);
+    try {
+      const res = await fetch("/api/notifications", { cache: "no-store" });
+      if (!res.ok) return;
+      const data = (await res.json()) as { items: Item[] };
+      setItems(data.items ?? []);
+    } finally {
+      setListLoading(false);
+    }
   }, []);
 
   useEffect(() => {
@@ -167,13 +174,25 @@ export function NotificationBell({
   }
 
   async function markOne(id: string) {
-    await fetch(`/api/notifications/${id}/read`, { method: "POST" });
-    await Promise.all([loadList(), refreshCount()]);
+    if (mutating) return;
+    setMutating(true);
+    try {
+      await fetch(`/api/notifications/${id}/read`, { method: "POST" });
+      await Promise.all([loadList(), refreshCount()]);
+    } finally {
+      setMutating(false);
+    }
   }
 
   async function markAll() {
-    await fetch("/api/notifications/read-all", { method: "POST" });
-    await Promise.all([loadList(), refreshCount()]);
+    if (mutating) return;
+    setMutating(true);
+    try {
+      await fetch("/api/notifications/read-all", { method: "POST" });
+      await Promise.all([loadList(), refreshCount()]);
+    } finally {
+      setMutating(false);
+    }
   }
 
   const aria =
@@ -223,8 +242,9 @@ export function NotificationBell({
           {count > 0 ? (
             <button
               type="button"
+              disabled={mutating || listLoading}
               onClick={() => void markAll()}
-              className="inline-flex items-center gap-1 text-[length:var(--text-caption)] font-medium text-[var(--primary)] underline-offset-2 hover:underline"
+              className="inline-flex items-center gap-1 text-[length:var(--text-caption)] font-medium text-[var(--primary)] underline-offset-2 hover:underline disabled:opacity-60"
             >
               <CheckCheck className="size-3.5 stroke-[1.75]" aria-hidden />
               {labels.markAll}
@@ -233,7 +253,15 @@ export function NotificationBell({
         </div>
 
         <ul className="max-h-80 overflow-y-auto p-1.5">
-          {items.length === 0 ? (
+          {listLoading ? (
+            <li className="list-none py-2">
+              <StatusPanel
+                kind="loading"
+                locale={locale}
+                className="py-8"
+              />
+            </li>
+          ) : items.length === 0 ? (
             <li className="list-none py-2">
               <StatusPanel
                 kind="empty"
@@ -306,8 +334,9 @@ export function NotificationBell({
                         {unread ? (
                           <button
                             type="button"
+                            disabled={mutating}
                             onClick={() => void markOne(n.id)}
-                            className="text-[length:var(--text-caption)] text-[var(--muted-foreground)] underline-offset-2 hover:underline"
+                            className="text-[length:var(--text-caption)] text-[var(--muted-foreground)] underline-offset-2 hover:underline disabled:opacity-60"
                           >
                             {labels.markRead}
                           </button>

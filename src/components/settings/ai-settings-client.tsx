@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import type { MessageCatalog } from "@/i18n";
+import { StatusPanel } from "@/components/ui/status-panel";
+import type { Locale, MessageCatalog } from "@/i18n";
 
 export function AiSettingsClient(props: {
   configured: boolean;
@@ -10,8 +11,9 @@ export function AiSettingsClient(props: {
   source: string;
   model: string;
   labels: MessageCatalog["settingsAi"];
+  locale?: Locale;
 }) {
-  const { labels } = props;
+  const { labels, locale = "it" } = props;
   const [status, setStatus] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
 
@@ -77,7 +79,9 @@ export function AiSettingsClient(props: {
       <Button type="button" onClick={ping} disabled={pending}>
         {pending ? labels.testing : labels.testConnection}
       </Button>
-      {status ? (
+      {pending ? (
+        <StatusPanel kind="loading" title={labels.testing} locale={locale} />
+      ) : status ? (
         <p className="text-sm text-[var(--muted-foreground)]" role="status">
           {status}
         </p>

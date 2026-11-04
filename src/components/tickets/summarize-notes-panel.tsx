@@ -80,9 +80,11 @@ export function SummarizeNotesPanel({
         {labels.summarizeHint}
       </p>
       {pending && !summary ? (
-        <p className="text-sm text-[var(--muted-foreground)]" role="status">
-          {labels.summarizeAutoPending}
-        </p>
+        <StatusPanel
+          kind="loading"
+          title={labels.summarizeAutoPending}
+          locale={locale}
+        />
       ) : null}
       <button
         type="button"
