@@ -639,6 +639,7 @@ E00 Platform OSS (Compose, SeaweedFS, Mailpit, pg-boss, Prisma schema)
 | **F5-UX-05** | Store intake + vendor PhoneShell | **P1** | Done 2026-11-04 — bottom nav; sticky CTA; touch ≥44px | No |
 | **F5-UX-06** | Auth / onboarding / CRUD polish | **P2** | Done 2026-11-04 — login; onboarding progress; liste dense | No |
 | **F5-UX-07** | Section sweep UI consistency | **P1** | Done 2026-11-04 — PageFrame su CRUD/settings/RFQ; sticky sotto topbar; StatusPanel i18n; phone RFQ touch | No |
+| **F5-UX-09** | Notifiche + token tipografia/colore | **P1** | Done 2026-11-04 — bell lucide + type icons; palette soft; font utilities | No |
 
 ---
 
