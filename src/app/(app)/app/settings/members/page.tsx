@@ -60,7 +60,7 @@ export default async function MembersPage() {
         {members.map((m) => (
           <li
             key={m.id}
-            className="rounded-[var(--radius)] border border-[var(--border)] p-4"
+            className="rounded-[var(--radius)] border border-[var(--border)] bg-[var(--card)] p-4"
           >
             <div className="flex flex-wrap items-baseline justify-between gap-2">
               <div>
@@ -111,7 +111,7 @@ export default async function MembersPage() {
                     <select
                       name="vendorId"
                       defaultValue={m.vendorId ?? ""}
-                      className="mt-1 w-full rounded-[var(--radius)] border border-[var(--border)] px-3 py-2"
+                      className="mt-1 w-full rounded-[var(--radius)] border border-[var(--border)] bg-[var(--card)] px-3 py-2"
                     >
                       <option value="">—</option>
                       {vendors.map((v) => (

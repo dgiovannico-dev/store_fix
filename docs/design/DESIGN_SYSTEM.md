@@ -212,7 +212,7 @@ Vietato: page transition marketing, parallax, confetti, skeleton shimmer aggress
 ## 11. Accessibilità — WCAG 2.1 AA
 
 - Contrasto testo/icone ≥ **4.5:1** (badge solid critical/signal verificati su light).
-- Focus visibile = `ring` ambra 2px; mai `outline-none` senza sostituto.
+- Focus visibile = `ring` brand teal 2px (`--ring`); mai `outline-none` senza sostituto.
 - Ordine focus logico; trap in Dialog/Sheet.
 - Label associate; errori annunciati (`aria-live="polite"` / `assertive` su submit fail).
 - Target touch ≥ 44px (store create ticket, vendor status).

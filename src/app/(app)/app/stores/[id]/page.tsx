@@ -42,7 +42,7 @@ export default async function StoreEditPage({
           await updateStoreAction(store.id, fd);
           redirect("/app/stores");
         }}
-        className="mt-8 space-y-3 rounded-[var(--radius)] border border-[var(--border)] p-4"
+        className="mt-8 space-y-3 rounded-[var(--radius)] border border-[var(--border)] bg-[var(--card)] p-4"
       >
         <label className="block text-sm">
           {copy.nameLabel}
@@ -51,7 +51,7 @@ export default async function StoreEditPage({
             required
             minLength={2}
             defaultValue={store.name}
-            className="mt-1 w-full rounded-[var(--radius)] border border-[var(--border)] px-3 py-2"
+            className="mt-1 w-full rounded-[var(--radius)] border border-[var(--border)] bg-[var(--card)] px-3 py-2"
           />
         </label>
         <label className="block text-sm">
@@ -59,7 +59,7 @@ export default async function StoreEditPage({
           <input
             name="city"
             defaultValue={store.city ?? ""}
-            className="mt-1 w-full rounded-[var(--radius)] border border-[var(--border)] px-3 py-2"
+            className="mt-1 w-full rounded-[var(--radius)] border border-[var(--border)] bg-[var(--card)] px-3 py-2"
           />
         </label>
         <label className="block text-sm">
@@ -67,7 +67,7 @@ export default async function StoreEditPage({
           <input
             name="address"
             defaultValue={store.address ?? ""}
-            className="mt-1 w-full rounded-[var(--radius)] border border-[var(--border)] px-3 py-2"
+            className="mt-1 w-full rounded-[var(--radius)] border border-[var(--border)] bg-[var(--card)] px-3 py-2"
           />
         </label>
         <label className="block text-sm">
@@ -75,7 +75,7 @@ export default async function StoreEditPage({
           <input
             name="timezone"
             defaultValue={store.timezone}
-            className="mt-1 w-full rounded-[var(--radius)] border border-[var(--border)] px-3 py-2"
+            className="mt-1 w-full rounded-[var(--radius)] border border-[var(--border)] bg-[var(--card)] px-3 py-2"
           />
         </label>
         <label className="block text-sm">
@@ -83,7 +83,7 @@ export default async function StoreEditPage({
           <input
             name="contacts"
             defaultValue={store.contacts ?? ""}
-            className="mt-1 w-full rounded-[var(--radius)] border border-[var(--border)] px-3 py-2"
+            className="mt-1 w-full rounded-[var(--radius)] border border-[var(--border)] bg-[var(--card)] px-3 py-2"
           />
         </label>
         <label className="block text-sm">
@@ -92,7 +92,7 @@ export default async function StoreEditPage({
             name="webhookUrl"
             defaultValue={store.webhookUrl ?? ""}
             placeholder={copy.webhookPlaceholder}
-            className="mt-1 w-full rounded-[var(--radius)] border border-[var(--border)] px-3 py-2"
+            className="mt-1 w-full rounded-[var(--radius)] border border-[var(--border)] bg-[var(--card)] px-3 py-2"
           />
         </label>
         <label className="block text-sm">
@@ -101,7 +101,7 @@ export default async function StoreEditPage({
             name="ntfyTopic"
             defaultValue={store.ntfyTopic ?? ""}
             placeholder={copy.ntfyPlaceholder}
-            className="mt-1 w-full rounded-[var(--radius)] border border-[var(--border)] px-3 py-2"
+            className="mt-1 w-full rounded-[var(--radius)] border border-[var(--border)] bg-[var(--card)] px-3 py-2"
           />
         </label>
         <button

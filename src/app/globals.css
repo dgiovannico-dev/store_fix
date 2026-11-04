@@ -2,7 +2,7 @@
 
 :root {
   /*
-   * Cool Teal Facility — slate-mist surfaces + verdant teal brand.
+   * Cool Teal Facility — cool mist surfaces + verdant teal brand.
    * Amber = SLA signal only; rose = critical. No purple / cream-terracotta.
    */
   --background: oklch(0.985 0.008 210);

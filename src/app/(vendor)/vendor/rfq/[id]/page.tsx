@@ -77,7 +77,7 @@ export default async function VendorRfqDetailPage({
             "use server";
             await submitQuoteBidAction(bid.id, fd);
           }}
-          className="mt-6 space-y-3 rounded-[var(--radius)] border border-[var(--border)] p-4"
+          className="mt-6 space-y-3 rounded-[var(--radius)] border border-[var(--border)] bg-[var(--card)] p-4"
         >
           <QuoteAmountFields
             defaultAmount={
@@ -86,7 +86,7 @@ export default async function VendorRfqDetailPage({
             defaultNote={bid.note}
             amountLabel={withCurrency(msg.rfq.amountLabel, prefs.currency)}
             noteLabel={msg.rfq.noteLabel}
-            className="mt-1 w-full rounded-[var(--radius)] border border-[var(--border)] px-3 py-2"
+            className="mt-1 w-full rounded-[var(--radius)] border border-[var(--border)] bg-[var(--card)] px-3 py-2"
           />
           <PendingSubmitButton
             size="lg"

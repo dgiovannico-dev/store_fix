@@ -48,7 +48,7 @@ export default function AcceptInvitePage() {
           name="name"
           required
           placeholder={msg.namePlaceholder}
-          className="w-full rounded-[var(--radius)] border border-[var(--border)] px-3 py-2.5"
+          className="w-full rounded-[var(--radius)] border border-[var(--border)] bg-[var(--card)] px-3 py-2.5"
         />
         <input
           name="password"
@@ -56,7 +56,7 @@ export default function AcceptInvitePage() {
           required
           minLength={8}
           placeholder={msg.password}
-          className="w-full rounded-[var(--radius)] border border-[var(--border)] px-3 py-2.5"
+          className="w-full rounded-[var(--radius)] border border-[var(--border)] bg-[var(--card)] px-3 py-2.5"
         />
         {error ? (
           <StatusPanel kind="error" title={error} locale={locale} />
