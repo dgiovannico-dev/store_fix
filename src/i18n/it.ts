@@ -528,8 +528,8 @@ export const it = {
   },
   pm: {
     title: "Calendario manutenzione",
-    hint: "Visite pianificate nei prossimi 30 giorni (anche serie RRULE)",
-    add: "Nuova visita PM",
+    hint: "Visite PM su griglia mese / settimana / agenda (serie RRULE incluse)",
+    add: "Crea",
     empty: "Nessuna visita pianificata in questo periodo.",
     titlePlaceholder: "Titolo visita",
     storePlaceholder: "Punto vendita",
@@ -541,11 +541,20 @@ export const it = {
     recurrenceWeekly: "Settimanale",
     recurrenceMonthly: "Mensile",
     recurrenceQuarterly: "Trimestrale",
-    schedule: "Pianifica",
+    schedule: "Salva",
     overdue: "in ritardo",
     openTicket: "Apri ticket",
     done: "Fatto",
     cancel: "Annulla",
+    today: "Oggi",
+    viewMonth: "Mese",
+    viewWeek: "Settimana",
+    viewAgenda: "Agenda",
+    more: "+{n} altri",
+    createTitle: "Nuova visita",
+    detailTitle: "Dettaglio visita",
+    close: "Chiudi",
+    weekdays: ["lun", "mar", "mer", "gio", "ven", "sab", "dom"],
   },
   members: {
     title: "Membri workspace",
@@ -741,9 +750,13 @@ export const it = {
   },
 } as const;
 
-/** Shape strutturale (stringhe) così `en` può divergere nei valori. */
+/** Shape strutturale (stringhe / liste di stringhe) così `en` può divergere nei valori. */
 export type MessageCatalog = {
   [K in keyof typeof it]: (typeof it)[K] extends string
     ? string
-    : { [P in keyof (typeof it)[K]]: string };
+    : {
+        [P in keyof (typeof it)[K]]: (typeof it)[K][P] extends readonly string[]
+          ? readonly string[]
+          : string;
+      };
 };

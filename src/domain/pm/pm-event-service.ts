@@ -34,22 +34,36 @@ export function canManagePm(role: Role): boolean {
 export async function listPmEvents(input: {
   tenantId: string;
   role: Role;
-  /** Giorni avanti (default 30); include overdue planned */
+  /** Giorni avanti (default 30); ignored if `from`/`to` set */
   horizonDays?: number;
+  /** Inclusive range for calendar views (GCal-like grid). */
+  from?: Date;
+  to?: Date;
 }) {
   requireTenantId(input.tenantId);
   if (!canManagePm(input.role)) {
     throw new ForbiddenError(undefined, "pmCalendarForbidden");
   }
-  const horizon = input.horizonDays ?? 30;
-  const until = new Date(Date.now() + horizon * 24 * 60 * 60 * 1000);
+
+  let scheduledAt: { gte?: Date; lte?: Date };
+  if (input.from || input.to) {
+    scheduledAt = {
+      ...(input.from ? { gte: input.from } : {}),
+      ...(input.to ? { lte: input.to } : {}),
+    };
+  } else {
+    const horizon = input.horizonDays ?? 30;
+    scheduledAt = {
+      lte: new Date(Date.now() + horizon * 24 * 60 * 60 * 1000),
+    };
+  }
 
   return prisma.plannedMaintenanceEvent.findMany({
     where: {
       tenantId: input.tenantId,
       deletedAt: null,
       status: PmEventStatus.planned,
-      scheduledAt: { lte: until },
+      scheduledAt,
     },
     orderBy: { scheduledAt: "asc" },
     include: {
