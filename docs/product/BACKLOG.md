@@ -5,7 +5,7 @@
 > **Gate codice:** approvazione umana esplicita + lavoro su branch `develop` / `feature/*` (non commit diretti su `main`).  
 > **Vincolo hard:** stack **100% open source / self-host**, nessun componente SaaS a pagamento. Dettaglio: [`STACK.md`](./STACK.md).  
 > **RBAC:** [`RBAC.md`](./RBAC.md).  
-> **Scope:** MVP (Fase 1) + production-ready (**E14 / S5**). **Fase 2 Done** (F2-01…F2-09). **Fase 3** in-repo Done (F3-02…08; **F3-01** = VPS umano). **Fase 4 Done in-repo** (F4-01…05, 2026-11-03). **Fase 5** UX Done (F5-UX-00…13,15; **F5-UX-14** aperto). **Fase 6** bozza PO — [`COMPETITIVE_POSITIONING.md`](./COMPETITIVE_POSITIONING.md).  
+> **Scope:** MVP (Fase 1) + production-ready (**E14 / S5**). **Fase 2 Done** (F2-01…F2-09). **Fase 3** in-repo Done (F3-02…08; **F3-01** = VPS umano). **Fase 4 Done in-repo** (F4-01…05, 2026-11-03). **Fase 5** UX Done (F5-UX-00…13,15; **F5-UX-14** aperto). **Fase 6** bozza PO — [`COMPETITIVE_POSITIONING.md`](./COMPETITIVE_POSITIONING.md). **Fase 7** AI platform bozza — [`AI_PLATFORM.md`](./AI_PLATFORM.md) / ADR-0012.  
 > **Lingua UI MVP:** italiano. Mercato: Italia / EUR.  
 > **Go prod:** NO-GO finché VPS — [`sprints/S5-EXIT-GAPS.md`](./sprints/S5-EXIT-GAPS.md) · [`../ops/NEXT_VPS.md`](../ops/NEXT_VPS.md).  
 > **Integrazione:** GitFlow **con PR auto-merge** — `feature/*`/`bugfix/*` → PR → `develop`; lab sync / `release/*`/`hotfix/*` → `main` (`scripts/gitflow-ship-pr.sh`).
@@ -669,6 +669,27 @@ E00 Platform OSS (Compose, SeaweedFS, Mailpit, pg-boss, Prisma schema)
 | **F6-08** | Calendario Day+Week+Month (≡ F5-UX-14) | **P1** | Stesso AC di F5-UX-14; chiudere uno chiude l’altro | No |
 | **F6-09** | Store wallboard / TV mode | **P2** | Vista sola lettura aperti+breach, auto-refresh, no nav | No |
 | **F6-10** | Pacchetto Franchise HQ IT | **P1** | Seed policy SLA + copy onboarding + ruoli demo “franchise HQ” | No |
+
+---
+
+## Fase 7 — AI platform (vLLM + multi-provider BYOK) — bozza PO
+
+> **Stato:** bozza 2026-11-04 — **attende GO F7** (espansione architetturale). Spec: [`AI_PLATFORM.md`](./AI_PLATFORM.md) · ADR [`../adr/0012-ai-multi-provider-byok.md`](../adr/0012-ai-multi-provider-byok.md).  
+> **Invarianti:** assist + human-confirm; mai SoR; default locale vLLM; cloud solo BYOK tenant.  
+> **SaaS tenant:** settings + secret + audit + limiti — **non** billing FacilityFlow in F7.
+
+| ID | Titolo | Priorità | AC (1 riga) | Dip. VPS |
+|----|--------|----------|-------------|----------|
+| **F7-01** | Port `LlmGateway` + vLLM openai_compat; migrare category/summarize | **P0** | Stessi endpoint AI; `source` riflette provider; Ollama-only deprecato | No |
+| **F7-02** | Env `AI_*` + `/api/ai/health` (models) | **P0** | Health verde con vLLM up; docs runbook | No |
+| **F7-03** | Tenant AI settings + BYOK cifrato + UI | **P0** | HQ abilita provider/key; test ping; toggle “default piattaforma” | No |
+| **F7-04** | Catalogo preset provider (local+cloud+custom) | **P0** | Preset vLLM/Ollama/OpenAI/Anthropic/Gemini/Groq/OpenRouter/Azure/custom | No |
+| **F7-05** | Assist A4 bozza msg + A1 priorità | **P1** | Bozza editabile; priorità suggest con confirm | No |
+| **F7-06** | Assist A6 RFQ compare + hook digest A5 | **P1** | Confronto bid sola lettura; digest narrative opz. | No |
+| **F7-07** | Audit `AiInvocation` + soft budget | **P1** | Log per tenant/feature; soft cap; no prompt plaintext cloud | No |
+| **F7-08** | Similar ticket embeddings (B3) | **P2** | Opt-in; richiede `/v1/embeddings` | No |
+| **F7-09** | Vision caption intake (B2) | **P2** | Opt-in; solo se modello vision | No |
+| **F7-10** | Lock docs ADR-0012 Accepted + `AI_PROVIDERS.md` | **P0** | ADR Accepted; STACK allineato; runbook ops | No |
 
 ---
 
