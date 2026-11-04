@@ -1,6 +1,9 @@
 import { createHash, randomBytes } from "crypto";
 import { prisma } from "@/infrastructure/db/prisma";
-import { enqueueEmail } from "@/infrastructure/email/outbox";
+import {
+  appendEmailOutbox,
+  kickEmailOutboxDispatch,
+} from "@/infrastructure/email/outbox";
 
 const VERIFY_TTL_MS = 24 * 60 * 60 * 1000;
 
@@ -15,28 +18,31 @@ function appBaseUrl(): string {
   );
 }
 
-/** Crea VerificationToken e invia email di conferma (T1.13). */
+/** Crea VerificationToken + outbox email nella stessa TX (T1.13 / F3-09). */
 export async function sendEmailVerification(email: string): Promise<void> {
   const normalized = email.toLowerCase();
-  await prisma.verificationToken.deleteMany({
-    where: { identifier: normalized },
-  });
-
   const raw = randomBytes(32).toString("hex");
-  await prisma.verificationToken.create({
-    data: {
-      identifier: normalized,
-      token: hashToken(raw),
-      expires: new Date(Date.now() + VERIFY_TTL_MS),
-    },
-  });
-
   const verifyUrl = `${appBaseUrl()}/verify-email?token=${raw}&email=${encodeURIComponent(normalized)}`;
-  await enqueueEmail({
-    to: normalized,
-    template: "email_verify",
-    vars: { verifyUrl },
+
+  await prisma.$transaction(async (tx) => {
+    await tx.verificationToken.deleteMany({
+      where: { identifier: normalized },
+    });
+    await tx.verificationToken.create({
+      data: {
+        identifier: normalized,
+        token: hashToken(raw),
+        expires: new Date(Date.now() + VERIFY_TTL_MS),
+      },
+    });
+    await appendEmailOutbox(tx, {
+      to: normalized,
+      template: "email_verify",
+      vars: { verifyUrl },
+      idempotencyKey: `email_verify:${normalized}:${raw.slice(0, 8)}`,
+    });
   });
+  await kickEmailOutboxDispatch();
 }
 
 export type VerifyEmailResult =

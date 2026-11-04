@@ -1,7 +1,10 @@
 import type { Prisma, Ticket } from "@prisma/client";
 import { getTenantI18nPrefs } from "@/application/tenant/i18n-prefs";
 import { NotificationType } from "@/domain/notification/types";
-import { enqueueEmail } from "@/infrastructure/email/outbox";
+import {
+  appendEmailOutbox,
+  kickEmailOutboxDispatch,
+} from "@/infrastructure/email/outbox";
 import type { EmailTemplateId } from "@/infrastructure/email/templates";
 import {
   pushStoreTicketEvent,
@@ -32,53 +35,6 @@ export type EmitKind =
   | "verified"
   | "rejected";
 
-async function createNotifications(input: {
-  tenantId: string;
-  userIds: string[];
-  type: string;
-  ticketId: string;
-  payload: Prisma.InputJsonValue;
-}) {
-  if (input.userIds.length === 0) return;
-  await prisma.notification.createMany({
-    data: input.userIds.map((userId) => ({
-      tenantId: input.tenantId,
-      userId,
-      type: input.type,
-      ticketId: input.ticketId,
-      payload: input.payload,
-    })),
-  });
-}
-
-async function sendTemplate(input: {
-  emails: string[];
-  template: EmailTemplateId;
-  locale: Locale;
-  vars: {
-    ticketId: string;
-    storeName?: string;
-    vendorName?: string;
-    summary?: string;
-  };
-}) {
-  const unique = [...new Set(input.emails.filter(Boolean))];
-  await Promise.all(
-    unique.map((to) =>
-      enqueueEmail({
-        to,
-        template: input.template,
-        locale: input.locale,
-        vars: {
-          ...input.vars,
-          summary:
-            `${input.vars.summary ?? ""}\n${ticketDeepLink(input.vars.ticketId)}`.trim(),
-        },
-      }),
-    ),
-  );
-}
-
 async function notify(
   tenantId: string,
   ticketId: string,
@@ -96,19 +52,40 @@ async function notify(
   extraEmails: string[] = [],
 ) {
   const uniq = uniqueRecipients(recipients);
-  await createNotifications({
-    tenantId,
-    userIds: uniq.map((r) => r.userId),
-    type,
-    ticketId,
-    payload,
+  const emails = [
+    ...new Set(
+      [...uniq.map((r) => r.email), ...extraEmails].filter(Boolean),
+    ),
+  ];
+  const summaryWithLink =
+    `${vars.summary ?? ""}\n${ticketDeepLink(vars.ticketId)}`.trim();
+
+  await prisma.$transaction(async (tx) => {
+    if (uniq.length > 0) {
+      await tx.notification.createMany({
+        data: uniq.map((r) => ({
+          tenantId,
+          userId: r.userId,
+          type,
+          ticketId,
+          payload,
+        })),
+      });
+    }
+    for (const to of emails) {
+      await appendEmailOutbox(tx, {
+        to,
+        template,
+        locale,
+        tenantId,
+        vars: { ...vars, summary: summaryWithLink },
+      });
+    }
   });
-  await sendTemplate({
-    emails: [...uniq.map((r) => r.email), ...extraEmails],
-    template,
-    locale,
-    vars,
-  });
+
+  if (emails.length > 0) {
+    await kickEmailOutboxDispatch();
+  }
 }
 
 const STORE_PUSH_KINDS = new Set(["created", "assigned", "done"]);
@@ -154,7 +131,8 @@ async function maybePushStore(input: {
 }
 
 /**
- * Notification in-app + email outbox (T3.1).
+ * Notification in-app + email outbox (T3.1 / F3-09).
+ * UoW unica: createMany Notification + appendEmailOutbox.
  * Regole: docs/product/NOTIFICATION_RULES.md
  */
 export async function emitTicketNotification(input: {

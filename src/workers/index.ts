@@ -1,16 +1,18 @@
 /**
- * Worker Compose / locale: email + sla + imap + pm + gdpr.purge + attachment.gc + rate_limit.gc.
+ * Worker Compose / locale: email outbox + sla + imap + pm + gdpr.purge + attachment.gc + rate_limit.gc.
  * Avvio: npm run worker
  */
 import { PgBoss } from "pg-boss";
 import { gcSoftDeletedAttachments } from "../application/attachments/gc-soft-deleted";
+import {
+  gcSentEmailOutbox,
+  processEmailOutboxBatch,
+} from "../application/email/dispatch-outbox";
 import { pollImapInbound } from "../application/email-inbound/poll-imap";
 import { purgeExpiredVerifiedTickets } from "../application/gdpr/purge-expired";
 import { maintainPmJobs } from "../application/pm/maintain-pm";
 import { gcExpiredRateLimitBuckets } from "../application/rate-limit/gc-expired-buckets";
 import { checkSlaBreaches } from "../application/sla/check-breaches";
-import { sendEmail } from "../infrastructure/email/mailer";
-import { drainEmailOutbox } from "../infrastructure/email/outbox-drain";
 import { readImapInboundConfig } from "../infrastructure/email/imap-config";
 import { openImapflowMailbox } from "../infrastructure/email/imapflow-mailbox";
 import { runWeeklyHqDigest } from "../application/digest/weekly-hq-digest";
@@ -18,8 +20,8 @@ import {
   QUEUE_ATTACHMENT_GC,
   QUEUE_EMAIL_DIGEST_WEEKLY,
   QUEUE_EMAIL_IMAP_POLL,
-  QUEUE_EMAIL_OUTBOX_DRAIN,
-  QUEUE_EMAIL_SEND,
+  QUEUE_EMAIL_OUTBOX_DISPATCH,
+  QUEUE_EMAIL_OUTBOX_GC,
   QUEUE_GDPR_PURGE,
   QUEUE_PM_MAINTAIN,
   QUEUE_RATE_LIMIT_GC,
@@ -35,8 +37,8 @@ async function main() {
   const boss = new PgBoss({ connectionString: url });
   boss.on("error", (err) => console.error("[worker/pg-boss]", err));
   await boss.start();
-  await boss.createQueue(QUEUE_EMAIL_SEND);
-  await boss.createQueue(QUEUE_EMAIL_OUTBOX_DRAIN);
+  await boss.createQueue(QUEUE_EMAIL_OUTBOX_DISPATCH);
+  await boss.createQueue(QUEUE_EMAIL_OUTBOX_GC);
   await boss.createQueue(QUEUE_EMAIL_DIGEST_WEEKLY);
   await boss.createQueue(QUEUE_SLA_CHECK);
   await boss.createQueue(QUEUE_EMAIL_IMAP_POLL);
@@ -45,28 +47,16 @@ async function main() {
   await boss.createQueue(QUEUE_ATTACHMENT_GC);
   await boss.createQueue(QUEUE_RATE_LIMIT_GC);
 
-  await boss.work(
-    QUEUE_EMAIL_SEND,
-    { batchSize: 5 },
-    async (jobs) => {
-      for (const job of jobs) {
-        const data = job.data as {
-          to: string | string[];
-          subject: string;
-          text: string;
-          html?: string;
-        };
-        console.log(`[worker] email.send → ${JSON.stringify(data.to)}`);
-        await sendEmail(data);
-      }
-    },
-  );
-
-  await boss.work(QUEUE_EMAIL_OUTBOX_DRAIN, async () => {
-    const result = await drainEmailOutbox(25);
+  await boss.work(QUEUE_EMAIL_OUTBOX_DISPATCH, async () => {
+    const result = await processEmailOutboxBatch(20);
     console.log(
-      `[worker] email.outbox_drain → sent=${result.sent} failed=${result.failed}`,
+      `[worker] email.outbox_dispatch → claimed=${result.claimed} sent=${result.sent} retried=${result.retried} dead=${result.dead}`,
     );
+  });
+
+  await boss.work(QUEUE_EMAIL_OUTBOX_GC, async () => {
+    const result = await gcSentEmailOutbox(30);
+    console.log(`[worker] email.outbox_gc → deleted=${result.deleted}`);
   });
 
   await boss.work(QUEUE_EMAIL_DIGEST_WEEKLY, async () => {
@@ -133,7 +123,6 @@ async function main() {
   }
 
   try {
-    // F6-01 digest HQ — lunedì 08:00 Europe/Rome
     await boss.schedule(QUEUE_EMAIL_DIGEST_WEEKLY, "0 8 * * 1", null, {
       tz: "Europe/Rome",
     });
@@ -142,11 +131,20 @@ async function main() {
   }
 
   try {
-    await boss.schedule(QUEUE_EMAIL_OUTBOX_DRAIN, "*/2 * * * *", null, {
+    // F3-09 — poll outbox ogni 5s (cron secondi se supportato; fallback */1)
+    await boss.schedule(QUEUE_EMAIL_OUTBOX_DISPATCH, "*/1 * * * *", null, {
       tz: "Europe/Rome",
     });
   } catch (e) {
     console.warn("[worker] schedule outbox:", (e as Error).message);
+  }
+
+  try {
+    await boss.schedule(QUEUE_EMAIL_OUTBOX_GC, "0 5 * * *", null, {
+      tz: "Europe/Rome",
+    });
+  } catch (e) {
+    console.warn("[worker] schedule outbox.gc:", (e as Error).message);
   }
 
   try {
@@ -158,7 +156,6 @@ async function main() {
   }
 
   try {
-    // Soft-delete batch quotidiano 03:00 Europe/Rome (US-E12-01)
     await boss.schedule(QUEUE_GDPR_PURGE, "0 3 * * *", null, {
       tz: "Europe/Rome",
     });
@@ -167,7 +164,6 @@ async function main() {
   }
 
   try {
-    // SeaweedFS DeleteObject dopo grace — 04:00 Europe/Rome (post gdpr.purge)
     await boss.schedule(QUEUE_ATTACHMENT_GC, "0 4 * * *", null, {
       tz: "Europe/Rome",
     });
@@ -176,7 +172,6 @@ async function main() {
   }
 
   try {
-    // RateLimitBucket scaduti — orario (utile con FF_RATE_LIMIT_STORE=postgres)
     await boss.schedule(QUEUE_RATE_LIMIT_GC, "15 * * * *", null, {
       tz: "Europe/Rome",
     });
@@ -202,7 +197,8 @@ async function main() {
 
   console.log(
     "[worker] ready — queues:",
-    QUEUE_EMAIL_SEND,
+    QUEUE_EMAIL_OUTBOX_DISPATCH,
+    QUEUE_EMAIL_OUTBOX_GC,
     QUEUE_SLA_CHECK,
     QUEUE_EMAIL_IMAP_POLL,
     QUEUE_PM_MAINTAIN,

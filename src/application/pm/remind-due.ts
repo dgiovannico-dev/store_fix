@@ -1,13 +1,16 @@
 import { PmEventStatus, Role } from "@prisma/client";
 import { getTenantI18nPrefs } from "@/application/tenant/i18n-prefs";
-import { enqueueEmail } from "@/infrastructure/email/outbox";
+import {
+  appendEmailOutbox,
+  kickEmailOutboxDispatch,
+} from "@/infrastructure/email/outbox";
 import { prisma } from "@/infrastructure/db/prisma";
 
 const DEFAULT_LEAD_HOURS = 48;
 
 /**
- * Promemoria email HQ per visite PM imminenti (F3-05).
- * Idempotente via `remindedAt IS NULL` + chiave outbox.
+ * Promemoria email HQ per visite PM imminenti (F3-05 / F3-09).
+ * Idempotente via `remindedAt IS NULL` + chiave outbox (stessa TX).
  */
 export async function remindDuePmEvents(
   now = new Date(),
@@ -26,13 +29,8 @@ export async function remindDuePmEvents(
   });
 
   let reminded = 0;
+  let queued = false;
   for (const event of due) {
-    const claimed = await prisma.plannedMaintenanceEvent.updateMany({
-      where: { id: event.id, remindedAt: null },
-      data: { remindedAt: now },
-    });
-    if (claimed.count === 0) continue;
-
     const memberships = await prisma.membership.findMany({
       where: {
         tenantId: event.tenantId,
@@ -49,23 +47,35 @@ export async function remindDuePmEvents(
 
     const when = event.scheduledAt.toISOString();
     const { locale } = await getTenantI18nPrefs(event.tenantId);
-    await Promise.all(
-      emails.map((to) =>
-        enqueueEmail({
+
+    const claimed = await prisma.$transaction(async (tx) => {
+      const upd = await tx.plannedMaintenanceEvent.updateMany({
+        where: { id: event.id, remindedAt: null },
+        data: { remindedAt: now },
+      });
+      if (upd.count === 0) return false;
+      for (const to of emails) {
+        await appendEmailOutbox(tx, {
           to,
           template: "pm_reminder",
           locale,
+          tenantId: event.tenantId,
           vars: {
             storeName: event.store.name,
             summary: `${event.title} — ${when}`,
             ticketId: event.id,
           },
           idempotencyKey: `pm_reminder:${event.id}:${to}`,
-        }),
-      ),
-    );
+        });
+      }
+      return true;
+    });
+
+    if (!claimed) continue;
+    if (emails.length > 0) queued = true;
     reminded += 1;
   }
 
+  if (queued) await kickEmailOutboxDispatch();
   return { reminded };
 }

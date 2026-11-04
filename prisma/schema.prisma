@@ -590,12 +590,12 @@ model RateLimitBucket {
 
 enum EmailOutboxStatus {
   pending
-  sending
+  processing
   sent
-  failed
+  dead
 }
 
-/// F6-07 — transactional email outbox (SoR send); worker SKIP LOCKED.
+/// F3-09 / F6-07 — transactional email outbox (SoR send); dispatcher SKIP LOCKED.
 model EmailOutbox {
   id             String            @id @default(cuid())
   tenantId       String?
@@ -603,17 +603,20 @@ model EmailOutbox {
   subject        String
   textBody       String
   htmlBody       String?
+  template       String            @default("unknown")
   idempotencyKey String            @unique
   status         EmailOutboxStatus @default(pending)
   attempts       Int               @default(0)
+  nextAttemptAt  DateTime          @default(now())
   lastError      String?
   lockedAt       DateTime?
-  lockedBy       String?
+  lockToken      String?
   createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
   sentAt         DateTime?
 
-  @@index([status, createdAt])
-  @@index([lockedAt])
+  @@index([status, nextAttemptAt])
+  @@index([tenantId, createdAt])
 }
 
 /// F7-03 — tenant AI override (BYOK); apiKeyEnc opaque.

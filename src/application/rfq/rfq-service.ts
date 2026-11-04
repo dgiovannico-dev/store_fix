@@ -13,7 +13,10 @@ import { canAwardRfqBid, canSubmitRfqBid } from "@/domain/rfq/rules";
 import { parseQuoteAmount } from "@/domain/ticket/quote";
 import { TicketEventType } from "@/domain/ticket/event-types";
 import { getTenantI18nPrefs } from "@/application/tenant/i18n-prefs";
-import { enqueueEmail } from "@/infrastructure/email/outbox";
+import {
+  appendEmailOutbox,
+  kickEmailOutboxDispatch,
+} from "@/infrastructure/email/outbox";
 import { appendTicketEvent } from "@/infrastructure/db/ticket-event-repository";
 import { prisma } from "@/infrastructure/db/prisma";
 import {
@@ -84,48 +87,56 @@ export async function createQuoteRequest(input: {
   }
 
   const uniqueIds = [...new Set(parsed.data.vendorIds)];
-  const request = await prisma.quoteRequest.create({
-    data: {
-      tenantId: input.tenantId,
-      title: parsed.data.title,
-      notes: parsed.data.notes,
-      ticketId: parsed.data.ticketId,
-      storeId,
-      status: QuoteRequestStatus.open,
-      createdByUserId: input.actorUserId,
-      bids: {
-        create: uniqueIds.map((vendorId) => ({
-          tenantId: input.tenantId,
-          vendorId,
-          status: QuoteBidStatus.invited,
-        })),
-      },
-    },
-    include: {
-      bids: { include: { vendor: { select: { id: true, name: true, email: true } } } },
-    },
-  });
-
-  const rfqUrl = `${appBaseUrl()}/vendor/rfq/${request.id}`;
   const { locale } = await getTenantI18nPrefs(input.tenantId);
-  await Promise.all(
-    request.bids.map(async (bid) => {
+
+  const request = await prisma.$transaction(async (tx) => {
+    const created = await tx.quoteRequest.create({
+      data: {
+        tenantId: input.tenantId,
+        title: parsed.data.title,
+        notes: parsed.data.notes,
+        ticketId: parsed.data.ticketId,
+        storeId,
+        status: QuoteRequestStatus.open,
+        createdByUserId: input.actorUserId,
+        bids: {
+          create: uniqueIds.map((vendorId) => ({
+            tenantId: input.tenantId,
+            vendorId,
+            status: QuoteBidStatus.invited,
+          })),
+        },
+      },
+      include: {
+        bids: {
+          include: {
+            vendor: { select: { id: true, name: true, email: true } },
+          },
+        },
+      },
+    });
+
+    const rfqUrl = `${appBaseUrl()}/vendor/rfq/${created.id}`;
+    for (const bid of created.bids) {
       const to = bid.vendor.email?.trim();
-      if (!to) return;
-      await enqueueEmail({
+      if (!to) continue;
+      await appendEmailOutbox(tx, {
         to,
         template: "rfq_invite",
         locale,
+        tenantId: input.tenantId,
         vars: {
           vendorName: bid.vendor.name,
-          summary: request.title,
+          summary: created.title,
           rfqUrl,
-          ticketId: request.ticketId ?? request.id,
+          ticketId: created.ticketId ?? created.id,
         },
-        idempotencyKey: `rfq_invite:${request.id}:${bid.vendorId}`,
-      }).catch((e) => console.error("[rfq.invite]", e));
-    }),
-  );
+        idempotencyKey: `rfq_invite:${created.id}:${bid.vendorId}`,
+      });
+    }
+    return created;
+  });
+  await kickEmailOutboxDispatch();
 
   return { ok: true as const, request };
 }

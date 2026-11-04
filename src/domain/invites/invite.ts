@@ -3,7 +3,10 @@ import { Role } from "@prisma/client";
 import { z } from "zod";
 import { getTenantI18nPrefs } from "@/application/tenant/i18n-prefs";
 import { requireTenantId } from "@/infrastructure/db/tenant-scope";
-import { enqueueEmail } from "@/infrastructure/email/outbox";
+import {
+  appendEmailOutbox,
+  kickEmailOutboxDispatch,
+} from "@/infrastructure/email/outbox";
 import { prisma } from "@/infrastructure/db/prisma";
 import { RbacAction } from "@/domain/rbac/actions";
 import { assertCanMutate } from "@/domain/rbac/guards";
@@ -74,28 +77,33 @@ export async function createInvite(input: {
   }
 
   const raw = randomBytes(32).toString("hex");
-  const invite = await prisma.inviteToken.create({
-    data: {
-      tenantId: input.tenantId,
-      email: parsed.data.email.toLowerCase(),
-      role: parsed.data.role,
-      storeIds: parsed.data.storeIds,
-      vendorId: parsed.data.vendorId ?? null,
-      tokenHash: hashToken(raw),
-      expiresAt: new Date(Date.now() + INVITE_TTL_MS),
-      createdById: input.actorUserId,
-    },
-  });
-
   const acceptUrl = `${appBaseUrl()}/invite/${raw}`;
   const { locale } = await getTenantI18nPrefs(input.tenantId);
-  await enqueueEmail({
-    to: invite.email,
-    template: "invite",
-    locale,
-    vars: { acceptUrl, role: invite.role },
-    idempotencyKey: `invite:${invite.id}`,
+
+  const invite = await prisma.$transaction(async (tx) => {
+    const row = await tx.inviteToken.create({
+      data: {
+        tenantId: input.tenantId,
+        email: parsed.data.email.toLowerCase(),
+        role: parsed.data.role,
+        storeIds: parsed.data.storeIds,
+        vendorId: parsed.data.vendorId ?? null,
+        tokenHash: hashToken(raw),
+        expiresAt: new Date(Date.now() + INVITE_TTL_MS),
+        createdById: input.actorUserId,
+      },
+    });
+    await appendEmailOutbox(tx, {
+      to: row.email,
+      template: "invite",
+      locale,
+      tenantId: input.tenantId,
+      vars: { acceptUrl, role: row.role },
+      idempotencyKey: `invite:${row.id}`,
+    });
+    return row;
   });
+  await kickEmailOutboxDispatch();
 
   return { ok: true, inviteId: invite.id, acceptUrl };
 }
