@@ -78,6 +78,7 @@ model Tenant {
   pmEvents            PlannedMaintenanceEvent[]
   quoteRequests       QuoteRequest[]
   quoteBids           QuoteBid[]
+  aiConfig            TenantAiConfig?
 }
 
 /// Progress Flusso C — skip esplicito; step “fatti” derivati da SoR (T1.30).
@@ -585,4 +586,61 @@ model RateLimitBucket {
   resetAt DateTime
 
   @@index([resetAt])
+}
+
+enum EmailOutboxStatus {
+  pending
+  sending
+  sent
+  failed
+}
+
+/// F6-07 — transactional email outbox (SoR send); worker SKIP LOCKED.
+model EmailOutbox {
+  id             String            @id @default(cuid())
+  tenantId       String?
+  toAddr         String
+  subject        String
+  textBody       String
+  htmlBody       String?
+  idempotencyKey String            @unique
+  status         EmailOutboxStatus @default(pending)
+  attempts       Int               @default(0)
+  lastError      String?
+  lockedAt       DateTime?
+  lockedBy       String?
+  createdAt      DateTime          @default(now())
+  sentAt         DateTime?
+
+  @@index([status, createdAt])
+  @@index([lockedAt])
+}
+
+/// F7-03 — tenant AI override (BYOK); apiKeyEnc opaque.
+model TenantAiConfig {
+  tenantId     String   @id
+  enabled      Boolean  @default(true)
+  providerKind String   @default("platform")
+  baseUrl      String?
+  model        String?
+  apiKeyEnc    String?
+  updatedAt    DateTime @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+}
+
+/// F7-07 — AI invocation audit (no raw prompt).
+model AiInvocation {
+  id        String   @id @default(cuid())
+  tenantId  String
+  userId    String?
+  feature   String
+  provider  String
+  model     String?
+  ok        Boolean
+  latencyMs Int?
+  errorCode String?
+  createdAt DateTime @default(now())
+
+  @@index([tenantId, createdAt])
 }

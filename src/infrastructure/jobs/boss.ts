@@ -1,6 +1,8 @@
 import { PgBoss } from "pg-boss";
 
 export const QUEUE_EMAIL_SEND = "email.send";
+export const QUEUE_EMAIL_OUTBOX_DRAIN = "email.outbox_drain";
+export const QUEUE_EMAIL_DIGEST_WEEKLY = "email.digest_weekly";
 export const QUEUE_SLA_CHECK = "sla.check_breaches";
 export const QUEUE_EMAIL_IMAP_POLL = "email.imap_poll";
 export const QUEUE_PM_MAINTAIN = "pm.maintain";
@@ -29,6 +31,8 @@ export async function getBoss(): Promise<PgBoss | null> {
     });
     await boss.start();
     await boss.createQueue(QUEUE_EMAIL_SEND);
+    await boss.createQueue(QUEUE_EMAIL_OUTBOX_DRAIN);
+    await boss.createQueue(QUEUE_EMAIL_DIGEST_WEEKLY);
     await boss.createQueue(QUEUE_SLA_CHECK);
     await boss.createQueue(QUEUE_EMAIL_IMAP_POLL);
     await boss.createQueue(QUEUE_PM_MAINTAIN);

@@ -10,8 +10,22 @@ import {
 } from "@/components/layout/app-breadcrumbs";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import {
+  ProductTourHost,
+  startProductTour,
+} from "@/features/product-tour/tour-controller";
 import type { NavItem } from "./nav-config";
 import { NavIcon } from "./nav-icons";
+
+function tourAttrForHref(href: string): string | undefined {
+  if (href.includes("/tickets/new")) return "nav.newTicket";
+  if (href.includes("/tickets")) return "nav.tickets";
+  if (href.includes("/segnala")) return "nav.segnala";
+  if (href.includes("/settings")) return "nav.locale";
+  if (href.includes("/inbox")) return "nav.inbox";
+  if (href.includes("/rfq")) return "nav.rfq";
+  return undefined;
+}
 
 export function PhoneShell(props: {
   brand: string;
@@ -21,11 +35,17 @@ export function PhoneShell(props: {
   signOutLabel: string;
   breadcrumbLabels: BreadcrumbLabels;
   homeHref: string;
+  audience?: "store" | "vendor";
 }) {
   const pathname = usePathname();
+  const audience = props.audience ?? "store";
 
   return (
-    <div className="flex min-h-dvh flex-col bg-[var(--background)]">
+    <div
+      className="flex min-h-dvh flex-col bg-[var(--background)]"
+      data-tour="shell.phone"
+    >
+      <ProductTourHost audience={audience} softPrompt />
       <header className="sticky top-0 z-40 border-b border-[var(--border)] bg-[var(--card)]">
         <div className="flex h-14 items-center gap-3 px-4">
           <Link
@@ -35,6 +55,14 @@ export function PhoneShell(props: {
             {props.brand}
           </Link>
           <div className="ml-auto flex items-center gap-2">
+            <button
+              type="button"
+              className="rounded-[var(--radius)] px-2 py-1 text-xs font-medium text-[var(--muted-foreground)] hover:bg-[var(--muted)]"
+              data-tour="help.tour"
+              onClick={() => startProductTour(audience, "full")}
+            >
+              Aiuto
+            </button>
             {props.topRight}
             <form action="/logout" method="post">
               <Button
@@ -74,6 +102,7 @@ export function PhoneShell(props: {
               <li key={item.href} className="flex-1">
                 <Link
                   href={item.href}
+                  data-tour={tourAttrForHref(item.href)}
                   className={cn(
                     "flex min-h-11 flex-col items-center justify-center gap-0.5 rounded-[var(--radius)] px-1 py-1.5 text-[10px] font-medium",
                     active

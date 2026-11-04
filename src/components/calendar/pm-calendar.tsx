@@ -63,6 +63,7 @@ export type PmCalendarCopy = {
   done: string;
   cancel: string;
   today: string;
+  viewDay: string;
   viewMonth: string;
   viewWeek: string;
   viewAgenda: string;
@@ -73,7 +74,7 @@ export type PmCalendarCopy = {
   weekdays: readonly string[];
 };
 
-type ViewMode = "month" | "week" | "agenda";
+type ViewMode = "day" | "week" | "month" | "agenda";
 
 type Panel =
   | { kind: "create"; dateYmd: string; anchor: AnchorRect }
@@ -123,7 +124,7 @@ export function PmCalendar(props: {
 }) {
   const { copy } = props;
   const [anchor, setAnchor] = useState(() => new Date());
-  const [view, setView] = useState<ViewMode>("month");
+  const [view, setView] = useState<ViewMode>("week");
   const [panel, setPanel] = useState<Panel>(null);
   const [today] = useState(() => new Date());
   const [createError, setCreateError] = useState<string | null>(null);
@@ -153,20 +154,35 @@ export function PmCalendar(props: {
       : null;
 
   const title =
-    view === "week"
-      ? weekTitle(anchor, props.dateLocale)
-      : monthTitle(anchor, props.dateLocale);
+    view === "day"
+      ? anchor.toLocaleDateString(props.dateLocale, {
+          weekday: "long",
+          day: "numeric",
+          month: "long",
+          year: "numeric",
+        })
+      : view === "week" || view === "agenda"
+        ? weekTitle(anchor, props.dateLocale)
+        : monthTitle(anchor, props.dateLocale);
 
   function goToday() {
     setAnchor(new Date());
   }
 
   function goPrev() {
-    setAnchor((d) => (view === "week" ? addDays(d, -7) : addMonths(d, -1)));
+    setAnchor((d) => {
+      if (view === "day") return addDays(d, -1);
+      if (view === "week" || view === "agenda") return addDays(d, -7);
+      return addMonths(d, -1);
+    });
   }
 
   function goNext() {
-    setAnchor((d) => (view === "week" ? addDays(d, 7) : addMonths(d, 1)));
+    setAnchor((d) => {
+      if (view === "day") return addDays(d, 1);
+      if (view === "week" || view === "agenda") return addDays(d, 7);
+      return addMonths(d, 1);
+    });
   }
 
   function openCreate(day: Date, el: HTMLElement) {
@@ -246,8 +262,9 @@ export function PmCalendar(props: {
         >
           {(
             [
-              ["month", copy.viewMonth],
+              ["day", copy.viewDay],
               ["week", copy.viewWeek],
+              ["month", copy.viewMonth],
               ["agenda", copy.viewAgenda],
             ] as const
           ).map(([id, label]) => (
@@ -270,13 +287,11 @@ export function PmCalendar(props: {
         </div>
       </div>
 
-      {view === "month" ? (
-        <MonthView
+      {view === "day" ? (
+        <DayView
           anchor={anchor}
           today={today}
           eventsByDay={eventsByDay}
-          weekdays={copy.weekdays}
-          moreLabel={copy.more}
           dateLocale={props.dateLocale}
           isOverdue={isOverdue}
           onOpenDay={openCreate}
@@ -290,6 +305,20 @@ export function PmCalendar(props: {
           today={today}
           eventsByDay={eventsByDay}
           weekdays={copy.weekdays}
+          dateLocale={props.dateLocale}
+          isOverdue={isOverdue}
+          onOpenDay={openCreate}
+          onOpenEvent={openEvent}
+        />
+      ) : null}
+
+      {view === "month" ? (
+        <MonthView
+          anchor={anchor}
+          today={today}
+          eventsByDay={eventsByDay}
+          weekdays={copy.weekdays}
+          moreLabel={copy.more}
           dateLocale={props.dateLocale}
           isOverdue={isOverdue}
           onOpenDay={openCreate}
@@ -629,6 +658,96 @@ function MonthView(props: {
                   </button>
                 ) : null}
               </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function DayView(props: {
+  anchor: Date;
+  today: Date;
+  eventsByDay: Map<string, PmCalendarEvent[]>;
+  dateLocale: string;
+  isOverdue: (iso: string) => boolean;
+  onOpenDay: (d: Date, el: HTMLElement) => void;
+  onOpenEvent: (id: string, el: HTMLElement) => void;
+}) {
+  const key = toYmd(props.anchor);
+  const dayEvents = props.eventsByDay.get(key) ?? [];
+  const hours = Array.from({ length: 24 }, (_, h) => h);
+  const isToday = sameYmd(props.anchor, props.today);
+
+  return (
+    <div className="overflow-hidden rounded-[var(--radius)] border border-[var(--border)] bg-[var(--card)]">
+      <div className="flex items-center justify-between border-b border-[var(--border)] bg-[var(--muted)]/40 px-4 py-2">
+        <p className="text-sm font-medium capitalize text-[var(--foreground)]">
+          {props.anchor.toLocaleDateString(props.dateLocale, {
+            weekday: "long",
+            day: "numeric",
+            month: "long",
+          })}
+          {isToday ? " · oggi" : ""}
+        </p>
+        <Button
+          type="button"
+          size="sm"
+          variant="outline"
+          onClick={(e) => props.onOpenDay(props.anchor, e.currentTarget)}
+        >
+          +
+        </Button>
+      </div>
+      <div className="max-h-[min(70vh,40rem)] overflow-y-auto">
+        {hours.map((h) => {
+          const slotEvents = dayEvents.filter((ev) => {
+            const d = parseLocal(ev.scheduledAt);
+            return d.getHours() === h;
+          });
+          return (
+            <div
+              key={h}
+              className="grid grid-cols-[3.5rem_1fr] border-b border-[var(--border)] last:border-b-0"
+            >
+              <div className="px-2 py-3 text-right text-xs tabular text-[var(--muted-foreground)]">
+                {String(h).padStart(2, "0")}:00
+              </div>
+              <button
+                type="button"
+                className="min-h-[3rem] space-y-1 px-2 py-1.5 text-left hover:bg-[var(--muted)]/25"
+                onClick={(e) => {
+                  if ((e.target as HTMLElement).closest("[data-event]")) return;
+                  props.onOpenDay(props.anchor, e.currentTarget);
+                }}
+              >
+                {slotEvents.map((ev) => (
+                  <button
+                    key={ev.id}
+                    type="button"
+                    data-event
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      props.onOpenEvent(ev.id, e.currentTarget);
+                    }}
+                    className={cn(
+                      "block w-full rounded-[var(--radius)] border px-2 py-1.5 text-left text-xs",
+                      props.isOverdue(ev.scheduledAt)
+                        ? "border-[color-mix(in_oklab,var(--critical)_35%,var(--border))] bg-[color-mix(in_oklab,var(--critical)_10%,transparent)]"
+                        : "border-[var(--border)] bg-[color-mix(in_oklab,var(--primary)_8%,transparent)]",
+                    )}
+                  >
+                    <span className="tabular text-[var(--muted-foreground)]">
+                      {timeLabel(ev.scheduledAt, props.dateLocale)}
+                    </span>
+                    <span className="ml-2 font-medium">{ev.title}</span>
+                    <span className="mt-0.5 block truncate text-[var(--muted-foreground)]">
+                      {ev.storeName}
+                    </span>
+                  </button>
+                ))}
+              </button>
             </div>
           );
         })}

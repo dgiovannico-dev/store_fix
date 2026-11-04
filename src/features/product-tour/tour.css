@@ -1,0 +1,32 @@
+.ff-tour-popover {
+  background: var(--card, #fff) !important;
+  color: var(--foreground, #0f172a) !important;
+  border: 1px solid var(--border, #e2e8f0) !important;
+  border-radius: var(--radius, 0.75rem) !important;
+  box-shadow: 0 12px 40px color-mix(in oklab, #0f172a 18%, transparent) !important;
+  max-width: 22rem;
+}
+
+.ff-tour-popover .driver-popover-title {
+  font-family: var(--font-sora), ui-sans-serif, system-ui, sans-serif;
+  font-weight: 600;
+  color: var(--primary, #0f3d4c) !important;
+}
+
+.ff-tour-popover .driver-popover-description {
+  color: var(--muted-foreground, #64748b) !important;
+  line-height: 1.45;
+}
+
+.ff-tour-popover .driver-popover-next-btn {
+  background: var(--primary, #0f3d4c) !important;
+  color: var(--primary-foreground, #fff) !important;
+  border: none !important;
+  text-shadow: none !important;
+}
+
+.ff-tour-popover .driver-popover-prev-btn,
+.ff-tour-popover .driver-popover-close-btn {
+  color: var(--muted-foreground, #64748b) !important;
+  text-shadow: none !important;
+}

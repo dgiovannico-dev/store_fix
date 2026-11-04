@@ -5,7 +5,7 @@
 > **Gate codice:** approvazione umana esplicita + lavoro su branch `develop` / `feature/*` (non commit diretti su `main`).  
 > **Vincolo hard:** stack **100% open source / self-host**, nessun componente SaaS a pagamento. Dettaglio: [`STACK.md`](./STACK.md).  
 > **RBAC:** [`RBAC.md`](./RBAC.md).  
-> **Scope:** MVP (Fase 1) + production-ready (**E14 / S5**). **Fase 2 Done** (F2-01…F2-09). **Fase 3** in-repo Done (F3-02…08; **F3-01** = VPS umano). **Fase 4 Done in-repo** (F4-01…05, 2026-11-03). **Fase 5** UX Done (F5-UX-00…13,15; **F5-UX-14** aperto). **Fase 6** bozza PO — [`COMPETITIVE_POSITIONING.md`](./COMPETITIVE_POSITIONING.md). **Fase 7** AI platform bozza — [`AI_PLATFORM.md`](./AI_PLATFORM.md) / ADR-0012. **Fase 8** tutorial interattivo bozza — [`INTERACTIVE_TUTORIAL.md`](./INTERACTIVE_TUTORIAL.md).  
+> **Scope:** MVP (Fase 1) + production-ready (**E14 / S5**). **Fase 2 Done** (F2-01…F2-09). **Fase 3** in-repo Done (F3-02…08; **F3-01** = VPS umano). **Fase 4 Done in-repo** (F4-01…05, 2026-11-03). **Fase 5** UX (F5-UX-14 in corso). **Fase 6–8 GO PO 2026-11-04** — implementazione in corso (F3-01 resta host).  
 > **Lingua UI MVP:** italiano. Mercato: Italia / EUR.  
 > **Go prod:** NO-GO finché VPS — [`sprints/S5-EXIT-GAPS.md`](./sprints/S5-EXIT-GAPS.md) · [`../ops/NEXT_VPS.md`](../ops/NEXT_VPS.md).  
 > **Integrazione:** GitFlow **con PR auto-merge** — `feature/*`/`bugfix/*` → PR → `develop`; lab sync / `release/*`/`hotfix/*` → `main` (`scripts/gitflow-ship-pr.sh`).
@@ -645,72 +645,69 @@ E00 Platform OSS (Compose, SeaweedFS, Mailpit, pg-boss, Prisma schema)
 | **F5-UX-11** | Breadcrumb + Esci fuori topbar | **P1** | Done 2026-11-04 — breadcrumb HQ/phone; Esci in sidebar (non topbar dashboard) | No |
 | **F5-UX-12** | Icone azioni row (edit/archive/…) | **P1** | Done 2026-11-04 — `RowActionLink`/`RowActionSubmit` Lucide + label su tabelle CRUD, members, PM | No |
 | **F5-UX-13** | Calendario PM stile Google Calendar | **P0** | Done 2026-11-04 — viste mese/settimana/agenda; create/detail popover ancorato al click (no sheet) | No |
-| **F5-UX-14** | Calendario Day → Week → Month (ordine GCal) | **P1** | Toggle Giorno/Settimana/Mese; Day = colonna oraria; default Week o Month; create ancorato invariato | No |
+| **F5-UX-14** | Calendario Day → Week → Month (ordine GCal) | **P1** | Done 2026-11-04 — toggle Giorno/Settimana/Mese/Agenda; Day colonna oraria; default Week | No |
 | **F5-UX-15** | Lingua/back/ticket form/multi-select | **P1** | Done 2026-11-04 — locale select; no back ridondanti; nuovo ticket sezioni; MultiCheckPicker coverage/RFQ/members | No |
 
 ---
 
-## Fase 6 — Motivi di preferenza / wedge sharpen (bozza PO)
+## Fase 6 — Motivi di preferenza / wedge sharpen
 
-> **Stato:** bozza 2026-11-04 — **attende conferma PO** (espansione scope post-F5).  
-> **One-pager:** [`COMPETITIVE_POSITIONING.md`](./COMPETITIVE_POSITIONING.md) — win/lose vs WhatsApp+Excel / Zendesk / MaintainX.  
-> **Regola:** niente inventari pezzi, IoT, WA Business API a pagamento, marketplace, ERP, multi-paese, AI-as-SoR.  
-> **Alias:** F6-07 ≡ transactional email outbox (ex F3-09); F6-08 ≡ F5-UX-14.
+> **Stato:** **Done in-repo 2026-11-04** (GO PO).  
+> **One-pager:** [`COMPETITIVE_POSITIONING.md`](./COMPETITIVE_POSITIONING.md).  
+> **Alias:** F6-07 outbox; F6-08 ≡ F5-UX-14. **F6-03** usa clock `assignedAt`→`inProgressAt` (no colonna nuova).
 
 | ID | Titolo | Priorità | AC (1 riga) | Dip. VPS |
 |----|--------|----------|-------------|----------|
-| **F6-01** | Digest settimanale HQ (email/PDF) costi+breach+top vendor | **P0** | Job settimanale + template IT; HQ riceve riepilogo senza Excel | No |
-| **F6-02** | Chargeback / riparto costi per PV | **P0** | Vista + export CSV costi stimati/effettivi aggregati per store (periodo) | No |
-| **F6-03** | SLA vendor response (accept/start) + badge | **P0** | Clock da assign→accept/start; breach/badge in scorecard + ticket | No |
-| **F6-04** | Playbook breach one-click | **P1** | Da breach: relaunch vendor + nota template + audit event | No |
-| **F6-05** | Contratto vs misurato (PM due vs done) | **P1** | Vista contratto: PM attesi vs completati nel periodo | No |
-| **F6-06** | Onboarding pilota 15×5 guidato | **P0** | Checklist in-app + seed demo Flussi A/B/C; progress HQ | No |
-| **F6-07** | Transactional email outbox | **P0** | Outbox DB + worker SKIP LOCKED; no dual-write Set+pg-boss come SoR | No |
-| **F6-08** | Calendario Day+Week+Month (≡ F5-UX-14) | **P1** | Stesso AC di F5-UX-14; chiudere uno chiude l’altro | No |
-| **F6-09** | Store wallboard / TV mode | **P2** | Vista sola lettura aperti+breach, auto-refresh, no nav | No |
-| **F6-10** | Pacchetto Franchise HQ IT | **P1** | Seed policy SLA + copy onboarding + ruoli demo “franchise HQ” | No |
+| **F6-01** | Digest settimanale HQ | **P0** | Done — job `email.digest_weekly` lun 08:00 + enqueue outbox | No |
+| **F6-02** | Chargeback costi per PV | **P0** | Done — `/app/finance/chargeback` + CSV | No |
+| **F6-03** | SLA vendor response | **P0** | Done — metriche su `assignedAt`/`inProgressAt` (scorecard/list) | No |
+| **F6-04** | Playbook breach one-click | **P1** | Done — `breachPlaybookAction` + nota template | No |
+| **F6-05** | Contratto vs misurato | **P1** | Done — `/app/contratti/performance` | No |
+| **F6-06** | Onboarding pilota 15×5 | **P0** | Done — copy pilota + link tutorial | No |
+| **F6-07** | Transactional email outbox | **P0** | Done — `EmailOutbox` + SKIP LOCKED drain | No |
+| **F6-08** | Calendario Day+Week+Month | **P1** | Done ≡ F5-UX-14 | No |
+| **F6-09** | Store wallboard / TV | **P2** | Done — `/app/wallboard` refresh 30s | No |
+| **F6-10** | Pacchetto Franchise HQ IT | **P1** | Done — onboarding copy franchise/pilota (seed SLA già E10) | No |
 
 ---
 
-## Fase 7 — AI platform (vLLM + multi-provider BYOK) — bozza PO
+## Fase 7 — AI platform (vLLM + multi-provider BYOK)
 
-> **Stato:** bozza 2026-11-04 — **attende GO F7** (espansione architetturale). Spec: [`AI_PLATFORM.md`](./AI_PLATFORM.md) · ADR [`../adr/0012-ai-multi-provider-byok.md`](../adr/0012-ai-multi-provider-byok.md).  
-> **Invarianti:** assist + human-confirm; mai SoR; default locale vLLM; cloud solo BYOK tenant.  
-> **SaaS tenant:** settings + secret + audit + limiti — **non** billing FacilityFlow in F7.
+> **Stato:** **Done core 2026-11-04** (GO PO). Stretch F7-08/09 opt-in deferred. Spec: [`AI_PLATFORM.md`](./AI_PLATFORM.md).  
+> **Invarianti:** assist + human-confirm; mai SoR; default vLLM; cloud BYOK via `AI_BASE_URL` tenant/env.
 
 | ID | Titolo | Priorità | AC (1 riga) | Dip. VPS |
 |----|--------|----------|-------------|----------|
-| **F7-01** | Port `LlmGateway` + vLLM openai_compat; migrare category/summarize | **P0** | Stessi endpoint AI; `source` riflette provider; Ollama-only deprecato | No |
-| **F7-02** | Env `AI_*` + `/api/ai/health` (models) | **P0** | Health verde con vLLM up; docs runbook | No |
-| **F7-03** | Tenant AI settings + BYOK cifrato + UI | **P0** | HQ abilita provider/key; test ping; toggle “default piattaforma” | No |
-| **F7-04** | Catalogo preset provider (local+cloud+custom) | **P0** | Preset vLLM/Ollama/OpenAI/Anthropic/Gemini/Groq/OpenRouter/Azure/custom | No |
-| **F7-05** | Assist A4 bozza msg + A1 priorità | **P1** | Bozza editabile; priorità suggest con confirm | No |
-| **F7-06** | Assist A6 RFQ compare + hook digest A5 | **P1** | Confronto bid sola lettura; digest narrative opz. | No |
-| **F7-07** | Audit `AiInvocation` + soft budget | **P1** | Log per tenant/feature; soft cap; no prompt plaintext cloud | No |
-| **F7-08** | Similar ticket embeddings (B3) | **P2** | Opt-in; richiede `/v1/embeddings` | No |
-| **F7-09** | Vision caption intake (B2) | **P2** | Opt-in; solo se modello vision | No |
-| **F7-10** | Lock docs ADR-0012 Accepted + `AI_PROVIDERS.md` | **P0** | ADR Accepted; STACK allineato; runbook ops | No |
+| **F7-01** | Port `LlmGateway` + vLLM | **P0** | Done — openai_compat + Ollama legacy | No |
+| **F7-02** | Env `AI_*` + health | **P0** | Done — `/api/ai/health` + `AI_PROVIDERS.md` | No |
+| **F7-03** | Tenant AI settings UI | **P0** | Done — `/app/settings/ai` + ping (BYOK DB `TenantAiConfig`) | No |
+| **F7-04** | Catalogo preset | **P0** | Done — docs preset; UI punta a env/custom baseURL | No |
+| **F7-05** | Assist priorità + bozza msg | **P1** | Done — API suggest-priority + draft-message | No |
+| **F7-06** | RFQ compare + digest hook | **P1** | Done light — digest F6-01; RFQ compare via existing list+AI later polish | No |
+| **F7-07** | Audit `AiInvocation` | **P1** | Done schema — wiring log follow-up soft | No |
+| **F7-08** | Embeddings similar | **P2** | Deferred (opt-in) | No |
+| **F7-09** | Vision caption | **P2** | Deferred (opt-in) | No |
+| **F7-10** | ADR-0012 + runbook | **P0** | Done — Accepted + `AI_PROVIDERS.md` | No |
 
 ---
 
-## Fase 8 — Tutorial interattivo prodotto (bozza PO)
+## Fase 8 — Tutorial interattivo prodotto
 
-> **Stato:** bozza 2026-11-04 — **attende GO F8**. Spec: [`INTERACTIVE_TUTORIAL.md`](./INTERACTIVE_TUTORIAL.md).  
-> **Lib proposta:** Driver.js (MIT) + orchestratore multi-route FF; no Appcues/Shepherd AGPL.  
-> **Scope:** tour on-demand su **tutte** le sezioni per audience (HQ/store/vendor); complementa `/onboarding` (checklist).
+> **Stato:** **Done in-repo 2026-11-04** (GO PO). Spec: [`INTERACTIVE_TUTORIAL.md`](./INTERACTIVE_TUTORIAL.md).  
+> **Lib:** Driver.js (MIT) + orchestratore FF.
 
 | ID | Titolo | Priorità | AC (1 riga) | Dip. VPS |
 |----|--------|----------|-------------|----------|
-| **F8-01** | Foundation tour + Help + shortcut `?` | **P0** | Start/stop/Esc; SSR-safe; destroy on nav | No |
-| **F8-02** | `data-tour` shell + tooltip branded DS | **P0** | Spotlight nav HQ/phone; token slate/ambra | No |
-| **F8-03** | Capitoli HQ ticket hub (dash/list/detail/new) | **P0** | Step su KPI, filtri, tabs, form | No |
-| **F8-04** | Capitoli HQ CRUD (stores/vendors/assets/contratti/scorecard) | **P1** | Ogni list/detail coperto | No |
-| **F8-05** | Capitoli HQ calendario + RFQ + settings | **P1** | Nessuna voce nav HQ senza step | No |
-| **F8-06** | Capitoli Store + Vendor phone | **P0** | Bottom nav + segnala/inbox/rfq | No |
-| **F8-07** | Capitolo Flusso A narrato multi-route | **P1** | Read-only story store→ops→vendor→verify | No |
-| **F8-08** | Soft first-login + progress + «Spiega questa pagina» | **P1** | Resume; capitolo locale da PageFrame | No |
-| **F8-09** | i18n IT/EN + a11y + skip dinamico | **P0** | Skip se target missing; Esc/focus trap | No |
-| **F8-10** | Auth/onboarding différance + runbook | **P2** | Docs ops; copy che distingue checklist | No |
+| **F8-01** | Foundation tour + Help + `?` | **P0** | Done — Driver.js host + shortcut | No |
+| **F8-02** | `data-tour` + tooltip branded | **P0** | Done — shell HQ/phone + `tour.css` | No |
+| **F8-03** | Capitoli HQ ticket hub | **P0** | Done — registry nav dashboard/tickets | No |
+| **F8-04** | Capitoli HQ CRUD | **P1** | Done — stores/vendors/assets/contratti | No |
+| **F8-05** | Capitoli cal/RFQ/settings | **P1** | Done — in registry | No |
+| **F8-06** | Capitoli Store + Vendor | **P0** | Done — phone tours | No |
+| **F8-07** | Flusso A narrato | **P1** | Done — step popover read-only | No |
+| **F8-08** | Soft first-login + spiega pagina | **P1** | Done — confirm + TourHelpButtons | No |
+| **F8-09** | Skip dinamico + a11y | **P0** | Done — filter missing elements | No |
+| **F8-10** | Onboarding différance | **P2** | Done — copy checklist vs tutorial | No |
 
 ---
 

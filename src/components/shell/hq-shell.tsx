@@ -18,8 +18,27 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
+import {
+  ProductTourHost,
+  TourHelpButtons,
+} from "@/features/product-tour/tour-controller";
 import type { NavItem } from "./nav-config";
 import { NavIcon } from "./nav-icons";
+
+function tourAttrForHref(href: string): string | undefined {
+  if (href.includes("/dashboard")) return "nav.dashboard";
+  if (href.includes("/tickets")) return "nav.tickets";
+  if (href.includes("/stores")) return "nav.stores";
+  if (href.includes("/vendors")) return "nav.vendors";
+  if (href.includes("/assets")) return "nav.assets";
+  if (href.includes("/contratti")) return "nav.contracts";
+  if (href.includes("/calendario")) return "nav.calendar";
+  if (href.includes("/rfq")) return "nav.rfq";
+  if (href.includes("/settings")) return "nav.locale";
+  if (href.includes("/segnala")) return "nav.segnala";
+  if (href.includes("/inbox")) return "nav.inbox";
+  return undefined;
+}
 
 function NavLink({
   item,
@@ -30,10 +49,12 @@ function NavLink({
   active: boolean;
   onNavigate?: () => void;
 }) {
+  const tour = tourAttrForHref(item.href);
   return (
     <Link
       href={item.href}
       onClick={onNavigate}
+      data-tour={tour}
       className={cn(
         "flex items-center gap-3 rounded-[var(--radius)] px-3 py-2 text-sm font-medium transition-colors",
         active
@@ -83,6 +104,11 @@ function SidebarNav({
           />
         ))}
       </nav>
+      <TourHelpButtons
+        audience="hq"
+        label="Tutorial interattivo"
+        pageLabel="Spiega questa pagina"
+      />
       <div className="border-t border-[var(--border)] p-2">
         <form action="/logout" method="post">
           <Button
@@ -109,7 +135,8 @@ export function HqShell(props: {
   homeHref: string;
 }) {
   return (
-    <div className="flex min-h-dvh bg-[var(--background)]">
+    <div className="flex min-h-dvh bg-[var(--background)]" data-tour="shell.hq">
+      <ProductTourHost audience="hq" softPrompt />
       <aside className="sticky top-0 hidden h-dvh w-[var(--sidebar-width)] shrink-0 border-r border-[var(--border)] bg-[var(--card)] lg:block">
         <SidebarNav
           items={props.items}

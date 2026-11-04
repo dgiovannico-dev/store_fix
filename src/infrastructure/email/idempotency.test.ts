@@ -13,9 +13,10 @@ describe("email idempotency", () => {
   });
 
   it("stessa chiave → secondo enqueue skipped", async () => {
+    const ticketId = `T-idem-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
     const key = emailIdempotencyKey({
       template: "ticket_nuovo",
-      ticketId: "T1",
+      ticketId,
       recipient: "ops@example.com",
     });
     expect(claimEmailIdempotency(key)).toBe(true);
@@ -25,7 +26,7 @@ describe("email idempotency", () => {
     const first = await enqueueEmail({
       to: "ops@example.com",
       template: "ticket_nuovo",
-      vars: { ticketId: "T1", storeName: "PV" },
+      vars: { ticketId, storeName: "PV" },
     });
     expect(first.sent).toBe(true);
     expect(first.skipped).toBe(false);
@@ -33,7 +34,7 @@ describe("email idempotency", () => {
     const second = await enqueueEmail({
       to: "ops@example.com",
       template: "ticket_nuovo",
-      vars: { ticketId: "T1", storeName: "PV" },
+      vars: { ticketId, storeName: "PV" },
     });
     expect(second.sent).toBe(false);
     expect(second.skipped).toBe(true);

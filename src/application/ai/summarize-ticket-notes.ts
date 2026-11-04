@@ -7,7 +7,7 @@ import {
 import { getActiveMembership } from "@/domain/memberships/membership-service";
 import { ForbiddenError } from "@/domain/rbac/guards";
 import { canAccessStore } from "@/domain/rbac/store-scope";
-import { ollamaChatJson, ollamaConfigured } from "@/infrastructure/ai/ollama";
+import { llmChatJson, llmConfigured } from "@/infrastructure/ai/llm-gateway";
 import { listTicketEvents } from "@/infrastructure/db/ticket-event-repository";
 import { prisma } from "@/infrastructure/db/prisma";
 import { requireTenantId } from "@/infrastructure/db/tenant-scope";
@@ -64,20 +64,20 @@ export async function summarizeTicketNotes(input: {
   ];
   const corpus = parts.filter(Boolean).join("\n");
 
-  if (ollamaConfigured()) {
-    const raw = await ollamaChatJson({
+  if (llmConfigured()) {
+    const raw = await llmChatJson({
       system:
         'Rispondi solo JSON {"summary":"…"}. Riassumi in italiano operativo max 5 punti. Non inventare fatti.',
       user: corpus.slice(0, 6000),
       signal: input.signal,
     });
     if (raw) {
-      const parsed = parseOllamaSummaryJson(raw);
+      const parsed = parseOllamaSummaryJson(raw.content);
       if (parsed) {
         return {
           summary: parsed,
-          source: "ollama",
-          bulletCount: parsed.split("\n").filter(Boolean).length,
+          source: raw.source,
+          bulletCount: parsed.split("\n").filter((l) => l.trim()).length,
         };
       }
     }

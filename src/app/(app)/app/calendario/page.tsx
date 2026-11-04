@@ -71,6 +71,7 @@ export default async function CalendarioPmPage() {
           done: copy.done,
           cancel: copy.cancel,
           today: copy.today,
+          viewDay: copy.viewDay,
           viewMonth: copy.viewMonth,
           viewWeek: copy.viewWeek,
           viewAgenda: copy.viewAgenda,

@@ -3,9 +3,15 @@ import {
   type IntakeCategory,
 } from "@/domain/intake/chat-steps";
 
+export type AiAssistSource =
+  | "heuristic"
+  | "ollama"
+  | "vllm"
+  | "openai_compatible";
+
 export type CategorySuggestion = {
   category: IntakeCategory;
-  source: "heuristic" | "ollama";
+  source: AiAssistSource;
   rationale: string;
 };
 
