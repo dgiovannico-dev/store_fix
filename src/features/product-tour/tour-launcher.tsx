@@ -7,6 +7,7 @@
  */
 
 import { CircleHelp } from "lucide-react";
+import type { Locale } from "@/i18n";
 import {
   chapterForPath,
   stepsForAudience,
@@ -37,13 +38,14 @@ function writeState(state: TourState) {
 export function startProductTour(
   audience: TourAudience,
   mode: "full" | "page" = "full",
+  locale: Locale = "it",
 ) {
   if (typeof window === "undefined") return;
   const pathname = window.location.pathname;
   const defs =
     mode === "page"
-      ? chapterForPath(audience, pathname)
-      : stepsForAudience(audience);
+      ? chapterForPath(audience, pathname, locale)
+      : stepsForAudience(audience, locale);
 
   const first = defs[0];
   if (first?.route && first.route !== pathname) {
@@ -61,13 +63,14 @@ export function TourHelpButtons(props: {
   label: string;
   pageLabel: string;
   pageScopeHint: string;
+  locale: Locale;
 }) {
   return (
     <div className="flex flex-col gap-1.5 p-2" data-tour="help.tour">
       <button
         type="button"
         className="flex cursor-pointer items-center gap-2.5 rounded-full border border-[color-mix(in_oklab,var(--primary)_30%,var(--border))] bg-[color-mix(in_oklab,var(--primary)_8%,var(--card))] px-3 py-2 text-left text-sm font-medium text-[var(--primary)] shadow-sm transition-colors hover:bg-[color-mix(in_oklab,var(--primary)_14%,var(--card))]"
-        onClick={() => startProductTour(props.audience, "full")}
+        onClick={() => startProductTour(props.audience, "full", props.locale)}
       >
         <span className="inline-flex size-6 shrink-0 items-center justify-center rounded-full bg-[var(--primary)] text-[var(--primary-foreground)]">
           <CircleHelp className="size-3.5" aria-hidden strokeWidth={2.25} />
@@ -77,7 +80,7 @@ export function TourHelpButtons(props: {
       <button
         type="button"
         className="flex cursor-pointer items-center gap-2.5 rounded-full border border-[var(--border)] bg-[var(--card)] px-3 py-2 text-left text-sm text-[var(--foreground)] shadow-sm transition-colors hover:border-[color-mix(in_oklab,var(--primary)_25%,var(--border))] hover:bg-[var(--muted)]"
-        onClick={() => startProductTour(props.audience, "page")}
+        onClick={() => startProductTour(props.audience, "page", props.locale)}
       >
         <span className="inline-flex size-6 shrink-0 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--muted)] text-[var(--muted-foreground)]">
           <CircleHelp className="size-3.5" aria-hidden strokeWidth={2} />

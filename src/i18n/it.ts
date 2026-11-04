@@ -148,6 +148,16 @@ export const it = {
     clearSelection: "Pulisci",
     close: "Chiudi",
     emptyDash: "—",
+    storeFallback: "punto vendita",
+  },
+  digest: {
+    weeklySummary:
+      "Digest 7g — aperti/in corso: {open} · breach SLA nuovi: {breached} · costi verificati: effettivi €{actual} · stimati €{estimated}",
+  },
+  slaOps: {
+    relaunchPrefix: "Rilancio SLA:",
+    playbookNote:
+      "Playbook breach: rilancio automatico — verificare vendor e aggiornare ETA entro 2h.",
   },
   tour: {
     softPromptConfirm:
@@ -869,6 +879,7 @@ export const it = {
     tourLaunchCta: "Avvia",
     pilotHint:
       "Pilota tipico: 15 store × 5 vendor. La checklist resta la fonte di verità sull’avvio rete.",
+    blockedSprintHint: "(prossimo sprint)",
   },
 } as const;
 

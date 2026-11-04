@@ -1,7 +1,9 @@
 import { Role } from "@prisma/client";
+import { getTenantI18nPrefs } from "@/application/tenant/i18n-prefs";
 import { OPEN_TICKET_STATUSES } from "@/domain/ticket/status";
 import { enqueueEmail } from "@/infrastructure/email/outbox";
 import { prisma } from "@/infrastructure/db/prisma";
+import { t } from "@/i18n";
 
 /**
  * F6-01 — digest settimanale HQ (costi/breach/open).
@@ -61,11 +63,12 @@ export async function runWeeklyHqDigest(): Promise<{
 
     const actual = Number(costAgg._sum.actualCost ?? 0);
     const estimated = Number(costAgg._sum.estimatedCost ?? 0);
-    const summary = [
-      `Digest 7g — aperti/in corso: ${open}`,
-      `breach SLA nuovi: ${breached}`,
-      `costi verificati: effettivi €${actual.toFixed(2)} · stimati €${estimated.toFixed(2)}`,
-    ].join(" · ");
+    const prefs = await getTenantI18nPrefs(tenant.id);
+    const summary = t(prefs.locale)
+      .digest.weeklySummary.replace("{open}", String(open))
+      .replace("{breached}", String(breached))
+      .replace("{actual}", actual.toFixed(2))
+      .replace("{estimated}", estimated.toFixed(2));
 
     const weekKey = since.toISOString().slice(0, 10);
     for (const to of recipients) {
@@ -73,6 +76,7 @@ export async function runWeeklyHqDigest(): Promise<{
         to,
         tenantId: tenant.id,
         template: "pm_reminder",
+        locale: prefs.locale,
         vars: {
           storeName: tenant.name,
           summary,

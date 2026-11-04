@@ -13,6 +13,7 @@ import {
   getOnboardingSnapshot,
   type OnboardingStepId,
 } from "@/domain/onboarding/progress";
+import { getTenantI18nPrefs } from "@/application/tenant/i18n-prefs";
 import { OnboardingTourLaunch } from "@/features/product-tour/onboarding-tour-launch";
 import { tenantMessages } from "@/i18n/tenant-messages";
 
@@ -22,9 +23,10 @@ export default async function OnboardingPage() {
     redirect("/login");
   }
 
-  const [snap, msg] = await Promise.all([
+  const [snap, msg, prefs] = await Promise.all([
     getOnboardingSnapshot(session.tenantId),
     tenantMessages(session.tenantId),
+    getTenantI18nPrefs(session.tenantId),
   ]);
   const pct = Math.round((snap.doneCount / Math.max(snap.totalCount, 1)) * 100);
   const copy = msg.onboarding;
@@ -68,6 +70,7 @@ export default async function OnboardingPage() {
         label={copy.tourLaunch}
         hint={copy.tourLaunchHint}
         cta={copy.tourLaunchCta}
+        locale={prefs.locale}
       />
 
       {snap.skippedAt ? (
@@ -126,7 +129,7 @@ export default async function OnboardingPage() {
                 {idx + 1}. {stepLabel[step.id]}
                 {step.blocked ? (
                   <span className="ml-2 text-xs font-normal text-[var(--muted-foreground)]">
-                    (S2)
+                    {copy.blockedSprintHint}
                   </span>
                 ) : null}
               </p>
