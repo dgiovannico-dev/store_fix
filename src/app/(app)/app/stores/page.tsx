@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { createStoreAction, deleteStoreAction } from "@/app/actions/stores";
@@ -7,6 +6,7 @@ import { PageFrame } from "@/components/layout/page-frame";
 import { StoresDataTable } from "@/components/tables/entity-data-table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { RowActionLink } from "@/components/ui/row-actions";
 import { StatusPanel } from "@/components/ui/status-panel";
 import { canMutate } from "@/domain/rbac/can";
 import { RbacAction } from "@/domain/rbac/actions";
@@ -38,12 +38,11 @@ export default async function StoresPage() {
           </p>
         </div>
         {canEdit ? (
-          <Link
+          <RowActionLink
             href="/app/stores/import"
-            className="text-sm font-medium text-[var(--primary)] underline-offset-4 hover:underline"
-          >
-            {msg.stores.importCsv}
-          </Link>
+            label={msg.stores.importCsv}
+            variant="import"
+          />
         ) : null}
       </div>
 
