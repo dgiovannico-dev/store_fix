@@ -1,7 +1,7 @@
 "use client";
 
 import { CircleHelp } from "lucide-react";
-import { startProductTour } from "@/features/product-tour/tour-controller";
+import { startProductTour } from "@/features/product-tour/tour-launcher";
 
 /** CTA on onboarding: one click starts the interactive HQ tour. */
 export function OnboardingTourLaunch(props: {
