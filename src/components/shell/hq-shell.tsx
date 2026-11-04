@@ -2,8 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu } from "lucide-react";
+import { LogOut, Menu } from "lucide-react";
 import type { ReactNode } from "react";
+import {
+  AppBreadcrumbs,
+  type BreadcrumbLabels,
+} from "@/components/layout/app-breadcrumbs";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -46,10 +50,12 @@ function NavLink({
 function SidebarNav({
   items,
   brand,
+  signOutLabel,
   onNavigate,
 }: {
   items: NavItem[];
   brand: string;
+  signOutLabel: string;
   onNavigate?: () => void;
 }) {
   const pathname = usePathname();
@@ -77,6 +83,18 @@ function SidebarNav({
           />
         ))}
       </nav>
+      <div className="border-t border-[var(--border)] p-2">
+        <form action="/logout" method="post">
+          <Button
+            type="submit"
+            variant="ghost"
+            className="w-full justify-start gap-3 text-[var(--muted-foreground)]"
+          >
+            <LogOut className="size-4 shrink-0" aria-hidden />
+            {signOutLabel}
+          </Button>
+        </form>
+      </div>
     </div>
   );
 }
@@ -86,11 +104,18 @@ export function HqShell(props: {
   items: NavItem[];
   topRight: ReactNode;
   children: ReactNode;
+  signOutLabel: string;
+  breadcrumbLabels: BreadcrumbLabels;
+  homeHref: string;
 }) {
   return (
     <div className="flex min-h-dvh bg-[var(--background)]">
       <aside className="sticky top-0 hidden h-dvh w-[var(--sidebar-width)] shrink-0 border-r border-[var(--border)] bg-[var(--card)] lg:block">
-        <SidebarNav items={props.items} brand={props.brand} />
+        <SidebarNav
+          items={props.items}
+          brand={props.brand}
+          signOutLabel={props.signOutLabel}
+        />
       </aside>
 
       <div className="flex min-w-0 flex-1 flex-col">
@@ -110,14 +135,31 @@ export function HqShell(props: {
               <SheetHeader className="sr-only">
                 <SheetTitle>{props.brand}</SheetTitle>
               </SheetHeader>
-              <SidebarNav items={props.items} brand={props.brand} />
+              <SidebarNav
+                items={props.items}
+                brand={props.brand}
+                signOutLabel={props.signOutLabel}
+              />
             </SheetContent>
           </Sheet>
-          <div className="font-[family-name:var(--font-sora)] text-sm font-semibold text-[var(--primary)] lg:hidden">
-            {props.brand}
+          <div className="min-w-0 flex-1">
+            <div className="font-[family-name:var(--font-sora)] text-sm font-semibold text-[var(--primary)] lg:hidden">
+              {props.brand}
+            </div>
+            <AppBreadcrumbs
+              labels={props.breadcrumbLabels}
+              homeHref={props.homeHref}
+              className="hidden lg:flex"
+            />
           </div>
           <div className="ml-auto flex items-center gap-2">{props.topRight}</div>
         </header>
+        <div className="border-b border-[var(--border)] px-4 py-2 lg:hidden sm:px-6">
+          <AppBreadcrumbs
+            labels={props.breadcrumbLabels}
+            homeHref={props.homeHref}
+          />
+        </div>
         <div className="flex-1">{props.children}</div>
       </div>
     </div>

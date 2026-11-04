@@ -109,6 +109,10 @@ export const en = {
     next: "Next",
     page: "Page",
     noResults: "No results",
+    detail: "Detail",
+    newItem: "New",
+    home: "Home",
+    breadcrumb: "Breadcrumb",
   },
   actionErrors: {
     accessRequired: "Sign-in required",
