@@ -1,28 +1,20 @@
-import { beforeEach, describe, expect, it } from "vitest";
-import {
-  _resetEmailIdempotencyForTests,
-  claimEmailIdempotency,
-  emailIdempotencyKey,
-} from "./idempotency";
+import { describe, expect, it } from "vitest";
+import { emailIdempotencyKey } from "./idempotency";
 import { enqueueEmail } from "./outbox";
 
-describe("email idempotency", () => {
-  beforeEach(() => {
-    _resetEmailIdempotencyForTests();
-    process.env.PGBOSS_DISABLED = "true";
-  });
-
+describe("email idempotency (durable EmailOutbox)", () => {
   it("stessa chiave → secondo enqueue skipped", async () => {
+    process.env.PGBOSS_DISABLED = "true";
+    process.env.SMTP_TRANSPORT = "json";
+
     const ticketId = `T-idem-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
     const key = emailIdempotencyKey({
       template: "ticket_nuovo",
       ticketId,
       recipient: "ops@example.com",
     });
-    expect(claimEmailIdempotency(key)).toBe(true);
-    expect(claimEmailIdempotency(key)).toBe(false);
+    expect(key).toContain(ticketId);
 
-    _resetEmailIdempotencyForTests();
     const first = await enqueueEmail({
       to: "ops@example.com",
       template: "ticket_nuovo",
