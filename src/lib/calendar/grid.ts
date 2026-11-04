@@ -67,3 +67,22 @@ export function buildWeekDays(anchor: Date): Date[] {
   const start = startOfWeekMonday(anchor);
   return Array.from({ length: 7 }, (_, i) => addDays(start, i));
 }
+
+/** Inclusive hour range, e.g. hoursInRange(6, 21) → [6…21]. */
+export function hoursInRange(
+  startHour: number,
+  endHourInclusive: number,
+): number[] {
+  const start = Math.max(0, Math.min(23, Math.floor(startHour)));
+  const end = Math.max(start, Math.min(23, Math.floor(endHourInclusive)));
+  return Array.from({ length: end - start + 1 }, (_, i) => start + i);
+}
+
+export function minutesFromMidnight(d: Date): number {
+  return d.getHours() * 60 + d.getMinutes();
+}
+
+/** HH:mm from hour + optional minutes. */
+export function formatHhMm(hour: number, minute = 0): string {
+  return `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`;
+}

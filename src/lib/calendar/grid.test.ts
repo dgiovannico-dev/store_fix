@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 import {
   buildMonthGrid,
   buildWeekDays,
+  formatHhMm,
+  hoursInRange,
   mondayIndex,
   startOfWeekMonday,
   toYmd,
@@ -27,5 +29,14 @@ describe("calendar grid", () => {
     expect(days).toHaveLength(7);
     expect(toYmd(days[0]!)).toBe("2026-11-02");
     expect(toYmd(days[6]!)).toBe("2026-11-08");
+  });
+
+  it("hoursInRange is inclusive (day grid 06–21)", () => {
+    const hours = hoursInRange(6, 21);
+    expect(hours[0]).toBe(6);
+    expect(hours.at(-1)).toBe(21);
+    expect(hours).toHaveLength(16);
+    expect(formatHhMm(9)).toBe("09:00");
+    expect(formatHhMm(14, 30)).toBe("14:30");
   });
 });
