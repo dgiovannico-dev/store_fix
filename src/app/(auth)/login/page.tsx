@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { auth, isAuthCredentialsEnabled, isAuthOidcEnabled } from "@/auth";
 import { loginAction } from "@/app/actions/login";
 import { loginOidcAction } from "@/app/actions/login-oidc";
+import { AuthMistWash } from "@/components/auth/auth-mist-wash";
 import { Input } from "@/components/ui/input";
 import { PendingSubmitButton } from "@/components/ui/pending-submit-button";
 import { StatusPanel } from "@/components/ui/status-panel";
@@ -37,10 +38,7 @@ export default async function LoginPage({ searchParams }: Props) {
 
   return (
     <main className="relative flex min-h-dvh flex-col items-center justify-center overflow-hidden px-6 py-16">
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_25%_15%,oklch(0.92_0.05_195/0.55),transparent_50%),radial-gradient(ellipse_at_85%_75%,oklch(0.93_0.04_210/0.65),transparent_45%),linear-gradient(165deg,oklch(0.985_0.01_210),oklch(0.94_0.025_195))]"
-      />
+      <AuthMistWash />
 
       <div className="relative z-10 w-full max-w-md">
         <h1 className="font-[family-name:var(--font-sora)] text-4xl font-semibold tracking-tight text-[var(--primary)] sm:text-5xl">

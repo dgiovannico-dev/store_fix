@@ -93,7 +93,7 @@ export function VendorTicketActions({
               step="0.01"
               min="0.01"
               required
-              className="mt-1 w-full rounded-[var(--radius)] border border-[var(--border)] bg-white px-3 py-3 text-base"
+              className="mt-1 w-full rounded-[var(--radius)] border border-[var(--border)] bg-[var(--card)] px-3 py-3 text-base"
             />
           </label>
           <label className="block text-sm font-medium">
@@ -103,7 +103,7 @@ export function VendorTicketActions({
               type="number"
               step="0.01"
               min="0"
-              className="mt-1 w-full rounded-[var(--radius)] border border-[var(--border)] bg-white px-3 py-3 text-base"
+              className="mt-1 w-full rounded-[var(--radius)] border border-[var(--border)] bg-[var(--card)] px-3 py-3 text-base"
             />
           </label>
           <label className="block text-sm font-medium">
@@ -113,7 +113,7 @@ export function VendorTicketActions({
               required
               minLength={5}
               rows={3}
-              className="mt-1 w-full rounded-[var(--radius)] border border-[var(--border)] bg-white px-3 py-3 text-base"
+              className="mt-1 w-full rounded-[var(--radius)] border border-[var(--border)] bg-[var(--card)] px-3 py-3 text-base"
             />
           </label>
           {completeState.error ? (

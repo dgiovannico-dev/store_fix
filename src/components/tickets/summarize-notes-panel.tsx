@@ -98,7 +98,7 @@ export function SummarizeNotesPanel({
         <StatusPanel kind="error" title={error} locale={locale} />
       ) : null}
       {summary ? (
-        <div className="rounded-[var(--radius)] border border-[var(--border)] bg-white p-3 text-sm whitespace-pre-wrap">
+        <div className="rounded-[var(--radius)] border border-[var(--border)] bg-[var(--card)] p-3 text-sm whitespace-pre-wrap">
           <p className="mb-2 text-xs text-[var(--muted-foreground)]">
             {labels.summarizeSource} {source} · {labels.summarizeNeedsConfirm}
           </p>
