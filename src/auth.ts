@@ -16,6 +16,7 @@ import {
   sessionTokenCookie,
   shouldUseSecureAuthCookies,
 } from "@/infrastructure/auth/secure-cookies";
+import { resolveActiveMembershipClaims } from "@/infrastructure/auth/membership-claims";
 import {
   isSessionIdleExpired,
   nextLastActiveAt,
@@ -120,19 +121,16 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           },
         });
 
-        const membership = await prisma.membership.findFirst({
-          where: { userId: user.id, deletedAt: null },
-          orderBy: { createdAt: "asc" },
-        });
         // soft-disable membership → nessun claim tenant (T1.26)
+        const claims = await resolveActiveMembershipClaims(user.id);
 
         return {
           ...token,
           sub: user.id,
           sessionToken,
-          tenantId: membership?.tenantId,
-          role: membership?.role,
-          membershipId: membership?.id,
+          tenantId: claims.tenantId,
+          role: claims.role,
+          membershipId: claims.membershipId,
           lastActiveAt: nowSec,
         };
       }
@@ -169,8 +167,17 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         return emptyJwt();
       }
 
+      // Re-check Membership.deletedAt on every refresh (not only login).
+      const claims = await resolveActiveMembershipClaims(
+        token.sub,
+        typeof token.membershipId === "string" ? token.membershipId : undefined,
+      );
+
       return {
         ...token,
+        tenantId: claims.tenantId,
+        role: claims.role,
+        membershipId: claims.membershipId,
         lastActiveAt: nextLastActiveAt(
           typeof token.lastActiveAt === "number"
             ? token.lastActiveAt
