@@ -1,15 +1,27 @@
-/** Presentational KPI tile (RSC-safe) — S4 refactor. */
+/** Metric strip FinTech-density (F5-UX-04) — no decorative card chrome. */
 
 export type KpiMetric = {
   label: string;
   value: string;
+  emphasize?: "critical" | "signal" | "default";
 };
 
-export function KpiMetricCard({ label, value }: KpiMetric) {
+export function KpiMetricCard({ label, value, emphasize = "default" }: KpiMetric) {
+  const valueColor =
+    emphasize === "critical"
+      ? "text-[var(--critical)]"
+      : emphasize === "signal"
+        ? "text-[var(--signal-foreground)]"
+        : "text-[var(--foreground)]";
+
   return (
-    <div className="rounded-[var(--radius)] border border-[var(--border)] px-3 py-4">
-      <p className="text-xs text-[var(--muted-foreground)]">{label}</p>
-      <p className="mt-1 font-[family-name:var(--font-sora)] text-xl font-semibold tabular-nums">
+    <div className="min-w-0 px-1 py-1">
+      <p className="text-[length:var(--text-caption)] font-medium uppercase tracking-wide text-[var(--muted-foreground)]">
+        {label}
+      </p>
+      <p
+        className={`mt-1 font-[family-name:var(--font-sora)] text-2xl font-semibold tabular-nums tracking-tight ${valueColor}`}
+      >
         {value}
       </p>
     </div>
@@ -26,10 +38,10 @@ export function DashboardKpiGrid({
   return (
     <section
       aria-label={ariaLabel}
-      className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5"
+      className="mt-6 grid grid-cols-2 gap-x-6 gap-y-4 border-y border-[var(--border)] py-5 sm:grid-cols-3 lg:grid-cols-5"
     >
       {items.map((k) => (
-        <KpiMetricCard key={k.label} label={k.label} value={k.value} />
+        <KpiMetricCard key={k.label} {...k} />
       ))}
     </section>
   );

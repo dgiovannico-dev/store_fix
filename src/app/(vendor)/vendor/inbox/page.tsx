@@ -6,15 +6,16 @@ import {
   listVendorTickets,
   type VendorInboxTab,
 } from "@/application/tickets/list-vendor-tickets";
+import { SlaBadge } from "@/components/tickets/sla-badge";
 import { StatusPanel } from "@/components/ui/status-panel";
 import { getActiveMembership } from "@/domain/memberships/membership-service";
 import {
   intakeCategoryLabel,
   intakePriorityLabel,
 } from "@/domain/intake/chat-steps";
+import { computeSlaBadge } from "@/domain/sla/badge";
 import { ticketStatusLabel } from "@/domain/ticket/status-labels";
 import { getTenantI18nPrefs } from "@/application/tenant/i18n-prefs";
-import { dateLocaleFor } from "@/i18n";
 import { tenantMessages } from "@/i18n/tenant-messages";
 
 type Props = { searchParams: Promise<{ tab?: string }> };
@@ -37,6 +38,7 @@ export default async function VendorInboxPage({ searchParams }: Props) {
     tenantMessages(session.tenantId),
     getTenantI18nPrefs(session.tenantId),
   ]);
+  const copy = msg.ticketDetail;
   const tabs: { id: VendorInboxTab; label: string }[] = [
     { id: "todo", label: msg.vendor.tabTodo },
     { id: "progress", label: msg.vendor.tabProgress },
@@ -54,10 +56,8 @@ export default async function VendorInboxPage({ searchParams }: Props) {
     tab,
   });
 
-  const dLocale = dateLocaleFor(prefs.locale);
-
   return (
-    <main className="mx-auto min-h-dvh w-full max-w-[390px] px-4 py-6">
+    <main className="px-4 py-6">
       <h1 className="font-[family-name:var(--font-sora)] text-xl font-semibold text-[var(--primary)]">
         {msg.vendor.inboxTitle}
       </h1>
@@ -66,16 +66,16 @@ export default async function VendorInboxPage({ searchParams }: Props) {
       </p>
 
       <nav
-        className="mt-6 flex gap-1 border-b border-[var(--border)]"
+        className="sticky top-14 z-10 mt-4 flex gap-1 border-b border-[var(--border)] bg-[var(--background)]/95 backdrop-blur-sm"
         aria-label={msg.vendor.inboxTitle}
       >
         {tabs.map((tabItem) => (
           <Link
             key={tabItem.id}
             href={`/vendor/inbox?tab=${tabItem.id}`}
-            className={`flex-1 px-2 py-2 text-center text-sm ${
+            className={`flex min-h-11 flex-1 items-center justify-center px-2 text-center text-sm ${
               tab === tabItem.id
-                ? "border-b-2 border-[var(--primary)] font-semibold"
+                ? "border-b-2 border-[var(--primary)] font-semibold text-[var(--primary)]"
                 : "text-[var(--muted-foreground)]"
             }`}
           >
@@ -93,26 +93,42 @@ export default async function VendorInboxPage({ searchParams }: Props) {
           />
         </div>
       ) : (
-        <ul className="mt-4 divide-y divide-[var(--border)]">
-          {tickets.map((tk) => (
-            <li key={tk.id} className="py-4">
-              <Link
-                href={`/vendor/tickets/${tk.id}`}
-                className="block font-medium underline-offset-4 hover:underline"
-              >
-                {intakeCategoryLabel(tk.category, prefs.locale)} ·{" "}
-                {intakePriorityLabel(tk.priority, prefs.locale)}
-              </Link>
-              <p className="text-sm text-[var(--muted-foreground)]">
-                {tk.store.name} ·{" "}
-                {ticketStatusLabel(tk.status, prefs.locale)}
-                {tk.slaDueAt
-                  ? ` · ${msg.ticketDetail.slaOkPrefix} ${tk.slaDueAt.toLocaleString(dLocale)}`
-                  : ""}
-              </p>
-              <p className="mt-1 line-clamp-2 text-sm">{tk.description}</p>
-            </li>
-          ))}
+        <ul className="mt-2 divide-y divide-[var(--border)]">
+          {tickets.map((tk) => {
+            const sla = computeSlaBadge({
+              slaDueAt: tk.slaDueAt,
+              slaBreachedAt: tk.slaBreachedAt,
+              openedAt: tk.openedAt,
+              dateLocale: prefs.dateLocale,
+              labels: {
+                breached: copy.slaBreached,
+                none: copy.slaNone,
+                riskPrefix: copy.slaRiskPrefix,
+                okPrefix: copy.slaOkPrefix,
+              },
+            });
+            return (
+              <li key={tk.id}>
+                <Link
+                  href={`/vendor/tickets/${tk.id}`}
+                  className="block min-h-11 py-3 active:bg-[var(--muted)]/50"
+                >
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <span className="font-medium">
+                      {intakeCategoryLabel(tk.category, prefs.locale)} ·{" "}
+                      {intakePriorityLabel(tk.priority, prefs.locale)}
+                    </span>
+                    <SlaBadge tone={sla.tone} label={sla.label} />
+                  </div>
+                  <p className="mt-1 text-sm text-[var(--muted-foreground)]">
+                    {tk.store.name} ·{" "}
+                    {ticketStatusLabel(tk.status, prefs.locale)}
+                  </p>
+                  <p className="mt-1 line-clamp-2 text-sm">{tk.description}</p>
+                </Link>
+              </li>
+            );
+          })}
         </ul>
       )}
     </main>

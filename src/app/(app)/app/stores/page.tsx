@@ -3,6 +3,9 @@ import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { createStoreAction, deleteStoreAction } from "@/app/actions/stores";
 import { getTenantI18nPrefs } from "@/application/tenant/i18n-prefs";
+import { PageFrame } from "@/components/layout/page-frame";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { StatusPanel } from "@/components/ui/status-panel";
 import { canMutate } from "@/domain/rbac/can";
 import { RbacAction } from "@/domain/rbac/actions";
@@ -23,13 +26,13 @@ export default async function StoresPage() {
   const canEdit = canMutate(session.role, RbacAction.crudStore);
 
   return (
-    <main className="mx-auto max-w-3xl px-6 py-12">
+    <PageFrame>
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <h1 className="font-[family-name:var(--font-sora)] text-2xl font-semibold text-[var(--primary)]">
             {msg.stores.title}
           </h1>
-          <p className="mt-2 text-sm text-[var(--muted-foreground)]">
+          <p className="mt-1 text-sm text-[var(--muted-foreground)]">
             {msg.stores.hint}
           </p>
         </div>
@@ -49,45 +52,32 @@ export default async function StoresPage() {
             "use server";
             await createStoreAction({}, fd);
           }}
-          className="mt-8 grid gap-3 sm:grid-cols-2"
+          className="mt-6 grid gap-3 rounded-[var(--radius)] border border-[var(--border)] p-4 sm:grid-cols-2"
         >
-          <input
+          <Input
             name="name"
             required
             placeholder={msg.stores.namePlaceholder}
-            className="rounded-[var(--radius)] border border-[var(--border)] px-3 py-2"
           />
-          <input
-            name="city"
-            placeholder={msg.stores.cityPlaceholder}
-            className="rounded-[var(--radius)] border border-[var(--border)] px-3 py-2"
-          />
-          <input
+          <Input name="city" placeholder={msg.stores.cityPlaceholder} />
+          <Input
             name="address"
             placeholder={msg.stores.addressPlaceholder}
-            className="sm:col-span-2 rounded-[var(--radius)] border border-[var(--border)] px-3 py-2"
+            className="sm:col-span-2"
           />
-          <input
+          <Input
             name="webhookUrl"
             placeholder={msg.stores.webhookPlaceholder}
-            className="rounded-[var(--radius)] border border-[var(--border)] px-3 py-2 text-sm"
           />
-          <input
-            name="ntfyTopic"
-            placeholder={msg.stores.ntfyPlaceholder}
-            className="rounded-[var(--radius)] border border-[var(--border)] px-3 py-2 text-sm"
-          />
-          <button
-            type="submit"
-            className="sm:col-span-2 rounded-[var(--radius)] bg-[var(--primary)] px-4 py-2 text-sm font-medium text-[var(--primary-foreground)]"
-          >
+          <Input name="ntfyTopic" placeholder={msg.stores.ntfyPlaceholder} />
+          <Button type="submit" className="sm:col-span-2">
             {msg.stores.add}
-          </button>
+          </Button>
         </form>
       ) : null}
 
       {stores.length === 0 ? (
-        <div className="mt-10">
+        <div className="mt-8">
           <StatusPanel
             kind="empty"
             title={msg.stores.empty}
@@ -95,59 +85,67 @@ export default async function StoresPage() {
           />
         </div>
       ) : (
-      <ul className="mt-10 divide-y divide-[var(--border)]">
-          {stores.map((s) => (
-            <li
-              key={s.id}
-              className="flex flex-wrap items-center justify-between gap-3 py-4"
-            >
-              <div>
-                <p className="font-medium">
-                  {canEdit ? (
-                    <Link
-                      href={`/app/stores/${s.id}`}
-                      className="text-[var(--primary)] hover:underline"
-                    >
-                      {s.name}
-                    </Link>
-                  ) : (
-                    s.name
-                  )}
-                </p>
-                <p className="text-sm text-[var(--muted-foreground)]">
-                  {[s.city, s.address].filter(Boolean).join(" · ") || "—"}
-                  {s.webhookUrl || s.ntfyTopic
-                    ? ` · push ${[s.ntfyTopic && "ntfy", s.webhookUrl && "webhook"].filter(Boolean).join("+")}`
-                    : ""}
-                </p>
-              </div>
-              {canEdit ? (
-                <div className="flex items-center gap-3">
-                  <Link
-                    href={`/app/stores/${s.id}`}
-                    className="text-sm text-[var(--primary)] underline-offset-4 hover:underline"
-                  >
-                    {msg.stores.edit}
-                  </Link>
-                  <form
-                    action={async () => {
-                      "use server";
-                      await deleteStoreAction(s.id);
-                    }}
-                  >
-                    <button
-                      type="submit"
-                      className="text-sm text-[var(--critical)] underline-offset-4 hover:underline"
-                    >
-                      {msg.stores.archive}
-                    </button>
-                  </form>
-                </div>
-              ) : null}
-            </li>
-          ))}
-      </ul>
+        <div className="mt-6 overflow-x-auto">
+          <table className="w-full min-w-[28rem] text-left text-sm">
+            <thead>
+              <tr className="border-b border-[var(--border)] text-[length:var(--text-caption)] uppercase tracking-wide text-[var(--muted-foreground)]">
+                <th className="py-2 pr-3 font-medium">{msg.stores.namePlaceholder}</th>
+                <th className="py-2 pr-3 font-medium">{msg.stores.cityPlaceholder}</th>
+                <th className="py-2 font-medium" />
+              </tr>
+            </thead>
+            <tbody>
+              {stores.map((s) => (
+                <tr
+                  key={s.id}
+                  className="border-b border-[var(--border)]/70 hover:bg-[var(--muted)]/40"
+                >
+                  <td className="py-2.5 pr-3 font-medium">
+                    {canEdit ? (
+                      <Link
+                        href={`/app/stores/${s.id}`}
+                        className="text-[var(--primary)] hover:underline"
+                      >
+                        {s.name}
+                      </Link>
+                    ) : (
+                      s.name
+                    )}
+                  </td>
+                  <td className="py-2.5 pr-3 text-[var(--muted-foreground)]">
+                    {[s.city, s.address].filter(Boolean).join(" · ") || "—"}
+                  </td>
+                  <td className="py-2.5 text-right">
+                    {canEdit ? (
+                      <div className="flex items-center justify-end gap-3">
+                        <Link
+                          href={`/app/stores/${s.id}`}
+                          className="text-sm text-[var(--primary)] underline-offset-4 hover:underline"
+                        >
+                          {msg.stores.edit}
+                        </Link>
+                        <form
+                          action={async () => {
+                            "use server";
+                            await deleteStoreAction(s.id);
+                          }}
+                        >
+                          <button
+                            type="submit"
+                            className="text-sm text-[var(--critical)] underline-offset-4 hover:underline"
+                          >
+                            {msg.stores.archive}
+                          </button>
+                        </form>
+                      </div>
+                    ) : null}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
-    </main>
+    </PageFrame>
   );
 }

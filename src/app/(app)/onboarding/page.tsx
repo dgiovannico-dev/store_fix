@@ -6,6 +6,8 @@ import {
   resumeOnboardingAction,
   skipOnboardingAction,
 } from "@/app/actions/onboarding";
+import { PageFrame } from "@/components/layout/page-frame";
+import { Button } from "@/components/ui/button";
 import {
   getOnboardingSnapshot,
   type OnboardingStepId,
@@ -33,12 +35,12 @@ export default async function OnboardingPage() {
   };
 
   return (
-    <main className="mx-auto flex min-h-dvh max-w-lg flex-col gap-6 px-6 py-12">
+    <PageFrame narrow className="flex flex-col gap-6">
       <header className="flex items-start justify-between gap-4">
         <div>
-          <p className="font-[family-name:var(--font-sora)] text-2xl font-semibold text-[var(--primary)]">
+          <h1 className="font-[family-name:var(--font-sora)] text-2xl font-semibold text-[var(--primary)]">
             {copy.title}
-          </p>
+          </h1>
           <p className="mt-1 text-sm text-[var(--muted-foreground)]">
             {copy.hint}
           </p>
@@ -146,52 +148,31 @@ export default async function OnboardingPage() {
         <p className="text-sm text-[var(--success)]">{copy.networkReady}</p>
       ) : null}
 
-      <div className="flex flex-wrap gap-3 pt-2">
-        <Link
-          href="/app/tickets/new"
-          className="rounded-[var(--radius)] bg-[var(--primary)] px-4 py-2 text-sm font-medium text-[var(--primary-foreground)]"
-        >
-          {msg.dashboard.ctaTicket}
-        </Link>
-        <Link
-          href="/app/dashboard"
-          className="rounded-[var(--radius)] border border-[var(--border)] px-4 py-2 text-sm font-medium"
-        >
-          {msg.nav.dashboard}
-        </Link>
-        <Link
-          href="/app/stores"
-          className="rounded-[var(--radius)] border border-[var(--border)] px-4 py-2 text-sm font-medium"
-        >
-          {msg.nav.stores}
-        </Link>
-        <Link
-          href="/app/vendors"
-          className="rounded-[var(--radius)] border border-[var(--border)] px-4 py-2 text-sm font-medium"
-        >
-          {msg.nav.vendors}
-        </Link>
-        <Link
-          href="/app/assets"
-          className="rounded-[var(--radius)] border border-[var(--border)] px-4 py-2 text-sm font-medium"
-        >
-          {msg.assets.title}
-        </Link>
-        <Link
-          href="/app/settings/members"
-          className="rounded-[var(--radius)] border border-[var(--border)] px-4 py-2 text-sm font-medium"
-        >
-          {msg.audit.membersLink}
-        </Link>
+      <div className="flex flex-wrap gap-2 pt-2">
+        <Button asChild size="sm">
+          <Link href="/app/tickets/new">{msg.dashboard.ctaTicket}</Link>
+        </Button>
+        <Button asChild variant="outline" size="sm">
+          <Link href="/app/dashboard">{msg.nav.dashboard}</Link>
+        </Button>
+        <Button asChild variant="outline" size="sm">
+          <Link href="/app/stores">{msg.nav.stores}</Link>
+        </Button>
+        <Button asChild variant="outline" size="sm">
+          <Link href="/app/vendors">{msg.nav.vendors}</Link>
+        </Button>
+        <Button asChild variant="outline" size="sm">
+          <Link href="/app/assets">{msg.assets.title}</Link>
+        </Button>
+        <Button asChild variant="outline" size="sm">
+          <Link href="/app/settings/members">{msg.audit.membersLink}</Link>
+        </Button>
         <form action="/logout" method="post">
-          <button
-            type="submit"
-            className="rounded-[var(--radius)] border border-[var(--border)] px-4 py-2 text-sm"
-          >
+          <Button type="submit" variant="outline" size="sm">
             {msg.nav.signOut}
-          </button>
+          </Button>
         </form>
       </div>
-    </main>
+    </PageFrame>
   );
 }
