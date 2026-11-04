@@ -1,6 +1,6 @@
 import { TicketStatus } from "@prisma/client";
 import { describe, expect, it } from "vitest";
-import { ticketStatusLabel } from "./status-labels";
+import { ticketStatusLabel } from "./ticket-status";
 
 describe("ticketStatusLabel", () => {
   it("mappa stati noti IT/EN e fallback raw", () => {

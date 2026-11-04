@@ -244,7 +244,7 @@ export async function assignTicket(input: {
       tenantId: input.tenantId,
       ticket: result.ticket,
       actorUserId: input.actorUserId,
-    }).catch((e) => console.error("[assign] notify", e));
+    });
   }
 
   return result;
@@ -289,7 +289,7 @@ export async function cancelTicket(input: {
       tenantId: input.tenantId,
       ticket: result.ticket,
       actorUserId: input.actorUserId,
-    }).catch((e) => console.error("[cancel] notify", e));
+    });
   }
 
   return result;

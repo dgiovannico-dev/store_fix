@@ -5,7 +5,7 @@ import {
   createVendor,
   softDeleteVendor,
   updateVendor,
-} from "@/domain/vendors/vendor-service";
+} from "@/application/vendors/vendor-service";
 import { actionError } from "@/i18n/action-errors";
 import { actionResultError } from "@/i18n/domain-errors";
 import { sessionTenant } from "@/lib/auth/session-tenant";

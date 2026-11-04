@@ -1,4 +1,4 @@
-import { expandAllPmSeries } from "@/domain/pm/pm-series-service";
+import { expandAllPmSeries } from "@/application/pm/pm-series-service";
 import { remindDuePmEvents } from "@/application/pm/remind-due";
 
 /**

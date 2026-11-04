@@ -11,8 +11,8 @@ import { MultiCheckPicker } from "@/components/ui/multi-check-picker";
 import { StatusPanel } from "@/components/ui/status-panel";
 import { RbacAction } from "@/domain/rbac/actions";
 import { can, canMutate } from "@/domain/rbac/can";
-import { listStores } from "@/domain/stores/store-service";
-import { listVendors } from "@/domain/vendors/vendor-service";
+import { listStores } from "@/application/stores/store-service";
+import { listVendors } from "@/application/vendors/vendor-service";
 import { tenantMessages } from "@/i18n/tenant-messages";
 
 export default async function VendorsPage() {

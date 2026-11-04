@@ -1,4 +1,5 @@
-import { Role, TicketStatus } from "@prisma/client";
+import { Role } from "@prisma/client";
+import { OPEN_TICKET_STATUSES } from "@/domain/ticket/status";
 import { enqueueEmail } from "@/infrastructure/email/outbox";
 import { prisma } from "@/infrastructure/db/prisma";
 
@@ -22,13 +23,7 @@ export async function runWeeklyHqDigest(): Promise<{
         where: {
           tenantId: tenant.id,
           deletedAt: null,
-          status: {
-            in: [
-              TicketStatus.open,
-              TicketStatus.assigned,
-              TicketStatus.in_progress,
-            ],
-          },
+          status: { in: [...OPEN_TICKET_STATUSES] },
         },
       }),
       prisma.ticket.count({

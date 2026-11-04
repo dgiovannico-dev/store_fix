@@ -1,9 +1,9 @@
 import { redirect } from "next/navigation";
 import { Role } from "@prisma/client";
 import { auth } from "@/auth";
+import { listChargebackByStore } from "@/application/finance/chargeback-query";
 import { PageFrame } from "@/components/layout/page-frame";
-import { getActiveMembership } from "@/domain/memberships/membership-service";
-import { prisma } from "@/infrastructure/db/prisma";
+import { getActiveMembership } from "@/application/memberships/membership-service";
 
 const HQ = new Set<Role>([
   Role.owner,
@@ -28,38 +28,7 @@ export default async function ChargebackPage({
 
   const sp = await searchParams;
   const days = Math.min(Math.max(Number(sp.days ?? 30) || 30, 7), 365);
-  const since = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
-
-  const stores = await prisma.store.findMany({
-    where: { tenantId: session.tenantId, deletedAt: null },
-    select: { id: true, name: true },
-    orderBy: { name: "asc" },
-  });
-
-  const rows = await Promise.all(
-    stores.map(async (s) => {
-      const agg = await prisma.ticket.aggregate({
-        where: {
-          tenantId: session.tenantId!,
-          storeId: s.id,
-          deletedAt: null,
-          OR: [
-            { verifiedAt: { gte: since } },
-            { doneAt: { gte: since } },
-          ],
-        },
-        _sum: { estimatedCost: true, actualCost: true },
-        _count: true,
-      });
-      return {
-        storeId: s.id,
-        name: s.name,
-        tickets: agg._count,
-        estimated: Number(agg._sum.estimatedCost ?? 0),
-        actual: Number(agg._sum.actualCost ?? 0),
-      };
-    }),
-  );
+  const rows = await listChargebackByStore(session.tenantId, days);
 
   const csv = [
     "store,tickets,estimated_eur,actual_eur",

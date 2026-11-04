@@ -3,8 +3,8 @@ import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { getTenantI18nPrefs } from "@/application/tenant/i18n-prefs";
 import { StatusPanel } from "@/components/ui/status-panel";
-import { getActiveMembership } from "@/domain/memberships/membership-service";
-import { listStores } from "@/domain/stores/store-service";
+import { getActiveMembership } from "@/application/memberships/membership-service";
+import { listStores } from "@/application/stores/store-service";
 import { tenantMessages } from "@/i18n/tenant-messages";
 
 /**

@@ -15,7 +15,7 @@ import { SummarizeNotesPanel } from "@/components/tickets/summarize-notes-panel"
 import { TicketDetailTabs } from "@/components/tickets/ticket-detail-tabs";
 import { TicketTimeline } from "@/components/tickets/ticket-timeline";
 import { VerifyPanel } from "@/components/tickets/verify-panel";
-import { getActiveMembership } from "@/domain/memberships/membership-service";
+import { getActiveMembership } from "@/application/memberships/membership-service";
 import { can } from "@/domain/rbac/can";
 import { RbacAction } from "@/domain/rbac/actions";
 import { canAccessStore } from "@/domain/rbac/store-scope";

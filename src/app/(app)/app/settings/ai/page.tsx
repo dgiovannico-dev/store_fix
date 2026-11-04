@@ -5,7 +5,7 @@ import { auth } from "@/auth";
 import { PageFrame } from "@/components/layout/page-frame";
 import { AiSettingsClient } from "@/components/settings/ai-settings-client";
 import { resolvePlatformAiConfig } from "@/infrastructure/ai/llm-gateway";
-import { getActiveMembership } from "@/domain/memberships/membership-service";
+import { getActiveMembership } from "@/application/memberships/membership-service";
 
 const HQ = new Set<Role>([Role.owner, Role.admin_hq]);
 

@@ -13,10 +13,10 @@ import {
 import { verifyTicket } from "@/application/tickets/verify-ticket";
 import { acceptInvite, createInvite } from "@/domain/invites/invite";
 import { ensureDefaultSlaPolicies } from "@/domain/sla/defaults";
-import { createStore } from "@/domain/stores/store-service";
+import { createStore } from "@/application/stores/store-service";
 import { signupHqOwner } from "@/domain/tenancy/signup";
 import { assertTransition, IllegalTransitionError } from "@/domain/ticket/fsm";
-import { createVendor } from "@/domain/vendors/vendor-service";
+import { createVendor } from "@/application/vendors/vendor-service";
 import { listTicketEvents } from "@/infrastructure/db/ticket-event-repository";
 import { prisma } from "@/infrastructure/db/prisma";
 import { buildAttachmentKey } from "@/infrastructure/storage/s3";

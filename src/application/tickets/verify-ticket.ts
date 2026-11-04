@@ -61,7 +61,7 @@ export async function verifyTicket(input: {
       tenantId: input.tenantId,
       ticket: result.ticket,
       actorUserId: input.actorUserId,
-    }).catch((e) => console.error("[verify] notify", e));
+    });
   }
   return result;
 }
@@ -129,7 +129,7 @@ export async function rejectTicket(input: {
       tenantId: input.tenantId,
       ticket: result.ticket,
       actorUserId: input.actorUserId,
-    }).catch((e) => console.error("[reject] notify", e));
+    });
   }
   return result;
 }

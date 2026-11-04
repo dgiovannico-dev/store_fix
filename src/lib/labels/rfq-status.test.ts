@@ -1,6 +1,6 @@
 import { QuoteBidStatus, QuoteRequestStatus } from "@prisma/client";
 import { describe, expect, it } from "vitest";
-import { rfqBidStatusLabel, rfqRequestStatusLabel } from "./status-labels";
+import { rfqBidStatusLabel, rfqRequestStatusLabel } from "./rfq-status";
 
 describe("rfq status labels", () => {
   it("mappa request/bid IT/EN e fallback raw", () => {

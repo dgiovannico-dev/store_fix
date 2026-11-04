@@ -5,7 +5,7 @@ import { auth } from "@/auth";
 import {
   softDisableMembership,
   updateMembership,
-} from "@/domain/memberships/membership-service";
+} from "@/application/memberships/membership-service";
 
 export async function updateMembershipAction(
   membershipId: string,

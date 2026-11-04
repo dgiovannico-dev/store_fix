@@ -5,7 +5,7 @@ import {
   createStore,
   restoreStore,
   softDeleteStore,
-} from "@/domain/stores/store-service";
+} from "@/application/stores/store-service";
 import { signupHqOwner } from "@/domain/tenancy/signup";
 import { ForbiddenError } from "@/domain/rbac/guards";
 import { prisma } from "@/infrastructure/db/prisma";

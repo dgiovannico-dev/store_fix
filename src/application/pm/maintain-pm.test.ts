@@ -5,8 +5,8 @@ import { remindDuePmEvents } from "@/application/pm/remind-due";
 import {
   createPmSeries,
   expandAllPmSeries,
-} from "@/domain/pm/pm-series-service";
-import { createStore } from "@/domain/stores/store-service";
+} from "@/application/pm/pm-series-service";
+import { createStore } from "@/application/stores/store-service";
 import { signupHqOwner } from "@/domain/tenancy/signup";
 import { prisma } from "@/infrastructure/db/prisma";
 import { cleanupTenant } from "@/test-utils/cleanup-tenant";

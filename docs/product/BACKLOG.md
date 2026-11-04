@@ -729,6 +729,33 @@ Override solo con nota esplicita in chat + aggiornamento di questo file.
 
 ---
 
+## Hardening H / Refactor R (modular monolith anti-regressione)
+
+> Programma architetturale (ADR-0013) — **non** nuova fase prodotto. Checkbox per tracking autopilot.
+
+| ID | Titolo | Priorità | Stato |
+|----|--------|----------|-------|
+| **R0** | Safety net test (cleanup outbox/AI, isolate jobs, no silent early-return) | **P0** | Done |
+| **R1.1** | Auth cookie gate fail-closed `/app` `/vendor` | **P0** | Done |
+| **R1.2** | Store-scope empty → `"none"` non-HQ; list vs `canAccessStore` | **P0** | Done |
+| **R1.3** | Audience HQ wallboard + contratti/performance | **P0** | Done |
+| **R1.4** | Ticket/SLA notify + outbox stessa TX | **P0** | Done |
+| **R1.5** | RFQ award FSM + IMAP Message-ID reserve | **P0** | Done |
+| **R2.1** | Break domain→application (invite locale) | **P1** | Done |
+| **R2.2** | Move stores/vendors/memberships/pm/assets/contracts → application | **P1** | Done |
+| **R2.3** | Label helpers → `src/lib/labels/` | **P2** | Done |
+| **R2.4** | Shared `OPEN_TICKET_STATUSES` | **P1** | Done |
+| **R3.1** | Wallboard query module | **P1** | Done |
+| **R3.2** | Chargeback query module | **P1** | Done |
+| **R3.3** | Contract performance query module | **P1** | Done |
+| **R3.4** | No new page-inline Prisma on heavy HQ reads | **P2** | Done |
+| **R4.1** | HQ sheet `onNavigate` close | **P0** | Done |
+| **R4.2** | Lazy `driver.js` / ProductTourHost | **P1** | Done |
+| **R4.3** | Calendar Day/Week/Month split files | **P2** | Done |
+| **R4.4** | New-ticket form-options via RSC props | **P1** | Done |
+
+---
+
 ## Checklist completezza MVP (v4)
 
 | Area brief | Copertura | Story chiave |

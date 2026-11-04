@@ -4,6 +4,7 @@ import { NotificationType } from "@/domain/notification/types";
 import {
   appendEmailOutbox,
   kickEmailOutboxDispatch,
+  type DbClient,
 } from "@/infrastructure/email/outbox";
 import type { EmailTemplateId } from "@/infrastructure/email/templates";
 import {
@@ -50,6 +51,7 @@ async function notify(
     summary?: string;
   },
   extraEmails: string[] = [],
+  opts: { db?: DbClient; skipKick?: boolean } = {},
 ) {
   const uniq = uniqueRecipients(recipients);
   const emails = [
@@ -60,7 +62,7 @@ async function notify(
   const summaryWithLink =
     `${vars.summary ?? ""}\n${ticketDeepLink(vars.ticketId)}`.trim();
 
-  await prisma.$transaction(async (tx) => {
+  const write = async (tx: DbClient) => {
     if (uniq.length > 0) {
       await tx.notification.createMany({
         data: uniq.map((r) => ({
@@ -81,9 +83,15 @@ async function notify(
         vars: { ...vars, summary: summaryWithLink },
       });
     }
-  });
+  };
 
-  if (emails.length > 0) {
+  if (opts.db) {
+    await write(opts.db);
+  } else {
+    await prisma.$transaction(async (tx) => write(tx));
+  }
+
+  if (emails.length > 0 && !opts.skipKick) {
     await kickEmailOutboxDispatch();
   }
 }
@@ -140,8 +148,12 @@ export async function emitTicketNotification(input: {
   tenantId: string;
   ticket: TicketWithRelations;
   actorUserId: string;
+  /** Join caller TX (F3-09 / R1.4); skipKick when caller kicks after commit */
+  db?: DbClient;
+  skipKick?: boolean;
 }) {
   requireTenantId(input.tenantId);
+  const notifyOpts = { db: input.db, skipKick: input.skipKick };
   const prefs = await getTenantI18nPrefs(input.tenantId);
   const locale = prefs.locale;
   const storeName =
@@ -165,6 +177,8 @@ export async function emitTicketNotification(input: {
       "ticket_nuovo",
       locale,
       { ticketId, storeName, summary },
+      [],
+      notifyOpts,
     );
     await maybePushStore({
       kind: "created",
@@ -197,6 +211,7 @@ export async function emitTicketNotification(input: {
         summary,
       },
       vendor?.email ? [vendor.email] : [],
+      notifyOpts,
     );
     await maybePushStore({
       kind: "assigned",
@@ -233,6 +248,7 @@ export async function emitTicketNotification(input: {
         summary: input.ticket.cancelReason ?? summary,
       },
       vendor?.email ? [vendor.email] : [],
+      notifyOpts,
     );
     return;
   }
@@ -252,6 +268,8 @@ export async function emitTicketNotification(input: {
       "ticket_done",
       locale,
       { ticketId, storeName, vendorName: vendor?.name, summary },
+      [],
+      notifyOpts,
     );
     await maybePushStore({
       kind: "done",
@@ -275,6 +293,8 @@ export async function emitTicketNotification(input: {
       "ticket_breach",
       locale,
       { ticketId, storeName, summary },
+      [],
+      notifyOpts,
     );
     return;
   }
@@ -294,6 +314,7 @@ export async function emitTicketNotification(input: {
       locale,
       { ticketId, storeName, vendorName: vendor?.name, summary },
       vendor?.email ? [vendor.email] : [],
+      notifyOpts,
     );
     return;
   }
@@ -318,5 +339,6 @@ export async function emitTicketNotification(input: {
       summary: input.ticket.rejectReason ?? summary,
     },
     vendor?.email ? [vendor.email] : [],
+    notifyOpts,
   );
 }

@@ -1,7 +1,6 @@
 import { createHash, randomBytes } from "crypto";
 import { Role } from "@prisma/client";
 import { z } from "zod";
-import { getTenantI18nPrefs } from "@/application/tenant/i18n-prefs";
 import { requireTenantId } from "@/infrastructure/db/tenant-scope";
 import {
   appendEmailOutbox,
@@ -10,6 +9,7 @@ import {
 import { prisma } from "@/infrastructure/db/prisma";
 import { RbacAction } from "@/domain/rbac/actions";
 import { assertCanMutate } from "@/domain/rbac/guards";
+import type { Locale } from "@/i18n";
 
 const INVITE_TTL_MS = 7 * 24 * 60 * 60 * 1000;
 
@@ -39,6 +39,8 @@ export async function createInvite(input: {
   role: Role;
   storeIds?: string[];
   vendorId?: string | null;
+  /** Pass from action (breaks domain→application i18n deps — R2.1) */
+  locale?: Locale;
 }): Promise<
   | { ok: true; inviteId: string; acceptUrl: string }
   | { ok: false; code: string; message?: string }
@@ -78,7 +80,7 @@ export async function createInvite(input: {
 
   const raw = randomBytes(32).toString("hex");
   const acceptUrl = `${appBaseUrl()}/invite/${raw}`;
-  const { locale } = await getTenantI18nPrefs(input.tenantId);
+  const locale = input.locale ?? "it";
 
   const invite = await prisma.$transaction(async (tx) => {
     const row = await tx.inviteToken.create({

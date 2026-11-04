@@ -1,3 +1,4 @@
+import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { getTenantI18nPrefs } from "@/application/tenant/i18n-prefs";
 import type { BreadcrumbLabels } from "@/components/layout/app-breadcrumbs";
@@ -45,7 +46,9 @@ function breadcrumbLabelsFromMsg(
 
 export async function AppChrome({ children }: { children: React.ReactNode }) {
   const session = await auth();
-  if (!session?.user) return <>{children}</>;
+  // Fail-closed: (app)/(vendor) layouts always wrap AppChrome
+  if (!session?.user) redirect("/login");
+
 
   const prefs = session.tenantId
     ? await getTenantI18nPrefs(session.tenantId)

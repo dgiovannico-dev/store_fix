@@ -2,7 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { getTenantI18nPrefs } from "@/application/tenant/i18n-prefs";
-import { listMembershipConfigAudit } from "@/domain/memberships/membership-service";
+import { listMembershipConfigAudit } from "@/application/memberships/membership-service";
 import { can } from "@/domain/rbac/can";
 import { RbacAction } from "@/domain/rbac/actions";
 import { PageFrame } from "@/components/layout/page-frame";

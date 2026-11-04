@@ -2,8 +2,8 @@
 
 import { revalidatePath } from "next/cache";
 import { auth } from "@/auth";
-import { createAsset, softDeleteAsset } from "@/domain/assets/asset-service";
-import { getActiveMembership } from "@/domain/memberships/membership-service";
+import { createAsset, softDeleteAsset } from "@/application/assets/asset-service";
+import { getActiveMembership } from "@/application/memberships/membership-service";
 import { actionError } from "@/i18n/action-errors";
 import { actionResultError } from "@/i18n/domain-errors";
 

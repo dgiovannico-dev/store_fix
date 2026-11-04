@@ -5,7 +5,7 @@ import { auth } from "@/auth";
 import {
   importStoresFromCsv,
   type CsvRowError,
-} from "@/domain/stores/csv-import";
+} from "@/application/stores/csv-import";
 import { actionError } from "@/i18n/action-errors";
 import { actionResultError } from "@/i18n/domain-errors";
 

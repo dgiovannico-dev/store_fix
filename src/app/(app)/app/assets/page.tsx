@@ -1,16 +1,16 @@
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { createAssetAction, deleteAssetAction } from "@/app/actions/assets";
-import { listAssets } from "@/domain/assets/asset-service";
+import { listAssets } from "@/application/assets/asset-service";
 import {
   intakeCategoryLabel,
   intakeCategoryOptions,
 } from "@/domain/intake/chat-steps";
-import { getActiveMembership } from "@/domain/memberships/membership-service";
+import { getActiveMembership } from "@/application/memberships/membership-service";
 import { RbacAction } from "@/domain/rbac/actions";
 import { can } from "@/domain/rbac/can";
-import { listStores } from "@/domain/stores/store-service";
-import { listVendors } from "@/domain/vendors/vendor-service";
+import { listStores } from "@/application/stores/store-service";
+import { listVendors } from "@/application/vendors/vendor-service";
 import { getTenantI18nPrefs } from "@/application/tenant/i18n-prefs";
 import { PageFrame } from "@/components/layout/page-frame";
 import { AssetsDataTable } from "@/components/tables/entity-data-table";

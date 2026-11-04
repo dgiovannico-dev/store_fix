@@ -1,6 +1,6 @@
 import { QuoteStatus } from "@prisma/client";
 import { describe, expect, it } from "vitest";
-import { quoteStatusLabel } from "./quote-status-labels";
+import { quoteStatusLabel } from "./quote-status";
 
 describe("quoteStatusLabel", () => {
   it("mappa stati e null", () => {

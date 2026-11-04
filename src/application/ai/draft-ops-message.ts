@@ -1,6 +1,6 @@
 import { Role } from "@prisma/client";
 import type { AiAssistSource } from "@/domain/ai/suggest-category";
-import { getActiveMembership } from "@/domain/memberships/membership-service";
+import { getActiveMembership } from "@/application/memberships/membership-service";
 import { ForbiddenError } from "@/domain/rbac/guards";
 import { canAccessStore } from "@/domain/rbac/store-scope";
 import { llmChatJson, llmConfigured } from "@/infrastructure/ai/llm-gateway";
