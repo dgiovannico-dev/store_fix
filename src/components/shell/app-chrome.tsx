@@ -40,6 +40,11 @@ function breadcrumbLabelsFromMsg(
       settings: msg.nav.locale,
       inbox: msg.nav.inbox,
       onboarding: msg.onboarding.title,
+      wallboard: msg.nav.wallboard,
+      finance: msg.chargeback.title,
+      chargeback: msg.chargeback.title,
+      performance: msg.contracts.performanceTitle,
+      ai: msg.nav.ai,
     },
   };
 }
