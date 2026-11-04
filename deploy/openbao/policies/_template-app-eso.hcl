@@ -14,4 +14,8 @@ path "secret/metadata/apps/APP_ID/*" {
   capabilities = ["read", "list"]
 }
 
+path "auth/token/lookup-self" {
+  capabilities = ["read"]
+}
+
 # Do NOT grant secret/data/* or secret/data/apps/* — least privilege per app.
