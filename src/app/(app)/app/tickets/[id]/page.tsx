@@ -31,10 +31,14 @@ import { canDecideQuote } from "@/domain/ticket/quote";
 import { listTicketEvents } from "@/infrastructure/db/ticket-event-repository";
 import { prisma } from "@/infrastructure/db/prisma";
 import { tenantMessages } from "@/i18n/tenant-messages";
+import {
+  isWallboardReturnPath,
+  safeAppReturnPath,
+} from "@/lib/safe-return-path";
 
 type Props = {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ created?: string }>;
+  searchParams: Promise<{ created?: string; returnTo?: string }>;
 };
 
 const HQ_OPS = new Set<Role>([
@@ -110,9 +114,25 @@ export default async function TicketDetailPage({
     can(session.role, RbacAction.acceptQuote) &&
     canDecideQuote(ticket.status, ticket.quoteStatus);
 
+  const returnTo = sp.returnTo
+    ? safeAppReturnPath(sp.returnTo, "/app/tickets")
+    : null;
+  const backHref = returnTo ?? "/app/tickets";
+  const backLabel = returnTo
+    ? isWallboardReturnPath(returnTo)
+      ? copy.backWallboard
+      : copy.backReturn
+    : copy.back;
+
   return (
     <PageFrame>
       <div className="sticky top-14 z-20 -mx-4 border-b border-[var(--border)] bg-[var(--background)]/95 px-4 py-3 backdrop-blur-sm sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
+        <Link
+          href={backHref}
+          className="mb-2 inline-flex text-sm font-medium text-[var(--primary)] underline-offset-4 hover:underline"
+        >
+          {backLabel}
+        </Link>
         {sp.created === "1" ? (
           <p
             className="mb-2 rounded-[var(--radius)] border border-[var(--success)] px-3 py-2 text-sm text-[var(--success)]"

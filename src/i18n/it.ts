@@ -43,6 +43,10 @@ export const it = {
     agoMinutes: "da {n} min",
     agoHours: "da {n} ore",
     agoDays: "da {n} giorni",
+    loadMore: "Carica altri interventi",
+    loadMorePending: "Caricamento…",
+    loadMoreError: "Impossibile caricare altri interventi",
+    showingOf: "Mostrati {shown} di {total}",
   },
   meta: {
     description:
@@ -69,7 +73,8 @@ export const it = {
     closedList: "Ticket chiusi / verificati",
     financeReadonly:
       "Accesso read-only: nessuna mutation, note interne non disponibili.",
-    cancelSkip: "Annulla skip",
+    cancelSkip: "Riprendi checklist",
+    cancelSkipHint: "Torna all’onboarding e continua da dove hai lasciato",
     kpiAria: "Indicatori KPI",
   },
   vendor: {
@@ -372,6 +377,8 @@ export const it = {
   ticketDetail: {
     back: "← Ticket",
     backInbox: "← Inbox",
+    backWallboard: "← Monitor interventi",
+    backReturn: "← Indietro",
     createdBanner: "Ticket aperto. ID:",
     statusPrefix: "stato",
     assetPrefix: "Asset:",
@@ -462,14 +469,16 @@ export const it = {
     slaNote: "Nota rilancio *",
     slaOk: "Rilancio inviato",
     slaSubmit: "Rilancia notifica ops",
-    summarizeTitle: "Assist riassunto",
+    summarizeTitle: "Assist riassunto e soluzione",
     summarizeHint:
       "Suggerimento AI/heuristic — non salva sul ticket (conferma = sola lettura).",
-    summarizeBtn: "Genera riassunto (assist)",
+    summarizeBtn: "Rigenera assist",
     summarizePending: "Generazione…",
-    summarizeError: "Errore riassunto",
+    summarizeError: "Errore assist",
     summarizeSource: "Fonte:",
     summarizeNeedsConfirm: "sola lettura — conferma umana",
+    summarizeSolutionTitle: "Possibile soluzione (da verificare)",
+    summarizeAutoPending: "Sto preparando riassunto e suggerimento…",
     vendorTitle: "Aggiorna intervento",
     vendorStart: "Inizia intervento",
     vendorWaiting: "In attesa ricambi",

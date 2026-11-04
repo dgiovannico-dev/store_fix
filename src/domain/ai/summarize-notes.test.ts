@@ -25,8 +25,25 @@ describe("summarizeNotesHeuristic", () => {
 
 describe("parseOllamaSummaryJson", () => {
   it("legge summary JSON", () => {
-    expect(
-      parseOllamaSummaryJson('{"summary":"Intervento frigo chiuso con successo."}'),
-    ).toMatch(/frigo/i);
+    const parsed = parseOllamaSummaryJson(
+      '{"summary":"Intervento frigo chiuso con successo."}',
+    );
+    expect(parsed?.summary).toMatch(/frigo/i);
+  });
+
+  it("legge suggestedSolution", () => {
+    const parsed = parseOllamaSummaryJson(
+      '{"summary":"Frigo fuori range.","suggestedSolution":"1. Controllare setpoint.\\n2. Chiamare frigorista."}',
+    );
+    expect(parsed?.suggestedSolution).toMatch(/setpoint/i);
+  });
+});
+
+describe("summarizeNotesHeuristic solution", () => {
+  it("propone passi per frigo", () => {
+    const r = summarizeNotesHeuristic(
+      "Apertura: frigo banco caldo sopra 8 gradi. Allarme temperatura attivo da stamattina.",
+    );
+    expect(r.suggestedSolution).toMatch(/temperatura|set-point|vendor/i);
   });
 });
