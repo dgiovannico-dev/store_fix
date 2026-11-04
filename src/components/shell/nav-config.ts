@@ -62,7 +62,7 @@ export function hqSidebarItems(
     { href: "/app/contratti", label: msg.nav.contracts, icon: "contracts" },
     { href: "/app/calendario", label: msg.nav.calendar, icon: "calendar" },
     { href: "/app/finance/chargeback", label: msg.nav.costs, icon: "contracts" },
-    { href: "/app/wallboard", label: msg.nav.overview, icon: "dashboard" },
+    { href: "/app/wallboard", label: msg.nav.wallboard, icon: "dashboard" },
   ];
   if (role && canMutate(role, RbacAction.manageRfq)) {
     items.push({ href: "/app/rfq", label: msg.nav.rfq, icon: "rfq" });

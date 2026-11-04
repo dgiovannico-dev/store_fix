@@ -92,6 +92,34 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Clickable controls: always show pointer (UA default is often `default` on buttons). */
+@layer base {
+  a[href],
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]),
+  summary,
+  label[for],
+  label:has(input:not(:disabled)),
+  input[type="submit"]:not(:disabled),
+  input[type="button"]:not(:disabled),
+  input[type="reset"]:not(:disabled),
+  input[type="checkbox"]:not(:disabled),
+  input[type="radio"]:not(:disabled),
+  input[type="file"]:not(:disabled),
+  select:not(:disabled),
+  [data-slot="trigger"]:not(:disabled),
+  .cursor-click {
+    cursor: pointer;
+  }
+
+  button:disabled,
+  [role="button"][aria-disabled="true"],
+  input:disabled,
+  select:disabled {
+    cursor: not-allowed;
+  }
+}
+
 .text-display {
   font-family: var(--font-sora), ui-sans-serif, sans-serif;
   font-size: var(--text-display);

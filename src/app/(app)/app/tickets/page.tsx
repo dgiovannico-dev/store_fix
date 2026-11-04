@@ -175,8 +175,8 @@ export default async function TicketsListPage({ searchParams }: Props) {
         </form>
       ) : null}
 
-      {visible.length === 0 ? (
-        <div className="mt-8">
+      <div className="mt-4" data-tour="page.tickets.table">
+        {visible.length === 0 ? (
           <StatusPanel
             kind="empty"
             title={msg.common.empty}
@@ -196,9 +196,7 @@ export default async function TicketsListPage({ searchParams }: Props) {
               </Link>
             ) : null}
           </StatusPanel>
-        </div>
-      ) : (
-        <div className="mt-4" data-tour="page.tickets.table">
+        ) : (
           <TicketsDataTable
             common={msg.common}
             headers={msg.ticketsList}
@@ -246,8 +244,8 @@ export default async function TicketsListPage({ searchParams }: Props) {
               };
             })}
           />
-        </div>
-      )}
+        )}
+      </div>
       </div>
     </PageFrame>
   );
