@@ -1,5 +1,5 @@
-import { TicketDetailSkeleton } from "@/components/ui/page-skeletons";
+import { PhoneTicketDetailSkeleton } from "@/components/ui/page-skeletons";
 
 export default function VendorTicketDetailLoading() {
-  return <TicketDetailSkeleton />;
+  return <PhoneTicketDetailSkeleton />;
 }

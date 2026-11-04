@@ -90,6 +90,37 @@ export function FormPageSkeleton() {
   );
 }
 
+/** Vendor phone ticket detail (single column, not HQ 2-col). */
+export function PhoneTicketDetailSkeleton() {
+  return (
+    <div className="mx-auto w-full max-w-[430px] space-y-4 px-4 py-6">
+      <Skeleton className="h-9 w-24" />
+      <Skeleton className="h-28 w-full rounded-[var(--radius)]" />
+      <Skeleton className="h-10 w-full rounded-[var(--radius)]" />
+      <Skeleton className="h-40 w-full rounded-[var(--radius)]" />
+      <Skeleton className="h-32 w-full rounded-[var(--radius)]" />
+    </div>
+  );
+}
+
+/** Intake chat wizard (segnala). */
+export function WizardSkeleton() {
+  return (
+    <div className="mx-auto w-full max-w-[430px] space-y-4 px-4 py-6">
+      <Skeleton className="h-2 w-full rounded-full" />
+      <div className="flex gap-1">
+        {Array.from({ length: 5 }).map((_, i) => (
+          <Skeleton key={i} className="h-1.5 flex-1 rounded-full" />
+        ))}
+      </div>
+      <Skeleton className="h-7 w-48" />
+      <Skeleton className="h-4 w-full max-w-xs" />
+      <Skeleton className="h-28 w-full rounded-[var(--radius)]" />
+      <Skeleton className="h-11 w-full rounded-[var(--radius)]" />
+    </div>
+  );
+}
+
 /** PM calendar month grid. */
 export function CalendarSkeleton() {
   return (

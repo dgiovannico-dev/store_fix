@@ -4,8 +4,8 @@ import { createStoreAction, deleteStoreAction } from "@/app/actions/stores";
 import { getTenantI18nPrefs } from "@/application/tenant/i18n-prefs";
 import { PageFrame } from "@/components/layout/page-frame";
 import { StoresDataTable } from "@/components/tables/entity-data-table";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { PendingSubmitButton } from "@/components/ui/pending-submit-button";
 import { RowActionLink } from "@/components/ui/row-actions";
 import { StatusPanel } from "@/components/ui/status-panel";
 import { canMutate } from "@/domain/rbac/can";
@@ -71,9 +71,11 @@ export default async function StoresPage() {
             placeholder={msg.stores.webhookPlaceholder}
           />
           <Input name="ntfyTopic" placeholder={msg.stores.ntfyPlaceholder} />
-          <Button type="submit" className="sm:col-span-2">
-            {msg.stores.add}
-          </Button>
+          <PendingSubmitButton
+            className="sm:col-span-2"
+            label={msg.stores.add}
+            pendingLabel={msg.common.working}
+          />
         </form>
       ) : null}
 
