@@ -6,7 +6,7 @@ import {
   listVendorTickets,
   type VendorInboxTab,
 } from "@/application/tickets/list-vendor-tickets";
-import { SlaBadge } from "@/components/tickets/sla-badge";
+import { VendorInboxDataTable } from "@/components/tables/vendor-inbox-data-table";
 import { StatusPanel } from "@/components/ui/status-panel";
 import { getActiveMembership } from "@/domain/memberships/membership-service";
 import {
@@ -93,43 +93,39 @@ export default async function VendorInboxPage({ searchParams }: Props) {
           />
         </div>
       ) : (
-        <ul className="mt-2 divide-y divide-[var(--border)]">
-          {tickets.map((tk) => {
-            const sla = computeSlaBadge({
-              slaDueAt: tk.slaDueAt,
-              slaBreachedAt: tk.slaBreachedAt,
-              openedAt: tk.openedAt,
-              dateLocale: prefs.dateLocale,
-              labels: {
-                breached: copy.slaBreached,
-                none: copy.slaNone,
-                riskPrefix: copy.slaRiskPrefix,
-                okPrefix: copy.slaOkPrefix,
-              },
-            });
-            return (
-              <li key={tk.id}>
-                <Link
-                  href={`/vendor/tickets/${tk.id}`}
-                  className="block min-h-11 py-3 active:bg-[var(--muted)]/50"
-                >
-                  <div className="flex flex-wrap items-center justify-between gap-2">
-                    <span className="font-medium">
-                      {intakeCategoryLabel(tk.category, prefs.locale)} ·{" "}
-                      {intakePriorityLabel(tk.priority, prefs.locale)}
-                    </span>
-                    <SlaBadge tone={sla.tone} label={sla.label} />
-                  </div>
-                  <p className="mt-1 text-sm text-[var(--muted-foreground)]">
-                    {tk.store.name} ·{" "}
-                    {ticketStatusLabel(tk.status, prefs.locale)}
-                  </p>
-                  <p className="mt-1 line-clamp-2 text-sm">{tk.description}</p>
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
+        <div className="mt-3">
+          <VendorInboxDataTable
+            common={msg.common}
+            titleHeader={msg.ticketsList.colPriority}
+            storeHeader={msg.ticketsList.colStore}
+            slaHeader={msg.ticketsList.colSla}
+            rows={tickets.map((tk) => {
+              const sla = computeSlaBadge({
+                slaDueAt: tk.slaDueAt,
+                slaBreachedAt: tk.slaBreachedAt,
+                openedAt: tk.openedAt,
+                dateLocale: prefs.dateLocale,
+                labels: {
+                  breached: copy.slaBreached,
+                  none: copy.slaNone,
+                  riskPrefix: copy.slaRiskPrefix,
+                  okPrefix: copy.slaOkPrefix,
+                },
+              });
+              const title = `${intakeCategoryLabel(tk.category, prefs.locale)} · ${intakePriorityLabel(tk.priority, prefs.locale)}`;
+              const storeStatus = `${tk.store.name} · ${ticketStatusLabel(tk.status, prefs.locale)}`;
+              return {
+                id: tk.id,
+                title,
+                storeStatus,
+                slaTone: sla.tone,
+                slaLabel: sla.label,
+                description: tk.description,
+                searchText: `${title} ${storeStatus} ${tk.description} ${sla.label}`,
+              };
+            })}
+          />
+        </div>
       )}
     </main>
   );
