@@ -8,3 +8,7 @@ path "secret/data/apps/facilityflow/*" {
 path "secret/metadata/apps/facilityflow/*" {
   capabilities = ["read", "list"]
 }
+
+path "auth/token/lookup-self" {
+  capabilities = ["read"]
+}

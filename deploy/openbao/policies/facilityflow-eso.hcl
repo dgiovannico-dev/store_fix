@@ -9,3 +9,8 @@ path "secret/data/apps/facilityflow/*" {
 path "secret/metadata/apps/facilityflow/*" {
   capabilities = ["read", "list"]
 }
+
+# ESO token introspection
+path "auth/token/lookup-self" {
+  capabilities = ["read"]
+}
