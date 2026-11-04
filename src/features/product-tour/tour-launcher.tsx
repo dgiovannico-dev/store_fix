@@ -69,7 +69,7 @@ export function TourHelpButtons(props: {
     <div className="flex flex-col gap-1.5 p-2" data-tour="help.tour">
       <button
         type="button"
-        className="flex cursor-pointer items-center gap-2.5 rounded-full border border-[color-mix(in_oklab,var(--primary)_30%,var(--border))] bg-[color-mix(in_oklab,var(--primary)_8%,var(--card))] px-3 py-2 text-left text-sm font-medium text-[var(--primary)] shadow-sm transition-colors hover:bg-[color-mix(in_oklab,var(--primary)_14%,var(--card))]"
+        className="flex cursor-pointer items-center gap-2.5 rounded-full border border-[color-mix(in_oklab,var(--primary)_30%,var(--border))] bg-[var(--primary-soft)] px-3 py-2 text-left text-sm font-medium text-[var(--primary)] shadow-sm transition-colors hover:bg-[var(--sidebar-accent)]"
         onClick={() => startProductTour(props.audience, "full", props.locale)}
       >
         <span className="inline-flex size-6 shrink-0 items-center justify-center rounded-full bg-[var(--primary)] text-[var(--primary-foreground)]">
@@ -79,10 +79,10 @@ export function TourHelpButtons(props: {
       </button>
       <button
         type="button"
-        className="flex cursor-pointer items-center gap-2.5 rounded-full border border-[var(--border)] bg-[var(--card)] px-3 py-2 text-left text-sm text-[var(--foreground)] shadow-sm transition-colors hover:border-[color-mix(in_oklab,var(--primary)_25%,var(--border))] hover:bg-[var(--muted)]"
+        className="flex cursor-pointer items-center gap-2.5 rounded-full border border-[var(--sidebar-border)] bg-[var(--card)] px-3 py-2 text-left text-sm text-[var(--foreground)] shadow-sm transition-colors hover:border-[var(--chrome-border)] hover:bg-[var(--accent)]"
         onClick={() => startProductTour(props.audience, "page", props.locale)}
       >
-        <span className="inline-flex size-6 shrink-0 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--muted)] text-[var(--muted-foreground)]">
+        <span className="inline-flex size-6 shrink-0 items-center justify-center rounded-full border border-[var(--sidebar-border)] bg-[var(--sidebar-accent)] text-[var(--nav-icon-active)]">
           <CircleHelp className="size-3.5" aria-hidden strokeWidth={2} />
         </span>
         <span className="min-w-0 leading-snug">

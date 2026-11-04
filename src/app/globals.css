@@ -1,44 +1,61 @@
 @import "tailwindcss";
 
 :root {
-  /* Brand / superfici — slate + ambra (DESIGN_SYSTEM) */
-  --background: oklch(0.982 0.006 250);
-  --foreground: oklch(0.2 0.025 250);
-  --card: oklch(0.995 0.002 250);
+  /*
+   * Cool Teal Facility — slate-mist surfaces + verdant teal brand.
+   * Amber = SLA signal only; rose = critical. No purple / cream-terracotta.
+   */
+  --background: oklch(0.985 0.008 210);
+  --foreground: oklch(0.22 0.03 220);
+  --card: oklch(0.997 0.004 210);
   --card-foreground: var(--foreground);
-  --popover: oklch(1 0 0);
+  --popover: oklch(1 0.002 210);
   --popover-foreground: var(--foreground);
-  --primary: oklch(0.3 0.045 250);
-  --primary-foreground: oklch(0.985 0.005 95);
-  --secondary: oklch(0.945 0.012 250);
-  --secondary-foreground: oklch(0.26 0.035 250);
-  --muted: oklch(0.958 0.01 250);
-  --muted-foreground: oklch(0.46 0.025 250);
-  --accent: oklch(0.94 0.018 250);
-  --accent-foreground: oklch(0.26 0.035 250);
-  --destructive: oklch(0.52 0.2 25);
+  --primary: oklch(0.4 0.1 195);
+  --primary-foreground: oklch(0.99 0.01 195);
+  --secondary: oklch(0.945 0.02 205);
+  --secondary-foreground: oklch(0.3 0.05 205);
+  --muted: oklch(0.955 0.014 210);
+  --muted-foreground: oklch(0.48 0.03 220);
+  --accent: oklch(0.935 0.035 195);
+  --accent-foreground: oklch(0.32 0.08 195);
+  --destructive: oklch(0.5 0.19 25);
   --destructive-foreground: oklch(0.98 0.01 25);
-  --border: oklch(0.875 0.012 250);
-  --input: oklch(0.875 0.012 250);
-  --ring: oklch(0.62 0.14 75);
+  --border: oklch(0.88 0.018 210);
+  --input: oklch(0.88 0.018 210);
+  --ring: oklch(0.55 0.12 195);
+
+  /* Chrome: sidebar / header / phone footer */
+  --sidebar: oklch(0.968 0.018 205);
+  --sidebar-foreground: oklch(0.28 0.04 210);
+  --sidebar-accent: oklch(0.92 0.045 195);
+  --sidebar-accent-foreground: oklch(0.34 0.09 195);
+  --sidebar-border: oklch(0.9 0.022 205);
+  --chrome: color-mix(in oklab, var(--card) 88%, var(--primary) 12%);
+  --chrome-border: color-mix(in oklab, var(--border) 70%, var(--primary) 30%);
+
+  /* Nav icons (lucide inherit / explicit) */
+  --nav-icon: oklch(0.52 0.055 205);
+  --nav-icon-active: oklch(0.38 0.11 195);
 
   /* Semantici facility / SLA */
-  --signal: oklch(0.76 0.145 75);
-  --signal-foreground: oklch(0.32 0.07 70);
-  --critical: oklch(0.52 0.2 25);
+  --signal: oklch(0.72 0.145 70);
+  --signal-foreground: oklch(0.36 0.08 65);
+  --critical: oklch(0.5 0.19 25);
   --critical-foreground: oklch(0.98 0.01 25);
-  --success: oklch(0.52 0.13 155);
-  --success-foreground: oklch(0.98 0.02 150);
-  --info: oklch(0.5 0.1 250);
-  --info-foreground: oklch(0.98 0.01 250);
+  --success: oklch(0.52 0.13 160);
+  --success-foreground: oklch(0.98 0.02 155);
+  --info: oklch(0.5 0.1 230);
+  --info-foreground: oklch(0.98 0.01 230);
 
   /* Soft washes (icone notifiche / badge) */
-  --signal-soft: oklch(0.96 0.04 75);
-  --critical-soft: oklch(0.96 0.035 25);
-  --success-soft: oklch(0.96 0.035 155);
-  --info-soft: oklch(0.955 0.025 250);
+  --signal-soft: oklch(0.96 0.045 70);
+  --critical-soft: oklch(0.96 0.04 25);
+  --success-soft: oklch(0.96 0.04 160);
+  --info-soft: oklch(0.955 0.03 230);
+  --primary-soft: oklch(0.95 0.04 195);
 
-  --radius: 0.5rem;
+  --radius: 0.625rem;
   --sidebar-width: 15rem;
   --text-display: 2.25rem;
   --text-h1: 1.75rem;
@@ -72,6 +89,11 @@
   --color-critical: var(--critical);
   --color-success: var(--success);
   --color-info: var(--info);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
   --font-sans: var(--font-plex);
   --font-display: var(--font-sora);
   --radius-sm: calc(var(--radius) - 4px);

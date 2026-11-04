@@ -119,7 +119,10 @@ export function AppBreadcrumbs(props: {
           props.className,
         )}
       >
-        <Home className="size-3.5 shrink-0" aria-hidden />
+        <Home
+          className="size-3.5 shrink-0 text-[var(--nav-icon)]"
+          aria-hidden
+        />
         <span className="font-medium text-[var(--foreground)]">
           {crumbs[0]?.label ?? props.labels.home}
         </span>
@@ -141,9 +144,15 @@ export function AppBreadcrumbs(props: {
           return (
             <li key={`${c.label}-${idx}`} className="flex items-center gap-1">
               {idx > 0 ? (
-                <ChevronRight className="size-3.5 shrink-0 opacity-60" aria-hidden />
+                <ChevronRight
+                  className="size-3.5 shrink-0 text-[var(--nav-icon)] opacity-70"
+                  aria-hidden
+                />
               ) : (
-                <Home className="size-3.5 shrink-0" aria-hidden />
+                <Home
+                  className="size-3.5 shrink-0 text-[var(--nav-icon)]"
+                  aria-hidden
+                />
               )}
               {c.href && !last ? (
                 <Link
