@@ -72,6 +72,7 @@ export default async function DashboardPage() {
 
   return (
     <PageFrame>
+      <div data-tour="page.dashboard.root" className="space-y-0">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <h1 className="font-[family-name:var(--font-sora)] text-2xl font-semibold text-[var(--primary)]">
@@ -184,7 +185,7 @@ export default async function DashboardPage() {
             ]}
           />
 
-          <section className="mt-8">
+          <section className="mt-8" data-tour="page.dashboard.byStore">
             <h2 className="text-[length:var(--text-caption)] font-semibold uppercase tracking-wide text-[var(--muted-foreground)]">
               {msg.dashboard.byStore}
             </h2>
@@ -288,6 +289,7 @@ export default async function DashboardPage() {
           {msg.gdpr.region} · {msg.gdpr.retention}
         </p>
       ) : null}
+      </div>
     </PageFrame>
   );
 }

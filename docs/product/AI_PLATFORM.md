@@ -98,14 +98,14 @@ Gap: solo Ollama nativo; no vLLM; no BYOK; no settings tenant; source label fiss
 ### Default lab / tuo setup
 
 ```bash
-# Preferito: vLLM già avviato
-AI_PROVIDER=openai_compatible
-AI_BASE_URL=http://127.0.0.1:8000/v1
-AI_API_KEY=token-local   # se vLLM --api-key; altrimenti placeholder
-AI_MODEL=<nome-modello-servito-da-vllm>
+# Preferito: vLLM già avviato (lab tipico :8001)
+AI_BASE_URL=http://127.0.0.1:8001/v1
+AI_API_KEY=local
+AI_MODEL=mlx-community/Qwen2.5-3B-Instruct-4bit
 
-# Fallback legacy (migrare a /v1)
-# OLLAMA_BASE_URL=http://127.0.0.1:11434  →  AI_BASE_URL=…/v1 + model
+# Fallback legacy Ollama
+# OLLAMA_BASE_URL=http://127.0.0.1:11434
+# OLLAMA_MODEL=llama3.2
 ```
 
 Env di piattaforma = **default** per tutti i tenant senza override.  

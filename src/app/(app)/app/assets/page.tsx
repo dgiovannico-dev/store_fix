@@ -46,6 +46,7 @@ export default async function AssetsPage() {
 
   return (
     <PageFrame>
+      <div data-tour="page.assets.root">
       <h1 className="font-[family-name:var(--font-sora)] text-2xl font-semibold text-[var(--primary)]">
         {copy.title}
       </h1>
@@ -126,6 +127,8 @@ export default async function AssetsPage() {
           />
         </div>
       )}
+    
+      </div>
     </PageFrame>
   );
 }

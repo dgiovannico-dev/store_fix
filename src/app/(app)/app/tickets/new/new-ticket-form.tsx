@@ -81,6 +81,7 @@ export function NewTicketForm({
 
   return (
     <PageFrame narrow>
+      <div data-tour="page.tickets.new">
       <h1 className="font-[family-name:var(--font-sora)] text-2xl font-semibold text-[var(--primary)]">
         {copy.title}
       </h1>
@@ -211,6 +212,7 @@ export function NewTicketForm({
           </Button>
         </form>
       )}
+      </div>
     </PageFrame>
   );
 }

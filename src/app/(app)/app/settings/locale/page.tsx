@@ -28,6 +28,7 @@ export default async function LocaleSettingsPage() {
 
   return (
     <PageFrame narrow>
+      <div data-tour="page.settings.locale">
       <h1 className="font-[family-name:var(--font-sora)] text-2xl font-semibold text-[var(--primary)]">
         {msg.localeSettings.title}
       </h1>
@@ -72,6 +73,8 @@ export default async function LocaleSettingsPage() {
         </p>
         <Button type="submit">{msg.localeSettings.save}</Button>
       </form>
+    
+      </div>
     </PageFrame>
   );
 }

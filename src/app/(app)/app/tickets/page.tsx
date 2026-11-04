@@ -94,6 +94,7 @@ export default async function TicketsListPage({ searchParams }: Props) {
 
   return (
     <PageFrame>
+      <div data-tour="page.tickets.root">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <h1 className="font-[family-name:var(--font-sora)] text-2xl font-semibold text-[var(--primary)]">
@@ -112,6 +113,7 @@ export default async function TicketsListPage({ searchParams }: Props) {
 
       {isHq ? (
         <form
+          data-tour="page.tickets.filters"
           className="sticky top-14 z-10 mt-6 grid gap-3 border-b border-[var(--border)] bg-[var(--background)]/95 py-3 backdrop-blur-sm sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6"
           method="get"
         >
@@ -196,7 +198,7 @@ export default async function TicketsListPage({ searchParams }: Props) {
           </StatusPanel>
         </div>
       ) : (
-        <div className="mt-4">
+        <div className="mt-4" data-tour="page.tickets.table">
           <TicketsDataTable
             common={msg.common}
             headers={msg.ticketsList}
@@ -246,6 +248,7 @@ export default async function TicketsListPage({ searchParams }: Props) {
           />
         </div>
       )}
+      </div>
     </PageFrame>
   );
 }

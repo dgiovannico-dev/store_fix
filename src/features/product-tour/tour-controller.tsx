@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { driver, type Driver } from "driver.js";
+import { driver, type DriveStep, type Driver } from "driver.js";
 import "driver.js/dist/driver.css";
 import "@/features/product-tour/tour.css";
 import {
@@ -15,6 +15,48 @@ import {
 const STORAGE_KEY = "ff.tour.resume";
 const SOFT_KEY = "ff.tour.softprompt";
 
+type TourState = {
+  audience: TourAudience;
+  mode: "full" | "page";
+  /** Index into `defs` (not filtered). */
+  index: number;
+  defs: TourStepDef[];
+};
+
+function readState(): TourState | null {
+  try {
+    const raw = window.sessionStorage.getItem(STORAGE_KEY);
+    if (!raw) return null;
+    return JSON.parse(raw) as TourState;
+  } catch {
+    return null;
+  }
+}
+
+function writeState(state: TourState | null) {
+  if (!state) {
+    window.sessionStorage.removeItem(STORAGE_KEY);
+    return;
+  }
+  window.sessionStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+
+function toDriveStep(d: TourStepDef): DriveStep {
+  const popover = {
+    title: d.title,
+    description: d.description,
+    side: d.side ?? "bottom",
+    align: d.align ?? "start",
+  };
+  if (!d.element) {
+    return { popover };
+  }
+  return {
+    element: d.element,
+    popover,
+  };
+}
+
 export function startProductTour(
   audience: TourAudience,
   mode: "full" | "page" = "full",
@@ -25,10 +67,15 @@ export function startProductTour(
     mode === "page"
       ? chapterForPath(audience, pathname)
       : stepsForAudience(audience);
-  window.sessionStorage.setItem(
-    STORAGE_KEY,
-    JSON.stringify({ audience, mode, index: 0, defs }),
-  );
+
+  const first = defs[0];
+  if (first?.route && first.route !== pathname) {
+    writeState({ audience, mode, index: 0, defs });
+    window.location.assign(first.route);
+    return;
+  }
+
+  writeState({ audience, mode, index: 0, defs });
   window.dispatchEvent(new CustomEvent("ff-tour-start"));
 }
 
@@ -65,116 +112,155 @@ export function ProductTourHost(props: {
     if (window.localStorage.getItem(SOFT_KEY)) return;
     const id = window.setTimeout(() => {
       const ok = window.confirm(
-        "Vuoi un tutorial interattivo di FacilityFlow? (Puoi rilanciarlo da Aiuto o col tasto ?)",
+        "Vuoi un tutorial guidato di FacilityFlow?\n\nTi accompagna sezione per sezione (puoi chiudere e ripartire da Aiuto o col tasto ?).",
       );
       window.localStorage.setItem(SOFT_KEY, ok ? "started" : "later");
       if (ok) startProductTour(props.audience, "full");
-    }, 1200);
+    }, 1400);
     return () => window.clearTimeout(id);
   }, [props.audience, props.softPrompt]);
 
   useEffect(() => {
-    function runFromStorage() {
-      const raw = window.sessionStorage.getItem(STORAGE_KEY);
-      if (!raw) return;
-      let parsed: {
-        audience: TourAudience;
-        mode: "full" | "page";
-        index: number;
-        defs: TourStepDef[];
-      };
-      try {
-        parsed = JSON.parse(raw) as typeof parsed;
-      } catch {
-        return;
+    let cancelled = false;
+
+    async function waitForSelector(
+      selector: string,
+      ms = 6000,
+    ): Promise<Element | null> {
+      const start = Date.now();
+      while (Date.now() - start < ms) {
+        if (cancelled) return null;
+        const el = document.querySelector(selector);
+        if (el) return el;
+        await new Promise((r) => setTimeout(r, 80));
       }
+      return document.querySelector(selector);
+    }
+
+    async function runFromStorage() {
+      const parsed = readState();
+      if (!parsed || cancelled) return;
 
       active.current?.destroy();
       navigating.current = false;
 
-      const steps = parsed.defs
-        .map((d) => {
-          if (!d.element) {
-            return {
-              popover: {
-                title: d.title,
-                description: d.description,
-              },
-            };
-          }
-          return {
-            element: d.element,
-            popover: {
-              title: d.title,
-              description: d.description,
-            },
-          };
-        })
-        .filter((s) => {
-          if (!("element" in s) || !s.element) return true;
-          return Boolean(document.querySelector(s.element));
-        });
-
-      if (steps.length === 0) {
-        window.sessionStorage.removeItem(STORAGE_KEY);
+      let index = Math.min(
+        Math.max(0, parsed.index),
+        Math.max(0, parsed.defs.length - 1),
+      );
+      let step = parsed.defs[index];
+      if (!step) {
+        writeState(null);
         return;
       }
+
+      // Se lo step richiede un'altra route, naviga e riprendi.
+      if (step.route && step.route !== pathname) {
+        navigating.current = true;
+        writeState({ ...parsed, index });
+        router.push(step.route);
+        return;
+      }
+
+      if (step.element) {
+        await waitForSelector(step.element);
+      }
+
+      // Salta ancore assenti (RBAC / empty) restando sulla stessa route.
+      while (
+        step?.element &&
+        !document.querySelector(step.element) &&
+        index < parsed.defs.length - 1
+      ) {
+        const next = parsed.defs[index + 1];
+        if (next?.route && next.route !== pathname) break;
+        index += 1;
+        step = parsed.defs[index];
+        if (step?.element) await waitForSelector(step.element, 1500);
+      }
+
+      if (!step) {
+        writeState(null);
+        return;
+      }
+
+      const driveSteps = parsed.defs.map(toDriveStep);
 
       const d = driver({
         showProgress: true,
         animate: true,
         allowClose: true,
+        smoothScroll: true,
         overlayColor: "color-mix(in oklab, #0f172a 55%, transparent)",
-        stagePadding: 8,
-        stageRadius: 10,
+        stagePadding: 10,
+        stageRadius: 12,
         popoverClass: "ff-tour-popover",
         nextBtnText: "Avanti",
         prevBtnText: "Indietro",
-        doneBtnText: "Fine",
+        doneBtnText: "Ho capito",
         progressText: "{{current}} / {{total}}",
-        steps,
+        steps: driveSteps,
         onDestroyed: () => {
-          if (!navigating.current) {
-            window.sessionStorage.removeItem(STORAGE_KEY);
-          }
+          if (!navigating.current) writeState(null);
           active.current = null;
         },
         onNextClick: (_el, _step, { driver: drv }) => {
-          const idx = drv.getActiveIndex() ?? 0;
-          const nextDef = parsed.defs[idx + 1];
-          if (nextDef?.route && nextDef.route !== pathname) {
+          const idx = drv.getActiveIndex() ?? index;
+          const nextIdx = idx + 1;
+          const nextDef = parsed.defs[nextIdx];
+          if (!nextDef) {
+            drv.destroy();
+            return;
+          }
+          if (nextDef.route && nextDef.route !== pathname) {
             navigating.current = true;
-            window.sessionStorage.setItem(
-              STORAGE_KEY,
-              JSON.stringify({ ...parsed, index: idx + 1 }),
-            );
+            writeState({ ...parsed, index: nextIdx });
             drv.destroy();
             router.push(nextDef.route);
             return;
           }
+          writeState({ ...parsed, index: nextIdx });
           drv.moveNext();
         },
+        onPrevClick: (_el, _step, { driver: drv }) => {
+          const idx = drv.getActiveIndex() ?? index;
+          const prevIdx = Math.max(0, idx - 1);
+          const prevDef = parsed.defs[prevIdx];
+          if (prevDef?.route && prevDef.route !== pathname) {
+            navigating.current = true;
+            writeState({ ...parsed, index: prevIdx });
+            drv.destroy();
+            router.push(prevDef.route);
+            return;
+          }
+          writeState({ ...parsed, index: prevIdx });
+          drv.movePrevious();
+        },
       });
+
+      if (cancelled) {
+        d.destroy();
+        return;
+      }
       active.current = d;
-      const startAt = Math.min(parsed.index ?? 0, Math.max(0, steps.length - 1));
-      d.drive(startAt);
+      writeState({ ...parsed, index });
+      d.drive(index);
     }
 
     function onStart() {
-      runFromStorage();
+      void runFromStorage();
     }
     window.addEventListener("ff-tour-start", onStart);
-    // resume after navigation
-    const raw = window.sessionStorage.getItem(STORAGE_KEY);
-    if (raw) {
-      const t = window.setTimeout(runFromStorage, 400);
-      return () => {
-        window.clearTimeout(t);
-        window.removeEventListener("ff-tour-start", onStart);
-        active.current?.destroy();
-      };
+
+    const existing = readState();
+    let timer: number | undefined;
+    if (existing) {
+      timer = window.setTimeout(() => void runFromStorage(), 350);
     }
+
     return () => {
+      cancelled = true;
+      if (timer) window.clearTimeout(timer);
       window.removeEventListener("ff-tour-start", onStart);
       active.current?.destroy();
     };
