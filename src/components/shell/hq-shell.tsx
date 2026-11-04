@@ -101,7 +101,7 @@ export function HqShell(props: {
                 variant="outline"
                 size="icon"
                 className="lg:hidden"
-                aria-label="Menu"
+                aria-label="Apri menu"
               >
                 <Menu className="size-4" />
               </Button>

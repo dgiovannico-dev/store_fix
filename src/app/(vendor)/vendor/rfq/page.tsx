@@ -39,8 +39,8 @@ export default async function VendorRfqListPage() {
   });
 
   return (
-    <main className="mx-auto max-w-3xl px-4 py-10 sm:px-6">
-      <h1 className="font-[family-name:var(--font-sora)] text-2xl font-semibold text-[var(--primary)]">
+    <main className="px-4 py-6">
+      <h1 className="font-[family-name:var(--font-sora)] text-xl font-semibold text-[var(--primary)]">
         {msg.rfq.vendorTitle}
       </h1>
       <p className="mt-1 text-sm text-[var(--muted-foreground)]">
@@ -55,22 +55,24 @@ export default async function VendorRfqListPage() {
           />
         </div>
       ) : (
-        <ul className="mt-8 divide-y divide-[var(--border)]">
+        <ul className="mt-4 divide-y divide-[var(--border)]">
           {bids.map((b) => (
-            <li key={b.id} className="py-4">
+            <li key={b.id}>
               <Link
                 href={`/vendor/rfq/${b.quoteRequest.id}`}
-                className="font-medium text-[var(--primary)] hover:underline"
+                className="block min-h-11 py-3 active:bg-[var(--muted)]/50"
               >
-                {b.quoteRequest.title}
+                <span className="font-medium text-[var(--primary)]">
+                  {b.quoteRequest.title}
+                </span>
+                <p className="mt-1 text-sm text-[var(--muted-foreground)]">
+                  {rfqRequestStatusLabel(b.quoteRequest.status, prefs.locale)} ·{" "}
+                  {rfqBidStatusLabel(b.status, prefs.locale)}
+                  {b.amountEur != null
+                    ? ` · ${formatMoney(b.amountEur, prefs)}`
+                    : ""}
+                </p>
               </Link>
-              <p className="mt-1 text-xs text-[var(--muted-foreground)]">
-                {rfqRequestStatusLabel(b.quoteRequest.status, prefs.locale)} ·{" "}
-                {rfqBidStatusLabel(b.status, prefs.locale)}
-                {b.amountEur != null
-                  ? ` · ${formatMoney(b.amountEur, prefs)}`
-                  : ""}
-              </p>
             </li>
           ))}
         </ul>

@@ -6,6 +6,7 @@ import { can } from "@/domain/rbac/can";
 import { RbacAction } from "@/domain/rbac/actions";
 import { ForbiddenError } from "@/domain/rbac/guards";
 import { getTenantI18nPrefs } from "@/application/tenant/i18n-prefs";
+import { PageFrame } from "@/components/layout/page-frame";
 import { StatusPanel } from "@/components/ui/status-panel";
 import { formatMoney } from "@/i18n/format";
 import { tenantMessages } from "@/i18n/tenant-messages";
@@ -58,7 +59,7 @@ export default async function VendorScorecardPage({ searchParams }: Props) {
   const showCosts = can(session.role, RbacAction.viewCosts);
 
   return (
-    <main className="mx-auto max-w-5xl px-4 py-10 sm:px-6">
+    <PageFrame>
       <Link
         href="/app/vendors"
         className="text-sm text-[var(--muted-foreground)] underline-offset-4 hover:underline"
@@ -140,6 +141,6 @@ export default async function VendorScorecardPage({ searchParams }: Props) {
           </table>
         </div>
       )}
-    </main>
+    </PageFrame>
   );
 }

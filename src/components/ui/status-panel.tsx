@@ -57,10 +57,10 @@ export function StatusPanel(props: {
           )}
         />
         {props.kind === "error"
-          ? "Errore"
+          ? msg.common.error
           : props.kind === "loading"
             ? "…"
-            : "Vuoto"}
+            : msg.common.empty}
       </Badge>
       <p className="font-[family-name:var(--font-sora)] text-[length:var(--text-h3)] font-semibold text-[var(--foreground)]">
         {title}

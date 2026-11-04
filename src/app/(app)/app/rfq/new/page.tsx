@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { createQuoteRequestAction } from "@/app/actions/rfq";
 import { getTenantI18nPrefs } from "@/application/tenant/i18n-prefs";
+import { PageFrame } from "@/components/layout/page-frame";
 import { StatusPanel } from "@/components/ui/status-panel";
 import { canMutate } from "@/domain/rbac/can";
 import { RbacAction } from "@/domain/rbac/actions";
@@ -25,7 +26,7 @@ export default async function NewRfqPage({
   const vendors = await listVendors(session.tenantId);
 
   return (
-    <main className="mx-auto max-w-lg px-4 py-10 sm:px-6">
+    <PageFrame>
       <h1 className="font-[family-name:var(--font-sora)] text-2xl font-semibold text-[var(--primary)]">
         {msg.rfq.newTitle}
       </h1>
@@ -90,6 +91,6 @@ export default async function NewRfqPage({
           </button>
         </form>
       )}
-    </main>
+    </PageFrame>
   );
 }

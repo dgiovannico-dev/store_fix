@@ -638,6 +638,7 @@ E00 Platform OSS (Compose, SeaweedFS, Mailpit, pg-boss, Prisma schema)
 | **F5-UX-04** | HQ Dashboard metric strip | **P1** | Done 2026-11-04 — KPI strip; tabella store densità | No |
 | **F5-UX-05** | Store intake + vendor PhoneShell | **P1** | Done 2026-11-04 — bottom nav; sticky CTA; touch ≥44px | No |
 | **F5-UX-06** | Auth / onboarding / CRUD polish | **P2** | Done 2026-11-04 — login; onboarding progress; liste dense | No |
+| **F5-UX-07** | Section sweep UI consistency | **P1** | Done 2026-11-04 — PageFrame su CRUD/settings/RFQ; sticky sotto topbar; StatusPanel i18n; phone RFQ touch | No |
 
 ---
 
