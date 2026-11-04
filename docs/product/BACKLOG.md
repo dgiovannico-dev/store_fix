@@ -5,7 +5,7 @@
 > **Gate codice:** approvazione umana esplicita + lavoro su branch `develop` / `feature/*` (non commit diretti su `main`).  
 > **Vincolo hard:** stack **100% open source / self-host**, nessun componente SaaS a pagamento. Dettaglio: [`STACK.md`](./STACK.md).  
 > **RBAC:** [`RBAC.md`](./RBAC.md).  
-> **Scope:** MVP (Fase 1) + production-ready (**E14 / S5**). **Fase 2 Done** (F2-01…F2-09). **Fase 3** in-repo Done (F3-02…08; **F3-01** = VPS umano). **Fase 4 Done in-repo** (F4-01…05, 2026-11-03).  
+> **Scope:** MVP (Fase 1) + production-ready (**E14 / S5**). **Fase 2 Done** (F2-01…F2-09). **Fase 3** in-repo Done (F3-02…08; **F3-01** = VPS umano). **Fase 4 Done in-repo** (F4-01…05, 2026-11-03). **Fase 5** UX Done (F5-UX-00…13,15; **F5-UX-14** aperto). **Fase 6** bozza PO — [`COMPETITIVE_POSITIONING.md`](./COMPETITIVE_POSITIONING.md).  
 > **Lingua UI MVP:** italiano. Mercato: Italia / EUR.  
 > **Go prod:** NO-GO finché VPS — [`sprints/S5-EXIT-GAPS.md`](./sprints/S5-EXIT-GAPS.md) · [`../ops/NEXT_VPS.md`](../ops/NEXT_VPS.md).  
 > **Integrazione:** GitFlow **con PR auto-merge** — `feature/*`/`bugfix/*` → PR → `develop`; lab sync / `release/*`/`hotfix/*` → `main` (`scripts/gitflow-ship-pr.sh`).
@@ -645,7 +645,30 @@ E00 Platform OSS (Compose, SeaweedFS, Mailpit, pg-boss, Prisma schema)
 | **F5-UX-11** | Breadcrumb + Esci fuori topbar | **P1** | Done 2026-11-04 — breadcrumb HQ/phone; Esci in sidebar (non topbar dashboard) | No |
 | **F5-UX-12** | Icone azioni row (edit/archive/…) | **P1** | Done 2026-11-04 — `RowActionLink`/`RowActionSubmit` Lucide + label su tabelle CRUD, members, PM | No |
 | **F5-UX-13** | Calendario PM stile Google Calendar | **P0** | Done 2026-11-04 — viste mese/settimana/agenda; create/detail popover ancorato al click (no sheet) | No |
+| **F5-UX-14** | Calendario Day → Week → Month (ordine GCal) | **P1** | Toggle Giorno/Settimana/Mese; Day = colonna oraria; default Week o Month; create ancorato invariato | No |
 | **F5-UX-15** | Lingua/back/ticket form/multi-select | **P1** | Done 2026-11-04 — locale select; no back ridondanti; nuovo ticket sezioni; MultiCheckPicker coverage/RFQ/members | No |
+
+---
+
+## Fase 6 — Motivi di preferenza / wedge sharpen (bozza PO)
+
+> **Stato:** bozza 2026-11-04 — **attende conferma PO** (espansione scope post-F5).  
+> **One-pager:** [`COMPETITIVE_POSITIONING.md`](./COMPETITIVE_POSITIONING.md) — win/lose vs WhatsApp+Excel / Zendesk / MaintainX.  
+> **Regola:** niente inventari pezzi, IoT, WA Business API a pagamento, marketplace, ERP, multi-paese, AI-as-SoR.  
+> **Alias:** F6-07 ≡ transactional email outbox (ex F3-09); F6-08 ≡ F5-UX-14.
+
+| ID | Titolo | Priorità | AC (1 riga) | Dip. VPS |
+|----|--------|----------|-------------|----------|
+| **F6-01** | Digest settimanale HQ (email/PDF) costi+breach+top vendor | **P0** | Job settimanale + template IT; HQ riceve riepilogo senza Excel | No |
+| **F6-02** | Chargeback / riparto costi per PV | **P0** | Vista + export CSV costi stimati/effettivi aggregati per store (periodo) | No |
+| **F6-03** | SLA vendor response (accept/start) + badge | **P0** | Clock da assign→accept/start; breach/badge in scorecard + ticket | No |
+| **F6-04** | Playbook breach one-click | **P1** | Da breach: relaunch vendor + nota template + audit event | No |
+| **F6-05** | Contratto vs misurato (PM due vs done) | **P1** | Vista contratto: PM attesi vs completati nel periodo | No |
+| **F6-06** | Onboarding pilota 15×5 guidato | **P0** | Checklist in-app + seed demo Flussi A/B/C; progress HQ | No |
+| **F6-07** | Transactional email outbox | **P0** | Outbox DB + worker SKIP LOCKED; no dual-write Set+pg-boss come SoR | No |
+| **F6-08** | Calendario Day+Week+Month (≡ F5-UX-14) | **P1** | Stesso AC di F5-UX-14; chiudere uno chiude l’altro | No |
+| **F6-09** | Store wallboard / TV mode | **P2** | Vista sola lettura aperti+breach, auto-refresh, no nav | No |
+| **F6-10** | Pacchetto Franchise HQ IT | **P1** | Seed policy SLA + copy onboarding + ruoli demo “franchise HQ” | No |
 
 ---
 

@@ -1,9 +1,9 @@
 # Increment status — FacilityFlow Retail
 
-**Aggiornato:** 2026-11-04 — **dev-only**; F3-01 VPS umano; **Fase 4 Done in-repo** (k3s/Helm/OpenBao/Keycloak multi-app)  
-Hardening recente: F4-01…06 + `platform:onboard` + CI helm; retro [`retros/F4-2026-11-03.md`](./retros/F4-2026-11-03.md).
+**Aggiornato:** 2026-11-04 — **dev-only**; F3-01 VPS umano; F4 Done; **F5 UX Done** (F5-UX-14 aperto); **F6 bozza PO**  
+Hardening recente: F4-01…06 + F5-UX + positioning [`COMPETITIVE_POSITIONING.md`](./COMPETITIVE_POSITIONING.md).
 
-**Autopilot:** F3-02…F3-08 Done; **F4-01…06 Done in-repo** (IAM piattaforma multi-app); CI `helm:template`. Resta F3-01 / install host. Niente Fase 5 inventata.
+**Autopilot:** F3–F5 (salvo F5-UX-14 / F3-01). **Fase 6** in BACKLOG = bozza — conferma PO prima di implementare. Next in-repo ammissibile senza conferma: **F5-UX-14** / debt.
 
 | Sprint / fase | Stato | Note |
 |---------------|-------|------|
@@ -14,6 +14,8 @@ Hardening recente: F4-01…06 + `platform:onboard` + CI helm; retro [`retros/F4-
 | Fase 3 (F3-02…F3-08) | **Done in-repo** | observe, summarize, IMAP, RRULE, i18n prefs, RFQ, store push |
 | F3-01 Exit pilota | **Blocked (skip deploy)** | Host/DNS/VPS — Compose **o** k3s (F4) |
 | Fase 4 (F4-01…06) | **Done in-repo** | k3s+Helm · OpenBao/Keycloak **shared** · cutover — [`PLATFORM_IAM.md`](../ops/PLATFORM_IAM.md) |
+| Fase 5 (F5-UX-00…15) | **Done salvo F5-UX-14** | Day/Week/Month GCal ancora aperto |
+| Fase 6 (F6-01…10) | **Bozza PO** | Motivi di preferenza — conferma prima di sprint |
 
 ## Modalità corrente
 
