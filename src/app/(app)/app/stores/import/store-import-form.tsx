@@ -6,6 +6,7 @@ import {
   importStoresAction,
   type ImportState,
 } from "@/app/actions/stores-import";
+import { PageFrame } from "@/components/layout/page-frame";
 import { StatusPanel } from "@/components/ui/status-panel";
 import type { Locale, MessageCatalog } from "@/i18n";
 
@@ -22,7 +23,7 @@ export function StoreImportForm({
   const copy = msg.storeImport;
 
   return (
-    <main className="mx-auto max-w-lg px-6 py-12">
+    <PageFrame>
       <p className="text-sm text-[var(--muted-foreground)]">
         <Link href="/app/stores" className="underline-offset-4 hover:underline">
           {copy.back}
@@ -86,6 +87,6 @@ export function StoreImportForm({
           )}
         </div>
       ) : null}
-    </main>
+    </PageFrame>
   );
 }

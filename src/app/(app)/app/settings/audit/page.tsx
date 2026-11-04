@@ -5,8 +5,10 @@ import { getTenantI18nPrefs } from "@/application/tenant/i18n-prefs";
 import { listMembershipConfigAudit } from "@/domain/memberships/membership-service";
 import { can } from "@/domain/rbac/can";
 import { RbacAction } from "@/domain/rbac/actions";
+import { PageFrame } from "@/components/layout/page-frame";
 import { StatusPanel } from "@/components/ui/status-panel";
 import { dateLocaleFor } from "@/i18n";
+import { tableHeadClass, tableRowClass } from "@/lib/ui-classes";
 import { tenantMessages } from "@/i18n/tenant-messages";
 
 export default async function ConfigAuditPage() {
@@ -29,7 +31,7 @@ export default async function ConfigAuditPage() {
   const dLocale = dateLocaleFor(prefs.locale);
 
   return (
-    <main className="mx-auto max-w-3xl px-4 py-10 sm:px-6">
+    <PageFrame>
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <h1 className="font-[family-name:var(--font-sora)] text-2xl font-semibold text-[var(--primary)]">
@@ -57,20 +59,34 @@ export default async function ConfigAuditPage() {
           />
         </div>
       ) : (
-        <ul className="mt-8 divide-y divide-[var(--border)] text-sm">
-          {events.map((e) => (
-            <li key={e.id} className="py-3">
-              <p className="font-medium">{e.type}</p>
-              <p className="text-[var(--muted-foreground)]">
-                {e.createdAt.toLocaleString(dLocale)}
-                {e.membershipId
-                  ? ` · membership ${e.membershipId.slice(0, 8)}…`
-                  : ""}
-              </p>
-            </li>
-          ))}
-        </ul>
+        <div className="mt-6 overflow-x-auto">
+          <table className="w-full text-left text-sm">
+            <thead>
+              <tr className={tableHeadClass}>
+                <th className="py-2 pr-3 font-medium">{copy.colEvent}</th>
+                <th className="py-2 font-medium">{copy.colWhen}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {events.map((e) => (
+                <tr key={e.id} className={tableRowClass}>
+                  <td className="py-2.5 pr-3 font-medium">
+                    {e.type}
+                    {e.membershipId ? (
+                      <span className="ml-2 font-normal text-[var(--muted-foreground)]">
+                        · {e.membershipId.slice(0, 8)}…
+                      </span>
+                    ) : null}
+                  </td>
+                  <td className="py-2.5 tabular-nums text-[var(--muted-foreground)]">
+                    {e.createdAt.toLocaleString(dLocale)}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
-    </main>
+    </PageFrame>
   );
 }

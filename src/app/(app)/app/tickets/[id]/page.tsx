@@ -112,7 +112,7 @@ export default async function TicketDetailPage({
 
   return (
     <PageFrame>
-      <div className="sticky top-0 z-20 -mx-4 border-b border-[var(--border)] bg-[var(--background)]/95 px-4 py-3 backdrop-blur-sm sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
+      <div className="sticky top-14 z-20 -mx-4 border-b border-[var(--border)] bg-[var(--background)]/95 px-4 py-3 backdrop-blur-sm sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
         <Link
           href="/app/tickets"
           className="text-sm text-[var(--muted-foreground)] underline-offset-4 hover:underline"

@@ -31,7 +31,7 @@ export function PhoneShell(props: {
       </div>
 
       <nav
-        aria-label="Navigazione principale"
+        aria-label="Menu principale"
         className="fixed inset-x-0 bottom-0 z-40 border-t border-[var(--border)] bg-[var(--card)] pb-[env(safe-area-inset-bottom)]"
       >
         <ul className="mx-auto flex max-w-[430px] items-stretch justify-around px-1 py-1">

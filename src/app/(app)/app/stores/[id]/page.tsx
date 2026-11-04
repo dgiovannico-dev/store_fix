@@ -6,6 +6,7 @@ import { canMutate } from "@/domain/rbac/can";
 import { RbacAction } from "@/domain/rbac/actions";
 import { prisma } from "@/infrastructure/db/prisma";
 import { tenantMessages } from "@/i18n/tenant-messages";
+import { PageFrame } from "@/components/layout/page-frame";
 
 export default async function StoreEditPage({
   params,
@@ -28,7 +29,7 @@ export default async function StoreEditPage({
   const copy = msg.stores;
 
   return (
-    <main className="mx-auto max-w-lg px-4 py-10 sm:px-6">
+    <PageFrame>
       <p className="text-sm">
         <Link
           href="/app/stores"
@@ -119,6 +120,6 @@ export default async function StoreEditPage({
           {copy.save}
         </button>
       </form>
-    </main>
+    </PageFrame>
   );
 }

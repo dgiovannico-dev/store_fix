@@ -12,6 +12,7 @@ import {
 } from "@/domain/vendor-contracts/vendor-contract-service";
 import { getVendor } from "@/domain/vendors/vendor-service";
 import { getTenantI18nPrefs } from "@/application/tenant/i18n-prefs";
+import { PageFrame } from "@/components/layout/page-frame";
 import { StatusPanel } from "@/components/ui/status-panel";
 import { formatMoney } from "@/i18n/format";
 import { tenantMessages } from "@/i18n/tenant-messages";
@@ -59,7 +60,7 @@ export default async function VendorDetailPage({ params }: Props) {
     : [];
 
   return (
-    <main className="mx-auto max-w-lg px-6 py-12">
+    <PageFrame>
       <Link
         href="/app/vendors"
         className="text-sm text-[var(--muted-foreground)] underline-offset-4 hover:underline"
@@ -236,6 +237,6 @@ export default async function VendorDetailPage({ params }: Props) {
           )}
         </section>
       ) : null}
-    </main>
+    </PageFrame>
   );
 }

@@ -13,6 +13,7 @@ import { listStores } from "@/domain/stores/store-service";
 import { listVendors } from "@/domain/vendors/vendor-service";
 import { getTenantI18nPrefs } from "@/application/tenant/i18n-prefs";
 import { tenantMessages } from "@/i18n/tenant-messages";
+import { PageFrame } from "@/components/layout/page-frame";
 
 export default async function MembersPage() {
   const session = await auth();
@@ -32,7 +33,7 @@ export default async function MembersPage() {
   const copy = msg.members;
 
   return (
-    <main className="mx-auto max-w-3xl px-6 py-12">
+    <PageFrame>
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <h1 className="font-[family-name:var(--font-sora)] text-2xl font-semibold text-[var(--primary)]">
@@ -140,6 +141,6 @@ export default async function MembersPage() {
           </li>
         ))}
       </ul>
-    </main>
+    </PageFrame>
   );
 }

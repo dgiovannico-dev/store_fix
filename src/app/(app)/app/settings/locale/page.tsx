@@ -5,6 +5,7 @@ import { updateTenantI18nAction } from "@/app/actions/tenant-i18n";
 import { canMutate } from "@/domain/rbac/can";
 import { RbacAction } from "@/domain/rbac/actions";
 import { tenantMessages } from "@/i18n/tenant-messages";
+import { PageFrame } from "@/components/layout/page-frame";
 
 export default async function LocaleSettingsPage() {
   const session = await auth();
@@ -17,7 +18,7 @@ export default async function LocaleSettingsPage() {
   const msg = await tenantMessages(session.tenantId);
 
   return (
-    <main className="mx-auto max-w-lg px-4 py-10 sm:px-6">
+    <PageFrame>
       <h1 className="font-[family-name:var(--font-sora)] text-2xl font-semibold text-[var(--primary)]">
         {msg.localeSettings.title}
       </h1>
@@ -68,6 +69,6 @@ export default async function LocaleSettingsPage() {
           {msg.localeSettings.save}
         </button>
       </form>
-    </main>
+    </PageFrame>
   );
 }
