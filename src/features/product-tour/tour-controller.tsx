@@ -2,13 +2,11 @@
 
 import { useEffect, useRef } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { CircleHelp } from "lucide-react";
 import { driver, type DriveStep, type Driver } from "driver.js";
 import "driver.js/dist/driver.css";
 import "@/features/product-tour/tour.css";
+import { startProductTour } from "./tour-launcher";
 import {
-  chapterForPath,
-  stepsForAudience,
   type TourAudience,
   type TourStepDef,
 } from "./tour-registry";
@@ -110,28 +108,6 @@ function toDriveStep(d: TourStepDef): DriveStep {
     element: d.element,
     popover,
   };
-}
-
-export function startProductTour(
-  audience: TourAudience,
-  mode: "full" | "page" = "full",
-) {
-  if (typeof window === "undefined") return;
-  const pathname = window.location.pathname;
-  const defs =
-    mode === "page"
-      ? chapterForPath(audience, pathname)
-      : stepsForAudience(audience);
-
-  const first = defs[0];
-  if (first?.route && first.route !== pathname) {
-    writeState({ audience, mode, index: 0, defs });
-    window.location.assign(tourHref(first.route));
-    return;
-  }
-
-  writeState({ audience, mode, index: 0, defs });
-  window.dispatchEvent(new CustomEvent("ff-tour-start"));
 }
 
 export function ProductTourHost(props: {
@@ -541,40 +517,4 @@ export function ProductTourHost(props: {
   }, [pathname, router, props.audience]);
 
   return null;
-}
-
-export function TourHelpButtons(props: {
-  audience: TourAudience;
-  label: string;
-  pageLabel: string;
-}) {
-  return (
-    <div className="flex flex-col gap-1.5 p-2" data-tour="help.tour">
-      <button
-        type="button"
-        className="flex cursor-pointer items-center gap-2.5 rounded-full border border-[color-mix(in_oklab,var(--primary)_30%,var(--border))] bg-[color-mix(in_oklab,var(--primary)_8%,var(--card))] px-3 py-2 text-left text-sm font-medium text-[var(--primary)] shadow-sm transition-colors hover:bg-[color-mix(in_oklab,var(--primary)_14%,var(--card))]"
-        onClick={() => startProductTour(props.audience, "full")}
-      >
-        <span className="inline-flex size-6 shrink-0 items-center justify-center rounded-full bg-[var(--primary)] text-[var(--primary-foreground)]">
-          <CircleHelp className="size-3.5" aria-hidden strokeWidth={2.25} />
-        </span>
-        {props.label}
-      </button>
-      <button
-        type="button"
-        className="flex cursor-pointer items-center gap-2.5 rounded-full border border-[var(--border)] bg-[var(--card)] px-3 py-2 text-left text-sm text-[var(--foreground)] shadow-sm transition-colors hover:border-[color-mix(in_oklab,var(--primary)_25%,var(--border))] hover:bg-[var(--muted)]"
-        onClick={() => startProductTour(props.audience, "page")}
-      >
-        <span className="inline-flex size-6 shrink-0 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--muted)] text-[var(--muted-foreground)]">
-          <CircleHelp className="size-3.5" aria-hidden strokeWidth={2} />
-        </span>
-        <span className="min-w-0 leading-snug">
-          <span className="block font-medium">{props.pageLabel}</span>
-          <span className="block text-[11px] font-normal text-[var(--muted-foreground)]">
-            Solo questa schermata
-          </span>
-        </span>
-      </button>
-    </div>
-  );
 }
