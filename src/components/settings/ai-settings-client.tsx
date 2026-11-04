@@ -2,13 +2,16 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import type { MessageCatalog } from "@/i18n";
 
 export function AiSettingsClient(props: {
   configured: boolean;
   kind: string;
   source: string;
   model: string;
+  labels: MessageCatalog["settingsAi"];
 }) {
+  const { labels } = props;
   const [status, setStatus] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
 
@@ -25,16 +28,21 @@ export function AiSettingsClient(props: {
         message?: string;
       };
       if (!data.configured) {
-        setStatus(data.message ?? "Non configurato");
+        setStatus(data.message ?? labels.pingNotConfigured);
       } else if (data.ok) {
         setStatus(
-          `OK — ${data.models?.length ? `modelli: ${data.models.slice(0, 5).join(", ")}` : "raggiungibile"}`,
+          data.models?.length
+            ? labels.pingOkModels.replace(
+                "{models}",
+                data.models.slice(0, 5).join(", "),
+              )
+            : labels.pingOkReachable,
         );
       } else {
-        setStatus(data.error ?? "Endpoint non raggiungibile");
+        setStatus(data.error ?? labels.pingUnreachable);
       }
     } catch {
-      setStatus("Errore di rete");
+      setStatus(labels.pingNetworkError);
     } finally {
       setPending(false);
     }
@@ -44,26 +52,30 @@ export function AiSettingsClient(props: {
     <div className="space-y-4 rounded-[var(--radius)] border border-[var(--border)] bg-[var(--card)] p-4">
       <dl className="grid gap-2 text-sm sm:grid-cols-2">
         <div>
-          <dt className="text-[var(--muted-foreground)]">Stato</dt>
+          <dt className="text-[var(--muted-foreground)]">{labels.statusLabel}</dt>
           <dd className="font-medium">
-            {props.configured ? "Configurato" : "Solo heuristic"}
+            {props.configured
+              ? labels.configuredYes
+              : labels.configuredHeuristic}
           </dd>
         </div>
         <div>
-          <dt className="text-[var(--muted-foreground)]">Provider</dt>
+          <dt className="text-[var(--muted-foreground)]">
+            {labels.providerLabel}
+          </dt>
           <dd className="font-medium">{props.kind}</dd>
         </div>
         <div>
-          <dt className="text-[var(--muted-foreground)]">Source label</dt>
+          <dt className="text-[var(--muted-foreground)]">{labels.sourceLabel}</dt>
           <dd className="font-medium">{props.source}</dd>
         </div>
         <div>
-          <dt className="text-[var(--muted-foreground)]">Modello</dt>
+          <dt className="text-[var(--muted-foreground)]">{labels.modelLabel}</dt>
           <dd className="font-medium">{props.model}</dd>
         </div>
       </dl>
       <Button type="button" onClick={ping} disabled={pending}>
-        {pending ? "Test…" : "Test connessione"}
+        {pending ? labels.testing : labels.testConnection}
       </Button>
       {status ? (
         <p className="text-sm text-[var(--muted-foreground)]" role="status">

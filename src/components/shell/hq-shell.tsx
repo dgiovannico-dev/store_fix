@@ -20,6 +20,8 @@ import {
 } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 import { TourHelpButtons } from "@/features/product-tour/tour-launcher";
+import type { ProductTourUiLabels } from "@/features/product-tour/tour-controller";
+import type { MessageCatalog } from "@/i18n";
 import type { NavItem } from "./nav-config";
 import { NavIcon } from "./nav-icons";
 
@@ -78,11 +80,13 @@ function SidebarNav({
   items,
   brand,
   signOutLabel,
+  tour,
   onNavigate,
 }: {
   items: NavItem[];
   brand: string;
   signOutLabel: string;
+  tour: MessageCatalog["tour"] & { launchLabel: string };
   onNavigate?: () => void;
 }) {
   const pathname = usePathname();
@@ -112,8 +116,9 @@ function SidebarNav({
       </nav>
       <TourHelpButtons
         audience="hq"
-        label="Tutorial interattivo"
-        pageLabel="Spiega questa pagina"
+        label={tour.launchLabel}
+        pageLabel={tour.explainPage}
+        pageScopeHint={tour.pageScopeHint}
       />
       <div className="border-t border-[var(--border)] p-2">
         <form action="/logout" method="post">
@@ -139,18 +144,27 @@ export function HqShell(props: {
   signOutLabel: string;
   breadcrumbLabels: BreadcrumbLabels;
   homeHref: string;
+  tourLabels: ProductTourUiLabels;
+  tourChrome: MessageCatalog["tour"] & { launchLabel: string };
+  shellLabels: MessageCatalog["shell"];
+  closeLabel: string;
 }) {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const closeMobileNav = () => setMobileNavOpen(false);
 
   return (
     <div className="flex min-h-dvh bg-[var(--background)]" data-tour="shell.hq">
-      <ProductTourHost audience="hq" softPrompt />
+      <ProductTourHost
+        audience="hq"
+        softPrompt
+        labels={props.tourLabels}
+      />
       <aside className="sticky top-0 hidden h-dvh w-[var(--sidebar-width)] shrink-0 border-r border-[var(--border)] bg-[var(--card)] lg:block">
         <SidebarNav
           items={props.items}
           brand={props.brand}
           signOutLabel={props.signOutLabel}
+          tour={props.tourChrome}
         />
       </aside>
 
@@ -162,12 +176,16 @@ export function HqShell(props: {
                 variant="outline"
                 size="icon"
                 className="lg:hidden"
-                aria-label="Apri menu"
+                aria-label={props.shellLabels.openMenu}
               >
                 <Menu className="size-4" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="left" className="p-0">
+            <SheetContent
+              side="left"
+              className="p-0"
+              closeLabel={props.closeLabel}
+            >
               <SheetHeader className="sr-only">
                 <SheetTitle>{props.brand}</SheetTitle>
               </SheetHeader>
@@ -175,6 +193,7 @@ export function HqShell(props: {
                 items={props.items}
                 brand={props.brand}
                 signOutLabel={props.signOutLabel}
+                tour={props.tourChrome}
                 onNavigate={closeMobileNav}
               />
             </SheetContent>

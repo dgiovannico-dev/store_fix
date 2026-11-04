@@ -30,6 +30,19 @@ export default async function ConfigAuditPage() {
   const copy = msg.audit;
   const dLocale = dateLocaleFor(prefs.locale);
 
+  function auditEventLabel(type: string): string {
+    switch (type) {
+      case "membership.updated":
+        return copy.evtMembershipUpdated;
+      case "membership.role_changed":
+        return copy.evtMembershipRoleChanged;
+      case "membership.soft_disabled":
+        return copy.evtMembershipSoftDisabled;
+      default:
+        return `${copy.evtUnknown}: ${type}`;
+    }
+  }
+
   return (
     <PageFrame>
       <div className="flex flex-wrap items-end justify-between gap-3">
@@ -71,7 +84,7 @@ export default async function ConfigAuditPage() {
               {events.map((e) => (
                 <tr key={e.id} className={tableRowClass}>
                   <td className="py-2.5 pr-3 font-medium">
-                    {e.type}
+                    {auditEventLabel(e.type)}
                     {e.membershipId ? (
                       <span className="ml-2 font-normal text-[var(--muted-foreground)]">
                         · {e.membershipId.slice(0, 8)}…

@@ -178,7 +178,7 @@ export function PmCalendar(props: {
             type="button"
             variant="ghost"
             size="icon"
-            aria-label="Precedente"
+            aria-label={copy.prevAria}
             onClick={goPrev}
           >
             <ChevronLeft className="size-4" />
@@ -187,7 +187,7 @@ export function PmCalendar(props: {
             type="button"
             variant="ghost"
             size="icon"
-            aria-label="Successivo"
+            aria-label={copy.nextAria}
             onClick={goNext}
           >
             <ChevronRight className="size-4" />
@@ -199,7 +199,7 @@ export function PmCalendar(props: {
         <div
           className="ml-auto flex rounded-[var(--radius)] border border-[var(--border)] p-0.5"
           role="tablist"
-          aria-label="Vista calendario"
+          aria-label={copy.viewSwitcherAria}
         >
           {(
             [
@@ -234,6 +234,7 @@ export function PmCalendar(props: {
           eventsByDay={eventsByDay}
           dateLocale={props.dateLocale}
           outsideHoursLabel={copy.outsideHours}
+          todaySuffix={copy.todaySuffix}
           isOverdue={isOverdue}
           onOpenSlot={openCreate}
           onOpenEvent={openEvent}

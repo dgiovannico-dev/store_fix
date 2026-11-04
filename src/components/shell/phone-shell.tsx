@@ -12,6 +12,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { startProductTour } from "@/features/product-tour/tour-launcher";
+import type { ProductTourUiLabels } from "@/features/product-tour/tour-controller";
+import type { MessageCatalog } from "@/i18n";
 import type { NavItem } from "./nav-config";
 import { NavIcon } from "./nav-icons";
 
@@ -42,6 +44,10 @@ export function PhoneShell(props: {
   breadcrumbLabels: BreadcrumbLabels;
   homeHref: string;
   audience?: "store" | "vendor";
+  tourLabels: ProductTourUiLabels;
+  shellLabels: MessageCatalog["shell"];
+  tourHelpAria: string;
+  tourLaunchLabel: string;
 }) {
   const pathname = usePathname();
   const audience = props.audience ?? "store";
@@ -51,7 +57,11 @@ export function PhoneShell(props: {
       className="flex min-h-dvh flex-col bg-[var(--background)]"
       data-tour="shell.phone"
     >
-      <ProductTourHost audience={audience} softPrompt />
+      <ProductTourHost
+        audience={audience}
+        softPrompt
+        labels={props.tourLabels}
+      />
       <header className="sticky top-0 z-40 border-b border-[var(--border)] bg-[var(--card)]">
         <div className="flex h-14 items-center gap-3 px-4">
           <Link
@@ -65,8 +75,8 @@ export function PhoneShell(props: {
               type="button"
               className="inline-flex size-10 items-center justify-center rounded-[var(--radius)] text-[var(--muted-foreground)] hover:bg-[var(--muted)]"
               data-tour="help.tour"
-              aria-label="Aiuto — tutorial interattivo"
-              title="Tutorial interattivo"
+              aria-label={props.tourHelpAria}
+              title={props.tourLaunchLabel}
               onClick={() => startProductTour(audience, "full")}
             >
               <CircleHelp className="size-4" aria-hidden />
@@ -98,7 +108,7 @@ export function PhoneShell(props: {
       </div>
 
       <nav
-        aria-label="Menu principale"
+        aria-label={props.shellLabels.mainNav}
         className="fixed inset-x-0 bottom-0 z-40 border-t border-[var(--border)] bg-[var(--card)] pb-[env(safe-area-inset-bottom)]"
       >
         <ul className="mx-auto flex max-w-[430px] items-stretch justify-around px-1 py-1">

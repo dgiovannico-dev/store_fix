@@ -61,37 +61,7 @@ export default async function CalendarioPmPage() {
           vendorName: e.vendor?.name ?? null,
           assetLabel: e.asset?.label ?? null,
         }))}
-        copy={{
-          title: copy.title,
-          hint: copy.hint,
-          add: copy.add,
-          empty: copy.empty,
-          titlePlaceholder: copy.titlePlaceholder,
-          storePlaceholder: copy.storePlaceholder,
-          vendorPlaceholder: copy.vendorPlaceholder,
-          dateLabel: copy.dateLabel,
-          timeLabel: copy.timeLabel,
-          recurrenceLabel: copy.recurrenceLabel,
-          recurrenceNone: copy.recurrenceNone,
-          recurrenceWeekly: copy.recurrenceWeekly,
-          recurrenceMonthly: copy.recurrenceMonthly,
-          recurrenceQuarterly: copy.recurrenceQuarterly,
-          schedule: copy.schedule,
-          overdue: copy.overdue,
-          openTicket: copy.openTicket,
-          done: copy.done,
-          cancel: copy.cancel,
-          today: copy.today,
-          viewDay: copy.viewDay,
-          viewWeek: copy.viewWeek,
-          viewMonth: copy.viewMonth,
-          outsideHours: copy.outsideHours,
-          more: copy.more,
-          createTitle: copy.createTitle,
-          detailTitle: copy.detailTitle,
-          close: copy.close,
-          weekdays: copy.weekdays,
-        }}
+        copy={copy}
       />
     
       </div>

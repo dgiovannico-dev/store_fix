@@ -21,7 +21,7 @@ export async function GET() {
     return NextResponse.json({
       ok: false,
       configured: false,
-      message: "Nessun AI_BASE_URL / VLLM_BASE_URL / OLLAMA_BASE_URL",
+      message: await actionError("aiNotConfigured"),
     });
   }
 
@@ -57,14 +57,14 @@ export async function GET() {
       source: cfg.sourceLabel,
       model: cfg.model,
     });
-  } catch (e) {
+  } catch {
     return NextResponse.json({
       ok: false,
       configured: true,
       kind: cfg.kind,
       source: cfg.sourceLabel,
       model: cfg.model,
-      error: e instanceof Error ? e.message : "unreachable",
+      error: await actionError("aiEndpointUnreachable"),
     });
   }
 }
