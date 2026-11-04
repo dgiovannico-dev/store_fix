@@ -3,7 +3,7 @@
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
-import { LogOut } from "lucide-react";
+import { CircleHelp, LogOut } from "lucide-react";
 import type { ReactNode } from "react";
 import {
   AppBreadcrumbs,
@@ -63,11 +63,13 @@ export function PhoneShell(props: {
           <div className="ml-auto flex items-center gap-2">
             <button
               type="button"
-              className="rounded-[var(--radius)] px-2 py-1 text-xs font-medium text-[var(--muted-foreground)] hover:bg-[var(--muted)]"
+              className="inline-flex size-10 items-center justify-center rounded-[var(--radius)] text-[var(--muted-foreground)] hover:bg-[var(--muted)]"
               data-tour="help.tour"
+              aria-label="Aiuto — tutorial interattivo"
+              title="Tutorial interattivo"
               onClick={() => startProductTour(audience, "full")}
             >
-              Aiuto
+              <CircleHelp className="size-4" aria-hidden />
             </button>
             {props.topRight}
             <form action="/logout" method="post">

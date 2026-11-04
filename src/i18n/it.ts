@@ -17,9 +17,32 @@ export const it = {
     ai: "Assistenza AI",
     signOut: "Esci",
     overview: "Panoramica",
+    wallboard: "Monitor sala",
     work: "Lavori",
     costs: "Costi",
     timeline: "Timeline",
+  },
+  wallboard: {
+    title: "Monitor interventi in corso",
+    subtitle:
+      "Vista per la sala operativa: ticket aperti o già fuori tempo rispetto allo SLA. Si aggiorna da sola ogni 30 secondi.",
+    countLabel: "Interventi da seguire",
+    countAria: "{n} interventi da seguire",
+    emptyTitle: "Nessun intervento critico in elenco",
+    emptyBody:
+      "Quando ci sono ticket aperti o fuori tempo SLA, compaiono qui in grande per la sala.",
+    storeLabel: "Punto vendita",
+    categoryLabel: "Tipo guasto",
+    priorityLabel: "Urgenza",
+    statusLabel: "Stato",
+    openedLabel: "Aperto",
+    breachedBadge: "Fuori tempo — SLA superato",
+    onTrackBadge: "Ancora nei tempi",
+    openTicket: "Apri dettaglio",
+    refreshHint: "Aggiornamento automatico ogni 30 secondi",
+    agoMinutes: "da {n} min",
+    agoHours: "da {n} ore",
+    agoDays: "da {n} giorni",
   },
   meta: {
     description:
@@ -741,7 +764,7 @@ export const it = {
   onboarding: {
     title: "FacilityFlow · Setup rete",
     hint: "Completa la rete in meno di 15 minuti",
-    skip: "Salta ⚠",
+    skip: "Salta per ora",
     skipTitle:
       "Puoi riprendere dalla dashboard. Alcuni KPI resteranno vuoti.",
     skippedBanner:
@@ -758,6 +781,12 @@ export const it = {
       "Ticket di prova opzionale — apri da Segnala o lista ticket quando la rete è pronta.",
     continue: "Continua →",
     networkReady: "Rete pronta. Puoi aprire la dashboard.",
+    tourLaunch: "Tutorial interattivo",
+    tourLaunchHint:
+      "Un giro guidato delle sezioni: clicca qui per avviarlo subito.",
+    tourLaunchCta: "Avvia",
+    pilotHint:
+      "Pilota tipico: 15 store × 5 vendor. La checklist resta la fonte di verità sull’avvio rete.",
   },
 } as const;
 

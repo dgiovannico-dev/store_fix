@@ -21,15 +21,40 @@
   white-space: normal !important;
 }
 
+.ff-tour-popover .driver-popover-footer {
+  margin-top: 0.75rem !important;
+  gap: 0.5rem !important;
+  align-items: center !important;
+}
+
+.ff-tour-popover .driver-popover-navigation-btns {
+  gap: 0.4rem !important;
+}
+
 .ff-tour-popover .driver-popover-next-btn {
   background: var(--primary, #0f3d4c) !important;
   color: var(--primary-foreground, #fff) !important;
   border: none !important;
   text-shadow: none !important;
+  border-radius: 999px !important;
+  padding: 0.45rem 1rem !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.01em;
+  cursor: pointer !important;
 }
 
-.ff-tour-popover .driver-popover-prev-btn,
+.ff-tour-popover .driver-popover-prev-btn {
+  color: var(--muted-foreground, #64748b) !important;
+  text-shadow: none !important;
+  border-radius: 999px !important;
+  padding: 0.45rem 0.85rem !important;
+  border: 1px solid var(--border, #e2e8f0) !important;
+  background: var(--card, #fff) !important;
+  cursor: pointer !important;
+}
+
 .ff-tour-popover .driver-popover-close-btn {
   color: var(--muted-foreground, #64748b) !important;
   text-shadow: none !important;
+  cursor: pointer !important;
 }

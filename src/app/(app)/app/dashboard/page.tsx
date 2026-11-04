@@ -21,9 +21,17 @@ import { tenantMessages } from "@/i18n/tenant-messages";
 import { formatMoney, withCurrency } from "@/i18n/format";
 import { getTenantI18nPrefs } from "@/application/tenant/i18n-prefs";
 
-export default async function DashboardPage() {
+export default async function DashboardPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ tour?: string }>;
+}) {
   const session = await auth();
   if (!session?.tenantId || !session.role) redirect("/login");
+
+  const sp = await searchParams;
+  /** Product tour preview: allow dashboard while network onboarding incomplete. */
+  const tourPreview = sp.tour === "1";
 
   const [msg, prefs] = await Promise.all([
     tenantMessages(session.tenantId),
@@ -32,7 +40,7 @@ export default async function DashboardPage() {
   const eur = (n: number) => formatMoney(n, prefs) ?? "—";
   const snap = await getOnboardingSnapshot(session.tenantId);
 
-  if (!snap.networkComplete && !snap.skippedAt) {
+  if (!snap.networkComplete && !snap.skippedAt && !tourPreview) {
     redirect("/onboarding");
   }
 
@@ -155,92 +163,83 @@ export default async function DashboardPage() {
             ) : null}
           </StatusPanel>
         </div>
-      ) : (
-        <>
-          <DashboardKpiGrid
-            ariaLabel={msg.dashboard.kpiAria}
-            items={[
-              { label: msg.dashboard.open, value: String(overview.openCount) },
-              {
-                label: msg.dashboard.breached,
-                value: String(overview.breachedCount),
-                emphasize: "critical",
-              },
-              {
-                label: msg.dashboard.atRisk,
-                value: String(overview.atRiskCount),
-                emphasize: "signal",
-              },
-              {
-                label: msg.dashboard.mttr,
-                value:
-                  overview.mttrHours == null
-                    ? "—"
-                    : `${overview.mttrHours.toFixed(1)} ${msg.dashboard.hours}`,
-              },
-              {
-                label: msg.dashboard.costs,
-                value: eur(overview.costsTotal),
-              },
-            ]}
-          />
+      ) : null}
 
-          <section className="mt-8" data-tour="page.dashboard.byStore">
-            <h2 className="text-[length:var(--text-caption)] font-semibold uppercase tracking-wide text-[var(--muted-foreground)]">
-              {msg.dashboard.byStore}
-            </h2>
-            {overview.byStore.length === 0 ? (
-              <div className="mt-3">
-                <StatusPanel kind="empty" locale={prefs.locale} />
-              </div>
-            ) : (
-              <div className="mt-2 overflow-x-auto">
-                <table className="w-full min-w-[28rem] text-left text-sm">
-                  <thead>
-                    <tr className="border-b border-[var(--border)] text-[length:var(--text-caption)] uppercase tracking-wide text-[var(--muted-foreground)]">
-                      <th className="py-2 pr-3 font-medium">
-                        {msg.dashboard.storeCol}
-                      </th>
-                      <th className="py-2 pr-3 font-medium">
-                        {msg.dashboard.open}
-                      </th>
-                      <th className="py-2 pr-3 font-medium">
-                        {msg.dashboard.breached}
-                      </th>
-                      <th className="py-2 font-medium">{msg.dashboard.costs}</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {overview.byStore.map((row) => (
-                      <tr
-                        key={row.storeId}
-                        className="border-b border-[var(--border)]/60 hover:bg-[var(--muted)]/40"
-                      >
-                        <td className="py-2 pr-3 font-medium">
-                          {row.storeName}
-                        </td>
-                        <td className="py-2 pr-3 tabular-nums">
-                          {row.openCount}
-                        </td>
-                        <td
-                          className={`py-2 pr-3 tabular-nums ${
-                            row.breachedCount > 0
-                              ? "text-[var(--critical)]"
-                              : ""
-                          }`}
-                        >
-                          {row.breachedCount}
-                        </td>
-                        <td className="py-2 tabular-nums">{eur(row.costs)}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </section>
-        </>
-      )}
+      {/* Always mount tour anchors so Avanti keeps sequential step numbers. */}
+      <DashboardKpiGrid
+        ariaLabel={msg.dashboard.kpiAria}
+        items={[
+          { label: msg.dashboard.open, value: String(overview.openCount) },
+          {
+            label: msg.dashboard.breached,
+            value: String(overview.breachedCount),
+            emphasize: "critical",
+          },
+          {
+            label: msg.dashboard.atRisk,
+            value: String(overview.atRiskCount),
+            emphasize: "signal",
+          },
+          {
+            label: msg.dashboard.mttr,
+            value:
+              overview.mttrHours == null
+                ? "—"
+                : `${overview.mttrHours.toFixed(1)} ${msg.dashboard.hours}`,
+          },
+          {
+            label: msg.dashboard.costs,
+            value: eur(overview.costsTotal),
+          },
+        ]}
+      />
+
+      <section className="mt-8" data-tour="page.dashboard.byStore">
+        <h2 className="text-[length:var(--text-caption)] font-semibold uppercase tracking-wide text-[var(--muted-foreground)]">
+          {msg.dashboard.byStore}
+        </h2>
+        {overview.byStore.length === 0 ? (
+          <div className="mt-3">
+            <StatusPanel kind="empty" locale={prefs.locale} />
+          </div>
+        ) : (
+          <div className="mt-2 overflow-x-auto">
+            <table className="w-full min-w-[28rem] text-left text-sm">
+              <thead>
+                <tr className="border-b border-[var(--border)] text-[length:var(--text-caption)] uppercase tracking-wide text-[var(--muted-foreground)]">
+                  <th className="py-2 pr-3 font-medium">
+                    {msg.dashboard.storeCol}
+                  </th>
+                  <th className="py-2 pr-3 font-medium">{msg.dashboard.open}</th>
+                  <th className="py-2 pr-3 font-medium">
+                    {msg.dashboard.breached}
+                  </th>
+                  <th className="py-2 font-medium">{msg.dashboard.costs}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {overview.byStore.map((row) => (
+                  <tr
+                    key={row.storeId}
+                    className="border-b border-[var(--border)]/60 hover:bg-[var(--muted)]/40"
+                  >
+                    <td className="py-2 pr-3 font-medium">{row.storeName}</td>
+                    <td className="py-2 pr-3 tabular-nums">{row.openCount}</td>
+                    <td
+                      className={`py-2 pr-3 tabular-nums ${
+                        row.breachedCount > 0 ? "text-[var(--critical)]" : ""
+                      }`}
+                    >
+                      {row.breachedCount}
+                    </td>
+                    <td className="py-2 tabular-nums">{eur(row.costs)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </section>
 
       {(isFinance || closed.length > 0) && (
         <section className="mt-8">
