@@ -24,13 +24,7 @@ import {
   requireTenantId,
   tenantActiveWhere,
 } from "@/infrastructure/db/tenant-scope";
-
-function appBaseUrl(): string {
-  return (
-    process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, "") ||
-    "http://localhost:3000"
-  );
-}
+import { appBaseUrl } from "@/lib/app-urls";
 
 const createSchema = z.object({
   title: z.string().trim().min(2).max(200),

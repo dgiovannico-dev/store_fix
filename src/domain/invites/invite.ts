@@ -10,6 +10,7 @@ import { prisma } from "@/infrastructure/db/prisma";
 import { RbacAction } from "@/domain/rbac/actions";
 import { assertCanMutate } from "@/domain/rbac/guards";
 import type { Locale } from "@/i18n";
+import { appBaseUrl } from "@/lib/app-urls";
 
 const INVITE_TTL_MS = 7 * 24 * 60 * 60 * 1000;
 
@@ -24,12 +25,6 @@ function hashToken(raw: string): string {
   return createHash("sha256").update(raw).digest("hex");
 }
 
-function appBaseUrl(): string {
-  return (
-    process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, "") ||
-    "http://localhost:3000"
-  );
-}
 
 export async function createInvite(input: {
   tenantId: string;

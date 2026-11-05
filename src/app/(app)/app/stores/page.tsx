@@ -18,6 +18,9 @@ export default async function StoresPage() {
   if (!session?.user?.id || !session.tenantId || !session.role) {
     redirect("/login");
   }
+  if (!canMutate(session.role, RbacAction.crudStore)) {
+    redirect("/app/tickets");
+  }
 
   const [msg, prefs, stores] = await Promise.all([
     tenantMessages(session.tenantId),

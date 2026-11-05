@@ -32,6 +32,8 @@ export function forbiddenAppPathRedirect(
   const store =
     role === Role.store_manager || role === Role.store_staff;
   if (store) {
+    // Empty pathname = missing x-ff-pathname → fail closed (no HQ SoR leak).
+    if (!pathname) return "/app/tickets";
     const allowed =
       pathname.startsWith("/app/tickets") ||
       pathname.startsWith("/app/segnala") ||
@@ -45,6 +47,7 @@ export function forbiddenAppPathRedirect(
   }
 
   if (role === Role.viewer_finance) {
+    if (!pathname) return "/app/dashboard";
     const allowed =
       pathname.startsWith("/app/dashboard") ||
       pathname.startsWith("/app/tickets") ||

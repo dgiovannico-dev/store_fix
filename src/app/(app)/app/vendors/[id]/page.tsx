@@ -23,6 +23,9 @@ type Props = { params: Promise<{ id: string }> };
 export default async function VendorDetailPage({ params }: Props) {
   const session = await auth();
   if (!session?.tenantId || !session.role) redirect("/login");
+  if (!canMutate(session.role, RbacAction.crudVendor)) {
+    redirect("/app/tickets");
+  }
 
   const [msg, prefs] = await Promise.all([
     tenantMessages(session.tenantId),

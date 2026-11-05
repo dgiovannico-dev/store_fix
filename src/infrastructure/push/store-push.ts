@@ -1,3 +1,5 @@
+import { ticketDeepLink as ticketDeepLinkFromUrls } from "@/lib/app-urls";
+
 export type StorePushPayload = {
   event: string;
   ticketId: string;
@@ -15,16 +17,8 @@ export type StorePushTarget = {
 
 const TOPIC_RE = /^[-_A-Za-z0-9]{1,64}$/;
 
-function appBaseUrl(): string {
-  return (
-    process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, "") ||
-    "http://localhost:3000"
-  );
-}
-
-export function ticketDeepLink(ticketId: string): string {
-  return `${appBaseUrl()}/app/tickets/${ticketId}`;
-}
+/** Re-export for stable imports — prefer `@/lib/app-urls`. */
+export const ticketDeepLink = ticketDeepLinkFromUrls;
 
 function isHttpUrl(value: string): boolean {
   try {

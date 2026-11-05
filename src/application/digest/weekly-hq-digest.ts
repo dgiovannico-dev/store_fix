@@ -4,15 +4,8 @@ import { getTenantI18nPrefs } from "@/application/tenant/i18n-prefs";
 import { OPEN_TICKET_STATUSES } from "@/domain/ticket/status";
 import { enqueueEmail } from "@/infrastructure/email/outbox";
 import { prisma } from "@/infrastructure/db/prisma";
-import { ticketDeepLink } from "@/infrastructure/push/store-push";
+import { digestAckDeepLink, ticketDeepLink } from "@/lib/app-urls";
 import { t } from "@/i18n";
-
-function appBaseUrl(): string {
-  return (
-    process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, "") ||
-    "http://localhost:3000"
-  );
-}
 
 /**
  * F6-01 + F9-01 — digest settimanale HQ con deep link top ticket + CTA Segna rivisto.
@@ -119,7 +112,7 @@ export async function runWeeklyHqDigest(): Promise<{
             .map((tk) => `- ${ticketDeepLink(tk.id)}`)
             .join("\n");
 
-    const ackUrl = `${appBaseUrl()}/app/dashboard?digestAck=${weekKey}`;
+    const ackUrl = digestAckDeepLink(weekKey);
 
     for (const to of recipients) {
       await enqueueEmail({
