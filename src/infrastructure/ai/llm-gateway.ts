@@ -3,6 +3,11 @@
  * Assist only — never System of Record.
  */
 
+import {
+  recordAiInvocation,
+  type AiAuditContext,
+} from "./record-ai-invocation";
+
 export type LlmProviderKind =
   | "openai_compatible"
   | "ollama"
@@ -21,6 +26,8 @@ export type PlatformAiConfig = {
   model: string;
   sourceLabel: LlmSource;
 };
+
+export type { AiAuditContext };
 
 export function resolvePlatformAiConfig(): PlatformAiConfig | null {
   const openaiBase =
@@ -69,6 +76,8 @@ export async function llmChatJson(input: {
   signal?: AbortSignal;
   /** Optional tenant override (BYOK). */
   override?: Partial<PlatformAiConfig> | null;
+  /** F7-07 — metadata audit (no prompt body stored). */
+  audit?: AiAuditContext | null;
 }): Promise<{ content: string; source: LlmSource } | null> {
   const platform = resolvePlatformAiConfig();
   const cfg: PlatformAiConfig | null = input.override?.baseUrl
@@ -82,14 +91,59 @@ export async function llmChatJson(input: {
     : platform;
   if (!cfg) return null;
 
-  if (cfg.kind === "ollama") {
-    const res = await fetch(`${cfg.baseUrl}/api/chat`, {
+  const started = Date.now();
+  const finish = async (
+    result: { content: string; source: LlmSource } | null,
+    errorCode?: string,
+  ) => {
+    if (input.audit) {
+      await recordAiInvocation({
+        tenantId: input.audit.tenantId,
+        userId: input.audit.userId,
+        feature: input.audit.feature,
+        provider: cfg.sourceLabel,
+        model: cfg.model,
+        ok: Boolean(result?.content),
+        latencyMs: Date.now() - started,
+        errorCode: errorCode ?? (result ? null : "empty_or_http"),
+      });
+    }
+    return result;
+  };
+
+  try {
+    if (cfg.kind === "ollama") {
+      const res = await fetch(`${cfg.baseUrl}/api/chat`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          model: cfg.model,
+          stream: false,
+          format: "json",
+          messages: [
+            { role: "system", content: input.system },
+            { role: "user", content: input.user },
+          ],
+        }),
+        signal: input.signal,
+      });
+      if (!res.ok) return finish(null, `http_${res.status}`);
+      const data = (await res.json()) as { message?: { content?: string } };
+      const content = data.message?.content?.trim();
+      return finish(content ? { content, source: "ollama" } : null);
+    }
+
+    const base = cfg.baseUrl.endsWith("/v1") ? cfg.baseUrl : `${cfg.baseUrl}/v1`;
+    const res = await fetch(`${base}/chat/completions`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${cfg.apiKey}`,
+      },
       body: JSON.stringify({
         model: cfg.model,
-        stream: false,
-        format: "json",
+        temperature: 0.2,
+        response_format: { type: "json_object" },
         messages: [
           { role: "system", content: input.system },
           { role: "user", content: input.user },
@@ -97,36 +151,21 @@ export async function llmChatJson(input: {
       }),
       signal: input.signal,
     });
-    if (!res.ok) return null;
-    const data = (await res.json()) as { message?: { content?: string } };
-    const content = data.message?.content?.trim();
-    return content ? { content, source: "ollama" } : null;
+    if (!res.ok) return finish(null, `http_${res.status}`);
+    const data = (await res.json()) as {
+      choices?: { message?: { content?: string } }[];
+    };
+    const content = data.choices?.[0]?.message?.content?.trim();
+    return finish(
+      content ? { content, source: cfg.sourceLabel } : null,
+    );
+  } catch (e) {
+    const code =
+      e instanceof DOMException && e.name === "AbortError"
+        ? "aborted"
+        : "network";
+    return finish(null, code);
   }
-
-  const base = cfg.baseUrl.endsWith("/v1") ? cfg.baseUrl : `${cfg.baseUrl}/v1`;
-  const res = await fetch(`${base}/chat/completions`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${cfg.apiKey}`,
-    },
-    body: JSON.stringify({
-      model: cfg.model,
-      temperature: 0.2,
-      response_format: { type: "json_object" },
-      messages: [
-        { role: "system", content: input.system },
-        { role: "user", content: input.user },
-      ],
-    }),
-    signal: input.signal,
-  });
-  if (!res.ok) return null;
-  const data = (await res.json()) as {
-    choices?: { message?: { content?: string } }[];
-  };
-  const content = data.choices?.[0]?.message?.content?.trim();
-  return content ? { content, source: cfg.sourceLabel } : null;
 }
 
 /** @deprecated use llmConfigured */

@@ -110,7 +110,23 @@ export async function generateDigestNarrative(input: {
     needsConfirm: true,
   };
 
-  if (!llmConfigured()) return heuristic;
+  const audit = {
+    tenantId: input.tenantId,
+    userId: input.userId,
+    feature: "digest_narrative",
+  };
+
+  if (!llmConfigured()) {
+    const { recordAiInvocation } = await import(
+      "@/infrastructure/ai/record-ai-invocation"
+    );
+    void recordAiInvocation({
+      ...audit,
+      provider: "heuristic",
+      ok: true,
+    });
+    return heuristic;
+  }
 
   const system = `Sei un assist HQ facility. JSON only:
 {"narrative":"IT max 500 char","citations":[{"ticketId":"…","reason":"…"}]}
@@ -136,8 +152,19 @@ Cita SOLO ticketId forniti. Non inventare numeri fuori metrics. Assist — confe
     system,
     user,
     signal: input.signal,
+    audit,
   });
-  if (!llm) return heuristic;
+  if (!llm) {
+    const { recordAiInvocation } = await import(
+      "@/infrastructure/ai/record-ai-invocation"
+    );
+    void recordAiInvocation({
+      ...audit,
+      provider: "heuristic",
+      ok: true,
+    });
+    return heuristic;
+  }
 
   try {
     const parsed = JSON.parse(llm.content) as {

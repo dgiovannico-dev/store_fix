@@ -1,6 +1,11 @@
 import type { TicketPriority } from "@prisma/client";
 import type { AiAssistSource } from "@/domain/ai/suggest-category";
-import { llmChatJson, llmConfigured } from "@/infrastructure/ai/llm-gateway";
+import {
+  llmChatJson,
+  llmConfigured,
+  type AiAuditContext,
+} from "@/infrastructure/ai/llm-gateway";
+import { recordAiInvocation } from "@/infrastructure/ai/record-ai-invocation";
 
 export type PrioritySuggestion = {
   priority: TicketPriority;
@@ -45,10 +50,26 @@ export async function suggestTicketPriority(input: {
   description: string;
   category?: string;
   signal?: AbortSignal;
+  audit?: AiAuditContext | null;
 }): Promise<PrioritySuggestion> {
   const text = input.description.trim();
   const fallback = heuristic(text);
-  if (text.length < 5 || !llmConfigured()) return fallback;
+  const audit = input.audit
+    ? { ...input.audit, feature: input.audit.feature || "suggest_priority" }
+    : null;
+
+  if (text.length < 5 || !llmConfigured()) {
+    if (audit) {
+      void recordAiInvocation({
+        tenantId: audit.tenantId,
+        userId: audit.userId,
+        feature: audit.feature,
+        provider: "heuristic",
+        ok: true,
+      });
+    }
+    return fallback;
+  }
 
   try {
     const raw = await llmChatJson({
@@ -56,6 +77,7 @@ export async function suggestTicketPriority(input: {
         'Rispondi SOLO JSON {"priority":"low|normal|high|critical"}. Facility retail IT.',
       user: `Categoria: ${input.category ?? "n/d"}\n${text.slice(0, 1500)}`,
       signal: input.signal,
+      audit,
     });
     if (!raw) return fallback;
     const obj = JSON.parse(raw.content.match(/\{[\s\S]*\}/)?.[0] ?? "{}") as {

@@ -85,7 +85,23 @@ export async function compareRfqOffers(input: {
     needsConfirm: true,
   };
 
-  if (!llmConfigured() || submitted.length === 0) return heuristic;
+  const audit = {
+    tenantId: input.tenantId,
+    userId: input.userId,
+    feature: "rfq_compare",
+  };
+
+  if (!llmConfigured() || submitted.length === 0) {
+    const { recordAiInvocation } = await import(
+      "@/infrastructure/ai/record-ai-invocation"
+    );
+    void recordAiInvocation({
+      ...audit,
+      provider: "heuristic",
+      ok: true,
+    });
+    return heuristic;
+  }
 
   const system = `Assist RFQ facility. JSON only:
 {"comparison":"IT max 400","prosCons":[{"bidId":"…","vendorName":"…","pros":["…"],"cons":["…"]}]}
@@ -106,8 +122,19 @@ Non scegliere un winner. Non award. Solo pro/contro. bidId devono essere quelli 
     system,
     user,
     signal: input.signal,
+    audit,
   });
-  if (!llm) return heuristic;
+  if (!llm) {
+    const { recordAiInvocation } = await import(
+      "@/infrastructure/ai/record-ai-invocation"
+    );
+    void recordAiInvocation({
+      ...audit,
+      provider: "heuristic",
+      ok: true,
+    });
+    return heuristic;
+  }
 
   try {
     const parsed = JSON.parse(llm.content) as {

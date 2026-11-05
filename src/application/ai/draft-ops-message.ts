@@ -58,7 +58,23 @@ export async function draftOpsMessage(input: {
     needsConfirm: true,
   };
 
-  if (!llmConfigured()) return fallback;
+  const audit = {
+    tenantId: input.tenantId,
+    userId: input.userId,
+    feature: "draft_message",
+  };
+
+  if (!llmConfigured()) {
+    const { recordAiInvocation } = await import(
+      "@/infrastructure/ai/record-ai-invocation"
+    );
+    void recordAiInvocation({
+      ...audit,
+      provider: "heuristic",
+      ok: true,
+    });
+    return fallback;
+  }
 
   try {
     const raw = await llmChatJson({
@@ -66,6 +82,7 @@ export async function draftOpsMessage(input: {
         'Rispondi SOLO JSON {"draft":"…"}. Bozza email/WhatsApp IT professionale max 120 parole. Non inventare SLA o costi.',
       user: `Destinatario: ${input.audience}\n${context}`,
       signal: input.signal,
+      audit,
     });
     if (!raw) return fallback;
     const obj = JSON.parse(raw.content.match(/\{[\s\S]*\}/)?.[0] ?? "{}") as {
