@@ -14,6 +14,7 @@ import { RbacAction } from "@/domain/rbac/actions";
 import { roleLabel } from "@/domain/rbac/role-labels";
 import { ticketStatusLabel } from "@/domain/ticket/status-labels";
 import { getOnboardingSnapshot } from "@/domain/onboarding/progress";
+import { DigestNarrativePanel } from "@/components/dashboard/digest-narrative-panel";
 import { DashboardKpiGrid } from "@/components/dashboard/kpi-metric-card";
 import { PageFrame } from "@/components/layout/page-frame";
 import { Button } from "@/components/ui/button";
@@ -120,6 +121,18 @@ export default async function DashboardPage({
           ) : null}
         </div>
       </div>
+
+      {!isFinance ? (
+        <div className="mt-8">
+          <DigestNarrativePanel
+            title={msg.dashboard.digestAssistTitle}
+            hint={msg.dashboard.digestAssistHint}
+            btn={msg.dashboard.digestAssistBtn}
+            pendingLabel={msg.dashboard.digestAssistPending}
+            errorLabel={msg.dashboard.digestAssistError}
+          />
+        </div>
+      ) : null}
 
       {!snap.networkComplete ? (
         <div className="mt-8">

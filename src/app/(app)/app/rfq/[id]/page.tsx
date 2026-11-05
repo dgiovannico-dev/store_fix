@@ -13,6 +13,7 @@ import {
 import { formatMoney } from "@/i18n/format";
 import { tenantMessages } from "@/i18n/tenant-messages";
 import { PageFrame } from "@/components/layout/page-frame";
+import { RfqComparePanel } from "@/components/rfq/rfq-compare-panel";
 import { PendingSubmitButton } from "@/components/ui/pending-submit-button";
 
 export default async function RfqDetailPage({
@@ -101,6 +102,9 @@ export default async function RfqDetailPage({
           </li>
         ))}
       </ul>
+      {request.status === "open" ? (
+        <RfqComparePanel requestId={request.id} labels={msg.rfq} />
+      ) : null}
     </PageFrame>
   );
 }
