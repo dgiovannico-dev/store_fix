@@ -5,7 +5,9 @@
 > **Wedge:** Intake leggero + ticket/SLA/dispatch vendor + costi per store.  
 > **Non competiamo su:** CMMS asset-heavy, inventari pezzi, IoT, marketplace, billing SaaS.
 
-Fonti (ordini di grandezza, non listino): MaintainX free→~$20–60/user/mo ([UpKeep vs MaintainX](https://upkeep.com/blog/maintainx-vs-upkeep/)); retail CMMS ranking ([OpenWrench](https://www.useopenwrench.com/blog/best-cmms-for-retail)); Zendesk ≠ CMMS ([TrustRadius UpKeep vs Zendesk](https://www.trustradius.com/compare-products/upkeep-maintenance-management-vs-zendesk-support-suite)). Cloud USA-first vs nostro self-host EU.
+Fonti (ordini di grandezza, non listino): MaintainX Essential **$20** / Premium **$65**/user/mo annual ([pricing ufficiale](https://www.getmaintainx.com/pricing)); retail CMMS ranking ([OpenWrench](https://www.useopenwrench.com/blog/best-cmms-for-retail)); Zendesk ≠ CMMS ([TrustRadius UpKeep vs Zendesk](https://www.trustradius.com/compare-products/upkeep-maintenance-management-vs-zendesk-support-suite)). Cloud USA-first vs nostro self-host EU.
+
+**Strategy deep-dive (2026-11-05):** [`MARKET_STRATEGY.md`](./MARKET_STRATEGY.md) · sizing [`MARKET_SIZING_ITALY.md`](./MARKET_SIZING_ITALY.md).
 
 ---
 
