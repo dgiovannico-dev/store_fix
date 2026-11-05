@@ -1,5 +1,6 @@
 import { Role, TicketStatus, type Membership } from "@prisma/client";
 import { z } from "zod";
+import { enqueueAiIndexTicket } from "@/application/ai/enqueue-ai-index";
 import { emitTicketNotification } from "@/application/notifications/emit";
 import { RbacAction } from "@/domain/rbac/actions";
 import { assertCan, ForbiddenError } from "@/domain/rbac/guards";
@@ -61,6 +62,10 @@ export async function verifyTicket(input: {
       tenantId: input.tenantId,
       ticket: result.ticket,
       actorUserId: input.actorUserId,
+    });
+    void enqueueAiIndexTicket({
+      tenantId: input.tenantId,
+      ticketId: result.ticket.id,
     });
   }
   return result;

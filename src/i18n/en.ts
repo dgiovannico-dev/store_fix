@@ -78,6 +78,12 @@ export const en = {
     cancelSkip: "Resume checklist",
     cancelSkipHint: "Return to onboarding and continue where you left off",
     kpiAria: "KPI metrics",
+    digestAssistTitle: "Weekly digest draft",
+    digestAssistHint:
+      "Narrative assist with SoR ticket citations — confirm before email send.",
+    digestAssistBtn: "Generate draft",
+    digestAssistPending: "Generating…",
+    digestAssistError: "Digest assist error",
   },
   vendor: {
     inboxTitle: "Vendor inbox",
@@ -563,6 +569,19 @@ export const en = {
     summarizeNeedsConfirm: "read-only — human confirm",
     summarizeSolutionTitle: "Possible solution (verify)",
     summarizeAutoPending: "Preparing summary and suggestion…",
+    similarTitle: "Similar cases",
+    similarHint:
+      "Suggestion — human confirm. Links to SoR tickets; no automatic writes.",
+    similarBtn: "Refresh similar",
+    similarPending: "Searching similar cases…",
+    similarError: "Similar search error",
+    similarEmpty: "No similar cases found.",
+    breachBriefTitle: "Breach brief draft",
+    breachBriefHint:
+      "Read-only assist from tools (similar / asset / vendor) — does not relaunch alone.",
+    breachBriefBtn: "Generate brief",
+    breachBriefPending: "Generating brief…",
+    breachBriefError: "Breach brief error",
     vendorTitle: "Update work",
     vendorStart: "Start work",
     vendorWaiting: "Waiting for parts",
@@ -787,6 +806,13 @@ export const en = {
     sendBid: "Submit bid",
     updateBid: "Update bid",
     yourOffer: "Submitted bid",
+    compareTitle: "Offer compare assist",
+    compareHint:
+      "Pros/cons suggestion — award always manual (no auto-award).",
+    compareBtn: "Generate comparison",
+    comparePending: "Comparing…",
+    compareError: "RFQ compare error",
+    compareSource: "Source",
   },
   rfqRequestStatus: {
     open: "Open",

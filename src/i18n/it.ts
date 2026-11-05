@@ -76,6 +76,12 @@ export const it = {
     cancelSkip: "Riprendi checklist",
     cancelSkipHint: "Torna all’onboarding e continua da dove hai lasciato",
     kpiAria: "Indicatori KPI",
+    digestAssistTitle: "Bozza digest settimanale",
+    digestAssistHint:
+      "Narrativa assist con citazioni ticket SoR — conferma prima dell'invio email.",
+    digestAssistBtn: "Genera bozza",
+    digestAssistPending: "Generazione…",
+    digestAssistError: "Errore digest assist",
   },
   vendor: {
     inboxTitle: "Inbox vendor",
@@ -564,6 +570,19 @@ export const it = {
     summarizeNeedsConfirm: "sola lettura — conferma umana",
     summarizeSolutionTitle: "Possibile soluzione (da verificare)",
     summarizeAutoPending: "Sto preparando riassunto e suggerimento…",
+    similarTitle: "Casi simili",
+    similarHint:
+      "Suggerimento — conferma umana. Link al ticket SoR; nessuna scrittura automatica.",
+    similarBtn: "Aggiorna simili",
+    similarPending: "Ricerca casi simili…",
+    similarError: "Errore ricerca simili",
+    similarEmpty: "Nessun caso simile trovato.",
+    breachBriefTitle: "Bozza brief breach",
+    breachBriefHint:
+      "Assist read-only da tool (simili / asset / vendor) — non rilancia da solo.",
+    breachBriefBtn: "Genera brief",
+    breachBriefPending: "Generazione brief…",
+    breachBriefError: "Errore brief breach",
     vendorTitle: "Aggiorna intervento",
     vendorStart: "Inizia intervento",
     vendorWaiting: "In attesa ricambi",
@@ -790,6 +809,13 @@ export const it = {
     sendBid: "Invia offerta",
     updateBid: "Aggiorna offerta",
     yourOffer: "Offerta inviata",
+    compareTitle: "Assist confronto offerte",
+    compareHint:
+      "Suggerimento pro/contro — award sempre manuale (nessun auto-award).",
+    compareBtn: "Genera confronto",
+    comparePending: "Confronto…",
+    compareError: "Errore confronto RFQ",
+    compareSource: "Fonte",
   },
   rfqRequestStatus: {
     open: "Aperta",

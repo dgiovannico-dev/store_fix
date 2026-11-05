@@ -161,9 +161,9 @@ Cosa rende l’AI “prodotto”, non script interno:
 | **F7-03** | Tenant AI settings + BYOK encrypt + UI `/app/settings/ai` | **P0** | F7-01, OpenBao opz. |
 | **F7-04** | Preset catalog (vLLM, Ollama, OpenAI, Anthropic, Gemini, Groq, OpenRouter, Azure, custom) | **P0** | F7-03 |
 | **F7-05** | Assist A4 bozza messaggio + A1 priorità | **P1** | F7-01 |
-| **F7-06** | Assist A6 RFQ compare + A5 digest hook | **P1** | F7-01, F6-01 opz. |
+| **F7-06** | Assist A6 RFQ compare + A5 digest hook | **P1** | Done lite 2026-11-05 (`/api/ai/rfq-compare`, `/api/ai/digest-narrative`) |
 | **F7-07** | `AiInvocation` audit + usage soft-budget | **P1** | F7-03 |
-| **F7-08** | Embeddings B3 similar ticket (opt-in) | **P2** | provider con `/v1/embeddings` |
+| **F7-08** | Embeddings B3 similar ticket (pgvector + Ollama CPU) | **P2** | Done lite 2026-11-05 — runbook [`../ops/AI_CPU.md`](../ops/AI_CPU.md) |
 | **F7-09** | Vision B2 caption (opt-in) | **P2** | modello vision |
 | **F7-10** | ADR-0012 Accepted + STACK update + runbook `AI_PROVIDERS.md` | **P0** | conferma PO |
 
