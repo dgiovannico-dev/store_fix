@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LogOut, Menu } from "lucide-react";
+import { CircleHelp, LogOut, Menu } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import dynamic from "next/dynamic";
 import {
@@ -19,7 +19,10 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
-import { TourHelpButtons } from "@/features/product-tour/tour-launcher";
+import {
+  TourHelpButtons,
+  startProductTour,
+} from "@/features/product-tour/tour-launcher";
 import type { ProductTourUiLabels } from "@/features/product-tour/tour-controller";
 import type { Locale, MessageCatalog } from "@/i18n";
 import type { NavItem } from "./nav-config";
@@ -235,7 +238,22 @@ export function HqShell(props: {
               className="hidden lg:flex"
             />
           </div>
-          <div className="ml-auto flex items-center gap-2">{props.topRight}</div>
+          <div className="ml-auto flex items-center gap-2">
+            <button
+              type="button"
+              className="inline-flex size-10 items-center justify-center rounded-[var(--radius)] text-[var(--nav-icon)] hover:bg-[var(--sidebar-accent)] hover:text-[var(--nav-icon-active)] lg:hidden"
+              data-tour="help.tour"
+              aria-label={props.tourChrome.helpAria}
+              title={props.tourChrome.launchLabel}
+              onClick={() => startProductTour("hq", "full", props.locale)}
+            >
+              <CircleHelp
+                className="size-4 stroke-[1.75] text-[var(--nav-icon)]"
+                aria-hidden
+              />
+            </button>
+            {props.topRight}
+          </div>
         </header>
         <div className="border-b border-[var(--border)] px-4 py-2 lg:hidden sm:px-6">
           <AppBreadcrumbs
