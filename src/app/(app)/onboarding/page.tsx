@@ -75,7 +75,7 @@ export default async function OnboardingPage() {
 
       {snap.skippedAt ? (
         <div className="space-y-2 rounded-[var(--radius)] border border-[var(--signal)] bg-[var(--signal-soft)] px-4 py-3 text-sm">
-          <p>
+          <div>
             {copy.skippedBanner}{" "}
             <form action={resumeOnboardingAction} className="inline">
               <button
@@ -85,7 +85,7 @@ export default async function OnboardingPage() {
                 {copy.resume}
               </button>
             </form>
-          </p>
+          </div>
           <div>
             <p className="font-medium">{copy.antiSkipTitle}</p>
             <ul className="mt-1 list-disc space-y-0.5 pl-5 text-[var(--muted-foreground)]">
