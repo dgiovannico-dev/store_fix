@@ -66,6 +66,8 @@ export function middleware(request: NextRequest) {
       headers: (() => {
         const h = new Headers(request.headers);
         h.set("x-request-id", requestId);
+        /** Consumed by AppChrome audience path guard (RSC). */
+        h.set("x-ff-pathname", pathname);
         return h;
       })(),
     },
