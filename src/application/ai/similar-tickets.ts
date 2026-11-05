@@ -28,7 +28,8 @@ export type SimilarTicketHit = {
 
 export type SimilarTicketsResult = {
   items: SimilarTicketHit[];
-  source: "embedding" | "heuristic";
+  /** embedding = remote or local_embed indexed vectors; heuristic = keyword only */
+  source: "embedding" | "heuristic" | "local_embed";
   needsConfirm: true;
 };
 
@@ -171,7 +172,11 @@ export async function findSimilarTickets(input: {
       .slice(0, limit);
 
     if (items.length > 0) {
-      return { items, source: "embedding", needsConfirm: true };
+      return {
+        items,
+        source: emb.source === "local_embed" ? "local_embed" : "embedding",
+        needsConfirm: true,
+      };
     }
   }
 
