@@ -41,7 +41,10 @@ function tourAttrForHref(href: string): string | undefined {
   if (href.includes("/assets")) return "nav.assets";
   if (href.includes("/contratti")) return "nav.contracts";
   if (href.includes("/calendario")) return "nav.calendar";
+  if (href.includes("/finance/chargeback")) return "nav.chargeback";
+  if (href.includes("/wallboard")) return "nav.wallboard";
   if (href.includes("/rfq")) return "nav.rfq";
+  if (href.includes("/settings/ai")) return "nav.ai";
   if (href.includes("/settings")) return "nav.locale";
   if (href.includes("/segnala")) return "nav.segnala";
   if (href.includes("/inbox")) return "nav.inbox";

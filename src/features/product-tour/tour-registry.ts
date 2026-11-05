@@ -124,12 +124,7 @@ function hqSteps(): TourStepSkeleton[] {
       element: "[data-tour='page.calendar.root']",
       side: "bottom",
     },
-    {
-      id: "hq.rfq",
-      route: "/app/rfq",
-      element: "[data-tour='page.rfq.root']",
-      side: "bottom",
-    },
+    // Ordine allineato a `hqSidebarItems` (nav-config): chargeback → wallboard → rfq → locale → ai
     {
       id: "hq.chargeback",
       route: "/app/finance/chargeback",
@@ -140,6 +135,12 @@ function hqSteps(): TourStepSkeleton[] {
       id: "hq.wallboard",
       route: "/app/wallboard",
       element: "[data-tour='hq.wallboard']",
+      side: "bottom",
+    },
+    {
+      id: "hq.rfq",
+      route: "/app/rfq",
+      element: "[data-tour='page.rfq.root']",
       side: "bottom",
     },
     {
@@ -158,6 +159,19 @@ function hqSteps(): TourStepSkeleton[] {
       id: "hq.flussoA",
     },
   ];
+}
+
+/** Route primarie del tour HQ (prima occorrenza), escluse onboarding/welcome senza nav. */
+export function hqTourSidebarRoutes(): string[] {
+  const seen = new Set<string>();
+  const routes: string[] = [];
+  for (const s of hqSteps()) {
+    if (!s.route || s.route === "/onboarding") continue;
+    if (seen.has(s.route)) continue;
+    seen.add(s.route);
+    routes.push(s.route);
+  }
+  return routes;
 }
 
 function storeSteps(): TourStepSkeleton[] {
