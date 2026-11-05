@@ -19,6 +19,10 @@ export default async function WallboardPage() {
     tenantMessages(session.tenantId),
   ]);
 
+  const base =
+    process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, "") ||
+    "http://localhost:3000";
+
   return (
     <WallboardClient
       initialTickets={page.items}
@@ -26,6 +30,7 @@ export default async function WallboardPage() {
       initialNextSkip={page.nextSkip}
       copy={msg.wallboard}
       locale={prefs.locale}
+      ticketsUrl={`${base}/app/tickets`}
     />
   );
 }

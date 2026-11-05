@@ -8,6 +8,7 @@ import {
 } from "@/domain/intake/chat-steps";
 import { ticketStatusLabel } from "@/lib/labels/ticket-status";
 import type { Locale, MessageCatalog } from "@/i18n";
+import { WallboardQr } from "./wallboard-qr";
 
 const PAGE_SIZE = 24;
 
@@ -40,8 +41,9 @@ export function WallboardClient(props: {
   initialNextSkip: number | null;
   copy: MessageCatalog["wallboard"];
   locale: Locale;
+  ticketsUrl: string;
 }) {
-  const { copy, locale } = props;
+  const { copy, locale, ticketsUrl } = props;
   const [tickets, setTickets] = useState(props.initialTickets);
   const [total, setTotal] = useState(props.initialTotal);
   const [nextSkip, setNextSkip] = useState(props.initialNextSkip);
@@ -152,16 +154,19 @@ export function WallboardClient(props: {
             </p>
           ) : null}
         </div>
-        <div
-          className="rounded-[var(--radius)] border border-[var(--border)] bg-[var(--card)] px-5 py-3 text-right"
-          aria-label={copy.countAria.replace("{n}", String(count))}
-        >
-          <p className="text-sm font-medium text-[var(--muted-foreground)]">
-            {copy.countLabel}
-          </p>
-          <p className="text-5xl font-semibold tabular text-[var(--foreground)]">
-            {count}
-          </p>
+        <div className="flex flex-wrap items-end gap-4">
+          <WallboardQr href={ticketsUrl} hint={copy.qrHint} />
+          <div
+            className="rounded-[var(--radius)] border border-[var(--border)] bg-[var(--card)] px-5 py-3 text-right"
+            aria-label={copy.countAria.replace("{n}", String(count))}
+          >
+            <p className="text-sm font-medium text-[var(--muted-foreground)]">
+              {copy.countLabel}
+            </p>
+            <p className="text-5xl font-semibold tabular text-[var(--foreground)]">
+              {count}
+            </p>
+          </div>
         </div>
       </header>
 

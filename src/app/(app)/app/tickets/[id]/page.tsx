@@ -6,7 +6,9 @@ import { getTenantI18nPrefs } from "@/application/tenant/i18n-prefs";
 import { PageFrame } from "@/components/layout/page-frame";
 import { TicketOpsPanel } from "@/components/ops/ticket-ops-panel";
 import { BreachBriefPanel } from "@/components/ops/breach-brief-panel";
+import { BreachPlaybookPanel } from "@/components/ops/breach-playbook-panel";
 import { SlaRelaunchPanel } from "@/components/ops/sla-relaunch-panel";
+import { TicketInvitePanel } from "@/components/tickets/ticket-invite-panel";
 import { AttachmentGallery } from "@/components/tickets/attachment-gallery";
 import { AttachmentUploader } from "@/components/tickets/attachment-uploader";
 import { QuotePanel } from "@/components/tickets/quote-panel";
@@ -189,6 +191,12 @@ export default async function TicketDetailPage({
         labels={msg.ticketPanels}
         locale={prefs.locale}
       />
+      <BreachPlaybookPanel
+        ticketId={ticket.id}
+        breached={!!ticket.slaBreachedAt}
+        canOps={canOps}
+        labels={msg.ticketPanels}
+      />
       <SlaRelaunchPanel
         ticketId={ticket.id}
         breached={!!ticket.slaBreachedAt}
@@ -201,6 +209,13 @@ export default async function TicketDetailPage({
         breached={!!ticket.slaBreachedAt}
         canOps={canOps}
         labels={msg.ticketPanels}
+      />
+      <TicketInvitePanel
+        canInvite={canOps && can(session.role, RbacAction.inviteUsers)}
+        storeId={ticket.storeId}
+        vendorId={ticket.vendorId}
+        labels={msg.ticketPanels}
+        locale={prefs.locale}
       />
       <VerifyPanel
         ticketId={ticket.id}

@@ -203,6 +203,22 @@ export async function completeVendorWork(input: {
       ticket: result.ticket,
       actorUserId: input.actorUserId,
     });
+    const vendorId = result.ticket.vendorId;
+    if (vendorId) {
+      const { notifyVendorFirstDone } = await import(
+        "@/application/vendors/first-done-and-nudge"
+      );
+      const vendor = await prisma.vendor.findFirst({
+        where: { id: vendorId, tenantId: input.tenantId },
+        select: { name: true },
+      });
+      await notifyVendorFirstDone({
+        tenantId: input.tenantId,
+        vendorId,
+        ticketId: result.ticket.id,
+        vendorName: vendor?.name ?? "vendor",
+      });
+    }
   }
 
   return result;

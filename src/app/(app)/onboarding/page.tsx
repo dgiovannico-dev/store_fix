@@ -74,16 +74,43 @@ export default async function OnboardingPage() {
       />
 
       {snap.skippedAt ? (
-        <div className="rounded-[var(--radius)] border border-[var(--signal)] bg-[var(--signal-soft)] px-4 py-3 text-sm">
-          {copy.skippedBanner}{" "}
-          <form action={resumeOnboardingAction} className="inline">
-            <button
-              type="submit"
-              className="font-medium underline-offset-4 hover:underline"
-            >
-              {copy.resume}
-            </button>
-          </form>
+        <div className="space-y-2 rounded-[var(--radius)] border border-[var(--signal)] bg-[var(--signal-soft)] px-4 py-3 text-sm">
+          <p>
+            {copy.skippedBanner}{" "}
+            <form action={resumeOnboardingAction} className="inline">
+              <button
+                type="submit"
+                className="font-medium underline-offset-4 hover:underline"
+              >
+                {copy.resume}
+              </button>
+            </form>
+          </p>
+          <div>
+            <p className="font-medium">{copy.antiSkipTitle}</p>
+            <ul className="mt-1 list-disc space-y-0.5 pl-5 text-[var(--muted-foreground)]">
+              <li>{copy.antiSkip1}</li>
+              <li>{copy.antiSkip2}</li>
+              <li>{copy.antiSkip3}</li>
+            </ul>
+          </div>
+        </div>
+      ) : null}
+
+      {snap.networkComplete ? (
+        <div className="rounded-[var(--radius)] border border-[var(--primary)] bg-[var(--primary-soft)] px-4 py-3">
+          <p className="text-sm font-semibold text-[var(--primary)]">
+            {copy.flussoATitle}
+          </p>
+          <p className="mt-1 text-sm text-[var(--muted-foreground)]">
+            {copy.flussoAHint}
+          </p>
+          <Link
+            href="/app/tickets/new?tour=1"
+            className="mt-3 inline-flex rounded-[var(--radius)] bg-[var(--primary)] px-3 py-2 text-sm font-medium text-[var(--primary-foreground)]"
+          >
+            {copy.flussoACta}
+          </Link>
         </div>
       ) : null}
 

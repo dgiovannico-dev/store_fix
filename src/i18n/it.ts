@@ -31,6 +31,7 @@ export const it = {
     emptyTitle: "Nessun intervento critico in elenco",
     emptyBody:
       "Quando ci sono ticket aperti o fuori tempo SLA, compaiono qui in grande per la sala.",
+    qrHint: "Scansiona per aprire i ticket in app",
     storeLabel: "Punto vendita",
     categoryLabel: "Tipo guasto",
     priorityLabel: "Urgenza",
@@ -59,6 +60,9 @@ export const it = {
     emptyTitle: "Nessun dato operativo",
     emptyBody:
       "Completa l'onboarding o apri un ticket di prova per vedere KPI e costi.",
+    emptyTourTitle: "Dashboard ancora vuota?",
+    emptyTourBody:
+      "Usa «Spiega questa pagina» per capire KPI e passi successivi in meno di un minuto.",
     open: "Aperti",
     breached: "SLA superati",
     atRisk: "A rischio",
@@ -160,6 +164,11 @@ export const it = {
   digest: {
     weeklySummary:
       "Digest 7g — aperti/in corso: {open} · breach SLA nuovi: {breached} · costi verificati: effettivi €{actual} · stimati €{estimated}",
+    noHotTickets: "Nessun ticket prioritario questa settimana.",
+    bannerTitle: "Digest settimanale",
+    bannerBody: "Hai ricevuto (o puoi rivedere) il digest di lunedì — conferma di averlo rivisto.",
+    bannerCta: "Segna rivisto",
+    bannerDone: "Digest segnato come rivisto.",
   },
   slaOps: {
     relaunchPrefix: "Rilancio SLA:",
@@ -212,10 +221,20 @@ export const it = {
     subtitle:
       "Ultimi {days} giorni — stimati vs effettivi (ticket completati/verificati).",
     exportCsv: "Esporta CSV",
+    shareCfoTitle: "Condividi con CFO",
+    shareCfoEmail: "Email CFO",
+    shareCfoSubmit: "Invia riepilogo",
+    shareCfoOk: "Riepilogo inviato",
+    shareCfoError: "Invio non riuscito",
     colStore: "Punto vendita",
     colTickets: "Ticket",
     colEstimated: "Stimato",
     colActual: "Effettivo",
+  },
+  trust: {
+    strip:
+      "Self-host / dati UE · audit ticket · export GDPR · AI solo con conferma umana",
+    settingsTitle: "Trust & compliance",
   },
   actionErrors: {
     accessRequired: "Accesso richiesto",
@@ -559,6 +578,17 @@ export const it = {
     opsAssign: "Assegna vendor",
     opsCancelLabel: "Annulla (motivo obbligatorio)",
     opsCancel: "Annulla ticket",
+    playbookTitle: "Playbook breach",
+    playbookHint:
+      "Un click: nota template + rilancio notifica ops (conferma umana sul SoR).",
+    playbookCta: "Esegui playbook breach",
+    inviteTitle: "Invita chi interviene",
+    inviteEmail: "Email",
+    inviteRoleSm: "Store manager",
+    inviteRoleVendor: "Vendor (portale)",
+    inviteSubmit: "Invia invito",
+    inviteOk: "Invito inviato",
+    inviteError: "Invito non inviato",
     slaTitle: "Escalation SLA",
     slaNote: "Nota rilancio *",
     slaOk: "Rilancio inviato",
@@ -865,6 +895,8 @@ export const it = {
     membersLink: "Membri",
     emptyTitle: "Nessun evento",
     emptyBody: "Le modifiche a ruoli e membership appariranno qui.",
+    exportJson: "Esporta JSON",
+    exportCsv: "Esporta CSV",
     colEvent: "Evento",
     colWhen: "Quando",
     evtMembershipUpdated: "Membership aggiornata",
@@ -920,6 +952,14 @@ export const it = {
     tourLaunchHint:
       "Un giro guidato delle sezioni: clicca qui per avviarlo subito.",
     tourLaunchCta: "Avvia",
+    flussoATitle: "Chiudi il primo ciclo (Flusso A)",
+    flussoAHint:
+      "In meno di 15 minuti: store segnala → HQ assegna → vendor done → store verifica. È l’aha moment della rete.",
+    flussoACta: "Parti dal ticket di prova",
+    antiSkipTitle: "Onboarding saltato — tre passi misurabili",
+    antiSkip1: "Apri almeno un ticket in FacilityFlow (non solo WhatsApp)",
+    antiSkip2: "Assegna un vendor e chiedi il done dal portale",
+    antiSkip3: "Verifica la chiusura dallo store",
     pilotHint:
       "Pilota tipico: 15 store × 5 vendor. La checklist resta la fonte di verità sull’avvio rete.",
     blockedSprintHint: "(prossimo sprint)",

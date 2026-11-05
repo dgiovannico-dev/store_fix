@@ -17,6 +17,8 @@ export const QUEUE_RATE_LIMIT_GC = "rate_limit.gc";
 export const QUEUE_AI_INDEX_TICKET = "ai.index_ticket";
 /** F7-07 — purge old AiInvocation rows (retention soft). */
 export const QUEUE_AI_INVOCATION_GC = "ai.invocation_gc";
+/** F9-03 — vendor stall nudge (assigned/in_progress > 48h). */
+export const QUEUE_VENDOR_NUDGE = "vendor.first_done_nudge";
 
 let bossSingleton: PgBoss | null = null;
 let starting: Promise<PgBoss | null> | null = null;
@@ -49,6 +51,7 @@ export async function getBoss(): Promise<PgBoss | null> {
     await boss.createQueue(QUEUE_RATE_LIMIT_GC);
     await boss.createQueue(QUEUE_AI_INDEX_TICKET);
     await boss.createQueue(QUEUE_AI_INVOCATION_GC);
+    await boss.createQueue(QUEUE_VENDOR_NUDGE);
     bossSingleton = boss;
     return boss;
   })();

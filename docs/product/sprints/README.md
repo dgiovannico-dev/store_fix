@@ -16,8 +16,10 @@ Indice degli Sprint Backlog (MVP S1–S4 + production-ready **S5**). Cadenza **2
 | **S3** | [`S3-sprint-backlog.md`](./S3-sprint-backlog.md) | Vendor portal (E06), verify/costi (E07), breach (E05), notifiche complete (E08), Flusso A→verified + B — **14 task** |
 | **S4** | [`S4-sprint-backlog.md`](./S4-sprint-backlog.md) | Dashboard HQ (E09), NFR/seed/i18n/security (E10), GDPR (E12), harden MVP — **20 task** |
 | **S5** | [`S5-sprint-backlog.md`](./S5-sprint-backlog.md) | **E14 production-ready** — harden, ops, exit pilota (DoD + readiness) |
+| **S6** | [`S6-sprint-backlog.md`](./S6-sprint-backlog.md) | **Fase 9 Adoption** — digest/Flusso A/vendor/playbook + stickiness + ops packs (no billing) |
 
 **Stato S5 (2026-10-29):** artefatti ops + prove **locali** PASS; **NO-GO prod** — gap VPS in [`S5-EXIT-GAPS.md`](./S5-EXIT-GAPS.md). Retro: [`../retros/S5-2026-10-29.md`](../retros/S5-2026-10-29.md).  
+**Stato S6:** in corso — Fase 9 Adoption (no billing).  
 **Increment globale:** [`../INCREMENT_STATUS.md`](../INCREMENT_STATUS.md) · next host: [`../../ops/NEXT_VPS.md`](../../ops/NEXT_VPS.md).
 
 > I file `S1`–`S5` sopra sono lo Sprint Backlog operativo; gli epic/story e gli AC restano canonici in `BACKLOG.md`. Vista esplosa TK: [`../backlog/`](../backlog/).
