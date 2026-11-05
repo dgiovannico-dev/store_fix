@@ -18,6 +18,7 @@ import { openImapflowMailbox } from "../infrastructure/email/imapflow-mailbox";
 import { gcAiInvocations } from "../application/ai/gc-ai-invocations";
 import { indexTicketChunks } from "../application/ai/index-ticket-chunks";
 import { runWeeklyHqDigest } from "../application/digest/weekly-hq-digest";
+import { runVendorFirstDoneNudges } from "../application/vendors/first-done-and-nudge";
 import {
   QUEUE_AI_INDEX_TICKET,
   QUEUE_AI_INVOCATION_GC,
@@ -30,6 +31,7 @@ import {
   QUEUE_PM_MAINTAIN,
   QUEUE_RATE_LIMIT_GC,
   QUEUE_SLA_CHECK,
+  QUEUE_VENDOR_NUDGE,
 } from "../infrastructure/jobs/boss";
 
 async function main() {
@@ -52,6 +54,7 @@ async function main() {
   await boss.createQueue(QUEUE_RATE_LIMIT_GC);
   await boss.createQueue(QUEUE_AI_INDEX_TICKET);
   await boss.createQueue(QUEUE_AI_INVOCATION_GC);
+  await boss.createQueue(QUEUE_VENDOR_NUDGE);
 
   await boss.work(QUEUE_EMAIL_OUTBOX_DISPATCH, async () => {
     const result = await processEmailOutboxBatch(20);
@@ -142,6 +145,11 @@ async function main() {
     );
   });
 
+  await boss.work(QUEUE_VENDOR_NUDGE, async () => {
+    const result = await runVendorFirstDoneNudges();
+    console.log(`[worker] vendor.first_done_nudge → nudged=${result.nudged}`);
+  });
+
   try {
     await boss.schedule(QUEUE_SLA_CHECK, "*/5 * * * *", null, {
       tz: "Europe/Rome",
@@ -215,6 +223,14 @@ async function main() {
     console.warn("[worker] schedule ai.invocation_gc:", (e as Error).message);
   }
 
+  try {
+    await boss.schedule(QUEUE_VENDOR_NUDGE, "0 */6 * * *", null, {
+      tz: "Europe/Rome",
+    });
+  } catch (e) {
+    console.warn("[worker] schedule vendor.nudge:", (e as Error).message);
+  }
+
   const imapConfig = readImapInboundConfig();
   if (imapConfig) {
     try {
@@ -243,6 +259,7 @@ async function main() {
     QUEUE_RATE_LIMIT_GC,
     QUEUE_AI_INDEX_TICKET,
     QUEUE_AI_INVOCATION_GC,
+    QUEUE_VENDOR_NUDGE,
   );
 }
 

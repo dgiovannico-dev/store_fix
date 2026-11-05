@@ -24,6 +24,7 @@ import type { ProductTourUiLabels } from "@/features/product-tour/tour-controlle
 import type { Locale, MessageCatalog } from "@/i18n";
 import type { NavItem } from "./nav-config";
 import { NavIcon } from "./nav-icons";
+import { TrustStrip } from "./trust-strip";
 
 const ProductTourHost = dynamic(
   () =>
@@ -92,12 +93,14 @@ function SidebarNav({
   brand,
   signOutLabel,
   tour,
+  trustStrip,
   onNavigate,
 }: {
   items: NavItem[];
   brand: string;
   signOutLabel: string;
   tour: MessageCatalog["tour"] & { launchLabel: string; locale: Locale };
+  trustStrip: string;
   onNavigate?: () => void;
 }) {
   const pathname = usePathname();
@@ -132,6 +135,7 @@ function SidebarNav({
         pageScopeHint={tour.pageScopeHint}
         locale={tour.locale}
       />
+      <TrustStrip text={trustStrip} />
       <div className="border-t border-[var(--sidebar-border)] p-2">
         <form action="/logout" method="post">
           <Button
@@ -162,6 +166,7 @@ export function HqShell(props: {
   tourLabels: ProductTourUiLabels;
   tourChrome: MessageCatalog["tour"] & { launchLabel: string; locale: Locale };
   shellLabels: MessageCatalog["shell"];
+  trustStrip: string;
   closeLabel: string;
   locale: Locale;
 }) {
@@ -182,6 +187,7 @@ export function HqShell(props: {
           brand={props.brand}
           signOutLabel={props.signOutLabel}
           tour={props.tourChrome}
+          trustStrip={props.trustStrip}
         />
       </aside>
 
@@ -211,6 +217,7 @@ export function HqShell(props: {
                 brand={props.brand}
                 signOutLabel={props.signOutLabel}
                 tour={props.tourChrome}
+                trustStrip={props.trustStrip}
                 onNavigate={closeMobileNav}
               />
             </SheetContent>

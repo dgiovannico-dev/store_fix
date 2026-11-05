@@ -96,6 +96,7 @@ export async function AppChrome({ children }: { children: React.ReactNode }) {
         tourLabels={tourLabels}
         tourChrome={tourChrome}
         shellLabels={msg.shell}
+        trustStrip={msg.trust.strip}
         closeLabel={msg.common.close}
         locale={prefs.locale}
       >

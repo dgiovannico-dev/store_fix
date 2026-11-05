@@ -10,6 +10,9 @@ export type EmailTemplateId =
   | "ticket_rejected"
   | "email_verify"
   | "pm_reminder"
+  | "hq_digest"
+  | "vendor_nudge"
+  | "chargeback_share"
   | "rfq_invite"
   | "invite"
   | "password_reset";
@@ -19,10 +22,13 @@ export type TemplateVars = {
   storeName?: string;
   vendorName?: string;
   summary?: string;
+  /** Optional HTML body fragment (hq_digest). Falls back to escaped summary. */
+  summaryHtml?: string;
   verifyUrl?: string;
   rfqUrl?: string;
   acceptUrl?: string;
   resetUrl?: string;
+  ackUrl?: string;
   role?: string;
 };
 
@@ -40,10 +46,12 @@ function build(
   const vendor =
     vars.vendorName ?? (locale === "en" ? "vendor" : "fornitore");
   const summary = vars.summary ?? "";
+  const summaryHtml = vars.summaryHtml ?? summary;
   const verifyUrl = vars.verifyUrl ?? "#";
   const rfqUrl = vars.rfqUrl ?? "#";
   const acceptUrl = vars.acceptUrl ?? "#";
   const resetUrl = vars.resetUrl ?? "#";
+  const ackUrl = vars.ackUrl ?? "#";
   const role = vars.role ?? "—";
 
   if (locale === "en") {
@@ -92,6 +100,21 @@ function build(
         subject: `[${brand}] PM reminder — ${store}`,
         text: `Scheduled maintenance visit for ${store}.\n${summary}\n\nOpen FacilityFlow → Calendar.`,
         html: `<p>Scheduled maintenance visit for <strong>${store}</strong>.</p><p>${summary}</p><p>Open FacilityFlow → Calendar.</p>`,
+      },
+      hq_digest: {
+        subject: `[${brand}] Weekly HQ digest — ${store}`,
+        text: `Weekly digest for ${store}.\n${summary}\n\nMark reviewed:\n${ackUrl}\n`,
+        html: `<p>Weekly digest for <strong>${store}</strong>.</p><div>${summaryHtml}</div><p><a href="${ackUrl}">Mark as reviewed</a></p>`,
+      },
+      vendor_nudge: {
+        subject: `[${brand}] Reminder — open work ${ticket}`,
+        text: `Hi ${vendor},\nticket ${ticket} (${store}) is still waiting for your update.\n${summary}\n\nOpen inbox:\n${acceptUrl}\n`,
+        html: `<p>Hi <strong>${vendor}</strong>,</p><p>ticket <strong>${ticket}</strong> (${store}) is still waiting for your update.</p><p>${summary}</p><p><a href="${acceptUrl}">Open inbox</a></p>`,
+      },
+      chargeback_share: {
+        subject: `[${brand}] Cost chargeback — ${store}`,
+        text: `Cost chargeback summary for ${store}.\n${summary}\n\nOpen:\n${acceptUrl}\n`,
+        html: `<p>Cost chargeback summary for <strong>${store}</strong>.</p><p>${summary}</p><p><a href="${acceptUrl}">Open chargeback</a></p>`,
       },
       rfq_invite: {
         subject: `[${brand}] Quote request — ${summary || "RFQ"}`,
@@ -156,6 +179,21 @@ function build(
       subject: `[${brand}] Promemoria PM — ${store}`,
       text: `Visita di manutenzione programmata per ${store}.\n${summary}\n\nApri FacilityFlow → Calendario.`,
       html: `<p>Visita di manutenzione programmata per <strong>${store}</strong>.</p><p>${summary}</p><p>Apri FacilityFlow → Calendario.</p>`,
+    },
+    hq_digest: {
+      subject: `[${brand}] Digest settimanale HQ — ${store}`,
+      text: `Digest settimanale per ${store}.\n${summary}\n\nSegna rivisto:\n${ackUrl}\n`,
+      html: `<p>Digest settimanale per <strong>${store}</strong>.</p><div>${summaryHtml}</div><p><a href="${ackUrl}">Segna rivisto</a></p>`,
+    },
+    vendor_nudge: {
+      subject: `[${brand}] Promemoria — lavoro aperto ${ticket}`,
+      text: `Ciao ${vendor},\nil ticket ${ticket} (${store}) è ancora in attesa di un tuo aggiornamento.\n${summary}\n\nApri inbox:\n${acceptUrl}\n`,
+      html: `<p>Ciao <strong>${vendor}</strong>,</p><p>il ticket <strong>${ticket}</strong> (${store}) è ancora in attesa di un tuo aggiornamento.</p><p>${summary}</p><p><a href="${acceptUrl}">Apri inbox</a></p>`,
+    },
+    chargeback_share: {
+      subject: `[${brand}] Chargeback costi — ${store}`,
+      text: `Riepilogo chargeback costi per ${store}.\n${summary}\n\nApri:\n${acceptUrl}\n`,
+      html: `<p>Riepilogo chargeback costi per <strong>${store}</strong>.</p><p>${summary}</p><p><a href="${acceptUrl}">Apri chargeback</a></p>`,
     },
     rfq_invite: {
       subject: `[${brand}] Richiesta preventivo — ${summary || "RFQ"}`,

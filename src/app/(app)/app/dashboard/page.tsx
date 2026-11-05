@@ -14,7 +14,9 @@ import { RbacAction } from "@/domain/rbac/actions";
 import { roleLabel } from "@/domain/rbac/role-labels";
 import { ticketStatusLabel } from "@/domain/ticket/status-labels";
 import { getOnboardingSnapshot } from "@/domain/onboarding/progress";
+import { DigestAckBanner } from "@/components/dashboard/digest-ack-banner";
 import { DigestNarrativePanel } from "@/components/dashboard/digest-narrative-panel";
+import { EmptyKpiTourPrompt } from "@/components/dashboard/empty-kpi-tour-prompt";
 import { DashboardKpiGrid } from "@/components/dashboard/kpi-metric-card";
 import { PageFrame } from "@/components/layout/page-frame";
 import { Button } from "@/components/ui/button";
@@ -22,22 +24,42 @@ import { StatusPanel } from "@/components/ui/status-panel";
 import { tenantMessages } from "@/i18n/tenant-messages";
 import { formatMoney, withCurrency } from "@/i18n/format";
 import { getTenantI18nPrefs } from "@/application/tenant/i18n-prefs";
+import {
+  ackWeeklyDigest,
+  hasAckedDigest,
+} from "@/application/digest/ack-digest";
+import { digestWeekKey } from "@/application/digest/week-key";
 
 export default async function DashboardPage({
   searchParams,
 }: {
-  searchParams: Promise<{ tour?: string }>;
+  searchParams: Promise<{ tour?: string; digestAck?: string }>;
 }) {
   const session = await auth();
-  if (!session?.tenantId || !session.role) redirect("/login");
+  if (!session?.tenantId || !session.role || !session.user?.id) {
+    redirect("/login");
+  }
 
   const sp = await searchParams;
   /** Product tour preview: allow dashboard while network onboarding incomplete. */
   const tourPreview = sp.tour === "1";
+  const weekKey = digestWeekKey();
+  if (sp.digestAck) {
+    await ackWeeklyDigest({
+      tenantId: session.tenantId,
+      userId: session.user.id,
+      weekKey: sp.digestAck,
+    });
+  }
 
-  const [msg, prefs] = await Promise.all([
+  const [msg, prefs, digestAcked] = await Promise.all([
     tenantMessages(session.tenantId),
     getTenantI18nPrefs(session.tenantId),
+    hasAckedDigest({
+      tenantId: session.tenantId,
+      userId: session.user.id,
+      weekKey,
+    }),
   ]);
   const eur = (n: number) => formatMoney(n, prefs) ?? "—";
   const snap = await getOnboardingSnapshot(session.tenantId);
@@ -83,6 +105,25 @@ export default async function DashboardPage({
   return (
     <PageFrame>
       <div data-tour="page.dashboard.root" className="space-y-0">
+      {!isFinance && !digestAcked ? (
+        <div className="mb-6">
+          <DigestAckBanner
+            weekKey={weekKey}
+            title={msg.digest.bannerTitle}
+            body={msg.digest.bannerBody}
+            cta={msg.digest.bannerCta}
+          />
+        </div>
+      ) : null}
+      {emptyOps && !isFinance ? (
+        <div className="mb-6">
+          <EmptyKpiTourPrompt
+            title={msg.dashboard.emptyTourTitle}
+            body={msg.dashboard.emptyTourBody}
+            cta={msg.tour.explainPage}
+          />
+        </div>
+      ) : null}
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <h1 className="font-[family-name:var(--font-sora)] text-2xl font-semibold text-[var(--primary)]">

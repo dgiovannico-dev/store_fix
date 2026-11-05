@@ -40,6 +40,19 @@ Retention consigliata MVP: **14 giorni** dump locali; produzione EU: allineare a
 
 Almeno 1 restore drill per sprint release (S4 exit / E14 prep): annotare sotto.
 
+### F9-11 — Checklist trimestrale (productized)
+
+1. Eseguire `bash scripts/backup-drill-check.sh` (verifica che esista almeno un dump recente + listabile).
+2. Restore su DB scratch (`facilityflow_restore_test`) con i comandi sotto — **mai** su DB prod.
+3. Annotare riga in “Restore drill log” (data, dump, esito PASS/FAIL).
+4. Se FAIL: aprire incidente ops, non promuovere release.
+
+```bash
+bash scripts/backup-drill-check.sh
+# opzionale: BACKUP_MAX_AGE_HOURS=72 bash scripts/backup-drill-check.sh
+```
+
+
 ### Restore drill log
 
 | Date | Environment | Dump | Target DB | Prod touched? | Esito | Note |

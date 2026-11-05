@@ -5,7 +5,7 @@
 > **Gate codice:** approvazione umana esplicita + lavoro su branch `develop` / `feature/*` (non commit diretti su `main`).  
 > **Vincolo hard:** stack **100% open source / self-host**, nessun componente SaaS a pagamento. Dettaglio: [`STACK.md`](./STACK.md).  
 > **RBAC:** [`RBAC.md`](./RBAC.md).  
-> **Scope:** MVP (Fase 1) + production-ready (**E14 / S5**). **Fase 2 Done** (F2-01…F2-09). **Fase 3** in-repo Done (F3-02…09; **F3-01** = VPS umano). **Fase 4 Done in-repo** (F4-01…05, 2026-11-03). **Fase 5** UX Done (F5-UX-14 GCal Day/Week/Month). **Fase 6–8 Done in-repo** (2026-11-04/05); **F7-09** vision deferred; **F3-01 / E14** = gate VPS umano.  
+> **Scope:** MVP (Fase 1) + production-ready (**E14 / S5**). **Fase 2 Done** (F2-01…F2-09). **Fase 3** in-repo Done (F3-02…09; **F3-01** = VPS umano). **Fase 4 Done in-repo** (F4-01…05, 2026-11-03). **Fase 5** UX Done (F5-UX-14 GCal Day/Week/Month). **Fase 6–8 Done in-repo** (2026-11-04/05); **Fase 9** Adoption in corso (no billing); **F7-09** vision deferred; **F3-01 / E14** = gate VPS umano.  
 > **Lingua UI MVP:** italiano. Mercato: Italia / EUR.  
 > **Go prod:** NO-GO finché VPS — [`sprints/S5-EXIT-GAPS.md`](./sprints/S5-EXIT-GAPS.md) · [`../ops/NEXT_VPS.md`](../ops/NEXT_VPS.md).  
 > **Integrazione:** GitFlow **con PR auto-merge** — `feature/*`/`bugfix/*` → PR → `develop`; lab sync / `release/*`/`hotfix/*` → `main` (`scripts/gitflow-ship-pr.sh`).
@@ -709,6 +709,28 @@ E00 Platform OSS (Compose, SeaweedFS, Mailpit, pg-boss, Prisma schema)
 | **F8-08** | Soft first-login + spiega pagina | **P1** | Done — confirm + TourHelpButtons | No |
 | **F8-09** | Skip dinamico + a11y | **P0** | Done — filter missing elements | No |
 | **F8-10** | Onboarding différance | **P2** | Done — copy checklist vs tutorial | No |
+
+---
+
+## Fase 9 — Adoption & differentiation (no billing)
+
+> **Stato:** **Done in-repo 2026-11-05**. Spec: [`MARKET_STRATEGY.md`](./MARKET_STRATEGY.md) §5–6.  
+> **Fuori scope:** Stripe/billing, soft seat-gate a pagamento, white-label commerciale, provisioning managed, inventari/IoT/WA API.  
+> **Ordine:** F9-01 → F9-04 → F9-02 → F9-03 → F9-05…09 → F9-10 → F9-11. Sprint: [`sprints/S6-sprint-backlog.md`](./sprints/S6-sprint-backlog.md).
+
+| ID | Titolo | Priorità | AC (1 riga) | Dip. VPS |
+|----|--------|----------|-------------|----------|
+| **F9-01** | Digest deep links + Segna rivisto | **P0** | Done — `hq_digest` + top-3 href + `DigestAck` | No |
+| **F9-02** | CTA Flusso A post-onboarding | **P0** | Done — CTA + anti-skip 3 bullet | No |
+| **F9-03** | Vendor first-done + nudge | **P0** | Done — notifica HQ + job `vendor.first_done_nudge` | No |
+| **F9-04** | Breach playbook CTA UI | **P0** | Done — `BreachPlaybookPanel` | No |
+| **F9-05** | Chargeback condividi CFO | **P1** | Done — share email + link | No |
+| **F9-06** | Invite SM/vendor dal ticket | **P1** | Done — `TicketInvitePanel` | No |
+| **F9-07** | Trust strip + audit export DPO | **P1** | Done — sidebar strip + `/api/audit/export` | No |
+| **F9-08** | Wallboard QR | **P1** | Done — QR → `/app/tickets` | No |
+| **F9-09** | Empty KPI → Spiega pagina | **P2** | Done — soft prompt one-shot | No |
+| **F9-10** | SSO Azure AD ↔ Keycloak pack | **P2** | Done — runbook in `KEYCLOAK.md` | No |
+| **F9-11** | Backup restore drill | **P2** | Done — checklist + `backup-drill-check.sh` | No |
 
 ---
 
