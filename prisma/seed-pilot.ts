@@ -298,6 +298,37 @@ async function main() {
     });
   }
 
+  /** Guarantee vendor0 has ≥1 open inbox item (tab «Da fare»). */
+  const vendor0 = vendors[0]!;
+  const store0 = stores[0]!;
+  const vendorInboxOpen = await prisma.ticket.findFirst({
+    where: {
+      tenantId: tenant.id,
+      vendorId: vendor0.id,
+      deletedAt: null,
+      status: {
+        in: [TicketStatus.assigned, TicketStatus.in_progress],
+      },
+    },
+  });
+  if (!vendorInboxOpen) {
+    const openedAt = new Date(Date.now() - 2 * 36e5);
+    await prisma.ticket.create({
+      data: {
+        tenantId: tenant.id,
+        storeId: store0.id,
+        category: "frigo",
+        priority: TicketPriority.normal,
+        status: TicketStatus.assigned,
+        description: "Ticket pilota vendor inbox (Da fare)",
+        vendorId: vendor0.id,
+        openedAt,
+        assignedAt: openedAt,
+        slaDueAt: new Date(openedAt.getTime() + 4 * 36e5),
+      },
+    });
+  }
+
   await prisma.onboardingProgress.upsert({
     where: { tenantId: tenant.id },
     create: {

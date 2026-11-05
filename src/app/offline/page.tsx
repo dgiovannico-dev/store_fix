@@ -14,7 +14,7 @@ export default async function OfflinePage() {
       <p className="mt-6 text-sm">
         {offline.restorePrefix}{" "}
         <Link
-          href="/app"
+          href="/app/tickets"
           className="font-medium text-[var(--primary)] underline-offset-4 hover:underline"
         >
           {offline.retry}

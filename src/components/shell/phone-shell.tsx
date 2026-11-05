@@ -4,7 +4,7 @@ import Link from "next/link";
 import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
 import { CircleHelp, LogOut } from "lucide-react";
-import type { ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import {
   AppBreadcrumbs,
   type BreadcrumbLabels,
@@ -52,6 +52,11 @@ export function PhoneShell(props: {
 }) {
   const pathname = usePathname();
   const audience = props.audience ?? "store";
+  /** Avoid SSR/client active-class mismatch on bottom nav. */
+  const [navReady, setNavReady] = useState(false);
+  useEffect(() => {
+    setNavReady(true);
+  }, []);
 
   return (
     <div
@@ -122,7 +127,9 @@ export function PhoneShell(props: {
         <ul className="mx-auto flex max-w-[430px] items-stretch justify-around px-1 py-1">
           {props.items.map((item) => {
             const active =
-              pathname === item.href || pathname.startsWith(`${item.href}/`);
+              navReady &&
+              (pathname === item.href ||
+                pathname.startsWith(`${item.href}/`));
             const emphasize = item.href.includes("/new");
             return (
               <li key={item.href} className="flex-1">

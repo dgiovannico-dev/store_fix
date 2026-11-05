@@ -90,8 +90,11 @@ function buildCrumbs(
 
     const label = labels.routes[seg] ?? seg;
     const isLast = i === parts.length - 1 && !next;
+    /** Segments without a real page (only nesting) — never 404 parents. */
+    const unlinkParent =
+      seg === "settings" || seg === "finance" || seg === "app";
     crumbs.push({
-      href: isLast ? undefined : acc,
+      href: isLast || unlinkParent ? undefined : acc,
       label,
     });
   }

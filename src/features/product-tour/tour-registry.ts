@@ -57,20 +57,21 @@ function hqSteps(): TourStepSkeleton[] {
       element: "[data-tour='shell.hq']",
       side: "right",
     },
+    /**
+     * Popover centrati: su viewport &lt; lg la sidebar è `hidden` (0×0) e Driver.js
+     * non può spotlightare nav/help/trust. Copy resta valido; help resta cliccabile
+     * anche dall’header (data-tour duplicato + queryVisible).
+     */
     {
       id: "hq.shell.nav",
-      element: "[data-tour='shell.hq.nav']",
-      side: "right",
     },
     {
       id: "hq.shell.help",
       element: "[data-tour='help.tour']",
-      side: "top",
+      side: "bottom",
     },
     {
       id: "hq.shell.trust",
-      element: "[data-tour='trust.strip']",
-      side: "top",
     },
     {
       id: "hq.onboarding",
