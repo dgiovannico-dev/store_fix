@@ -13,6 +13,11 @@ type TourStepSkeleton = {
   route?: string;
   side?: TourSide;
   align?: "start" | "center" | "end";
+  /**
+   * Deep-link fuori dalla sidebar primaria (members, scorecard, …).
+   * Escluso dal test ordine `hqTourSidebarRoutes` ↔ `hqSidebarItems`.
+   */
+  deep?: boolean;
 };
 
 export type TourStepDef = TourStepSkeleton & {
@@ -51,6 +56,21 @@ function hqSteps(): TourStepSkeleton[] {
       id: "hq.welcome",
       element: "[data-tour='shell.hq']",
       side: "right",
+    },
+    {
+      id: "hq.shell.nav",
+      element: "[data-tour='shell.hq.nav']",
+      side: "right",
+    },
+    {
+      id: "hq.shell.help",
+      element: "[data-tour='help.tour']",
+      side: "top",
+    },
+    {
+      id: "hq.shell.trust",
+      element: "[data-tour='trust.strip']",
+      side: "top",
     },
     {
       id: "hq.onboarding",
@@ -95,9 +115,34 @@ function hqSteps(): TourStepSkeleton[] {
       side: "top",
     },
     {
+      id: "hq.tickets.newCta",
+      route: "/app/tickets",
+      element: "[data-tour='page.tickets.newCta']",
+      side: "left",
+    },
+    {
+      id: "hq.tickets.new",
+      route: "/app/tickets/new",
+      element: "[data-tour='page.tickets.new']",
+      side: "bottom",
+      deep: true,
+    },
+    {
+      id: "hq.tickets.detail",
+      route: "/app/tickets",
+      element: "[data-tour='page.tickets.table']",
+      side: "top",
+    },
+    {
       id: "hq.stores",
       route: "/app/stores",
       element: "[data-tour='page.stores.root']",
+      side: "bottom",
+    },
+    {
+      id: "hq.stores.actions",
+      route: "/app/stores",
+      element: "[data-tour='page.stores.actions']",
       side: "bottom",
     },
     {
@@ -105,6 +150,13 @@ function hqSteps(): TourStepSkeleton[] {
       route: "/app/vendors",
       element: "[data-tour='page.vendors.root']",
       side: "bottom",
+    },
+    {
+      id: "hq.vendors.scorecard",
+      route: "/app/vendors/scorecard",
+      element: "[data-tour='page.vendors.scorecard']",
+      side: "bottom",
+      deep: true,
     },
     {
       id: "hq.assets",
@@ -119,9 +171,22 @@ function hqSteps(): TourStepSkeleton[] {
       side: "bottom",
     },
     {
+      id: "hq.contracts.performance",
+      route: "/app/contratti/performance",
+      element: "[data-tour='hq.contracts.performance']",
+      side: "bottom",
+      deep: true,
+    },
+    {
       id: "hq.calendar",
       route: "/app/calendario",
       element: "[data-tour='page.calendar.root']",
+      side: "bottom",
+    },
+    {
+      id: "hq.calendar.views",
+      route: "/app/calendario",
+      element: "[data-tour='page.calendar.views']",
       side: "bottom",
     },
     // Ordine allineato a `hqSidebarItems` (nav-config): chargeback → wallboard → rfq → locale → ai
@@ -132,10 +197,22 @@ function hqSteps(): TourStepSkeleton[] {
       side: "bottom",
     },
     {
+      id: "hq.chargeback.share",
+      route: "/app/finance/chargeback",
+      element: "[data-tour='page.chargeback.share']",
+      side: "bottom",
+    },
+    {
       id: "hq.wallboard",
       route: "/app/wallboard",
       element: "[data-tour='hq.wallboard']",
       side: "bottom",
+    },
+    {
+      id: "hq.wallboard.qr",
+      route: "/app/wallboard",
+      element: "[data-tour='hq.wallboard.qr']",
+      side: "left",
     },
     {
       id: "hq.rfq",
@@ -144,10 +221,31 @@ function hqSteps(): TourStepSkeleton[] {
       side: "bottom",
     },
     {
+      id: "hq.rfq.new",
+      route: "/app/rfq/new",
+      element: "[data-tour='page.rfq.new']",
+      side: "bottom",
+      deep: true,
+    },
+    {
       id: "hq.settings",
       route: "/app/settings/locale",
       element: "[data-tour='page.settings.locale']",
       side: "bottom",
+    },
+    {
+      id: "hq.settings.members",
+      route: "/app/settings/members",
+      element: "[data-tour='page.settings.members']",
+      side: "bottom",
+      deep: true,
+    },
+    {
+      id: "hq.settings.audit",
+      route: "/app/settings/audit",
+      element: "[data-tour='page.settings.audit']",
+      side: "bottom",
+      deep: true,
     },
     {
       id: "hq.ai",
@@ -161,12 +259,12 @@ function hqSteps(): TourStepSkeleton[] {
   ];
 }
 
-/** Route primarie del tour HQ (prima occorrenza), escluse onboarding/welcome senza nav. */
+/** Route primarie del tour HQ (prima occorrenza non-deep), escluse onboarding/welcome. */
 export function hqTourSidebarRoutes(): string[] {
   const seen = new Set<string>();
   const routes: string[] = [];
   for (const s of hqSteps()) {
-    if (!s.route || s.route === "/onboarding") continue;
+    if (s.deep || !s.route || s.route === "/onboarding") continue;
     if (seen.has(s.route)) continue;
     seen.add(s.route);
     routes.push(s.route);
@@ -182,7 +280,18 @@ function storeSteps(): TourStepSkeleton[] {
       side: "top",
     },
     {
+      id: "store.shell.nav",
+      element: "[data-tour='shell.phone.nav']",
+      side: "top",
+    },
+    {
       id: "store.tickets",
+      route: "/app/tickets",
+      element: "[data-tour='page.tickets.root']",
+      side: "bottom",
+    },
+    {
+      id: "store.verify",
       route: "/app/tickets",
       element: "[data-tour='page.tickets.root']",
       side: "bottom",
@@ -219,7 +328,18 @@ function vendorSteps(): TourStepSkeleton[] {
       side: "top",
     },
     {
+      id: "vendor.shell.nav",
+      element: "[data-tour='shell.phone.nav']",
+      side: "top",
+    },
+    {
       id: "vendor.inbox",
+      route: "/vendor/inbox",
+      element: "[data-tour='page.vendor.inbox']",
+      side: "bottom",
+    },
+    {
+      id: "vendor.ticket.work",
       route: "/vendor/inbox",
       element: "[data-tour='page.vendor.inbox']",
       side: "bottom",

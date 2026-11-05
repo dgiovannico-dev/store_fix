@@ -709,6 +709,7 @@ E00 Platform OSS (Compose, SeaweedFS, Mailpit, pg-boss, Prisma schema)
 | **F8-08** | Soft first-login + spiega pagina | **P1** | Done — confirm + TourHelpButtons | No |
 | **F8-09** | Skip dinamico + a11y | **P0** | Done — filter missing elements | No |
 | **F8-10** | Onboarding différance | **P2** | Done — copy checklist vs tutorial | No |
+| **F8-11** | Tour completo tutte le sezioni | **P0** | Done — deep chapters shell/CRUD/settings + copy IT/EN | No |
 
 ---
 

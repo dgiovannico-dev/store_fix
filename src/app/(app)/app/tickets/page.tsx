@@ -106,7 +106,9 @@ export default async function TicketsListPage({ searchParams }: Props) {
         </div>
         {canOpen ? (
           <Button asChild>
-            <Link href="/app/tickets/new">{msg.dashboard.ctaTicket}</Link>
+            <Link href="/app/tickets/new" data-tour="page.tickets.newCta">
+              {msg.dashboard.ctaTicket}
+            </Link>
           </Button>
         ) : null}
       </div>

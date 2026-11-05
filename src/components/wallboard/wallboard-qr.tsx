@@ -25,7 +25,10 @@ export function WallboardQr({ href, hint }: Props) {
   if (!dataUrl) return null;
 
   return (
-    <div className="flex items-center gap-3 rounded-[var(--radius)] border border-[var(--border)] bg-[var(--card)] p-3">
+    <div
+      className="flex items-center gap-3 rounded-[var(--radius)] border border-[var(--border)] bg-[var(--card)] p-3"
+      data-tour="hq.wallboard.qr"
+    >
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img src={dataUrl} alt="" width={96} height={96} className="rounded" />
       <p className="max-w-[10rem] text-xs text-[var(--muted-foreground)]">

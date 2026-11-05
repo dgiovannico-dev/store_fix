@@ -72,11 +72,18 @@ export default async function ContrattiPage({ searchParams }: Props) {
             {showAll ? msg.contracts.hintAll : msg.contracts.hintExpiring}
           </p>
         </div>
-        <Button asChild variant="outline" size="sm">
-          <Link href={showAll ? "/app/contratti" : "/app/contratti?all=1"}>
-            {showAll ? msg.contracts.filterExpiring : msg.contracts.filterAll}
-          </Link>
-        </Button>
+        <div className="flex flex-wrap gap-2">
+          <Button asChild variant="outline" size="sm">
+            <Link href="/app/contratti/performance">
+              {msg.contracts.performanceTitle}
+            </Link>
+          </Button>
+          <Button asChild variant="outline" size="sm">
+            <Link href={showAll ? "/app/contratti" : "/app/contratti?all=1"}>
+              {showAll ? msg.contracts.filterExpiring : msg.contracts.filterAll}
+            </Link>
+          </Button>
+        </div>
       </div>
 
       {canEdit && vendors.length > 0 ? (

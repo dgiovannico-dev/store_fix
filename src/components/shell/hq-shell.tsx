@@ -116,7 +116,10 @@ function SidebarNav({
         </Link>
       </div>
       <Separator className="bg-[var(--sidebar-border)]" />
-      <nav className="flex flex-1 flex-col gap-0.5 p-2">
+      <nav
+        className="flex flex-1 flex-col gap-0.5 p-2"
+        data-tour="shell.hq.nav"
+      >
         {items.map((item) => (
           <NavLink
             key={item.href}
