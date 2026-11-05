@@ -1,57 +1,57 @@
-# AI CPU-first (Ollama + pgvector)
+# AI CPU-first (vLLM + pgvector)
 
-Runbook lab per assist RAG / embeddings **senza GPU**. Path critico OSS: Ollama (default) o llama.cpp `llama-server` via `AI_BASE_URL`; vector store = **pgvector** sullo stesso Postgres Compose.
+Runbook lab: assist + RAG **senza Ollama obbligatorio**. Default = **vLLM** OpenAI-compatible già in ascolto (es. `:8001`); vector store = **pgvector** sullo stesso Postgres.
 
-## Requisiti
+## Stack lab tipico (questo repo)
 
-| Voce | Minimo |
-|------|--------|
-| RAM host | 8–16 GB (modelli 3B Q4 + embed) |
-| Disco | ~5 GB modelli |
-| Postgres | image `pgvector/pgvector:pg16` (Compose lab/prod) |
+| Ruolo | Tool | Esempio |
+|-------|------|---------|
+| Chat | **vLLM** `/v1/chat/completions` | `mlx-community/Qwen2.5-3B-Instruct-4bit` su `:8001` |
+| Embeddings | `/v1/embeddings` se esposto, altrimenti **local hash 768-d** | niente secondo modello |
+| Alternate chat | llama.cpp / Ollama | solo se `AI_BASE_URL` assente e `OLLAMA_*` settato |
+| Vector DB | pgvector | image `pgvector/pgvector:pg16` |
 
-## Avvio lab
+## Env (già in `.env.example`)
 
 ```bash
-# Postgres con pgvector (già in docker-compose.yml)
-docker compose up -d postgres
+AI_BASE_URL=http://127.0.0.1:8001/v1
+AI_API_KEY=local
+AI_MODEL=mlx-community/Qwen2.5-3B-Instruct-4bit
+# Opz. se un giorno esponi un embed server:
+# AI_EMBED_MODEL=…
+# AI_EMBED_BASE_URL=…   # futuro; oggi riusa AI_BASE_URL
+```
 
-# Ollama (profile ai)
+Smoke provider:
+
+```bash
+curl -s http://127.0.0.1:8001/v1/models | head
+# Chat OK → suggest/summarize/breach/RFQ usano vLLM
+# Embeddings: molti vLLM chat-only → 404 su /v1/embeddings → fallback local_embed (OK)
+```
+
+## Flusso RAG
+
+1. Ticket → `verified` / `cancelled` → job `ai.index_ticket` (embed remoto o local).
+2. HQ → pannello **Casi simili** → `POST /api/ai/similar-tickets`.
+3. Se vLLM down → chat heuristic; similar resta su local_embed / keyword — **no 5xx**.
+
+## Ollama (opzionale, non default)
+
+```bash
 docker compose --profile ai up -d ollama
-docker compose exec ollama ollama pull nomic-embed-text
-docker compose exec ollama ollama pull qwen2.5:3b
+# solo se vuoi nomic-embed-text dedicato
 ```
-
-Env app/worker (es. `.env`):
-
-```bash
-OLLAMA_BASE_URL=http://127.0.0.1:11434
-OLLAMA_MODEL=qwen2.5:3b
-OLLAMA_EMBED_MODEL=nomic-embed-text
-# oppure OpenAI-compat (llama.cpp / vLLM):
-# AI_BASE_URL=http://127.0.0.1:8080/v1
-# AI_MODEL=...
-# AI_EMBED_MODEL=nomic-embed-text
-```
-
-In Compose rete: `OLLAMA_BASE_URL=http://ollama:11434` su servizi `app`/`worker` se ollama è sullo stesso compose.
-
-## Flusso
-
-1. Ticket → `verified` / `cancelled` → job pg-boss `ai.index_ticket` chunk+embed.
-2. HQ dettaglio → pannello **Casi simili** → `POST /api/ai/similar-tickets` (tenant-scoped).
-3. Se Ollama down → heuristic keyword, **no 5xx**.
 
 ## Vincoli
 
-- AI = assist + conferma umana; **mai** write SoR (stato/SLA/costi).
-- Isolamento `tenantId` obbligatorio su index e query.
-- MCP interno = solo lab (rete privata / token); non path store prod.
+- AI = assist + conferma umana; **mai** write SoR.
+- Isolamento `tenantId` su index/query.
+- MCP = lab only (`docs/ops/AI_MCP.md`).
 
-## Smoke
+## Smoke similar
 
 ```bash
-# con sessione HQ autenticata
 curl -sS -X POST "$NEXT_PUBLIC_APP_URL/api/ai/similar-tickets" \
   -H "Content-Type: application/json" \
   -H "Cookie: …" \
