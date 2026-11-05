@@ -5,6 +5,7 @@
  * Credenziali QA (solo locale):
  *   owner@pilot.facilityflow.local / PilotOwner123!
  *   finance@pilot.facilityflow.local / PilotFinance123!
+ *   sm@pilot.facilityflow.local / PilotStore123!
  *   vendor0@pilot.facilityflow.local / PilotVendor123!
  *
  * Uso: npx tsx prisma/seed-pilot.ts
@@ -43,6 +44,7 @@ async function main() {
   const financeEmail = "finance@pilot.facilityflow.local";
   const ownerHash = await bcrypt.hash("PilotOwner123!", 12);
   const financeHash = await bcrypt.hash("PilotFinance123!", 12);
+  const storeHash = await bcrypt.hash("PilotStore123!", 12);
   const vendorHash = await bcrypt.hash("PilotVendor123!", 12);
 
   const owner = await prisma.user.upsert({
@@ -127,6 +129,38 @@ async function main() {
       }),
     );
   }
+
+  const smEmail = "sm@pilot.facilityflow.local";
+  const smUser = await prisma.user.upsert({
+    where: { email: smEmail },
+    update: {
+      passwordHash: storeHash,
+      name: "Pilot Store Manager",
+      emailVerified: new Date(),
+    },
+    create: {
+      email: smEmail,
+      name: "Pilot Store Manager",
+      passwordHash: storeHash,
+      emailVerified: new Date(),
+    },
+  });
+  const smStoreIds = stores.slice(0, 1).map((s) => s.id);
+  await prisma.membership.upsert({
+    where: { tenantId_userId: { tenantId: tenant.id, userId: smUser.id } },
+    update: {
+      role: Role.store_manager,
+      deletedAt: null,
+      storeIds: smStoreIds,
+      vendorId: null,
+    },
+    create: {
+      tenantId: tenant.id,
+      userId: smUser.id,
+      role: Role.store_manager,
+      storeIds: smStoreIds,
+    },
+  });
 
   const vendors = [];
   const trades = ["frigo", "hvac", "elettrico", "idraulico", "porte"];
@@ -278,6 +312,7 @@ async function main() {
   console.log(`  stores: ${stores.length} · vendors: ${vendors.length}`);
   console.log(`  owner:   ${ownerEmail} / PilotOwner123!`);
   console.log(`  finance: ${financeEmail} / PilotFinance123!`);
+  console.log(`  store:   ${smEmail} / PilotStore123!`);
   console.log(`  vendor:  vendor0@pilot.facilityflow.local / PilotVendor123!`);
 }
 
