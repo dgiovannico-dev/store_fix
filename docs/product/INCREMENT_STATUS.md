@@ -1,10 +1,10 @@
 # Increment status — FacilityFlow Retail
 
-**Aggiornato:** 2026-11-04 — **dev-only**; F3-01 VPS umano; F4–F8 Done in-repo; **R0–R4 modular monolith anti-regressione Done** (ADR-0013).
+**Aggiornato:** 2026-11-05 — **dev-only**; F3-01 VPS umano; F4–F9 Done in-repo; **R0–R4 modular monolith anti-regressione Done** (ADR-0013).
 
-Hardening recente: transactional email outbox (F3-09), calendar Day/Week/Month (F5-UX-14), refactor R0–R4 (auth gate, store-scope, notify-in-TX, layer moves, CQRS light reads, load/UX).
+Hardening recente: F9 adoption (digest habit, Flusso A CTA, vendor nudge, trust/QR/SSO packs), breadcrumb hydration fix, refactor R0–R4.
 
-**Autopilot:** F3–F8 in-repo chiusi salvo F3-01 VPS + F7-08/09 deferred. Next ammissibile: debt / flake / docs drift; **no** nuova Fase 3 fuori tabella.
+**Autopilot:** F3–F9 in-repo chiusi salvo F3-01 VPS + F7-08/09 deferred. **Hard-stop prodotto** finché VPS o nuovo item backlog.
 
 | Sprint / fase | Stato | Note |
 |---------------|-------|------|
@@ -19,6 +19,7 @@ Hardening recente: transactional email outbox (F3-09), calendar Day/Week/Month (
 | Fase 6 (F6-01…10) | **Done in-repo** | Digest, chargeback, outbox, wallboard, … |
 | Fase 7 (F7-01…10) | **Done core** | vLLM gateway + settings; F7-08/09 deferred |
 | Fase 8 (F8-01…10) | **Done in-repo** | Driver.js tour on-demand |
+| Fase 9 / S6 (F9-01…11) | **Done in-repo** | Adoption no-billing; retro `retros/S6-2026-11-05.md` |
 | **Refactor R0–R4** | **Done** | Safety net → P0 security → layer moves → CQRS reads → load/UX; ADR-0013 |
 
 ## Modalità corrente
