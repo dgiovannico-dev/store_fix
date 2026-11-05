@@ -10,6 +10,8 @@ type Props = {
   btn: string;
   pendingLabel: string;
   errorLabel: string;
+  sourceLabel: string;
+  confirmLabel: string;
 };
 
 export function DigestNarrativePanel({
@@ -18,6 +20,8 @@ export function DigestNarrativePanel({
   btn,
   pendingLabel,
   errorLabel,
+  sourceLabel,
+  confirmLabel,
 }: Props) {
   const [pending, setPending] = useState(false);
   const [narrative, setNarrative] = useState<string | null>(null);
@@ -90,7 +94,7 @@ export function DigestNarrativePanel({
           ) : null}
           {source ? (
             <p className="text-[10px] text-[var(--muted-foreground)]">
-              {source} — needsConfirm
+              {sourceLabel} {source} — {confirmLabel}
             </p>
           ) : null}
         </div>

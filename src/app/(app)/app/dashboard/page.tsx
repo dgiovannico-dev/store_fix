@@ -130,6 +130,8 @@ export default async function DashboardPage({
             btn={msg.dashboard.digestAssistBtn}
             pendingLabel={msg.dashboard.digestAssistPending}
             errorLabel={msg.dashboard.digestAssistError}
+            sourceLabel={msg.ticketPanels.summarizeSource}
+            confirmLabel={msg.ticketPanels.summarizeNeedsConfirm}
           />
         </div>
       ) : null}
