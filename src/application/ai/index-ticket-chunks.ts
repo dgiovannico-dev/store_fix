@@ -7,6 +7,7 @@ import { TicketStatus } from "@prisma/client";
 import { createHash, randomUUID } from "node:crypto";
 import { chunkTicketText } from "@/application/ai/chunk-ticket-text";
 import { llmEmbed, vectorToSql } from "@/infrastructure/ai/embed";
+import { recordAiInvocation } from "@/infrastructure/ai/record-ai-invocation";
 import { listTicketEvents } from "@/infrastructure/db/ticket-event-repository";
 import { prisma } from "@/infrastructure/db/prisma";
 import { requireTenantId } from "@/infrastructure/db/tenant-scope";
@@ -107,6 +108,12 @@ export async function indexTicketChunks(input: {
     tenantId: input.tenantId,
     ticketId: ticket.id,
     chunks: embedded.length,
+  });
+  void recordAiInvocation({
+    tenantId: input.tenantId,
+    feature: "index_ticket",
+    provider: "embed",
+    ok: true,
   });
   return { ok: true, chunks: embedded.length };
 }

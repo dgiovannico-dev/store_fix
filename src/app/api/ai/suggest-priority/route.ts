@@ -45,6 +45,11 @@ export async function POST(req: Request) {
     description,
     category,
     signal: req.signal,
+    audit: {
+      tenantId: session.tenantId,
+      userId: session.user.id,
+      feature: "suggest_priority",
+    },
   });
   logJson("info", "ai.suggest_priority", {
     tenantId: session.tenantId,

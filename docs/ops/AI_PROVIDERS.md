@@ -39,6 +39,10 @@ OLLAMA_MODEL=llama3.2
 
 `AI_BASE_URL` / `VLLM_BASE_URL` **hanno sempre priorità** su Ollama.
 
+### Audit F7-07
+
+Ogni assist scrive `AiInvocation` (tenant, feature, provider, model, ok, latency) — **senza** prompt/response. Soft budget: `AI_SOFT_BUDGET_MONTHLY` (default 5000) → warn log + badge in `/app/settings/ai`.
+
 ## Endpoints assist
 
 | Route | Uso |

@@ -8,6 +8,7 @@ import { getActiveMembership } from "@/application/memberships/membership-servic
 import { ForbiddenError } from "@/domain/rbac/guards";
 import { canAccessStore } from "@/domain/rbac/store-scope";
 import { llmEmbed, vectorToSql } from "@/infrastructure/ai/embed";
+import { recordAiInvocation } from "@/infrastructure/ai/record-ai-invocation";
 import { prisma } from "@/infrastructure/db/prisma";
 import { requireTenantId } from "@/infrastructure/db/tenant-scope";
 
@@ -172,9 +173,18 @@ export async function findSimilarTickets(input: {
       .slice(0, limit);
 
     if (items.length > 0) {
+      const source =
+        emb.source === "local_embed" ? "local_embed" : "embedding";
+      void recordAiInvocation({
+        tenantId: input.tenantId,
+        userId: input.userId,
+        feature: "similar_tickets",
+        provider: source,
+        ok: true,
+      });
       return {
         items,
-        source: emb.source === "local_embed" ? "local_embed" : "embedding",
+        source,
         needsConfirm: true,
       };
     }
@@ -186,6 +196,13 @@ export async function findSimilarTickets(input: {
     description: ticket.description,
     category: ticket.category,
     limit,
+  });
+  void recordAiInvocation({
+    tenantId: input.tenantId,
+    userId: input.userId,
+    feature: "similar_tickets",
+    provider: "heuristic",
+    ok: true,
   });
   return { items, source: "heuristic", needsConfirm: true };
 }

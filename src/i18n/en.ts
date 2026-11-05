@@ -205,6 +205,9 @@ export const en = {
     pingNetworkError: "Network error",
     providerNone: "none",
     sourceHeuristic: "heuristic",
+    usageLabel: "Month usage (soft)",
+    usageValue: "{count} / {limit} invocations",
+    usageSoftExceeded: "soft budget exceeded — assist stays on",
   },
   chargeback: {
     title: "Cost chargeback by store",

@@ -203,6 +203,9 @@ export const it = {
     pingNetworkError: "Errore di rete",
     providerNone: "nessuno",
     sourceHeuristic: "heuristic",
+    usageLabel: "Utilizzo mese (soft)",
+    usageValue: "{count} / {limit} invocazioni",
+    usageSoftExceeded: "budget soft superato — assist resta attivo",
   },
   chargeback: {
     title: "Chargeback costi per PV",

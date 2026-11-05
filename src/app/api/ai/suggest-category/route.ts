@@ -40,6 +40,11 @@ export async function POST(req: Request) {
   const suggestion = await suggestTicketCategory({
     description,
     signal: req.signal,
+    audit: {
+      tenantId: session.tenantId,
+      userId: session.user.id,
+      feature: "suggest_category",
+    },
   });
   logJson("info", "ai.suggest_category", {
     tenantId: session.tenantId,
