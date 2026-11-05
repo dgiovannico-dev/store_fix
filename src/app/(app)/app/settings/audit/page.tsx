@@ -45,6 +45,7 @@ export default async function ConfigAuditPage() {
 
   return (
     <PageFrame>
+      <div data-tour="page.settings.audit">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <h1 className="font-[family-name:var(--font-sora)] text-2xl font-semibold text-[var(--primary)]">
@@ -114,6 +115,7 @@ export default async function ConfigAuditPage() {
           </table>
         </div>
       )}
+      </div>
     </PageFrame>
   );
 }

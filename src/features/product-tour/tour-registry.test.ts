@@ -37,4 +37,35 @@ describe("product tour vs sidebar order (F8)", () => {
     const nav = vendorBottomItems("it").map((i) => i.href);
     expect(firstRoutes("vendor")).toEqual(nav);
   });
+
+  it("every step has non-empty IT title and description (F8-11)", () => {
+    for (const audience of ["hq", "store", "vendor"] as const) {
+      for (const step of stepsForAudience(audience, "it")) {
+        expect(step.title.trim().length, step.id).toBeGreaterThan(3);
+        expect(step.description.trim().length, step.id).toBeGreaterThan(40);
+      }
+    }
+  });
+
+  it("HQ tour includes deep chapters (members, audit, scorecard, RFQ new)", () => {
+    const ids = stepsForAudience("hq", "it").map((s) => s.id);
+    expect(ids).toEqual(
+      expect.arrayContaining([
+        "hq.shell.nav",
+        "hq.shell.help",
+        "hq.shell.trust",
+        "hq.tickets.new",
+        "hq.tickets.detail",
+        "hq.stores.actions",
+        "hq.vendors.scorecard",
+        "hq.contracts.performance",
+        "hq.calendar.views",
+        "hq.chargeback.share",
+        "hq.wallboard.qr",
+        "hq.rfq.new",
+        "hq.settings.members",
+        "hq.settings.audit",
+      ]),
+    );
+  });
 });

@@ -116,6 +116,7 @@ export function PhoneShell(props: {
 
       <nav
         aria-label={props.shellLabels.mainNav}
+        data-tour="shell.phone.nav"
         className="fixed inset-x-0 bottom-0 z-40 border-t border-[var(--chrome-border)] bg-[var(--chrome)]/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-md"
       >
         <ul className="mx-auto flex max-w-[430px] items-stretch justify-around px-1 py-1">

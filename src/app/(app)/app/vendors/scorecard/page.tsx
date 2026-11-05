@@ -60,6 +60,7 @@ export default async function VendorScorecardPage({ searchParams }: Props) {
 
   return (
     <PageFrame>
+      <div data-tour="page.vendors.scorecard">
       <h1 className="font-[family-name:var(--font-sora)] text-2xl font-semibold text-[var(--primary)]">
         {msg.scorecard.title}
       </h1>
@@ -136,6 +137,7 @@ export default async function VendorScorecardPage({ searchParams }: Props) {
           </table>
         </div>
       )}
+      </div>
     </PageFrame>
   );
 }
