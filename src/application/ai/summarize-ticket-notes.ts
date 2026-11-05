@@ -64,12 +64,19 @@ export async function summarizeTicketNotes(input: {
   ];
   const corpus = parts.filter(Boolean).join("\n");
 
+  const audit = {
+    tenantId: input.tenantId,
+    userId: input.userId,
+    feature: "summarize_ticket",
+  };
+
   if (llmConfigured()) {
     const raw = await llmChatJson({
       system:
         'Rispondi solo JSON {"summary":"…","suggestedSolution":"…"}. summary: riassunto italiano operativo max 5 punti (bullet). suggestedSolution: 2-4 passi operativi plausibili da verificare con un umano, senza inventare pezzi/ricambi non menzionati. Non inventare fatti.',
       user: corpus.slice(0, 6000),
       signal: input.signal,
+      audit,
     });
     if (raw) {
       const parsed = parseOllamaSummaryJson(raw.content);
@@ -88,5 +95,15 @@ export async function summarizeTicketNotes(input: {
     }
   }
 
+  if (!llmConfigured()) {
+    const { recordAiInvocation } = await import(
+      "@/infrastructure/ai/record-ai-invocation"
+    );
+    void recordAiInvocation({
+      ...audit,
+      provider: "heuristic",
+      ok: true,
+    });
+  }
   return summarizeNotesHeuristic(corpus);
 }

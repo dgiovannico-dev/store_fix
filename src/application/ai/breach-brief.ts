@@ -120,7 +120,23 @@ export async function generateBreachBrief(input: {
     similarIds,
   });
 
-  if (!llmConfigured()) return base;
+  const audit = {
+    tenantId: input.tenantId,
+    userId: input.userId,
+    feature: "breach_brief",
+  };
+
+  if (!llmConfigured()) {
+    const { recordAiInvocation } = await import(
+      "@/infrastructure/ai/record-ai-invocation"
+    );
+    void recordAiInvocation({
+      ...audit,
+      provider: "heuristic",
+      ok: true,
+    });
+    return base;
+  }
 
   const system = `Sei un assistente ops facility retail. Rispondi SOLO JSON:
 {"brief":"stringa IT max 400 char","suggestedActions":["..."],"citationTicketIds":["id"]}
@@ -137,8 +153,19 @@ Non inventare ID ticket: cita solo quelli forniti. Non ordinare chiusure/award/c
     system,
     user,
     signal: input.signal,
+    audit,
   });
-  if (!llm) return base;
+  if (!llm) {
+    const { recordAiInvocation } = await import(
+      "@/infrastructure/ai/record-ai-invocation"
+    );
+    void recordAiInvocation({
+      ...audit,
+      provider: "heuristic",
+      ok: true,
+    });
+    return base;
+  }
 
   try {
     const parsed = JSON.parse(llm.content) as {

@@ -6,6 +6,7 @@ import { getTenantI18nPrefs } from "@/application/tenant/i18n-prefs";
 import { PageFrame } from "@/components/layout/page-frame";
 import { AiSettingsClient } from "@/components/settings/ai-settings-client";
 import { resolvePlatformAiConfig } from "@/infrastructure/ai/llm-gateway";
+import { getAiUsageMonth } from "@/infrastructure/ai/record-ai-invocation";
 import { getActiveMembership } from "@/application/memberships/membership-service";
 import { tenantMessages } from "@/i18n/tenant-messages";
 
@@ -23,10 +24,11 @@ export default async function AiSettingsPage() {
     redirect("/app/dashboard");
   }
 
-  const [cfg, msg, prefs] = await Promise.all([
+  const [cfg, msg, prefs, usage] = await Promise.all([
     Promise.resolve(resolvePlatformAiConfig()),
     tenantMessages(session.tenantId),
     getTenantI18nPrefs(session.tenantId),
+    getAiUsageMonth(session.tenantId),
   ]);
   const copy = msg.settingsAi;
 
@@ -46,6 +48,9 @@ export default async function AiSettingsPage() {
           kind={cfg?.kind ?? copy.providerNone}
           source={cfg?.sourceLabel ?? copy.sourceHeuristic}
           model={cfg?.model ?? msg.common.emptyDash}
+          usageCount={usage.count}
+          usageLimit={usage.limit}
+          usageSoftExceeded={usage.softExceeded}
           labels={copy}
           locale={prefs.locale}
         />

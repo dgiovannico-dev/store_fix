@@ -10,6 +10,9 @@ export function AiSettingsClient(props: {
   kind: string;
   source: string;
   model: string;
+  usageCount: number;
+  usageLimit: number;
+  usageSoftExceeded: boolean;
   labels: MessageCatalog["settingsAi"];
   locale?: Locale;
 }) {
@@ -74,6 +77,19 @@ export function AiSettingsClient(props: {
         <div>
           <dt className="text-[var(--muted-foreground)]">{labels.modelLabel}</dt>
           <dd className="font-medium">{props.model}</dd>
+        </div>
+        <div className="sm:col-span-2">
+          <dt className="text-[var(--muted-foreground)]">{labels.usageLabel}</dt>
+          <dd className="font-medium">
+            {labels.usageValue
+              .replace("{count}", String(props.usageCount))
+              .replace("{limit}", String(props.usageLimit))}
+            {props.usageSoftExceeded ? (
+              <span className="ml-2 text-xs text-[var(--warning)]">
+                {labels.usageSoftExceeded}
+              </span>
+            ) : null}
+          </dd>
         </div>
       </dl>
       <Button type="button" onClick={ping} disabled={pending}>
