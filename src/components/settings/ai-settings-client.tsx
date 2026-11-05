@@ -85,7 +85,7 @@ export function AiSettingsClient(props: {
               .replace("{count}", String(props.usageCount))
               .replace("{limit}", String(props.usageLimit))}
             {props.usageSoftExceeded ? (
-              <span className="ml-2 text-xs text-[var(--warning)]">
+              <span className="ml-2 text-xs text-[var(--destructive)]">
                 {labels.usageSoftExceeded}
               </span>
             ) : null}
