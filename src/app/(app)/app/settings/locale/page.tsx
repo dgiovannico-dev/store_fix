@@ -5,6 +5,7 @@ import { updateTenantI18nAction } from "@/app/actions/tenant-i18n";
 import { canMutate } from "@/domain/rbac/can";
 import { RbacAction } from "@/domain/rbac/actions";
 import { tenantMessages } from "@/i18n/tenant-messages";
+import Link from "next/link";
 import { PageFrame } from "@/components/layout/page-frame";
 import { Button } from "@/components/ui/button";
 import { controlClass } from "@/lib/ui-classes";
@@ -34,6 +35,20 @@ export default async function LocaleSettingsPage() {
       </h1>
       <p className="mt-1 text-sm text-[var(--muted-foreground)]">
         {msg.localeSettings.hint}
+      </p>
+      <p className="mt-3 flex flex-wrap gap-3 text-sm">
+        <Link
+          href="/app/settings/members"
+          className="text-[var(--primary)] underline-offset-4 hover:underline"
+        >
+          {msg.members.title}
+        </Link>
+        <Link
+          href="/app/settings/audit"
+          className="text-[var(--primary)] underline-offset-4 hover:underline"
+        >
+          {msg.audit.title}
+        </Link>
       </p>
 
       <form

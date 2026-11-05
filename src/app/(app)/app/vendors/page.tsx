@@ -45,7 +45,12 @@ export default async function VendorsPage() {
         </div>
         {canScorecard ? (
           <Button asChild variant="outline" size="sm">
-            <Link href="/app/vendors/scorecard">{msg.scorecard.linkList}</Link>
+            <Link
+              href="/app/vendors/scorecard"
+              data-tour="page.vendors.scorecardLink"
+            >
+              {msg.scorecard.linkList}
+            </Link>
           </Button>
         ) : null}
       </div>

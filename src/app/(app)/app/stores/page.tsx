@@ -29,7 +29,10 @@ export default async function StoresPage() {
   return (
     <PageFrame>
       <div data-tour="page.stores.root">
-      <div className="flex flex-wrap items-end justify-between gap-3">
+      <div
+        className="flex flex-wrap items-end justify-between gap-3"
+        data-tour="page.stores.actions"
+      >
         <div>
           <h1 className="font-[family-name:var(--font-sora)] text-2xl font-semibold text-[var(--primary)]">
             {msg.stores.title}
@@ -54,6 +57,7 @@ export default async function StoresPage() {
             await createStoreAction({}, fd);
           }}
           className="mt-6 grid gap-3 rounded-[var(--radius)] border border-[var(--border)] p-4 sm:grid-cols-2"
+          data-tour="page.stores.actions"
         >
           <Input
             name="name"

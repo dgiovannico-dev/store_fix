@@ -200,6 +200,7 @@ export function PmCalendar(props: {
           className="ml-auto flex rounded-[var(--radius)] border border-[var(--border)] p-0.5"
           role="tablist"
           aria-label={copy.viewSwitcherAria}
+          data-tour="page.calendar.views"
         >
           {(
             [

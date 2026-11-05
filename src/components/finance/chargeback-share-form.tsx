@@ -20,6 +20,7 @@ export function ChargebackShareForm(props: {
   return (
     <form
       action={action}
+      data-tour="page.chargeback.share"
       className="flex flex-wrap items-end gap-2 rounded-[var(--radius)] border border-[var(--border)] p-3"
     >
       <input type="hidden" name="days" value={props.days} />

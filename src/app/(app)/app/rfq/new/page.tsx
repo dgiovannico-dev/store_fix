@@ -29,6 +29,7 @@ export default async function NewRfqPage({
 
   return (
     <PageFrame>
+      <div data-tour="page.rfq.new">
       <h1 className="font-[family-name:var(--font-sora)] text-2xl font-semibold text-[var(--primary)]">
         {msg.rfq.newTitle}
       </h1>
@@ -96,6 +97,7 @@ export default async function NewRfqPage({
           />
         </form>
       )}
+      </div>
     </PageFrame>
   );
 }

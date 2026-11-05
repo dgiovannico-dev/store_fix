@@ -1,6 +1,6 @@
 # FacilityFlow Retail — Tutorial interattivo (piano)
 
-> **Stato:** **GO PO 2026-11-04** — implementazione F8 in corso.  
+> **Stato:** **F8-01…11 Done** (2026-11-05) — tour HQ/store/vendor con capitoli deep (members, audit, scorecard, RFQ new, calendar views, chargeback share, wallboard QR, shell help/trust).  
 > **Obiettivo:** tour **completo, dinamico, interattivo e curato** sulle sezioni dell’app (nessuna esclusa per il ruolo), **rilanciabile quando si vuole**.  
 > **Non sostituisce** `/onboarding` (checklist setup rete) — lo **complementa** (educazione prodotto).
 

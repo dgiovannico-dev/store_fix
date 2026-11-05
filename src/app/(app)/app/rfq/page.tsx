@@ -40,7 +40,9 @@ export default async function RfqListPage() {
           </p>
         </div>
         <Button asChild size="sm">
-          <Link href="/app/rfq/new">{msg.rfq.add}</Link>
+          <Link href="/app/rfq/new" data-tour="page.rfq.newCta">
+            {msg.rfq.add}
+          </Link>
         </Button>
       </div>
 
