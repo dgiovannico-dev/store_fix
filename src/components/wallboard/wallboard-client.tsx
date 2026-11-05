@@ -154,16 +154,16 @@ export function WallboardClient(props: {
             </p>
           ) : null}
         </div>
-        <div className="flex flex-wrap items-end gap-4">
+        <div className="flex flex-wrap items-stretch gap-4">
           <WallboardQr href={ticketsUrl} hint={copy.qrHint} />
           <div
-            className="rounded-[var(--radius)] border border-[var(--border)] bg-[var(--card)] px-5 py-3 text-right"
+            className="flex min-h-[5.75rem] flex-col justify-center rounded-[var(--radius)] border border-[var(--border)] bg-[var(--card)] px-5 py-3 text-right"
             aria-label={copy.countAria.replace("{n}", String(count))}
           >
             <p className="text-sm font-medium text-[var(--muted-foreground)]">
               {copy.countLabel}
             </p>
-            <p className="text-5xl font-semibold tabular text-[var(--foreground)]">
+            <p className="text-5xl font-semibold tabular leading-none text-[var(--foreground)]">
               {count}
             </p>
           </div>
