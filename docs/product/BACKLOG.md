@@ -5,7 +5,7 @@
 > **Gate codice:** approvazione umana esplicita + lavoro su branch `develop` / `feature/*` (non commit diretti su `main`).  
 > **Vincolo hard:** stack **100% open source / self-host**, nessun componente SaaS a pagamento. Dettaglio: [`STACK.md`](./STACK.md).  
 > **RBAC:** [`RBAC.md`](./RBAC.md).  
-> **Scope:** MVP (Fase 1) + production-ready (**E14 / S5**). **Fase 2 Done** (F2-01…F2-09). **Fase 3** in-repo Done (F3-02…09; **F3-01** = VPS umano). **Fase 4 Done in-repo** (F4-01…05, 2026-11-03). **Fase 5** UX Done (F5-UX-14 GCal Day/Week/Month). **Fase 6–8 GO PO 2026-11-04** — implementazione in corso (F3-01 resta host).  
+> **Scope:** MVP (Fase 1) + production-ready (**E14 / S5**). **Fase 2 Done** (F2-01…F2-09). **Fase 3** in-repo Done (F3-02…09; **F3-01** = VPS umano). **Fase 4 Done in-repo** (F4-01…05, 2026-11-03). **Fase 5** UX Done (F5-UX-14 GCal Day/Week/Month). **Fase 6–8 Done in-repo** (2026-11-04/05); **F7-09** vision deferred; **F3-01 / E14** = gate VPS umano.  
 > **Lingua UI MVP:** italiano. Mercato: Italia / EUR.  
 > **Go prod:** NO-GO finché VPS — [`sprints/S5-EXIT-GAPS.md`](./sprints/S5-EXIT-GAPS.md) · [`../ops/NEXT_VPS.md`](../ops/NEXT_VPS.md).  
 > **Integrazione:** GitFlow **con PR auto-merge** — `feature/*`/`bugfix/*` → PR → `develop`; lab sync / `release/*`/`hotfix/*` → `main` (`scripts/gitflow-ship-pr.sh`).
@@ -674,7 +674,7 @@ E00 Platform OSS (Compose, SeaweedFS, Mailpit, pg-boss, Prisma schema)
 
 ## Fase 7 — AI platform (vLLM + multi-provider BYOK)
 
-> **Stato:** **Done core 2026-11-04** (GO PO). Stretch F7-08/09 opt-in deferred. Spec: [`AI_PLATFORM.md`](./AI_PLATFORM.md).  
+> **Stato:** **Done in-repo 2026-11-05** (GO PO). Stretch **F7-09** vision ancora deferred. Spec: [`AI_PLATFORM.md`](./AI_PLATFORM.md).  
 > **Invarianti:** assist + human-confirm; mai SoR; default vLLM; cloud BYOK via `AI_BASE_URL` tenant/env.
 
 | ID | Titolo | Priorità | AC (1 riga) | Dip. VPS |
@@ -685,7 +685,7 @@ E00 Platform OSS (Compose, SeaweedFS, Mailpit, pg-boss, Prisma schema)
 | **F7-04** | Catalogo preset | **P0** | Done — docs preset; UI punta a env/custom baseURL | No |
 | **F7-05** | Assist priorità + bozza msg | **P1** | Done — API suggest-priority + draft-message | No |
 | **F7-06** | RFQ compare + digest hook | **P1** | Done 2026-11-05 — `/api/ai/rfq-compare` + `/api/ai/digest-narrative` | No |
-| **F7-07** | Audit `AiInvocation` | **P1** | Done 2026-11-05 — record su assist + soft budget settings | No |
+| **F7-07** | Audit `AiInvocation` | **P1** | Done 2026-11-05 — record assist (incl. vendor) + soft budget + GC 90g | No |
 | **F7-08** | Embeddings similar | **P2** | Done lite 2026-11-05 (pgvector + vLLM/`local_embed` + UI casi simili) | No |
 | **F7-09** | Vision caption | **P2** | Deferred (opt-in) | No |
 | **F7-10** | ADR-0012 + runbook | **P0** | Done — Accepted + `AI_PROVIDERS.md` | No |
