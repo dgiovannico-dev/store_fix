@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { Role } from "@prisma/client";
 import { auth } from "@/auth";
 import { listChargebackByStore } from "@/application/finance/chargeback-query";
+import { ChargebackShareForm } from "@/components/finance/chargeback-share-form";
 import { PageFrame } from "@/components/layout/page-frame";
 import { getActiveMembership } from "@/application/memberships/membership-service";
 import { tenantMessages } from "@/i18n/tenant-messages";
@@ -63,6 +64,7 @@ export default async function ChargebackPage({
             {copy.exportCsv}
           </a>
         </div>
+        <ChargebackShareForm days={days} copy={copy} />
         <div className="overflow-x-auto rounded-[var(--radius)] border border-[var(--border)]">
           <table className="w-full text-left text-sm">
             <thead className="bg-[var(--muted)]/40 text-[var(--muted-foreground)]">

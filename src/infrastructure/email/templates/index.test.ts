@@ -11,6 +11,9 @@ const IDS = [
   "ticket_rejected",
   "email_verify",
   "pm_reminder",
+  "hq_digest",
+  "vendor_nudge",
+  "chargeback_share",
   "rfq_invite",
   "invite",
   "password_reset",
@@ -38,6 +41,9 @@ describe("renderEmailTemplate", () => {
       if (
         id !== "email_verify" &&
         id !== "pm_reminder" &&
+        id !== "hq_digest" &&
+        id !== "vendor_nudge" &&
+        id !== "chargeback_share" &&
         id !== "rfq_invite" &&
         id !== "invite" &&
         id !== "password_reset"
@@ -45,6 +51,9 @@ describe("renderEmailTemplate", () => {
         expect(t.html).toContain("T-1");
       }
       if (id === "pm_reminder") expect(t.html).toContain("PV Milano");
+      if (id === "hq_digest") expect(t.html).toContain("Segna rivisto");
+      if (id === "vendor_nudge") expect(t.html).toContain("Frigo SpA");
+      if (id === "chargeback_share") expect(t.html).toContain("PV Milano");
       if (id === "rfq_invite") expect(t.html).toContain("Frigo SpA");
       if (id === "invite") expect(t.html).toContain("store_manager");
       if (id === "password_reset") expect(t.html).toContain("reset");

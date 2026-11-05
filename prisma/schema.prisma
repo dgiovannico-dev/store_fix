@@ -80,6 +80,8 @@ model Tenant {
   quoteBids           QuoteBid[]
   aiConfig            TenantAiConfig?
   ticketEmbeddings    TicketEmbedding[]
+  digestAcks          DigestAck[]
+  ticketVendorNudges  TicketVendorNudge[]
 }
 
 /// Progress Flusso C — skip esplicito; step “fatti” derivati da SoR (T1.30).
@@ -669,4 +671,30 @@ model AiInvocation {
   createdAt DateTime @default(now())
 
   @@index([tenantId, createdAt])
+}
+
+/// F9-01 — HQ weekly digest acknowledgment (Segna rivisto).
+model DigestAck {
+  id        String   @id @default(cuid())
+  tenantId  String
+  userId    String
+  weekKey   String
+  createdAt DateTime @default(now())
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, userId, weekKey])
+  @@index([tenantId, weekKey])
+}
+
+/// F9-03 — one-shot vendor stall nudge per ticket.
+model TicketVendorNudge {
+  id        String   @id @default(cuid())
+  tenantId  String
+  ticketId  String   @unique
+  createdAt DateTime @default(now())
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
 }

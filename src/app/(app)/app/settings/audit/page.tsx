@@ -54,12 +54,26 @@ export default async function ConfigAuditPage() {
             {copy.hint}
           </p>
         </div>
-        <Link
-          href="/app/settings/members"
-          className="text-sm text-[var(--primary)] underline-offset-4 hover:underline"
-        >
-          {copy.membersLink}
-        </Link>
+        <div className="flex flex-wrap gap-3 text-sm">
+          <a
+            href="/api/audit/export?format=json"
+            className="text-[var(--primary)] underline-offset-4 hover:underline"
+          >
+            {copy.exportJson}
+          </a>
+          <a
+            href="/api/audit/export?format=csv"
+            className="text-[var(--primary)] underline-offset-4 hover:underline"
+          >
+            {copy.exportCsv}
+          </a>
+          <Link
+            href="/app/settings/members"
+            className="text-[var(--primary)] underline-offset-4 hover:underline"
+          >
+            {copy.membersLink}
+          </Link>
+        </div>
       </div>
 
       {events.length === 0 ? (

@@ -125,6 +125,8 @@ Europe still on-prem heavy in CMMS → **self-host / dati EU** is a real sales s
 
 ## 5. Optimizations & extensions that drive USE → PAY
 
+> **Implementazione in-repo (no billing):** [Fase 9](./BACKLOG.md#fase-9--adoption--differentiation-no-billing) · sprint [`sprints/S6-sprint-backlog.md`](./sprints/S6-sprint-backlog.md). Soft seat-gate / Stripe restano esclusi.
+
 ### 5.1 Product / growth (ICE order)
 
 | Priority | Bet | Why people pay |

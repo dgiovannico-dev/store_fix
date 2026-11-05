@@ -33,6 +33,7 @@ export const en = {
     emptyTitle: "No critical interventions listed",
     emptyBody:
       "When there are open or overdue SLA tickets, they appear here large for the room.",
+    qrHint: "Scan to open tickets in the app",
     storeLabel: "Store",
     categoryLabel: "Fault type",
     priorityLabel: "Urgency",
@@ -61,6 +62,9 @@ export const en = {
     emptyTitle: "No operational data",
     emptyBody:
       "Complete onboarding or open a sample ticket to see KPIs and costs.",
+    emptyTourTitle: "Empty dashboard?",
+    emptyTourBody:
+      "Use “Explain this page” to learn KPIs and next steps in under a minute.",
     open: "Open",
     breached: "SLA breached",
     atRisk: "At risk",
@@ -162,6 +166,11 @@ export const en = {
   digest: {
     weeklySummary:
       "7d digest — open/in progress: {open} · new SLA breaches: {breached} · verified costs: actual €{actual} · estimated €{estimated}",
+    noHotTickets: "No priority tickets this week.",
+    bannerTitle: "Weekly digest",
+    bannerBody: "Confirm you reviewed Monday’s digest.",
+    bannerCta: "Mark reviewed",
+    bannerDone: "Digest marked as reviewed.",
   },
   slaOps: {
     relaunchPrefix: "SLA relaunch:",
@@ -214,10 +223,20 @@ export const en = {
     subtitle:
       "Last {days} days — estimated vs actual (completed/verified tickets).",
     exportCsv: "Export CSV",
+    shareCfoTitle: "Share with CFO",
+    shareCfoEmail: "CFO email",
+    shareCfoSubmit: "Send summary",
+    shareCfoOk: "Summary sent",
+    shareCfoError: "Send failed",
     colStore: "Store",
     colTickets: "Tickets",
     colEstimated: "Estimated",
     colActual: "Actual",
+  },
+  trust: {
+    strip:
+      "Self-host / EU data · ticket audit · GDPR export · AI with human confirm only",
+    settingsTitle: "Trust & compliance",
   },
   actionErrors: {
     accessRequired: "Sign-in required",
@@ -558,6 +577,17 @@ export const en = {
     opsAssign: "Assign vendor",
     opsCancelLabel: "Cancel (reason required)",
     opsCancel: "Cancel ticket",
+    playbookTitle: "Breach playbook",
+    playbookHint:
+      "One click: template note + ops relaunch notification (human confirm on SoR).",
+    playbookCta: "Run breach playbook",
+    inviteTitle: "Invite who will work it",
+    inviteEmail: "Email",
+    inviteRoleSm: "Store manager",
+    inviteRoleVendor: "Vendor (portal)",
+    inviteSubmit: "Send invite",
+    inviteOk: "Invite sent",
+    inviteError: "Invite failed",
     slaTitle: "SLA escalation",
     slaNote: "Relaunch note *",
     slaOk: "Relaunch sent",
@@ -862,6 +892,8 @@ export const en = {
     membersLink: "Members",
     emptyTitle: "No events",
     emptyBody: "Role and membership changes will appear here.",
+    exportJson: "Export JSON",
+    exportCsv: "Export CSV",
     colEvent: "Event",
     colWhen: "When",
     evtMembershipUpdated: "Membership updated",
@@ -915,6 +947,14 @@ export const en = {
     tourLaunch: "Interactive tutorial",
     tourLaunchHint: "A guided walkthrough of each section — click to start now.",
     tourLaunchCta: "Start",
+    flussoATitle: "Close the first cycle (Flow A)",
+    flussoAHint:
+      "In under 15 minutes: store reports → HQ assigns → vendor done → store verifies. That’s the network aha moment.",
+    flussoACta: "Start from sample ticket",
+    antiSkipTitle: "Onboarding skipped — three measurable steps",
+    antiSkip1: "Open at least one ticket in FacilityFlow (not WhatsApp only)",
+    antiSkip2: "Assign a vendor and ask for done from the portal",
+    antiSkip3: "Verify closure from the store",
     pilotHint:
       "Typical pilot: 15 stores × 5 vendors. This checklist remains the source of truth for network setup.",
     blockedSprintHint: "(next sprint)",
