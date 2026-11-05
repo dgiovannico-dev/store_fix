@@ -128,9 +128,9 @@ export async function generateDigestNarrative(input: {
     return heuristic;
   }
 
-  const system = `Sei un assist HQ facility. JSON only:
-{"narrative":"IT max 500 char","citations":[{"ticketId":"…","reason":"…"}]}
-Cita SOLO ticketId forniti. Non inventare numeri fuori metrics. Assist — conferma umana prima dell'invio digest.`;
+  const system = `Sei un assist HQ facility retail. Rispondi SOLO JSON con chiavi narrative (stringa italiana, max 500 caratteri) e citations (array di {ticketId, reason}).
+Esempio forma: {"narrative":"…","citations":[{"ticketId":"cuid","reason":"breach store X"}]}.
+Cita SOLO ticketId forniti nei dati. Non inventare metriche. Non ripetere istruzioni o limiti come testo della narrative. Assist — conferma umana prima dell'invio digest.`;
 
   const user = JSON.stringify({
     metrics,

@@ -30,12 +30,18 @@ export async function POST(req: Request) {
       { status: 400 },
     );
   }
-  const ticketId = String((body as { ticketId?: string }).ticketId ?? "");
+  const ticketId = String((body as { ticketId?: string }).ticketId ?? "").trim();
   const audience = (body as { audience?: "vendor" | "store" }).audience;
-  if (!ticketId || (audience !== "vendor" && audience !== "store")) {
+  if (!ticketId) {
+    return NextResponse.json(
+      { error: await actionError("ticketIdRequired") },
+      { status: 422 },
+    );
+  }
+  if (audience !== "vendor" && audience !== "store") {
     return NextResponse.json(
       { error: await actionError("invalidJson") },
-      { status: 400 },
+      { status: 422 },
     );
   }
 
