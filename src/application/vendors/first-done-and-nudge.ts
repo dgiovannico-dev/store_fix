@@ -2,12 +2,7 @@ import { Role, TicketStatus } from "@prisma/client";
 import { enqueueEmail } from "@/infrastructure/email/outbox";
 import { prisma } from "@/infrastructure/db/prisma";
 import { getTenantI18nPrefs } from "@/application/tenant/i18n-prefs";
-function appBaseUrl(): string {
-  return (
-    process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, "") ||
-    "http://localhost:3000"
-  );
-}
+import { appBaseUrl } from "@/lib/app-urls";
 
 const NUDGE_AFTER_MS = 48 * 60 * 60 * 1000;
 

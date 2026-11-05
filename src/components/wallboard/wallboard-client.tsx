@@ -41,9 +41,9 @@ export function WallboardClient(props: {
   initialNextSkip: number | null;
   copy: MessageCatalog["wallboard"];
   locale: Locale;
-  ticketsUrl: string;
+  qrSvg: string;
 }) {
-  const { copy, locale, ticketsUrl } = props;
+  const { copy, locale, qrSvg } = props;
   const [tickets, setTickets] = useState(props.initialTickets);
   const [total, setTotal] = useState(props.initialTotal);
   const [nextSkip, setNextSkip] = useState(props.initialNextSkip);
@@ -155,7 +155,7 @@ export function WallboardClient(props: {
           ) : null}
         </div>
         <div className="flex flex-wrap items-stretch gap-4">
-          <WallboardQr href={ticketsUrl} hint={copy.qrHint} />
+          <WallboardQr svg={qrSvg} hint={copy.qrHint} />
           <div
             className="flex min-h-[5.75rem] flex-col justify-center rounded-[var(--radius)] border border-[var(--border)] bg-[var(--card)] px-5 py-3 text-right"
             aria-label={copy.countAria.replace("{n}", String(count))}

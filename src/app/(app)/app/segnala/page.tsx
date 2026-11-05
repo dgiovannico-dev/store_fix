@@ -5,6 +5,7 @@ import { getTenantI18nPrefs } from "@/application/tenant/i18n-prefs";
 import { StatusPanel } from "@/components/ui/status-panel";
 import { getActiveMembership } from "@/application/memberships/membership-service";
 import { listStores } from "@/application/stores/store-service";
+import { segnalaStoreDeepLink } from "@/lib/app-urls";
 import { tenantMessages } from "@/i18n/tenant-messages";
 
 /**
@@ -26,10 +27,6 @@ export default async function SegnalaHubPage() {
     getTenantI18nPrefs(session.tenantId),
     listStores(session.tenantId, membership),
   ]);
-  const base =
-    process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, "") ||
-    "http://localhost:3000";
-
   return (
     <main className="px-4 py-6" data-tour="page.segnala.root">
       <h1 className="font-[family-name:var(--font-sora)] text-xl font-semibold text-[var(--primary)]">
@@ -61,8 +58,7 @@ export default async function SegnalaHubPage() {
                   {msg.intake.openReport}
                 </Link>
                 <code className="block break-all text-xs text-[var(--muted-foreground)]">
-                  {base}
-                  {path}
+                  {segnalaStoreDeepLink(s.id)}
                 </code>
               </li>
             );

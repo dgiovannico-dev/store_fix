@@ -27,6 +27,9 @@ describe("forbiddenAppPathRedirect", () => {
     expect(
       forbiddenAppPathRedirect(Role.store_manager, "/app/tickets/new"),
     ).toBeNull();
+    expect(forbiddenAppPathRedirect(Role.store_manager, "")).toBe(
+      "/app/tickets",
+    );
   });
 
   it("viewer_finance stays on finance surface", () => {
@@ -42,6 +45,9 @@ describe("forbiddenAppPathRedirect", () => {
     expect(
       forbiddenAppPathRedirect(Role.viewer_finance, "/app/contratti"),
     ).toBeNull();
+    expect(forbiddenAppPathRedirect(Role.viewer_finance, "")).toBe(
+      "/app/dashboard",
+    );
   });
 
   it("owner keeps full /app", () => {

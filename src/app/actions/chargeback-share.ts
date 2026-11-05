@@ -6,15 +6,9 @@ import { listChargebackByStore } from "@/application/finance/chargeback-query";
 import { getTenantI18nPrefs } from "@/application/tenant/i18n-prefs";
 import { enqueueEmail } from "@/infrastructure/email/outbox";
 import { actionError } from "@/i18n/action-errors";
+import { appBaseUrl } from "@/lib/app-urls";
 
 export type ChargebackShareState = { ok?: boolean; error?: string };
-
-function appBaseUrl(): string {
-  return (
-    process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, "") ||
-    "http://localhost:3000"
-  );
-}
 
 const HQ = new Set<Role>([
   Role.owner,
