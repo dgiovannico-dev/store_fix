@@ -43,6 +43,8 @@ OLLAMA_MODEL=llama3.2
 
 Ogni assist scrive `AiInvocation` (tenant, feature, provider, model, ok, latency) — **senza** prompt/response. Soft budget: `AI_SOFT_BUDGET_MONTHLY` (default 5000) → warn log + badge in `/app/settings/ai`.
 
+Retention: job `ai.invocation_gc` (cron 04:30 Europe/Rome) cancella righe più vecchie di `AI_INVOCATION_RETENTION_DAYS` (default 90).
+
 ## Endpoints assist
 
 | Route | Uso |

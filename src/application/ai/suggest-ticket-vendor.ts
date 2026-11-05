@@ -6,6 +6,7 @@ import { getActiveMembership } from "@/application/memberships/membership-servic
 import { canAccessStore } from "@/domain/rbac/store-scope";
 import { ForbiddenError } from "@/domain/rbac/guards";
 import { listVendors } from "@/application/vendors/vendor-service";
+import { recordAiInvocation } from "@/infrastructure/ai/record-ai-invocation";
 import { requireTenantId } from "@/infrastructure/db/tenant-scope";
 
 export async function suggestTicketVendor(input: {
@@ -22,7 +23,7 @@ export async function suggestTicketVendor(input: {
   }
 
   const vendors = await listVendors(input.tenantId);
-  return suggestVendorHeuristic({
+  const suggestion = suggestVendorHeuristic({
     storeId: input.storeId,
     category: input.category,
     vendors: vendors.map((v) => ({
@@ -32,4 +33,12 @@ export async function suggestTicketVendor(input: {
       storeCoverageIds: v.storeCoverageIds,
     })),
   });
+  void recordAiInvocation({
+    tenantId: input.tenantId,
+    userId: input.userId,
+    feature: "suggest_vendor",
+    provider: suggestion?.source ?? "heuristic",
+    ok: true,
+  });
+  return suggestion;
 }
