@@ -35,6 +35,7 @@
     "verify:local": "npm run typecheck && npm run lint && npm test && npm run secrets:scan && npm audit --audit-level=high",
     "audit:osv": "bash scripts/osv-scan.sh",
     "smoke:http": "bash scripts/smoke-flusso-a-http.sh",
+    "smoke:all-roles": "bash scripts/smoke-all-roles-http.sh",
     "smoke:attachment-put": "bash scripts/smoke-attachment-s3-put.sh",
     "verify:headers": "bash scripts/verify-security-headers.sh",
     "vps:preflight": "bash scripts/vps-preflight.sh",
