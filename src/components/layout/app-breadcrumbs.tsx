@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 import { ChevronRight, Home } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -108,17 +109,36 @@ export function AppBreadcrumbs(props: {
   className?: string;
 }) {
   const pathname = usePathname() || "/";
+  /** Avoid SSR/client pathname mismatch (Next soft-nav / searchParams). */
+  const [ready, setReady] = useState(false);
+  useEffect(() => {
+    setReady(true);
+  }, []);
+
+  const navClass = cn(
+    "flex items-center gap-1.5 text-[length:var(--text-caption)] text-[var(--muted-foreground)]",
+    props.className,
+  );
+
+  if (!ready) {
+    return (
+      <nav aria-label={props.labels.breadcrumb} className={navClass}>
+        <Home
+          className="size-3.5 shrink-0 text-[var(--nav-icon)]"
+          aria-hidden
+        />
+        <span className="font-medium text-[var(--foreground)]">
+          {props.labels.home}
+        </span>
+      </nav>
+    );
+  }
+
   const crumbs = buildCrumbs(pathname, props.labels, props.homeHref);
 
   if (crumbs.length <= 1) {
     return (
-      <nav
-        aria-label={props.labels.breadcrumb}
-        className={cn(
-          "flex items-center gap-1.5 text-[length:var(--text-caption)] text-[var(--muted-foreground)]",
-          props.className,
-        )}
-      >
+      <nav aria-label={props.labels.breadcrumb} className={navClass}>
         <Home
           className="size-3.5 shrink-0 text-[var(--nav-icon)]"
           aria-hidden
