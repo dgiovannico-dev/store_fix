@@ -21,14 +21,23 @@ curl -s http://127.0.0.1:8001/v1/models | head
 
 Alias accettati dal gateway: `VLLM_BASE_URL`, `VLLM_API_KEY`, `VLLM_MODEL`.
 
-### Legacy Ollama
+### Embeddings (RAG F7-08)
+
+1. `POST {AI_BASE_URL}/embeddings` se il server lo espone  
+2. altrimenti **local_embed** 768-d (CPU, deterministico) — tipico con vLLM chat-only MLX  
+3. Ollama `/api/embeddings` solo se usi preset Ollama (non default)
+
+Runbook: [`AI_CPU.md`](./AI_CPU.md).
+
+### Legacy Ollama (non default)
 
 ```bash
+# Solo se AI_BASE_URL / VLLM_* sono vuoti:
 OLLAMA_BASE_URL=http://127.0.0.1:11434
 OLLAMA_MODEL=llama3.2
 ```
 
-Se è settato `AI_BASE_URL` / `VLLM_BASE_URL`, ha priorità su Ollama.
+`AI_BASE_URL` / `VLLM_BASE_URL` **hanno sempre priorità** su Ollama.
 
 ## Endpoints assist
 
@@ -39,6 +48,10 @@ Se è settato `AI_BASE_URL` / `VLLM_BASE_URL`, ha priorità su Ollama.
 | `POST /api/ai/suggest-vendor` | Vendor heuristic |
 | `POST /api/ai/summarize-ticket` | Riassunto note |
 | `POST /api/ai/draft-message` | Bozza msg vendor/store |
+| `POST /api/ai/similar-tickets` | Casi simili (RAG / local_embed) |
+| `POST /api/ai/breach-brief` | Brief breach (tool + LLM) |
+| `POST /api/ai/digest-narrative` | Bozza digest HQ |
+| `POST /api/ai/rfq-compare` | Confronto offerte (no auto-award) |
 | `GET /api/ai/health` | Ping provider |
 
 UI settings: `/app/settings/ai`

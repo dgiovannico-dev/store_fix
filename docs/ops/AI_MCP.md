@@ -22,8 +22,10 @@ export FF_MCP_USER_ID=<hq user id>   # per similar_tickets RBAC
 export FF_MCP_TOKEN=<secret lab>
 export FF_MCP_AUTH=$FF_MCP_TOKEN      # stesso valore nel processo
 export DATABASE_URL=...
-# opz. Ollama
-export OLLAMA_BASE_URL=http://127.0.0.1:11434
+# vLLM già in lab (preferito)
+export AI_BASE_URL=http://127.0.0.1:8001/v1
+export AI_API_KEY=local
+export AI_MODEL=mlx-community/Qwen2.5-3B-Instruct-4bit
 
 npm run mcp
 ```

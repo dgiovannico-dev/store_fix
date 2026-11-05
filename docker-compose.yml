@@ -200,9 +200,8 @@ services:
       DEFAULT_FROM_EMAIL: ${GLITCHTIP_FROM_EMAIL:-noreply@facilityflow.local}
       EMAIL_URL: ${GLITCHTIP_EMAIL_URL:-consolemail://}
 
-  # CPU-first local LLM (F7) — profile ai
+  # Optional fallback LLM — lab default is host vLLM (:8001), not this service.
   # docker compose --profile ai up -d ollama
-  # then: docker compose exec ollama ollama pull nomic-embed-text && ollama pull qwen2.5:3b
   ollama:
     image: ollama/ollama:0.12.3
     profiles: ["ai"]

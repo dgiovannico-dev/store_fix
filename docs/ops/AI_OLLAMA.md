@@ -2,8 +2,8 @@
 
 Assist **locale/OSS** + **conferma umana**. Mai System of Record.
 
-> **F7 (bozza):** preferire **vLLM** OpenAI-compatible e multi-provider BYOK — vedi [`../product/AI_PLATFORM.md`](../product/AI_PLATFORM.md).  
-> Questo runbook resta valido finché il client usa `OLLAMA_*`; dopo F7-01 userai `AI_BASE_URL=http://…:11434/v1` (Ollama OpenAI compat) o vLLM `:8000/v1`.
+> **Default lab:** **vLLM** su `:8001` — vedi [`AI_PROVIDERS.md`](./AI_PROVIDERS.md) e [`AI_CPU.md`](./AI_CPU.md).  
+> Questo runbook è **legacy**: usalo solo senza `AI_BASE_URL` / `VLLM_*`.
 
 ## Config
 
