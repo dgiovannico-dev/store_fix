@@ -11,6 +11,7 @@ import {
   type TourAudience,
   type TourStepDef,
 } from "./tour-registry";
+import { stepFitsPath } from "./tour-path";
 
 const STORAGE_KEY = "ff.tour.resume";
 const SOFT_KEY = "ff.tour.softprompt";
@@ -80,11 +81,6 @@ function skipBlockedRoute(
     i += 1;
   }
   return i;
-}
-
-function stepFitsPath(step: TourStepDef, pathname: string): boolean {
-  if (!step.route) return true;
-  return pathname === step.route || pathname.startsWith(`${step.route}/`);
 }
 
 /** Soft-nav target; `tour=1` unlocks gated pages (e.g. dashboard) during the tour. */
