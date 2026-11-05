@@ -18,11 +18,6 @@ const it: Record<string, TourStepCopy> = {
     description:
       "Da qui riavvii il tutorial completo o usi «Spiega questa pagina» per il solo capitolo della schermata attuale. Utile in demo commerciale o quando un collega nuovo entra in un’area specifica. Scorciatoia: tasto ? (fuori dai campi di testo).",
   },
-  "hq.shell.trust": {
-    title: "Fiducia e conformità",
-    description:
-      "Questa riga ricorda che i dati restano self-host / UE, con audit e AI solo in assist + conferma umana. È il messaggio da mostrare a DPO e direzione IT quando chiedono «dove stanno i dati?» — senza SaaS a pagamento nel path critico.",
-  },
   "hq.onboarding": {
     title: "Checklist di avvio rete",
     description:
@@ -260,11 +255,6 @@ const en: Record<string, TourStepCopy> = {
     title: "Help at hand",
     description:
       "Restart the full tutorial or use Explain this page for the current screen only — handy in demos or for new teammates. Shortcut: ? key (outside text fields).",
-  },
-  "hq.shell.trust": {
-    title: "Trust and compliance",
-    description:
-      "Reminds stakeholders that data stays self-host / EU, with audit and AI assist + human confirm only. Show this to DPO and IT when they ask where data lives — no paid SaaS on the critical path.",
   },
   "hq.onboarding": {
     title: "Network launch checklist",

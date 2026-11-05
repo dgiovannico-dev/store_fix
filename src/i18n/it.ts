@@ -231,11 +231,6 @@ export const it = {
     colEstimated: "Stimato",
     colActual: "Effettivo",
   },
-  trust: {
-    strip:
-      "Self-host / dati UE · audit ticket · export GDPR · AI solo con conferma umana",
-    settingsTitle: "Trust & compliance",
-  },
   actionErrors: {
     accessRequired: "Accesso richiesto",
     membershipMissing: "Membership assente",
