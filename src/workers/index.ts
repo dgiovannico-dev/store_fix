@@ -15,10 +15,12 @@ import { gcExpiredRateLimitBuckets } from "../application/rate-limit/gc-expired-
 import { checkSlaBreaches } from "../application/sla/check-breaches";
 import { readImapInboundConfig } from "../infrastructure/email/imap-config";
 import { openImapflowMailbox } from "../infrastructure/email/imapflow-mailbox";
+import { gcAiInvocations } from "../application/ai/gc-ai-invocations";
 import { indexTicketChunks } from "../application/ai/index-ticket-chunks";
 import { runWeeklyHqDigest } from "../application/digest/weekly-hq-digest";
 import {
   QUEUE_AI_INDEX_TICKET,
+  QUEUE_AI_INVOCATION_GC,
   QUEUE_ATTACHMENT_GC,
   QUEUE_EMAIL_DIGEST_WEEKLY,
   QUEUE_EMAIL_IMAP_POLL,
@@ -49,6 +51,7 @@ async function main() {
   await boss.createQueue(QUEUE_ATTACHMENT_GC);
   await boss.createQueue(QUEUE_RATE_LIMIT_GC);
   await boss.createQueue(QUEUE_AI_INDEX_TICKET);
+  await boss.createQueue(QUEUE_AI_INVOCATION_GC);
 
   await boss.work(QUEUE_EMAIL_OUTBOX_DISPATCH, async () => {
     const result = await processEmailOutboxBatch(20);
@@ -132,6 +135,13 @@ async function main() {
     );
   });
 
+  await boss.work(QUEUE_AI_INVOCATION_GC, async () => {
+    const result = await gcAiInvocations();
+    console.log(
+      `[worker] ai.invocation_gc → dryRun=${result.dryRun} deleted=${result.deleted} cutoff=${result.cutoff}`,
+    );
+  });
+
   try {
     await boss.schedule(QUEUE_SLA_CHECK, "*/5 * * * *", null, {
       tz: "Europe/Rome",
@@ -197,6 +207,14 @@ async function main() {
     console.warn("[worker] schedule rate_limit.gc:", (e as Error).message);
   }
 
+  try {
+    await boss.schedule(QUEUE_AI_INVOCATION_GC, "30 4 * * *", null, {
+      tz: "Europe/Rome",
+    });
+  } catch (e) {
+    console.warn("[worker] schedule ai.invocation_gc:", (e as Error).message);
+  }
+
   const imapConfig = readImapInboundConfig();
   if (imapConfig) {
     try {
@@ -224,6 +242,7 @@ async function main() {
     QUEUE_ATTACHMENT_GC,
     QUEUE_RATE_LIMIT_GC,
     QUEUE_AI_INDEX_TICKET,
+    QUEUE_AI_INVOCATION_GC,
   );
 }
 
