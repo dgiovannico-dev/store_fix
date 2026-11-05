@@ -1,8 +1,10 @@
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { getTenantI18nPrefs } from "@/application/tenant/i18n-prefs";
 import type { BreadcrumbLabels } from "@/components/layout/app-breadcrumbs";
 import { NotificationBell } from "@/components/notifications/notification-bell";
+import { forbiddenAppPathRedirect } from "@/domain/rbac/route-audience";
 import { t } from "@/i18n";
 import { HqShell } from "./hq-shell";
 import {
@@ -54,6 +56,9 @@ export async function AppChrome({ children }: { children: React.ReactNode }) {
   // Fail-closed: (app)/(vendor) layouts always wrap AppChrome
   if (!session?.user) redirect("/login");
 
+  const pathname = (await headers()).get("x-ff-pathname") ?? "";
+  const bounce = forbiddenAppPathRedirect(session.role, pathname);
+  if (bounce) redirect(bounce);
 
   const prefs = session.tenantId
     ? await getTenantI18nPrefs(session.tenantId)

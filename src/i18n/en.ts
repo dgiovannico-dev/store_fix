@@ -866,6 +866,8 @@ export const en = {
   localeSettings: {
     title: "Language & region",
     hint: "Choose workspace language and currency.",
+    readOnlyHint:
+      "Workspace language and currency are set by HQ. You see the active values here; ask an owner/admin to change them.",
     language: "Language",
     langIt: "Italiano",
     langEn: "English",
