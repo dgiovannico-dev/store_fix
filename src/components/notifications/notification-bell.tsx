@@ -21,6 +21,7 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { ticketPathForRole } from "@/lib/app-urls";
 import { cn } from "@/lib/utils";
 import { formatDateTime, type Locale, type MessageCatalog } from "@/i18n";
 
@@ -47,8 +48,7 @@ type TypeVisual = {
 };
 
 function ticketHref(role: string | null | undefined, ticketId: string) {
-  if (role === "vendor") return `/vendor/tickets/${ticketId}`;
-  return `/app/tickets/${ticketId}`;
+  return ticketPathForRole(role, ticketId);
 }
 
 function typeLabel(

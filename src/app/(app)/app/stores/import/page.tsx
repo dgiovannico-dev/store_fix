@@ -1,6 +1,8 @@
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { getTenantI18nPrefs } from "@/application/tenant/i18n-prefs";
+import { RbacAction } from "@/domain/rbac/actions";
+import { canMutate } from "@/domain/rbac/can";
 import { tenantMessages } from "@/i18n/tenant-messages";
 import { StoreImportForm } from "./store-import-form";
 
@@ -8,6 +10,9 @@ export default async function StoreImportPage() {
   const session = await auth();
   if (!session?.user?.id || !session.tenantId || !session.role) {
     redirect("/login");
+  }
+  if (!canMutate(session.role, RbacAction.crudStore)) {
+    redirect("/app/stores");
   }
   const [msg, prefs] = await Promise.all([
     tenantMessages(session.tenantId),

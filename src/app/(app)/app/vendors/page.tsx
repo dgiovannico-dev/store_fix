@@ -21,6 +21,9 @@ export default async function VendorsPage() {
   if (!session?.user?.id || !session.tenantId || !session.role) {
     redirect("/login");
   }
+  if (!canMutate(session.role, RbacAction.crudVendor)) {
+    redirect("/app/tickets");
+  }
 
   const [msg, prefs, vendors, stores] = await Promise.all([
     tenantMessages(session.tenantId),

@@ -8,6 +8,7 @@ import {
 import { checkActionRateLimit } from "@/infrastructure/rate-limit-action";
 import { RATE_LIMIT } from "@/infrastructure/rate-limit-policies";
 import { rateLimitKey } from "@/infrastructure/security/client-ip";
+import { appBaseUrl } from "@/lib/app-urls";
 
 const RESET_TTL_MS = 60 * 60 * 1000;
 const RESET_PREFIX = "pwdreset:";
@@ -16,12 +17,6 @@ function hashToken(raw: string): string {
   return createHash("sha256").update(raw).digest("hex");
 }
 
-function appBaseUrl(): string {
-  return (
-    process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, "") ||
-    "http://localhost:3000"
-  );
-}
 
 /**
  * Richiede reset: sempre messaggio generico (no user enumeration).
