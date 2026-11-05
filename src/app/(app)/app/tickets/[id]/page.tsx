@@ -5,10 +5,12 @@ import { preferredVendorHint } from "@/application/tickets/transition-ticket";
 import { getTenantI18nPrefs } from "@/application/tenant/i18n-prefs";
 import { PageFrame } from "@/components/layout/page-frame";
 import { TicketOpsPanel } from "@/components/ops/ticket-ops-panel";
+import { BreachBriefPanel } from "@/components/ops/breach-brief-panel";
 import { SlaRelaunchPanel } from "@/components/ops/sla-relaunch-panel";
 import { AttachmentGallery } from "@/components/tickets/attachment-gallery";
 import { AttachmentUploader } from "@/components/tickets/attachment-uploader";
 import { QuotePanel } from "@/components/tickets/quote-panel";
+import { SimilarTicketsPanel } from "@/components/tickets/similar-tickets-panel";
 import { SummarizeNotesPanel } from "@/components/tickets/summarize-notes-panel";
 import { TicketDetailHero } from "@/components/tickets/ticket-detail-hero";
 import { TicketDetailTabs } from "@/components/tickets/ticket-detail-tabs";
@@ -194,6 +196,12 @@ export default async function TicketDetailPage({
         labels={msg.ticketPanels}
         locale={prefs.locale}
       />
+      <BreachBriefPanel
+        ticketId={ticket.id}
+        breached={!!ticket.slaBreachedAt}
+        canOps={canOps}
+        labels={msg.ticketPanels}
+      />
       <VerifyPanel
         ticketId={ticket.id}
         status={ticket.status}
@@ -225,12 +233,19 @@ export default async function TicketDetailPage({
 
   const assistBlock = canOps ? (
     <TicketPanelSection title={copy.sectionAssist}>
-      <SummarizeNotesPanel
-        ticketId={ticket.id}
-        canOps={canOps}
-        labels={msg.ticketPanels}
-        locale={prefs.locale}
-      />
+      <div className="space-y-6">
+        <SummarizeNotesPanel
+          ticketId={ticket.id}
+          canOps={canOps}
+          labels={msg.ticketPanels}
+          locale={prefs.locale}
+        />
+        <SimilarTicketsPanel
+          ticketId={ticket.id}
+          canOps={canOps}
+          labels={msg.ticketPanels}
+        />
+      </div>
     </TicketPanelSection>
   ) : null;
 

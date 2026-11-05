@@ -686,7 +686,7 @@ E00 Platform OSS (Compose, SeaweedFS, Mailpit, pg-boss, Prisma schema)
 | **F7-05** | Assist priorità + bozza msg | **P1** | Done — API suggest-priority + draft-message | No |
 | **F7-06** | RFQ compare + digest hook | **P1** | Done light — digest F6-01; RFQ compare via existing list+AI later polish | No |
 | **F7-07** | Audit `AiInvocation` | **P1** | Done schema — wiring log follow-up soft | No |
-| **F7-08** | Embeddings similar | **P2** | Deferred (opt-in) | No |
+| **F7-08** | Embeddings similar | **P2** | Done lite 2026-11-05 (pgvector + Ollama CPU + UI casi simili) | No |
 | **F7-09** | Vision caption | **P2** | Deferred (opt-in) | No |
 | **F7-10** | ADR-0012 + runbook | **P0** | Done — Accepted + `AI_PROVIDERS.md` | No |
 

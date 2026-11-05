@@ -15,8 +15,10 @@ import { gcExpiredRateLimitBuckets } from "../application/rate-limit/gc-expired-
 import { checkSlaBreaches } from "../application/sla/check-breaches";
 import { readImapInboundConfig } from "../infrastructure/email/imap-config";
 import { openImapflowMailbox } from "../infrastructure/email/imapflow-mailbox";
+import { indexTicketChunks } from "../application/ai/index-ticket-chunks";
 import { runWeeklyHqDigest } from "../application/digest/weekly-hq-digest";
 import {
+  QUEUE_AI_INDEX_TICKET,
   QUEUE_ATTACHMENT_GC,
   QUEUE_EMAIL_DIGEST_WEEKLY,
   QUEUE_EMAIL_IMAP_POLL,
@@ -46,6 +48,7 @@ async function main() {
   await boss.createQueue(QUEUE_GDPR_PURGE);
   await boss.createQueue(QUEUE_ATTACHMENT_GC);
   await boss.createQueue(QUEUE_RATE_LIMIT_GC);
+  await boss.createQueue(QUEUE_AI_INDEX_TICKET);
 
   await boss.work(QUEUE_EMAIL_OUTBOX_DISPATCH, async () => {
     const result = await processEmailOutboxBatch(20);
@@ -111,6 +114,21 @@ async function main() {
     const result = await gcExpiredRateLimitBuckets();
     console.log(
       `[worker] rate_limit.gc → dryRun=${result.dryRun} deleted=${result.deleted} cutoff=${result.cutoff}`,
+    );
+  });
+
+  await boss.work(QUEUE_AI_INDEX_TICKET, async ([job]) => {
+    const data = job.data as { tenantId?: string; ticketId?: string };
+    if (!data?.tenantId || !data?.ticketId) {
+      console.warn("[worker] ai.index_ticket skip — payload incompleto");
+      return;
+    }
+    const result = await indexTicketChunks({
+      tenantId: data.tenantId,
+      ticketId: data.ticketId,
+    });
+    console.log(
+      `[worker] ai.index_ticket → ticket=${data.ticketId} result=${JSON.stringify(result)}`,
     );
   });
 
@@ -205,6 +223,7 @@ async function main() {
     QUEUE_GDPR_PURGE,
     QUEUE_ATTACHMENT_GC,
     QUEUE_RATE_LIMIT_GC,
+    QUEUE_AI_INDEX_TICKET,
   );
 }
 

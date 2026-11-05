@@ -79,6 +79,7 @@ model Tenant {
   quoteRequests       QuoteRequest[]
   quoteBids           QuoteBid[]
   aiConfig            TenantAiConfig?
+  ticketEmbeddings    TicketEmbedding[]
 }
 
 /// Progress Flusso C — skip esplicito; step “fatti” derivati da SoR (T1.30).
@@ -359,6 +360,7 @@ model Ticket {
   attachments Attachment[]
   notifications Notification[]
   quoteRequests QuoteRequest[]
+  embeddings  TicketEmbedding[]
 
   @@index([tenantId])
   @@index([tenantId, status])
@@ -369,6 +371,27 @@ model Ticket {
   @@index([storeId])
   @@index([vendorId])
   @@index([slaDueAt])
+}
+
+/// RAG chunk embeddings (F7-08 / B3) — pgvector; mai SoR write dall'AI.
+model TicketEmbedding {
+  id         String                       @id @default(cuid())
+  tenantId   String
+  ticketId   String
+  chunkIndex Int
+  chunkText  String
+  /// nomic-embed-text = 768-d; raw SQL for <=> / HNSW
+  embedding  Unsupported("vector(768)")
+  createdAt  DateTime                     @default(now())
+  updatedAt  DateTime                     @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  ticket Ticket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+
+  @@unique([ticketId, chunkIndex])
+  @@index([tenantId])
+  @@index([ticketId])
+  @@index([tenantId, ticketId])
 }
 
 enum QuoteRequestStatus {
