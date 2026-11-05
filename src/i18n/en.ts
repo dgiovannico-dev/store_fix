@@ -233,11 +233,6 @@ export const en = {
     colEstimated: "Estimated",
     colActual: "Actual",
   },
-  trust: {
-    strip:
-      "Self-host / EU data · ticket audit · GDPR export · AI with human confirm only",
-    settingsTitle: "Trust & compliance",
-  },
   actionErrors: {
     accessRequired: "Sign-in required",
     membershipMissing: "Membership missing",

@@ -53,7 +53,6 @@ describe("product tour vs sidebar order (F8)", () => {
       expect.arrayContaining([
         "hq.shell.nav",
         "hq.shell.help",
-        "hq.shell.trust",
         "hq.tickets.new",
         "hq.tickets.detail",
         "hq.stores.actions",
