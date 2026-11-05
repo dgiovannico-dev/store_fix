@@ -95,6 +95,16 @@ function tourHref(route: string): string {
   return `${route}?tour=1`;
 }
 
+/** Prefer a painted target (sidebar hidden &lt;lg is in DOM at 0×0). */
+function queryVisible(selector: string): Element | null {
+  const nodes = document.querySelectorAll(selector);
+  for (const el of nodes) {
+    const r = el.getBoundingClientRect();
+    if (r.width >= 1 && r.height >= 1) return el;
+  }
+  return null;
+}
+
 function toDriveStep(d: TourStepDef): DriveStep {
   const popover = {
     title: d.title,
@@ -105,6 +115,11 @@ function toDriveStep(d: TourStepDef): DriveStep {
   if (!d.element) {
     return { popover };
   }
+  const visible = queryVisible(d.element);
+  if (visible) {
+    return { element: visible, popover };
+  }
+  // Fallback: selector string (Driver waits); skip path uses queryVisible.
   return {
     element: d.element,
     popover,
@@ -181,11 +196,11 @@ export function ProductTourHost(props: {
       const start = Date.now();
       while (Date.now() - start < ms) {
         if (cancelled || myRun !== runId.current) return null;
-        const el = document.querySelector(selector);
+        const el = queryVisible(selector);
         if (el) return el;
         await new Promise((r) => setTimeout(r, 80));
       }
-      return document.querySelector(selector);
+      return queryVisible(selector);
     }
 
     function clearTour() {
@@ -269,7 +284,7 @@ export function ProductTourHost(props: {
         if (!step.element) break;
         const found = await waitForSelector(step.element, 2500);
         if (cancelled || myRun !== runId.current) return;
-        if (found || document.querySelector(step.element)) break;
+        if (found || queryVisible(step.element)) break;
 
         // Soft-nav can report /app/dashboard while SSR redirected away — abort
         // long skips and treat as gated bounce.
@@ -338,7 +353,7 @@ export function ProductTourHost(props: {
       for (let i = index; i < parsed.defs.length; i += 1) {
         const s = parsed.defs[i]!;
         if (s.route && !stepFitsPath(s, pathname)) break;
-        if (s.element && !document.querySelector(s.element)) {
+        if (s.element && !queryVisible(s.element)) {
           localDefs.push({ ...s, element: undefined });
         } else {
           localDefs.push(s);
@@ -482,7 +497,7 @@ export function ProductTourHost(props: {
             const nextLocal = localDefs[nextLocalPos];
             const anchorOk =
               !nextLocal?.element ||
-              Boolean(document.querySelector(nextLocal.element));
+              Boolean(queryVisible(nextLocal.element));
             if (anchorOk && nextLocalPos === localIdx + 1) {
               drv.moveNext();
               return;

@@ -11,7 +11,12 @@ export function forbiddenAppPathRedirect(
   if (!role) return "/login";
 
   if (role === Role.vendor) {
-    if (pathname.startsWith("/app") || pathname.startsWith("/onboarding")) {
+    // Empty pathname = missing x-ff-pathname → fail closed (no HQ SoR leak).
+    if (
+      !pathname ||
+      pathname.startsWith("/app") ||
+      pathname.startsWith("/onboarding")
+    ) {
       return "/vendor/inbox";
     }
     return null;

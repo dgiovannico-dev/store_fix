@@ -10,6 +10,7 @@ describe("forbiddenAppPathRedirect", () => {
     expect(forbiddenAppPathRedirect(Role.vendor, "/app/tickets")).toBe(
       "/vendor/inbox",
     );
+    expect(forbiddenAppPathRedirect(Role.vendor, "")).toBe("/vendor/inbox");
     expect(forbiddenAppPathRedirect(Role.vendor, "/vendor/inbox")).toBeNull();
   });
 
