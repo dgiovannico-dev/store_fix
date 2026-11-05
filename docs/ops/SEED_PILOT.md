@@ -13,7 +13,10 @@ Tenant slug: `pilot-retail`.
 |-------|-------|----------|
 | owner | `owner@pilot.facilityflow.local` | `PilotOwner123!` |
 | viewer_finance | `finance@pilot.facilityflow.local` | `PilotFinance123!` |
+| store_manager | `sm@pilot.facilityflow.local` | `PilotStore123!` |
 | vendor | `vendor0@pilot.facilityflow.local` … `vendor4@…` | `PilotVendor123!` |
+
+Store manager è scoped al primo PV del pilota. Smoke multi-ruolo: `npm run smoke:all-roles` (app su `:3000`).
 
 Non usare in produzione. Script idempotente su slug `pilot-retail`.
 
