@@ -64,7 +64,7 @@
     "clsx": "^2.1.1",
     "driver.js": "^1.10.2",
     "imapflow": "^2.9.1",
-    "lucide-react": "^1.68.0",
+    "lucide-react": "^1.70.0",
     "mailparser": "^3.13.0",
     "next": "15.5.28",
     "next-auth": "^5.0.0-beta.32",
