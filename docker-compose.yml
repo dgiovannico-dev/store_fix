@@ -119,7 +119,7 @@ services:
   # Dev-only SMTP catcher — docker compose --profile dev up -d
   mailpit:
     # Pin tag (avoid floating :latest drift in lab).
-    image: axllent/mailpit:v1.32.0@sha256:0790692be935ea4420d085694f7985b1f692ca6a8771ab0e0bd8ba75ac180498
+    image: axllent/mailpit:v1.33.1@sha256:aef2aacc11f075ec0fb6874275ee4a421e688e11a96ebb296134d1735c7761ce
     profiles: ["dev", "full"]
     restart: unless-stopped
     ports:
